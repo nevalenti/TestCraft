@@ -5,6 +5,7 @@ import { BrowserRouter } from "react-router";
 
 import App from "./App.tsx";
 
+import "./tailwind.css";
 import "./styles.css";
 
 const queryClient = new QueryClient({
