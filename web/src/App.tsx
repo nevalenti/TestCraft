@@ -1,5 +1,5 @@
 const App = () => {
-  return <div className="underline">Hello, World!</div>;
+  return <></>;
 };
 
 export default App;
