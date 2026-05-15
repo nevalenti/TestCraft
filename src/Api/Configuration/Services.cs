@@ -1,3 +1,4 @@
+using Api.Configuration.Api;
 using Api.Configuration.Infrastructure;
 
 namespace Api.Configuration;
@@ -8,7 +9,7 @@ public static class Services
     {
         services.AddDatabase(configuration);
 
-        services.AddOpenApi();
+        services.AddOpenApiConfiguration();
 
         var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
             ?? throw new InvalidOperationException("Cors:AllowedOrigins is required.");

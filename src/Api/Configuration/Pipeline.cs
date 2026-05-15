@@ -1,3 +1,5 @@
+using Api.Configuration.Api;
+
 namespace Api.Configuration;
 
 public static class Pipeline
@@ -11,12 +13,12 @@ public static class Pipeline
 
         if (app.Environment.IsDevelopment())
         {
-            app.MapOpenApi();
+            app.UseOpenApi();
         }
 
-        app.UseCors("AllowReactApp");
-
         app.UseRouting();
+
+        app.UseCors("AllowReactApp");
 
         app.MapControllers();
 
