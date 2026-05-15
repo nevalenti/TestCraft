@@ -6,7 +6,7 @@ namespace Api.Configuration.Infrastructure;
 
 public static class Database
 {
-    public static void AddDatabase(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDbContext<AppDbContext>(options =>
         {
@@ -23,5 +23,7 @@ public static class Database
 
             options.UseNpgsql($"Host={host};Port={port};Database={database};Username={username};Password={password}");
         });
+
+        return services;
     }
 }

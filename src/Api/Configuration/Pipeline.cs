@@ -1,4 +1,4 @@
-using Api.Configuration.Api;
+using Api.Configuration.Web;
 
 namespace Api.Configuration;
 
@@ -10,16 +10,13 @@ public static class Pipeline
         {
             app.UseHttpsRedirection();
         }
-
-        if (app.Environment.IsDevelopment())
+        else
         {
-            app.UseOpenApi();
+            app.UseApiDocumentation();
         }
 
         app.UseRouting();
-
-        app.UseCors("AllowReactApp");
-
+        app.UseCorsPolicy();
         app.MapControllers();
 
         return app;

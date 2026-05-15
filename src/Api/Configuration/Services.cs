@@ -1,5 +1,5 @@
-using Api.Configuration.Api;
 using Api.Configuration.Infrastructure;
+using Api.Configuration.Web;
 
 namespace Api.Configuration;
 
@@ -8,22 +8,8 @@ public static class Services
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddDatabase(configuration);
-
-        services.AddOpenApiConfiguration();
-
-        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
-            ?? throw new InvalidOperationException("Cors:AllowedOrigins is required.");
-
-        services.AddCors(options =>
-        {
-            options.AddPolicy("AllowReactApp", policy =>
-            {
-                policy.WithOrigins(allowedOrigins)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-            });
-        });
-
+        services.AddCorsPolicy(configuration);
+        services.AddApiDocumentation();
         services.AddControllers();
 
         return services;
