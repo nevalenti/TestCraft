@@ -1,4 +1,4 @@
-.PHONY: dev down prod build clean format
+.PHONY: dev down prod build clean format e2e
 
 API_IMAGE=testcraft-api
 WEB_IMAGE=testcraft-web
@@ -25,3 +25,6 @@ clean:
 format:
 	dotnet format
 	pnpm dlx prettier . --write
+
+e2e:
+	docker compose --profile e2e run --rm --build e2e
