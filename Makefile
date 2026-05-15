@@ -1,4 +1,4 @@
-.PHONY: dev down prod build clean
+.PHONY: dev down prod build clean format
 
 API_IMAGE=testcraft-api
 WEB_IMAGE=testcraft-web
