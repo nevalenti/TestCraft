@@ -5,11 +5,15 @@
     <ProjectReference Include="../Infrastructure/Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Label="Validation">
     <PackageReference Include="FluentValidation.AspNetCore" />
   </ItemGroup>
+  
+  <ItemGroup Label="Logging">
+    <PackageReference Include="Serilog.AspNetCore" />
+  </ItemGroup>
 
-  <ItemGroup Label="EF Core Tools">
+  <ItemGroup Label="EF Core">
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

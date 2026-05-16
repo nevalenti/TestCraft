@@ -1,11 +1,31 @@
 using Api.Configuration;
 
+using Serilog;
+
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.ConfigureServices(builder.Configuration);
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 
-var app = builder.Build();
+try
+{
+    builder.Host.UseSerilog();
 
-app.ConfigurePipeline();
+    builder.Services.ConfigureServices(builder.Configuration);
 
-app.Run();
+    var app = builder.Build();
+
+    app.ConfigurePipeline();
+
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
