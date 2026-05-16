@@ -11,7 +11,7 @@ public static class OpenApi
 
     public static WebApplication UseApiDocumentation(this WebApplication app)
     {
-        app.MapOpenApi();
+        app.MapOpenApi("/openapi/{documentName}.json");
         app.UseSwaggerUI(options =>
         {
             options.SwaggerEndpoint("/openapi/v1.json", "TestCraft API v1");

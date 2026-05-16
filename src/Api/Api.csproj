@@ -13,11 +13,16 @@
     <PackageReference Include="Serilog.AspNetCore" />
   </ItemGroup>
 
-  <ItemGroup Label="EF Core">
+  <ItemGroup Label="Entity Framework Core">
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup Label="Versioning">
+    <PackageReference Include="Asp.Versioning.Http" />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
   </ItemGroup>
 
   <ItemGroup Label="OpenAPI">

@@ -3,6 +3,8 @@ using Api.Configuration.Web;
 
 using Application.Projects;
 
+using Asp.Versioning;
+
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
@@ -21,6 +23,19 @@ public static class Services
             services.AddCorsPolicy(configuration);
             services.AddApiDocumentation();
             services.AddControllers();
+
+            services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+            })
+            .AddMvc()
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
 
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<CreateProjectDtoValidator>();
