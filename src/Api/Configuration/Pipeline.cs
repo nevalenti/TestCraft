@@ -6,17 +6,18 @@ public static class Pipeline
 {
     public static WebApplication ConfigurePipeline(this WebApplication app)
     {
-        if (!app.Environment.IsDevelopment())
+        if (app.Environment.IsDevelopment())
         {
-            app.UseHttpsRedirection();
+            app.UseApiDocumentation();
         }
         else
         {
-            app.UseApiDocumentation();
+            app.UseHttpsRedirection();
         }
 
         app.UseRouting();
         app.UseCorsPolicy();
+
         app.MapControllers();
 
         return app;

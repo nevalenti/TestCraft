@@ -2,7 +2,7 @@ namespace Api.Configuration.Web;
 
 public static class Cors
 {
-    public const string PolicyName = "AllowReactApp";
+    private const string PolicyName = "AllowReactApp";
 
     public static IServiceCollection AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
