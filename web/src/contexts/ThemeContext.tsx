@@ -1,8 +1,25 @@
-import { type ReactNode, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  type ReactNode,
+  useEffect,
+  useState,
+} from "react";
 
 import { getCookie, setCookie } from "@/services/cookie";
 
-import { ThemeContext } from "./themeContext";
+interface ThemeContextValue {
+  isDark: boolean;
+  toggleTheme: () => void;
+}
+
+const ThemeContext = createContext<ThemeContextValue | null>(null);
+
+export const useTheme = (): ThemeContextValue => {
+  const context = useContext(ThemeContext);
+  if (!context) throw new Error("useTheme must be used inside ThemeProvider");
+  return context;
+};
 
 const THEME_KEY = "app-theme";
 const LIGHT = "emerald";

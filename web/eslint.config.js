@@ -31,4 +31,10 @@ export default defineConfig([
       react: { version: "19.2" },
     },
   },
+  {
+    files: ["**/contexts/**"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);
