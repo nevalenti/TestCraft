@@ -62,7 +62,7 @@ jobs:
         working-directory: web
 
       - name: Wait for web dev server
-        run: timeout 60 bash -c 'until curl -sf http://localhost:5173 > /dev/null; do sleep 1; done'
+        run: timeout 60 bash -c 'until curl -sf http://localhost:3000 > /dev/null; do sleep 1; done'
 
       - name: Run Playwright tests
         run: pnpm exec playwright test --project=chromium
