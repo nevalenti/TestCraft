@@ -1,8 +1,12 @@
 @import url("https://rsms.me/inter/inter.css");
 @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&display=swap");
 
+@import "tailwindcss";
+
 @plugin "daisyui" {
-  themes: dark --default;
+  themes:
+    emerald --default,
+    dim --prefersdark;
 }
 
 @theme {
