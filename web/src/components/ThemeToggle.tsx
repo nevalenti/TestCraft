@@ -1,10 +1,13 @@
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/hooks/useTheme";
 
 export const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <label className="swap swap-rotate btn btn-ghost btn-circle">
+    <label
+      aria-label="Toggle theme"
+      className="swap swap-rotate btn btn-ghost btn-circle"
+    >
       <input
         type="checkbox"
         className="theme-controller"

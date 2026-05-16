@@ -7,10 +7,6 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
 
-  const closeMobileMenu = () => {
-    if (drawerRef.current) drawerRef.current.checked = false;
-  };
-
   return (
     <>
       <nav className="navbar border-base-content/10 h-16 border-b px-4">
@@ -88,7 +84,6 @@ export const Header = () => {
             <nav
               className="flex flex-1 flex-col items-center justify-start gap-4 p-6"
               aria-label="Mobile navigation"
-              onClick={closeMobileMenu}
             />
             <div className="p-6">
               <div className="flex justify-center">

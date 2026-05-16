@@ -13,8 +13,8 @@ export const NotFound = () => {
           Page Not Found
         </h2>
         <p className="text-base-content/70 mx-auto mb-8 max-w-md text-lg">
-          Oops! The page you're looking for seems to have wandered off into the
-          digital void.
+          Oops! The page you&apos;re looking for seems to have wandered off into
+          the digital void.
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
           <Link to="/" className="btn btn-ghost gap-2">
