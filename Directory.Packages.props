@@ -11,6 +11,11 @@
 
   <ItemGroup Label="Logging">
     <PackageVersion Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageVersion Include="Serilog.Sinks.Seq" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup Label="Environment">
+    <PackageVersion Include="DotNetEnv" Version="3.2.0" />
   </ItemGroup>
 
   <ItemGroup Label="Entity Framework Core">

@@ -1,6 +1,8 @@
 using Api.Configuration.Infrastructure;
 using Api.Configuration.Web;
 
+using Serilog;
+
 namespace Api.Configuration;
 
 public static class Pipeline
@@ -11,6 +13,8 @@ public static class Pipeline
         {
             app.MigrateDatabase();
         }
+
+        app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())
         {

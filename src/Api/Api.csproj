@@ -5,12 +5,17 @@
     <ProjectReference Include="../Infrastructure/Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup Label="Environment">
+    <PackageReference Include="DotNetEnv" />
+  </ItemGroup>
+
   <ItemGroup Label="Validation">
     <PackageReference Include="FluentValidation.AspNetCore" />
   </ItemGroup>
   
   <ItemGroup Label="Logging">
     <PackageReference Include="Serilog.AspNetCore" />
+    <PackageReference Include="Serilog.Sinks.Seq" />
   </ItemGroup>
 
   <ItemGroup Label="Entity Framework Core">

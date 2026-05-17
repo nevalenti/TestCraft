@@ -4,7 +4,7 @@ API_IMAGE=testcraft-api
 WEB_IMAGE=testcraft-web
 
 dev:
-	docker compose up -d postgres
+	docker compose up -d postgres seq
 
 down:
 	docker compose down

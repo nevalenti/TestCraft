@@ -1,17 +1,26 @@
 using Api.Configuration;
 
+using DotNetEnv;
+
 using Serilog;
+
+if (File.Exists(".env"))
+    Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-Log.Logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
+builder.Host.UseSerilog((ctx, cfg) =>
+{
+    cfg.ReadFrom.Configuration(ctx.Configuration)
+       .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}");
+
+    var seqUrl = ctx.Configuration["Seq:ServerUrl"];
+    if (!string.IsNullOrEmpty(seqUrl))
+        cfg.WriteTo.Seq(seqUrl);
+});
 
 try
 {
-    builder.Host.UseSerilog();
-
     builder.Services.ConfigureServices(builder.Configuration);
 
     var app = builder.Build();
@@ -23,9 +32,12 @@ try
 catch (Exception ex)
 {
     Log.Fatal(ex, "Application terminated unexpectedly");
+
     throw;
 }
 finally
 {
-    Log.CloseAndFlush();
+    await Log.CloseAndFlushAsync();
 }
+
+public partial class Program;
