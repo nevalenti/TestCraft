@@ -22,41 +22,47 @@ interface NotificationsState {
   clearAll: () => void;
 }
 
-const timeouts = new Map<string, ReturnType<typeof setTimeout>>();
+export const useNotificationsStore = create<NotificationsState>((set) => {
+  const timers = new Map<string, ReturnType<typeof setTimeout>>();
 
-export const useNotificationsStore = create<NotificationsState>((set) => ({
-  notifications: [],
-
-  add(notification) {
-    const id = nanoid();
-    set((state) => ({
-      notifications: [...state.notifications, { ...notification, id }],
-    }));
-    if (notification.timeout) {
-      const timeoutId = setTimeout(() => {
-        timeouts.delete(id);
-        set((state) => ({
-          notifications: state.notifications.filter((n) => n.id !== id),
-        }));
-      }, notification.timeout);
-      timeouts.set(id, timeoutId);
+  const cancel = (id: string) => {
+    const timer = timers.get(id);
+    if (timer) {
+      clearTimeout(timer);
+      timers.delete(id);
     }
-  },
+  };
 
-  remove(id) {
-    const timeoutId = timeouts.get(id);
-    if (timeoutId !== undefined) {
-      clearTimeout(timeoutId);
-      timeouts.delete(id);
-    }
+  const dismiss = (id: string) =>
     set((state) => ({
       notifications: state.notifications.filter((n) => n.id !== id),
     }));
-  },
 
-  clearAll() {
-    timeouts.forEach((id) => clearTimeout(id));
-    timeouts.clear();
-    set({ notifications: [] });
-  },
-}));
+  return {
+    notifications: [],
+
+    add: (notification) => {
+      const id = nanoid();
+      set((state) => ({
+        notifications: [...state.notifications, { ...notification, id }],
+      }));
+      if (notification.timeout) {
+        timers.set(
+          id,
+          setTimeout(() => dismiss(id), notification.timeout),
+        );
+      }
+    },
+
+    remove: (id) => {
+      cancel(id);
+      dismiss(id);
+    },
+
+    clearAll: () => {
+      timers.forEach((timer) => clearTimeout(timer));
+      timers.clear();
+      set({ notifications: [] });
+    },
+  };
+});

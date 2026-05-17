@@ -1,0 +1,48 @@
+import { queryOptions } from "@tanstack/react-query";
+import type {
+  CreateTestCaseDto,
+  TestCaseDto,
+  UpdateTestCaseDto,
+} from "@/types";
+import client from "./client";
+import { queryKeys } from "./queryKeys";
+
+const BASE = (projectId: string, suiteId: string) =>
+  `/api/v1/projects/${projectId}/suites/${suiteId}/cases`;
+
+export const testCasesApi = {
+  getAll: (projectId: string, suiteId: string) =>
+    client.get<TestCaseDto[]>(BASE(projectId, suiteId)).then((r) => r.data),
+  getById: (projectId: string, suiteId: string, id: string) =>
+    client
+      .get<TestCaseDto>(`${BASE(projectId, suiteId)}/${id}`)
+      .then((r) => r.data),
+  create: (projectId: string, suiteId: string, dto: CreateTestCaseDto) =>
+    client.post<TestCaseDto>(BASE(projectId, suiteId), dto).then((r) => r.data),
+  update: (
+    projectId: string,
+    suiteId: string,
+    id: string,
+    dto: UpdateTestCaseDto,
+  ) =>
+    client
+      .put<TestCaseDto>(`${BASE(projectId, suiteId)}/${id}`, dto)
+      .then((r) => r.data),
+  delete: (projectId: string, suiteId: string, id: string) =>
+    client.delete(`${BASE(projectId, suiteId)}/${id}`),
+};
+
+export const testCaseQueries = {
+  all: (projectId: string, suiteId: string) =>
+    queryOptions({
+      queryKey: queryKeys.testCases.all(projectId, suiteId),
+      queryFn: () => testCasesApi.getAll(projectId, suiteId),
+      enabled: !!projectId && !!suiteId,
+    }),
+  detail: (projectId: string, suiteId: string, id: string) =>
+    queryOptions({
+      queryKey: queryKeys.testCases.detail(projectId, suiteId, id),
+      queryFn: () => testCasesApi.getById(projectId, suiteId, id),
+      enabled: !!projectId && !!suiteId && !!id,
+    }),
+};
