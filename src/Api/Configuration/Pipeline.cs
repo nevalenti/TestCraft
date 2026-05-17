@@ -7,11 +7,11 @@ namespace Api.Configuration;
 
 public static class Pipeline
 {
-    public static WebApplication ConfigurePipeline(this WebApplication app)
+    public static async Task<WebApplication> ConfigurePipeline(this WebApplication app)
     {
-        if (app.Configuration.GetValue<bool>("RunMigrations"))
+        if (app.Configuration.GetValue<bool>("ApplyMigrations"))
         {
-            app.MigrateDatabase();
+            await app.ApplyMigrations();
         }
 
         app.UseExceptionHandler();

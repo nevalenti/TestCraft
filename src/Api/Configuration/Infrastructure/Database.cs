@@ -27,10 +27,10 @@ public static class Database
         return services;
     }
 
-    public static void MigrateDatabase(this WebApplication app)
+    public static async Task ApplyMigrations(this WebApplication app)
     {
-        using var scope = app.Services.CreateScope();
+        await using var scope = app.Services.CreateAsyncScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        db.Database.Migrate();
+        await db.Database.MigrateAsync();
     }
 }

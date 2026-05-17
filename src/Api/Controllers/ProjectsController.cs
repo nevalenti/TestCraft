@@ -22,6 +22,7 @@ public class ProjectsController(IProjectsService service) : ControllerBase
     public async Task<ActionResult<ProjectDto>> GetProject(Guid id, CancellationToken cancellationToken)
     {
         var project = await service.GetByIdAsync(id, cancellationToken);
+
         return project is null ? NotFound() : Ok(project);
     }
 
@@ -31,6 +32,7 @@ public class ProjectsController(IProjectsService service) : ControllerBase
     public async Task<ActionResult<ProjectDto>> CreateProject(CreateProjectDto request, CancellationToken cancellationToken)
     {
         var project = await service.CreateAsync(request, cancellationToken);
+
         return CreatedAtAction(nameof(GetProject), new { id = project.Id }, project);
     }
 

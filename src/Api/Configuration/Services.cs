@@ -3,6 +3,11 @@ using Api.Configuration.Web;
 using Api.Exceptions;
 
 using Application.Projects;
+using Application.TestCases;
+using Application.TestCaseSteps;
+using Application.TestResults;
+using Application.TestRuns;
+using Application.TestSuites;
 
 using Asp.Versioning;
 
@@ -52,6 +57,11 @@ public static class Services
         private IServiceCollection AddApplicationServices()
         {
             services.AddScoped<IProjectsService, ProjectsService>();
+            services.AddScoped<ITestSuitesService, TestSuitesService>();
+            services.AddScoped<ITestCasesService, TestCasesService>();
+            services.AddScoped<ITestCaseStepsService, TestCaseStepsService>();
+            services.AddScoped<ITestRunsService, TestRunsService>();
+            services.AddScoped<ITestResultsService, TestResultsService>();
 
             return services;
         }
