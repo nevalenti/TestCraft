@@ -4,8 +4,7 @@ using DotNetEnv;
 
 using Serilog;
 
-if (File.Exists(".env"))
-    Env.Load();
+Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 

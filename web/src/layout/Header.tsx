@@ -1,5 +1,4 @@
 import { useRef } from "react";
-
 import { Link } from "react-router";
 
 import { ThemeToggle } from "@/components/ThemeToggle";

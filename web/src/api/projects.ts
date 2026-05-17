@@ -1,5 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
+
 import type { CreateProjectDto, ProjectDto, UpdateProjectDto } from "@/types";
+
 import client from "./client";
 import { queryKeys } from "./queryKeys";
 
