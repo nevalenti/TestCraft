@@ -14,6 +14,9 @@ public static class Pipeline
             app.MigrateDatabase();
         }
 
+        app.UseExceptionHandler();
+        app.UseStatusCodePages();
+
         app.UseSerilogRequestLogging();
 
         if (app.Environment.IsDevelopment())

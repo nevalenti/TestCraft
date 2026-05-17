@@ -1,5 +1,6 @@
 using Api.Configuration.Infrastructure;
 using Api.Configuration.Web;
+using Api.Exceptions;
 
 using Application.Projects;
 
@@ -19,6 +20,9 @@ public static class Services
         public IServiceCollection ConfigureServices(IConfiguration configuration)
         {
             services.AddDatabase(configuration);
+
+            services.AddProblemDetails();
+            services.AddExceptionHandler<GlobalExceptionHandler>();
 
             services.AddCorsPolicy(configuration);
             services.AddApiDocumentation();
