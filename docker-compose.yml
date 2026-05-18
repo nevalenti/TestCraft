@@ -1,16 +1,4 @@
 services:
-  seq:
-    image: datalust/seq
-    container_name: testcraft-seq
-    environment:
-      ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
-    ports:
-      - "5341:5341"
-      - "8090:80"
-    volumes:
-      - seq_data:/data
-
   postgres:
     image: postgres:17-alpine
     container_name: testcraft-postgres
@@ -28,6 +16,25 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  seq:
+    image: datalust/seq
+    container_name: testcraft-seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+    ports:
+      - "5341:5341"
+      - "8090:80"
+    volumes:
+      - seq_data:/data
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: testcraft-jaeger
+    ports:
+      - "16686:16686"
+      - "4318:4318"
 
   web:
     build:

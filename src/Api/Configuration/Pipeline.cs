@@ -9,7 +9,10 @@ public static class Pipeline
 {
     public static async Task<WebApplication> ConfigurePipeline(this WebApplication app)
     {
-        if (app.Configuration.GetValue<bool>("ApplyMigrations"))
+        var isDevelopment = app.Environment.IsDevelopment();
+        var applyMigrations = app.Configuration.GetValue<bool>("ApplyMigrations");
+
+        if (applyMigrations)
         {
             await app.ApplyMigrations();
         }
@@ -17,19 +20,16 @@ public static class Pipeline
         app.UseExceptionHandler();
         app.UseStatusCodePages();
 
-        app.UseSerilogRequestLogging();
-
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseApiDocumentation();
-        }
-        else
-        {
+        if (!isDevelopment)
             app.UseHttpsRedirection();
-        }
+
+        app.UseSerilogRequestLogging();
 
         app.UseRouting();
         app.UseCorsPolicy();
+
+        if (isDevelopment)
+            app.UseApiDocumentation();
 
         app.MapControllers();
 
