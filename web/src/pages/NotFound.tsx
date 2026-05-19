@@ -13,16 +13,16 @@ export const NotFound = () => {
           Page Not Found
         </h2>
         <p className="text-base-content/70 mx-auto mb-8 max-w-md text-lg">
-          Oops! The page you&apos;re looking for seems to have wandered off into
-          the digital void.
+          The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link to="/" className="btn btn-ghost gap-2">
+          <Link to="/" className="btn btn-ghost btn-sm gap-2">
             <svg
               className="size-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"
@@ -35,13 +35,14 @@ export const NotFound = () => {
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="btn btn-ghost gap-2"
+            className="btn btn-ghost btn-sm gap-2"
           >
             <svg
               className="size-5"
               fill="none"
               stroke="currentColor"
-              viewBox="0  0 24 24"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 strokeLinecap="round"

@@ -129,3 +129,16 @@ export interface UpdateTestResultDto {
   status: TestResultStatus;
   notes?: string;
 }
+
+export type ModalState<T> =
+  | { type: "closed" }
+  | { type: "create" }
+  | { type: "edit"; item: T }
+  | { type: "delete"; item: T };
+
+export const statusOptions = [
+  { value: TestResultStatus.Passed, label: "Passed" },
+  { value: TestResultStatus.Failed, label: "Failed" },
+  { value: TestResultStatus.Blocked, label: "Blocked" },
+  { value: TestResultStatus.Skipped, label: "Skipped" },
+] as const;

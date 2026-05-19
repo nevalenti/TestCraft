@@ -25,10 +25,13 @@ const THEME_KEY = "app-theme";
 const LIGHT = "emerald";
 const DARK = "dim";
 
+const resolveTheme = (): string => {
+  const stored = getCookie(THEME_KEY);
+  return stored === LIGHT || stored === DARK ? stored : LIGHT;
+};
+
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useState<string>(
-    () => getCookie(THEME_KEY) ?? DARK,
-  );
+  const [theme, setTheme] = useState<string>(resolveTheme);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);

@@ -7,8 +7,8 @@ public class CreateTestCaseStepDtoValidator : AbstractValidator<CreateTestCaseSt
     public CreateTestCaseStepDtoValidator()
     {
         RuleFor(x => x.Order).GreaterThan(0);
-        RuleFor(x => x.Action).NotEmpty();
-        RuleFor(x => x.ExpectedResult).NotEmpty();
+        RuleFor(x => x.Action).NotEmpty().MaximumLength(255);
+        RuleFor(x => x.ExpectedResult).NotEmpty().MaximumLength(255);
     }
 }
 
@@ -17,7 +17,7 @@ public class UpdateTestCaseStepDtoValidator : AbstractValidator<UpdateTestCaseSt
     public UpdateTestCaseStepDtoValidator()
     {
         RuleFor(x => x.Order).GreaterThan(0);
-        RuleFor(x => x.Action).NotEmpty();
-        RuleFor(x => x.ExpectedResult).NotEmpty();
+        RuleFor(x => x.Action).NotEmpty().MaximumLength(255);
+        RuleFor(x => x.ExpectedResult).NotEmpty().MaximumLength(255);
     }
 }

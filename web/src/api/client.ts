@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNotificationsStore } from "@/stores/notifications";
 
 const client = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+  baseURL: import.meta.env.VITE_API_URL ?? "",
   headers: {
     "Content-Type": "application/json",
   },
