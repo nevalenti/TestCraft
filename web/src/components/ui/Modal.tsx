@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 interface ModalProps {
   isOpen: boolean;
@@ -9,11 +9,13 @@ interface ModalProps {
 
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const ref = useRef<HTMLDialogElement>(null);
-  const childCache = useRef<React.ReactNode>(null);
   const isProgrammatic = useRef(false);
+  const [cachedChildren, setCachedChildren] = useState<React.ReactNode>(null);
+  const [prevIsOpen, setPrevIsOpen] = useState(false);
 
-  if (isOpen) {
-    childCache.current = children;
+  if (prevIsOpen !== isOpen) {
+    setPrevIsOpen(isOpen);
+    if (isOpen) setCachedChildren(children);
   }
 
   useLayoutEffect(() => {
@@ -27,15 +29,13 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
     }
     return () => {
       isProgrammatic.current = true;
-      ref.current?.close();
+      dialog?.close();
       isProgrammatic.current = false;
     };
   }, [isOpen]);
 
   const handleClose = () => {
-    if (!isProgrammatic.current) {
-      onClose();
-    }
+    if (!isProgrammatic.current) onClose();
   };
 
   return (
@@ -49,7 +49,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
           ✕
         </button>
         <h3 className="mb-4 text-lg font-bold">{title}</h3>
-        {childCache.current}
+        {isOpen ? children : cachedChildren}
       </div>
       <form method="dialog" className="modal-backdrop">
         <button onClick={onClose}>close</button>

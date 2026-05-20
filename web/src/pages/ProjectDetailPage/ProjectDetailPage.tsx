@@ -6,7 +6,7 @@ import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 
 import { RunsSection } from "./RunsTab";
-import { SuitesSection, type SectionHandle } from "./SuitesTab";
+import { type SectionHandle, SuitesSection } from "./SuitesTab";
 
 type Tab = "suites" | "runs";
 
