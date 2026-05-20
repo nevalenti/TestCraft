@@ -6,72 +6,49 @@ using Infrastructure.Data;
 
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Repositories;
 
-public class TestSuitesService(AppDbContext db) : ITestSuitesService
+public class TestSuiteRepository(AppDbContext db) : ITestSuiteRepository
 {
     public async Task<IEnumerable<TestSuiteDto>> GetAllAsync(Guid projectId, CancellationToken cancellationToken = default)
-    {
-        return await db.TestSuites
+        => await db.TestSuites
             .Where(s => s.ProjectId == projectId)
             .Select(s => new TestSuiteDto(s.Id, s.ProjectId, s.Name, s.Description, s.CreatedAt, s.UpdatedAt))
             .ToListAsync(cancellationToken);
-    }
 
     public async Task<TestSuiteDto?> GetByIdAsync(Guid projectId, Guid id, CancellationToken cancellationToken = default)
-    {
-        return await db.TestSuites
+        => await db.TestSuites
             .Where(s => s.ProjectId == projectId && s.Id == id)
             .Select(s => new TestSuiteDto(s.Id, s.ProjectId, s.Name, s.Description, s.CreatedAt, s.UpdatedAt))
             .FirstOrDefaultAsync(cancellationToken);
-    }
 
-    public async Task<TestSuiteDto?> CreateAsync(Guid projectId, CreateTestSuiteDto dto, CancellationToken cancellationToken = default)
+    public Task<bool> ExistsAsync(Guid projectId, Guid id, CancellationToken cancellationToken = default)
+        => db.TestSuites.AnyAsync(s => s.ProjectId == projectId && s.Id == id, cancellationToken);
+
+    public async Task<TestSuiteDto> AddAsync(TestSuite suite, CancellationToken cancellationToken = default)
     {
-        var projectExists = await db.Projects.AnyAsync(p => p.Id == projectId, cancellationToken);
-        if (!projectExists)
-            return null;
-
-        var suite = new TestSuite
-        {
-            Name = dto.Name,
-            Description = dto.Description,
-            ProjectId = projectId
-        };
-
         db.TestSuites.Add(suite);
         await db.SaveChangesAsync(cancellationToken);
-
         return new TestSuiteDto(suite.Id, suite.ProjectId, suite.Name, suite.Description, suite.CreatedAt, suite.UpdatedAt);
     }
 
-    public async Task<bool> UpdateAsync(Guid projectId, Guid id, UpdateTestSuiteDto dto, CancellationToken cancellationToken = default)
+    public async Task<bool> UpdateAsync(Guid projectId, Guid id, Action<TestSuite> mutate, CancellationToken cancellationToken = default)
     {
-        var suite = await db.TestSuites
-            .FirstOrDefaultAsync(s => s.ProjectId == projectId && s.Id == id, cancellationToken);
+        var suite = await db.TestSuites.FirstOrDefaultAsync(s => s.ProjectId == projectId && s.Id == id, cancellationToken);
+        if (suite is null) return false;
 
-        if (suite is null)
-            return false;
-
-        suite.Name = dto.Name;
-        suite.Description = dto.Description;
-
+        mutate(suite);
         await db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
     public async Task<bool> DeleteAsync(Guid projectId, Guid id, CancellationToken cancellationToken = default)
     {
-        var suite = await db.TestSuites
-            .FirstOrDefaultAsync(s => s.ProjectId == projectId && s.Id == id, cancellationToken);
-
-        if (suite is null)
-            return false;
+        var suite = await db.TestSuites.FirstOrDefaultAsync(s => s.ProjectId == projectId && s.Id == id, cancellationToken);
+        if (suite is null) return false;
 
         suite.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 }

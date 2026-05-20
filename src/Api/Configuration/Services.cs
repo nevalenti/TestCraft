@@ -13,7 +13,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 
 using Infrastructure.Data;
-using Infrastructure.Services;
+using Infrastructure.Repositories;
 
 namespace Api.Configuration;
 
@@ -48,6 +48,13 @@ public static class Services
 
         private IServiceCollection AddApplicationServices()
         {
+            services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITestSuiteRepository, TestSuiteRepository>();
+            services.AddScoped<ITestCaseRepository, TestCaseRepository>();
+            services.AddScoped<ITestCaseStepRepository, TestCaseStepRepository>();
+            services.AddScoped<ITestRunRepository, TestRunRepository>();
+            services.AddScoped<ITestResultRepository, TestResultRepository>();
+
             services.AddScoped<IProjectsService, ProjectsService>();
             services.AddScoped<ITestSuitesService, TestSuitesService>();
             services.AddScoped<ITestCasesService, TestCasesService>();
