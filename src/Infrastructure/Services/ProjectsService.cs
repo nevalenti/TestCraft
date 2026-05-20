@@ -13,7 +13,10 @@ public class ProjectsService(AppDbContext db) : IProjectsService
     public async Task<IEnumerable<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         return await db.Projects
-            .Select(p => new ProjectDto(p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt))
+            .Select(p => new ProjectDto(
+                p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
+                p.TestSuites.Count(s => !s.IsDeleted),
+                p.TestRuns.Count(r => !r.IsDeleted)))
             .ToListAsync(cancellationToken);
     }
 
@@ -21,7 +24,10 @@ public class ProjectsService(AppDbContext db) : IProjectsService
     {
         return await db.Projects
             .Where(p => p.Id == id)
-            .Select(p => new ProjectDto(p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt))
+            .Select(p => new ProjectDto(
+                p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
+                p.TestSuites.Count(s => !s.IsDeleted),
+                p.TestRuns.Count(r => !r.IsDeleted)))
             .FirstOrDefaultAsync(cancellationToken);
     }
 

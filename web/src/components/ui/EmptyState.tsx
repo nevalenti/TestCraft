@@ -14,17 +14,17 @@ export const EmptyState = ({
   icon,
 }: EmptyStateProps) => (
   <div className="flex flex-col items-center justify-center py-20 text-center select-none">
-    <div className="mb-5 flex size-16 items-center justify-center bg-base-200 text-base-content/20 border border-border">
-      {icon ?? <InboxIcon size="size-7" />}
+    <div className="mb-5 flex size-14 items-center justify-center bg-base-200 text-base-content/40 border border-border/60 shadow-sm">
+      {icon ?? <InboxIcon size="size-6" />}
     </div>
-    <p className="text-[15px] font-semibold text-base-content/80 tracking-tight">
+    <p className="text-sm font-semibold text-base-content/80 tracking-tight">
       {title}
     </p>
     {description && (
-      <p className="mt-1.5 max-w-[260px] text-sm text-base-content/45 leading-relaxed">
+      <p className="mt-1.5 max-w-[240px] text-xs text-base-content/50 leading-relaxed">
         {description}
       </p>
     )}
-    {action && <div className="mt-6">{action}</div>}
+    {action && <div className="mt-5 flex justify-center">{action}</div>}
   </div>
 );

@@ -49,7 +49,7 @@ export const UpdateResultForm = ({
       </FormField>
       <FormField label="Notes">
         <textarea
-          className="textarea textarea-bordered w-full"
+          className="textarea textarea-bordered bg-base-200 w-full"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Optional"

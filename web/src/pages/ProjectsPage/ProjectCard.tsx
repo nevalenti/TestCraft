@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-import { PencilIcon, TrashIcon } from "@/components/ui/icons";
+import { ResourceCard } from "@/components/ui/ResourceCard";
 import { formatDate } from "@/lib/format";
 import type { ProjectDto } from "@/types";
 
@@ -15,42 +15,36 @@ export const ProjectCard = ({
   onEdit,
   onDelete,
 }: ProjectCardProps) => (
-  <div className="relative bg-base-100 border border-border border-l-4 border-l-primary shadow-sm transition-all duration-150 hover:shadow-md group overflow-hidden">
-    <div className="p-5 flex flex-row gap-4 items-stretch">
-      <div className="flex-1 flex flex-col justify-between min-w-0">
-        <div className="flex flex-col gap-1.5">
-          <Link
-            to={`/projects/${project.id}`}
-            className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
-          >
-            {project.name}
-          </Link>
-          {project.description && (
-            <p className="text-base-content/50 line-clamp-2 text-sm leading-relaxed">
-              {project.description}
-            </p>
-          )}
-        </div>
-        <p className="text-base-content/35 mt-3 text-xs tabular-nums">
-          {formatDate(project.createdAt)}
+  <ResourceCard onEdit={onEdit} onDelete={onDelete} label="project">
+    <div className="flex flex-col gap-1.5">
+      <Link
+        to={`/projects/${project.id}`}
+        className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
+      >
+        {project.name}
+      </Link>
+      {project.description && (
+        <p className="text-base-content/55 line-clamp-2 text-sm leading-relaxed">
+          {project.description}
         </p>
-      </div>
-      <div className="flex shrink-0 items-start gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button
-          className="btn btn-ghost btn-sm"
-          onClick={onEdit}
-          aria-label="Edit project"
-        >
-          <PencilIcon />
-        </button>
-        <button
-          className="btn btn-ghost btn-sm text-error"
-          onClick={onDelete}
-          aria-label="Delete project"
-        >
-          <TrashIcon />
-        </button>
-      </div>
+      )}
     </div>
-  </div>
+    <div className="mt-4 flex items-center justify-between gap-2">
+      {project.suiteCount !== undefined && project.runCount !== undefined ? (
+        <div className="flex items-center gap-1">
+          <span className="px-2 py-0.5 rounded-full text-[11px] font-medium text-base-content/50 bg-base-200">
+            {project.suiteCount} {project.suiteCount === 1 ? "suite" : "suites"}
+          </span>
+          <span className="px-2 py-0.5 rounded-full text-[11px] font-medium text-base-content/50 bg-base-200">
+            {project.runCount} {project.runCount === 1 ? "run" : "runs"}
+          </span>
+        </div>
+      ) : (
+        <span />
+      )}
+      <span className="text-[11px] tabular-nums text-base-content/40 font-medium shrink-0">
+        {formatDate(project.createdAt)}
+      </span>
+    </div>
+  </ResourceCard>
 );

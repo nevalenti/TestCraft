@@ -3,6 +3,7 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  onError?: (error: Error, info: ErrorInfo) => void;
 }
 
 interface State {
@@ -17,7 +18,11 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error("Unhandled error:", error, info);
+    if (this.props.onError) {
+      this.props.onError(error, info);
+    } else {
+      console.error("Unhandled error:", error, info);
+    }
   }
 
   render() {
@@ -29,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-error font-semibold mb-2">
                 Something went wrong
               </p>
-              <p className="text-base-content/50 text-sm mb-4">
+              <p className="text-base-content/65 text-sm mb-4">
                 {this.state.error.message}
               </p>
               <button

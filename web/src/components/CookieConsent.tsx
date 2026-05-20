@@ -26,7 +26,7 @@ export const CookieConsent = () => {
             </svg>
             <div className="flex flex-col gap-0.5 min-w-0">
               <p className="text-sm font-semibold">We use cookies</p>
-              <p className="text-xs text-base-content/60 leading-relaxed">
+              <p className="text-xs text-base-content/75 leading-relaxed">
                 We use cookies to enhance your browsing experience and analyse
                 our traffic.
               </p>

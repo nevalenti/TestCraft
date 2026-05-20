@@ -5,7 +5,6 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Notifications } from "@/components/Notifications";
 import { BreadcrumbBar } from "@/layout/BreadcrumbBar";
-import { Footer } from "@/layout/Footer";
 import { Header } from "@/layout/Header";
 import { PageSkeleton } from "@/layout/PageSkeleton";
 
@@ -31,7 +30,7 @@ const NotFound = lazy(() =>
 );
 
 const AppLayout = () => (
-  <div className="mx-auto flex min-h-screen w-full max-w-360 flex-col bg-base-100 sm:border sm:border-border sm:overflow-hidden sm:min-h-[calc(100vh-3rem)] sm:my-6 app-shadow">
+  <div className="mx-auto flex min-h-screen w-full max-w-360 flex-col bg-base-100 sm:border sm:border-border sm:overflow-hidden sm:rounded-box sm:min-h-[calc(100vh-2rem)] sm:my-4 app-shadow">
     <Header />
     <BreadcrumbBar />
     <main className="flex flex-1">
@@ -61,7 +60,6 @@ const AppLayout = () => (
         </Suspense>
       </ErrorBoundary>
     </main>
-    <Footer />
     <Notifications />
     <CookieConsent />
   </div>

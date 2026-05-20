@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -8,6 +7,7 @@ import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
+import { useRequiredParam } from "@/hooks/useRequiredParam";
 import {
   useCreateTestResult,
   useDeleteTestResult,
@@ -30,20 +30,18 @@ import { ResultRow } from "./ResultRow";
 import { UpdateResultForm } from "./UpdateResultForm";
 
 export const TestRunPage = () => {
-  const { projectId, runId } = useParams<{
-    projectId: string;
-    runId: string;
-  }>();
+  const projectId = useRequiredParam("projectId");
+  const runId = useRequiredParam("runId");
   const [modal, setModal] = useState<ModalState<TestResultDto>>({
     type: "closed",
   });
 
-  const { data: project } = useProject(projectId!);
-  const { data: run } = useTestRun(projectId!, runId!);
-  const { data: results, isPending } = useTestResults(projectId!, runId!);
-  const createResult = useCreateTestResult(projectId!, runId!);
-  const updateResult = useUpdateTestResult(projectId!, runId!);
-  const deleteResult = useDeleteTestResult(projectId!, runId!);
+  const { data: project } = useProject(projectId);
+  const { data: run } = useTestRun(projectId, runId);
+  const { data: results, isPending } = useTestResults(projectId, runId);
+  const createResult = useCreateTestResult(projectId, runId);
+  const updateResult = useUpdateTestResult(projectId, runId);
+  const deleteResult = useDeleteTestResult(projectId, runId);
   const close = () => setModal({ type: "closed" });
 
   const handleCreate = (dto: CreateTestResultDto) =>
@@ -71,16 +69,18 @@ export const TestRunPage = () => {
     { label: run?.name ?? "…" },
   ]);
 
+  const deleteItem = modal.type === "delete" ? modal.item : null;
+
   return (
     <div className="w-full flex flex-col">
-      <header className="page-header flex items-start justify-between gap-4">
+      <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{run?.name}</h1>
-          {run?.environment && (
-            <p className="mt-0.5 text-sm text-base-content/45 font-medium">
-              {run.environment}
-            </p>
-          )}
+          <h1 className="text-2xl font-bold tracking-tight font-display">
+            {run?.name}
+          </h1>
+          <p className="mt-0.5 text-sm text-base-content/60">
+            {run?.environment ?? "Track test results for this run"}
+          </p>
         </div>
         <button
           className="btn btn-primary btn-sm shrink-0"
@@ -100,7 +100,7 @@ export const TestRunPage = () => {
                   className={`bg-base-100 border border-border border-l-4 ${statusBorderClass[value]} flex items-center gap-2.5 px-3 py-1.5 text-sm shadow-sm`}
                 >
                   <StatusBadge status={value} />
-                  <span className="font-bold text-base-content/60 tabular-nums text-sm">
+                  <span className="font-bold text-base-content/75 tabular-nums text-sm">
                     {statusCounts[value]}
                   </span>
                 </div>
@@ -121,7 +121,7 @@ export const TestRunPage = () => {
                   className="btn btn-primary btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
-                  Add Result
+                  Add First Result
                 </button>
               }
             />
@@ -140,18 +140,22 @@ export const TestRunPage = () => {
         </div>
       </section>
 
-      {modal.type === "create" && (
-        <Modal isOpen onClose={close} title="Add Test Result">
+      <Modal
+        isOpen={modal.type === "create"}
+        onClose={close}
+        title="Add Test Result"
+      >
+        {modal.type === "create" && (
           <CreateResultForm
-            projectId={projectId!}
+            projectId={projectId}
             onSubmit={handleCreate}
             onCancel={close}
             isLoading={createResult.isPending}
           />
-        </Modal>
-      )}
-      {modal.type === "edit" && (
-        <Modal isOpen onClose={close} title="Edit Result">
+        )}
+      </Modal>
+      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Result">
+        {modal.type === "edit" && (
           <UpdateResultForm
             key={modal.item.id}
             defaultValues={{
@@ -162,18 +166,16 @@ export const TestRunPage = () => {
             onCancel={close}
             isLoading={updateResult.isPending}
           />
-        </Modal>
-      )}
-      {modal.type === "delete" && (
-        <ConfirmDialog
-          isOpen
-          onClose={close}
-          onConfirm={() => handleDelete(modal.item.id)}
-          title="Delete Result"
-          description="Delete this test result?"
-          isLoading={deleteResult.isPending}
-        />
-      )}
+        )}
+      </Modal>
+      <ConfirmDialog
+        isOpen={modal.type === "delete"}
+        onClose={close}
+        onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
+        title="Delete Result"
+        description="Delete this test result?"
+        isLoading={deleteResult.isPending}
+      />
     </div>
   );
 };

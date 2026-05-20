@@ -1,5 +1,4 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -7,6 +6,7 @@ import { Modal } from "@/components/ui/Modal";
 import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
+import { useRequiredParam } from "@/hooks/useRequiredParam";
 import { useTestCase } from "@/hooks/useTestCases";
 import {
   useCreateTestCaseStep,
@@ -26,26 +26,24 @@ import { StepForm } from "./StepForm";
 import { StepRow } from "./StepRow";
 
 export const TestCasePage = () => {
-  const { projectId, suiteId, caseId } = useParams<{
-    projectId: string;
-    suiteId: string;
-    caseId: string;
-  }>();
+  const projectId = useRequiredParam("projectId");
+  const suiteId = useRequiredParam("suiteId");
+  const caseId = useRequiredParam("caseId");
   const [modal, setModal] = useState<ModalState<TestCaseStepDto>>({
     type: "closed",
   });
 
-  const { data: project } = useProject(projectId!);
-  const { data: suite } = useTestSuite(projectId!, suiteId!);
-  const { data: testCase } = useTestCase(projectId!, suiteId!, caseId!);
+  const { data: project } = useProject(projectId);
+  const { data: suite } = useTestSuite(projectId, suiteId);
+  const { data: testCase } = useTestCase(projectId, suiteId, caseId);
   const { data: steps, isPending } = useTestCaseSteps(
-    projectId!,
-    suiteId!,
-    caseId!,
+    projectId,
+    suiteId,
+    caseId,
   );
-  const createStep = useCreateTestCaseStep(projectId!, suiteId!, caseId!);
-  const updateStep = useUpdateTestCaseStep(projectId!, suiteId!, caseId!);
-  const deleteStep = useDeleteTestCaseStep(projectId!, suiteId!, caseId!);
+  const createStep = useCreateTestCaseStep(projectId, suiteId, caseId);
+  const updateStep = useUpdateTestCaseStep(projectId, suiteId, caseId);
+  const deleteStep = useDeleteTestCaseStep(projectId, suiteId, caseId);
   const close = () => setModal({ type: "closed" });
 
   const { sortedSteps, nextOrder } = useMemo(() => {
@@ -74,18 +72,18 @@ export const TestCasePage = () => {
     { label: testCase?.name ?? "…" },
   ]);
 
+  const deleteItem = modal.type === "delete" ? modal.item : null;
+
   return (
     <div className="w-full flex flex-col">
-      <header className="page-header flex items-start justify-between gap-4">
+      <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">
+          <h1 className="text-2xl font-bold tracking-tight font-display">
             {testCase?.name}
           </h1>
-          {testCase?.description && (
-            <p className="mt-0.5 text-sm text-base-content/45">
-              {testCase.description}
-            </p>
-          )}
+          <p className="mt-0.5 text-sm text-base-content/60">
+            {testCase?.description ?? "Steps for this test case"}
+          </p>
         </div>
         <button
           className="btn btn-primary btn-sm shrink-0"
@@ -99,7 +97,7 @@ export const TestCasePage = () => {
         <div className="min-h-80">
           {isPending ? (
             <div className="space-y-3">
-              {[0, 1, 2].map((i) => (
+              {Array.from({ length: 3 }, (_, i) => (
                 <SkeletonCard key={i} />
               ))}
             </div>
@@ -112,7 +110,7 @@ export const TestCasePage = () => {
                   className="btn btn-primary btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
-                  Add Step
+                  Add First Step
                 </button>
               }
             />
@@ -132,15 +130,17 @@ export const TestCasePage = () => {
       </section>
 
       <Modal isOpen={modal.type === "create"} onClose={close} title="Add Step">
-        <StepForm
-          nextOrder={nextOrder}
-          onSubmit={handleCreate}
-          onCancel={close}
-          isLoading={createStep.isPending}
-        />
+        {modal.type === "create" && (
+          <StepForm
+            nextOrder={nextOrder}
+            onSubmit={handleCreate}
+            onCancel={close}
+            isLoading={createStep.isPending}
+          />
+        )}
       </Modal>
-      {modal.type === "edit" && (
-        <Modal isOpen onClose={close} title="Edit Step">
+      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Step">
+        {modal.type === "edit" && (
           <StepForm
             key={modal.item.id}
             defaultValues={{
@@ -153,18 +153,16 @@ export const TestCasePage = () => {
             onCancel={close}
             isLoading={updateStep.isPending}
           />
-        </Modal>
-      )}
-      {modal.type === "delete" && (
-        <ConfirmDialog
-          isOpen
-          onClose={close}
-          onConfirm={() => handleDelete(modal.item.id)}
-          title="Delete Step"
-          description={`Delete step ${modal.item.order}?`}
-          isLoading={deleteStep.isPending}
-        />
-      )}
+        )}
+      </Modal>
+      <ConfirmDialog
+        isOpen={modal.type === "delete"}
+        onClose={close}
+        onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
+        title="Delete Step"
+        description={deleteItem ? `Delete step ${deleteItem.order}?` : ""}
+        isLoading={deleteStep.isPending}
+      />
     </div>
   );
 };

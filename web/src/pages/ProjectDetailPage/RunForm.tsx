@@ -31,7 +31,7 @@ export const RunForm = ({
     >
       <FormField label="Name">
         <input
-          className="input input-bordered w-full"
+          className="input input-bordered bg-base-200 w-full"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -41,7 +41,7 @@ export const RunForm = ({
       </FormField>
       <FormField label="Environment">
         <input
-          className="input input-bordered w-full"
+          className="input input-bordered bg-base-200 w-full"
           value={environment}
           onChange={(e) => setEnvironment(e.target.value)}
           required

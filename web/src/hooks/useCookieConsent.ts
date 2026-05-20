@@ -7,7 +7,12 @@ const CONSENT_KEY = "cookies-consent";
 export const useCookieConsent = () => {
   const [consent, setConsent] = useState<boolean | null>(() => {
     const stored = getCookie(CONSENT_KEY);
-    return stored ? (JSON.parse(stored) as boolean) : null;
+    if (!stored) return null;
+    try {
+      return JSON.parse(stored) === true;
+    } catch {
+      return null;
+    }
   });
 
   const accept = () => {

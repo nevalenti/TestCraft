@@ -33,4 +33,11 @@ public static class Database
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await db.Database.MigrateAsync();
     }
+
+    public static async Task SeedData(this WebApplication app)
+    {
+        await using var scope = app.Services.CreateAsyncScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        await DataSeeder.SeedAsync(db);
+    }
 }

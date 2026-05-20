@@ -35,7 +35,7 @@ const config: Record<
 export const StatusBadge = ({ status }: { status: TestResultStatus }) => {
   const { label, cls, icon } = config[status];
   return (
-    <span className={`badge ${cls} gap-1 font-medium`}>
+    <span className={`badge badge-sm ${cls} gap-1 font-medium`}>
       {icon}
       {label}
     </span>

@@ -17,6 +17,12 @@ public static class Pipeline
             await app.ApplyMigrations();
         }
 
+        var seedData = app.Configuration.GetValue<bool>("SeedData");
+        if (seedData)
+        {
+            await app.SeedData();
+        }
+
         app.UseExceptionHandler();
         app.UseStatusCodePages();
 

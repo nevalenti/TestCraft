@@ -35,7 +35,7 @@ export const StepForm = ({
       <FormField label="Order">
         <input
           type="number"
-          className="input input-bordered w-24"
+          className="input input-bordered bg-base-200 w-24"
           value={order}
           onChange={(e) => setOrder(Number(e.target.value))}
           required
@@ -44,7 +44,7 @@ export const StepForm = ({
       </FormField>
       <FormField label="Action">
         <textarea
-          className="textarea textarea-bordered w-full"
+          className="textarea textarea-bordered bg-base-200 w-full"
           value={action}
           onChange={(e) => setAction(e.target.value)}
           required
@@ -55,7 +55,7 @@ export const StepForm = ({
       </FormField>
       <FormField label="Expected Result">
         <textarea
-          className="textarea textarea-bordered w-full"
+          className="textarea textarea-bordered bg-base-200 w-full"
           value={expectedResult}
           onChange={(e) => setExpectedResult(e.target.value)}
           required

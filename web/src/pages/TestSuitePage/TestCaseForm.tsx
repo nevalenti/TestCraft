@@ -31,7 +31,7 @@ export const TestCaseForm = ({
     >
       <FormField label="Name">
         <input
-          className="input input-bordered w-full"
+          className="input input-bordered bg-base-200 w-full"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
@@ -41,7 +41,7 @@ export const TestCaseForm = ({
       </FormField>
       <FormField label="Description">
         <textarea
-          className="textarea textarea-bordered w-full"
+          className="textarea textarea-bordered bg-base-200 w-full"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Optional"

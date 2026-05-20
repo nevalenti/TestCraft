@@ -4,6 +4,8 @@ export interface ProjectDto {
   description?: string;
   createdAt: string;
   updatedAt?: string;
+  suiteCount?: number;
+  runCount?: number;
 }
 
 export interface CreateProjectDto {

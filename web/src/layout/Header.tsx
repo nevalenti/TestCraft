@@ -14,7 +14,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="navbar border-border bg-base-200 h-14 border-b px-6 sm:px-8 lg:px-10 header-stripes shrink-0">
+      <nav className="navbar border-border bg-base-200 h-14 border-b px-4 sm:px-6 lg:px-8 header-stripes shrink-0">
         <div className="navbar-start">
           <Link
             to="/"
@@ -104,13 +104,13 @@ export const Header = () => {
               className="flex flex-1 flex-col gap-0.5 px-3 py-4"
               aria-label="Mobile navigation"
             >
-              <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-base-content/40">
+              <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-base-content/55">
                 Menu
               </p>
               <Link
                 to="/projects"
                 onClick={closeMobileNav}
-                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-base-content/70 hover:bg-base-200 hover:text-base-content transition-colors"
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-base-content/80 hover:bg-base-200 hover:text-base-content transition-colors"
               >
                 <FolderIcon size="size-4" />
                 Projects
