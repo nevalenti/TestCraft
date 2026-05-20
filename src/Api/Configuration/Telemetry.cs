@@ -1,4 +1,6 @@
+using OpenTelemetry;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -26,6 +28,13 @@ public static class Telemetry
                         options.Endpoint = new Uri(otlpEndpoint);
                         options.Protocol = OtlpExportProtocol.HttpProtobuf;
                     });
+            })
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddPrometheusExporter();
             });
 
         return services;

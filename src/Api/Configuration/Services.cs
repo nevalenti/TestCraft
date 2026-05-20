@@ -12,6 +12,7 @@ using Application.TestSuites;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 
+using Infrastructure.Data;
 using Infrastructure.Services;
 
 namespace Api.Configuration;
@@ -33,6 +34,9 @@ public static class Services
 
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssemblyContaining<CreateProjectDtoValidator>();
+
+            services.AddHealthChecks()
+                    .AddDbContextCheck<AppDbContext>();
 
             services.AddCorsPolicy(configuration);
             services.AddApiDocumentation();

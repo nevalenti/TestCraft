@@ -32,6 +32,8 @@ public static class Pipeline
             app.UseApiDocumentation();
 
         app.MapControllers();
+        app.MapHealthChecks("/health");
+        app.MapPrometheusScrapingEndpoint();
 
         return app;
     }
