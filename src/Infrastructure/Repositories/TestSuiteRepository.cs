@@ -29,6 +29,7 @@ public class TestSuiteRepository(AppDbContext db) : ITestSuiteRepository
     {
         db.TestSuites.Add(suite);
         await db.SaveChangesAsync(cancellationToken);
+
         return new TestSuiteDto(suite.Id, suite.ProjectId, suite.Name, suite.Description, suite.CreatedAt, suite.UpdatedAt);
     }
 
@@ -39,6 +40,7 @@ public class TestSuiteRepository(AppDbContext db) : ITestSuiteRepository
 
         mutate(suite);
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -49,6 +51,7 @@ public class TestSuiteRepository(AppDbContext db) : ITestSuiteRepository
 
         suite.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 }

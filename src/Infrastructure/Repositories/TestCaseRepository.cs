@@ -32,6 +32,7 @@ public class TestCaseRepository(AppDbContext db) : ITestCaseRepository
     {
         db.TestCases.Add(testCase);
         await db.SaveChangesAsync(cancellationToken);
+
         return new TestCaseDto(testCase.Id, testCase.SuiteId, testCase.Name, testCase.Description, testCase.CreatedAt, testCase.UpdatedAt);
     }
 
@@ -43,6 +44,7 @@ public class TestCaseRepository(AppDbContext db) : ITestCaseRepository
 
         mutate(testCase);
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -54,6 +56,7 @@ public class TestCaseRepository(AppDbContext db) : ITestCaseRepository
 
         testCase.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 }

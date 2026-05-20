@@ -34,6 +34,7 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
     {
         db.Projects.Add(project);
         await db.SaveChangesAsync(cancellationToken);
+
         return new ProjectDto(project.Id, project.Name, project.Description, project.CreatedAt, project.UpdatedAt);
     }
 
@@ -44,6 +45,7 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
 
         mutate(project);
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -54,6 +56,7 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
 
         project.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 }

@@ -29,6 +29,7 @@ public class TestRunRepository(AppDbContext db) : ITestRunRepository
     {
         db.TestRuns.Add(run);
         await db.SaveChangesAsync(cancellationToken);
+
         return new TestRunDto(run.Id, run.ProjectId, run.Name, run.Environment, run.ExecutedById, run.CreatedAt, run.UpdatedAt);
     }
 
@@ -39,6 +40,7 @@ public class TestRunRepository(AppDbContext db) : ITestRunRepository
 
         mutate(run);
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -49,6 +51,7 @@ public class TestRunRepository(AppDbContext db) : ITestRunRepository
 
         run.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 }

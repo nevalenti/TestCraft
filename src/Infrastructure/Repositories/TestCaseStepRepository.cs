@@ -27,6 +27,7 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
     {
         db.TestCaseSteps.Add(step);
         await db.SaveChangesAsync(cancellationToken);
+
         return new TestCaseStepDto(step.Id, step.TestCaseId, step.Order, step.Action, step.ExpectedResult, step.CreatedAt, step.UpdatedAt);
     }
 
@@ -38,6 +39,7 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
 
         mutate(step);
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 
@@ -49,6 +51,7 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
 
         step.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
+
         return true;
     }
 }
