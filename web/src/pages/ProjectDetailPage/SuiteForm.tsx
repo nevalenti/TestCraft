@@ -29,23 +29,26 @@ export const SuiteForm = ({
       }}
       className="space-y-4"
     >
-      <FormField label="Name">
+      <FormField label="Name" htmlFor="suite-name">
         <input
+          id="suite-name"
           className="input input-bordered bg-base-200 w-full"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           maxLength={255}
           placeholder="Login Flow"
+          autoFocus
         />
       </FormField>
-      <FormField label="Description">
+      <FormField label="Description" htmlFor="suite-description">
         <textarea
+          id="suite-description"
           className="textarea textarea-bordered bg-base-200 w-full"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Optional"
-          rows={4}
+          rows={2}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

@@ -1,3 +1,18 @@
+import {
+  closestCenter,
+  DndContext,
+  type DragEndEvent,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -36,15 +51,22 @@ export const TestCasePage = () => {
   const { data: project } = useProject(projectId);
   const { data: suite } = useTestSuite(projectId, suiteId);
   const { data: testCase } = useTestCase(projectId, suiteId, caseId);
-  const { data: steps, isPending } = useTestCaseSteps(
-    projectId,
-    suiteId,
-    caseId,
-  );
+  const {
+    data: steps,
+    isPending,
+    isError,
+  } = useTestCaseSteps(projectId, suiteId, caseId);
   const createStep = useCreateTestCaseStep(projectId, suiteId, caseId);
   const updateStep = useUpdateTestCaseStep(projectId, suiteId, caseId);
   const deleteStep = useDeleteTestCaseStep(projectId, suiteId, caseId);
   const close = () => setModal({ type: "closed" });
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
 
   const { sortedSteps, nextOrder } = useMemo(() => {
     const sorted = [...(steps ?? [])].sort((a, b) => a.order - b.order);
@@ -60,6 +82,29 @@ export const TestCasePage = () => {
     updateStep.mutate({ id, ...dto }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteStep.mutate(id, { onSuccess: close });
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = sortedSteps.findIndex((s) => s.id === active.id);
+    const newIndex = sortedSteps.findIndex((s) => s.id === over.id);
+    const reordered = arrayMove(sortedSteps, oldIndex, newIndex);
+
+    Promise.all(
+      reordered
+        .map((step, index) => ({ step, newOrder: index + 1 }))
+        .filter(({ step, newOrder }) => step.order !== newOrder)
+        .map(({ step, newOrder }) =>
+          updateStep.mutateAsync({
+            id: step.id,
+            order: newOrder,
+            action: step.action,
+            expectedResult: step.expectedResult,
+          }),
+        ),
+    );
+  };
 
   useBreadcrumbs([
     { label: "home", href: "/" },
@@ -79,14 +124,16 @@ export const TestCasePage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
-            {testCase?.name}
+            {testCase?.name ?? (
+              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+            )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
             {testCase?.description ?? "Steps for this test case"}
           </p>
         </div>
         <button
-          className="btn btn-primary btn-sm shrink-0"
+          className="btn btn-accent btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
           Add Step
@@ -101,13 +148,28 @@ export const TestCasePage = () => {
                 <SkeletonCard key={i} />
               ))}
             </div>
+          ) : isError ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <p className="text-error font-semibold mb-2">Failed to load</p>
+                <p className="text-base-content/60 text-sm mb-4">
+                  Please check your connection and try again.
+                </p>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
           ) : sortedSteps.length === 0 ? (
             <EmptyState
               title="No steps defined"
               description="Break this test case down into clear, ordered steps."
               action={
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-accent btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
                   Add First Step
@@ -115,16 +177,27 @@ export const TestCasePage = () => {
               }
             />
           ) : (
-            <div className="space-y-3">
-              {sortedSteps.map((step) => (
-                <StepRow
-                  key={step.id}
-                  step={step}
-                  onEdit={() => setModal({ type: "edit", item: step })}
-                  onDelete={() => setModal({ type: "delete", item: step })}
-                />
-              ))}
-            </div>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={sortedSteps.map((s) => s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-3">
+                  {sortedSteps.map((step) => (
+                    <StepRow
+                      key={step.id}
+                      step={step}
+                      onEdit={() => setModal({ type: "edit", item: step })}
+                      onDelete={() => setModal({ type: "delete", item: step })}
+                    />
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
           )}
         </div>
       </section>
@@ -160,7 +233,11 @@ export const TestCasePage = () => {
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Step"
-        description={deleteItem ? `Delete step ${deleteItem.order}?` : ""}
+        description={
+          deleteItem
+            ? `Delete step ${deleteItem.order}? This cannot be undone.`
+            : ""
+        }
         isLoading={deleteStep.isPending}
       />
     </div>

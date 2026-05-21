@@ -15,7 +15,7 @@ export const FormActions = ({
     </button>
     <button
       type="submit"
-      className="btn btn-primary btn-sm"
+      className="btn btn-accent btn-sm"
       disabled={isLoading}
     >
       {isLoading ? (

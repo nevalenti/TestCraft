@@ -1,8 +1,8 @@
+import { Bars3Icon, FolderIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useRef } from "react";
 import { Link } from "react-router";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { FolderIcon } from "@/components/ui/icons";
 import { LogoMark } from "@/layout/LogoMark";
 
 export const Header = () => {
@@ -37,21 +37,7 @@ export const Header = () => {
             className="btn btn-ghost btn-sm btn-square lg:hidden"
             aria-label="Open menu"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="size-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.75}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            <Bars3Icon className="size-5" aria-hidden="true" />
           </label>
         </div>
       </nav>
@@ -82,21 +68,7 @@ export const Header = () => {
                 className="btn btn-ghost btn-sm btn-square"
                 aria-label="Close menu"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="size-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <XMarkIcon className="size-4" aria-hidden="true" />
               </label>
             </div>
 
@@ -112,13 +84,15 @@ export const Header = () => {
                 onClick={closeMobileNav}
                 className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-base-content/80 hover:bg-base-200 hover:text-base-content transition-colors"
               >
-                <FolderIcon size="size-4" />
+                <FolderIcon className="size-4" aria-hidden="true" />
                 Projects
               </Link>
             </nav>
 
-            <div className="border-t border-border p-4 flex justify-center">
-              <ThemeToggle />
+            <div className="border-t border-border p-4 text-center">
+              <p className="text-[10px] text-base-content/40">
+                &copy; 2026 TestCraft
+              </p>
             </div>
           </div>
         </div>

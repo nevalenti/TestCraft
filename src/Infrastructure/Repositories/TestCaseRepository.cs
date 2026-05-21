@@ -16,6 +16,13 @@ public class TestCaseRepository(AppDbContext db) : ITestCaseRepository
             .Select(c => new TestCaseDto(c.Id, c.SuiteId, c.Name, c.Description, c.CreatedAt, c.UpdatedAt))
             .ToListAsync(cancellationToken);
 
+    public async Task<IEnumerable<TestCaseDto>> GetAllByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
+        => await db.TestCases
+            .Where(c => c.Suite.ProjectId == projectId)
+            .OrderBy(c => c.SuiteId).ThenBy(c => c.Name)
+            .Select(c => new TestCaseDto(c.Id, c.SuiteId, c.Name, c.Description, c.CreatedAt, c.UpdatedAt))
+            .ToListAsync(cancellationToken);
+
     public async Task<TestCaseDto?> GetByIdAsync(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken = default)
         => await db.TestCases
             .Where(c => c.Id == id && c.SuiteId == suiteId && c.Suite.ProjectId == projectId)

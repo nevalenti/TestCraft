@@ -24,7 +24,6 @@ import {
   type UpdateTestResultDto,
 } from "@/types";
 
-import { statusBorderClass } from "./constants";
 import { CreateResultForm } from "./CreateResultForm";
 import { ResultRow } from "./ResultRow";
 import { UpdateResultForm } from "./UpdateResultForm";
@@ -35,10 +34,17 @@ export const TestRunPage = () => {
   const [modal, setModal] = useState<ModalState<TestResultDto>>({
     type: "closed",
   });
+  const [statusFilter, setStatusFilter] = useState<TestResultStatus | null>(
+    null,
+  );
 
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
-  const { data: results, isPending } = useTestResults(projectId, runId);
+  const {
+    data: results,
+    isPending,
+    isError,
+  } = useTestResults(projectId, runId);
   const createResult = useCreateTestResult(projectId, runId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
@@ -62,6 +68,19 @@ export const TestRunPage = () => {
     );
   }, [results]);
 
+  const summary = useMemo(() => {
+    if (!results || results.length === 0) return null;
+    const total = results.length;
+    const passed = statusCounts?.[TestResultStatus.Passed] ?? 0;
+    const passRate = Math.round((passed / total) * 100);
+    return { total, passed, passRate };
+  }, [results, statusCounts]);
+
+  const filteredResults = useMemo(() => {
+    if (!results || statusFilter === null) return results;
+    return results.filter((r) => r.status === statusFilter);
+  }, [results, statusFilter]);
+
   useBreadcrumbs([
     { label: "home", href: "/" },
     { label: "Projects", href: "/projects" },
@@ -76,14 +95,16 @@ export const TestRunPage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
-            {run?.name}
+            {run?.name ?? (
+              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+            )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
             {run?.environment ?? "Track test results for this run"}
           </p>
         </div>
         <button
-          className="btn btn-primary btn-sm shrink-0"
+          className="btn btn-accent btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
           Add Result
@@ -91,19 +112,55 @@ export const TestRunPage = () => {
       </header>
 
       <section className="page-content flex-1">
+        {summary && (
+          <p className="text-sm text-base-content/60 mb-4">
+            <span className="font-semibold text-base-content">
+              {summary.total}
+            </span>{" "}
+            result{summary.total !== 1 ? "s" : ""} ·{" "}
+            <span
+              className={`font-semibold ${
+                summary.passRate >= 80
+                  ? "text-success"
+                  : summary.passRate >= 50
+                    ? "text-warning"
+                    : "text-error"
+              }`}
+            >
+              {summary.passRate}%
+            </span>{" "}
+            pass rate
+          </p>
+        )}
+
         {statusCounts && results && results.length > 0 && (
-          <div className="mb-6 flex flex-wrap gap-2">
+          <div className="mb-4 flex flex-wrap gap-2">
+            {statusFilter !== null && (
+              <button
+                onClick={() => setStatusFilter(null)}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-base-100 hover:bg-base-200 transition-colors"
+              >
+                All results
+              </button>
+            )}
             {statusOptions.map(({ value }) =>
               statusCounts[value] ? (
-                <div
+                <button
                   key={value}
-                  className={`bg-base-100 border border-border border-l-4 ${statusBorderClass[value]} flex items-center gap-2.5 px-3 py-1.5 text-sm shadow-sm`}
+                  onClick={() =>
+                    setStatusFilter(statusFilter === value ? null : value)
+                  }
+                  className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                    statusFilter === value
+                      ? "border-base-content/40 bg-base-200 shadow-sm"
+                      : "border-border bg-base-100 hover:bg-base-200"
+                  }`}
                 >
                   <StatusBadge status={value} />
                   <span className="font-bold text-base-content/75 tabular-nums text-sm">
                     {statusCounts[value]}
                   </span>
-                </div>
+                </button>
               ) : null,
             )}
           </div>
@@ -112,29 +169,75 @@ export const TestRunPage = () => {
         <div className="min-h-80">
           {isPending ? (
             <SkeletonGrid />
+          ) : isError ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <p className="text-error font-semibold mb-2">
+                  Failed to load results
+                </p>
+                <p className="text-base-content/60 text-sm mb-4">
+                  Please check your connection and try again.
+                </p>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
           ) : results?.length === 0 ? (
             <EmptyState
               title="No results recorded"
               description="Add results to track the outcome of each test case in this run."
               action={
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-accent btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
                   Add First Result
                 </button>
               }
             />
+          ) : filteredResults?.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <p className="text-sm font-semibold text-base-content/60 mb-2">
+                No results match this filter
+              </p>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={() => setStatusFilter(null)}
+              >
+                Clear filter
+              </button>
+            </div>
           ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {results?.map((result) => (
-                <ResultRow
-                  key={result.id}
-                  result={result}
-                  onEdit={() => setModal({ type: "edit", item: result })}
-                  onDelete={() => setModal({ type: "delete", item: result })}
-                />
-              ))}
+            <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
+              <table className="table table-sm">
+                <thead>
+                  <tr className="text-xs text-base-content/60">
+                    <th className="w-8">#</th>
+                    <th>Test Case</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                    <th>Executed</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredResults?.map((result, index) => (
+                    <ResultRow
+                      key={result.id}
+                      result={result}
+                      index={index + 1}
+                      onEdit={() => setModal({ type: "edit", item: result })}
+                      onDelete={() =>
+                        setModal({ type: "delete", item: result })
+                      }
+                    />
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
@@ -173,7 +276,9 @@ export const TestRunPage = () => {
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Result"
-        description="Delete this test result?"
+        description={
+          deleteItem ? `Delete result for "${deleteItem.testCaseName}"?` : ""
+        }
         isLoading={deleteResult.isPending}
       />
     </div>

@@ -1,9 +1,10 @@
 import {
   CheckIcon,
   MinusIcon,
-  NoEntryIcon,
-  XIcon,
-} from "@/components/ui/icons";
+  NoSymbolIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+
 import { TestResultStatus } from "@/types";
 
 const config: Record<
@@ -13,22 +14,22 @@ const config: Record<
   [TestResultStatus.Passed]: {
     label: "Passed",
     cls: "badge-success",
-    icon: <CheckIcon size="size-3" />,
+    icon: <CheckIcon className="size-3" />,
   },
   [TestResultStatus.Failed]: {
     label: "Failed",
     cls: "badge-error",
-    icon: <XIcon size="size-3" />,
+    icon: <XMarkIcon className="size-3" />,
   },
   [TestResultStatus.Blocked]: {
     label: "Blocked",
     cls: "badge-warning",
-    icon: <NoEntryIcon size="size-3" />,
+    icon: <NoSymbolIcon className="size-3" />,
   },
   [TestResultStatus.Skipped]: {
     label: "Skipped",
     cls: "badge-neutral",
-    icon: <MinusIcon size="size-3" />,
+    icon: <MinusIcon className="size-3" />,
   },
 };
 

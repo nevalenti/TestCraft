@@ -28,6 +28,7 @@ export default defineConfig([
     rules: {
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error",
+      "jsx-a11y/no-autofocus": "off",
     },
     languageOptions: {
       globals: globals.browser,

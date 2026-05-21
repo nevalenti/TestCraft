@@ -23,7 +23,7 @@ export const useTheme = (): ThemeContextValue => {
 
 const THEME_KEY = "app-theme";
 const LIGHT = "emerald";
-const DARK = "dracula";
+const DARK = "dim";
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);

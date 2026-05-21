@@ -34,15 +34,23 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-error font-semibold mb-2">
                 Something went wrong
               </p>
-              <p className="text-base-content/65 text-sm mb-4">
+              <p className="text-base-content/65 text-sm mb-4 max-w-sm mx-auto">
                 {this.state.error.message}
               </p>
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={() => this.setState({ error: null })}
-              >
-                Try again
-              </button>
+              <div className="flex items-center justify-center gap-2">
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => this.setState({ error: null })}
+                >
+                  Try again
+                </button>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Reload page
+                </button>
+              </div>
             </div>
           </div>
         )

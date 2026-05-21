@@ -1,4 +1,4 @@
-import { PencilIcon, TrashIcon } from "./icons";
+import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 interface ResourceActionsProps {
   onEdit: () => void;
@@ -19,14 +19,14 @@ export const ResourceActions = ({
       onClick={onEdit}
       aria-label={`Edit ${label}`}
     >
-      <PencilIcon size={size === "xs" ? "size-3.5" : undefined} />
+      <PencilIcon className={size === "xs" ? "size-3.5" : "size-4"} />
     </button>
     <button
       className={`btn btn-ghost btn-${size} text-error`}
       onClick={onDelete}
       aria-label={`Delete ${label}`}
     >
-      <TrashIcon size={size === "xs" ? "size-3.5" : undefined} />
+      <TrashIcon className={size === "xs" ? "size-3.5" : "size-4"} />
     </button>
   </>
 );

@@ -1,5 +1,5 @@
+import { RectangleGroupIcon } from "@heroicons/react/24/outline";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { Link } from "react-router";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -60,7 +60,7 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
             description="Group related test cases together into suites."
             action={
               <button
-                className="btn btn-primary btn-sm"
+                className="btn btn-accent btn-sm"
                 onClick={() => setModal({ type: "create" })}
               >
                 Create First Suite
@@ -74,20 +74,23 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
                 key={suite.id}
                 onEdit={() => setModal({ type: "edit", item: suite })}
                 onDelete={() => setModal({ type: "delete", item: suite })}
-                label="suite"
+                to={`/projects/${projectId}/suites/${suite.id}`}
+                label="test suite"
+                cardBg="card-bg-info"
+                accentText="text-info"
+                typeIcon={<RectangleGroupIcon className="size-3.5" />}
               >
                 <div className="flex flex-col gap-1.5">
-                  <Link
-                    to={`/projects/${projectId}/suites/${suite.id}`}
-                    className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
-                  >
+                  <span className="text-base font-semibold leading-snug line-clamp-2">
                     {suite.name}
-                  </Link>
-                  {suite.description && (
-                    <p className="text-base-content/65 line-clamp-2 text-sm leading-relaxed">
-                      {suite.description}
-                    </p>
-                  )}
+                  </span>
+                  <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
+                    {suite.description ?? (
+                      <span className="italic text-base-content/30">
+                        No description
+                      </span>
+                    )}
+                  </p>
                 </div>
                 <p className="text-base-content/50 mt-3 text-xs tabular-nums">
                   {formatDate(suite.createdAt)}

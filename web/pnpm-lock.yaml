@@ -7,6 +7,18 @@ settings:
 importers:
   .:
     dependencies:
+      "@dnd-kit/core":
+        specifier: ^6.3.1
+        version: 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      "@dnd-kit/sortable":
+        specifier: ^10.0.0
+        version: 10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)
+      "@dnd-kit/utilities":
+        specifier: ^3.2.2
+        version: 3.2.2(react@19.2.6)
+      "@heroicons/react":
+        specifier: ^2.2.0
+        version: 2.2.0(react@19.2.6)
       "@tanstack/react-query":
         specifier: ^5.100.10
         version: 5.100.10(react@19.2.6)
@@ -38,6 +50,9 @@ importers:
       "@tailwindcss/vite":
         specifier: ^4.3.0
         version: 4.3.0(vite@8.0.13(@types/node@24.12.4)(jiti@2.7.0))
+      "@tanstack/react-query-devtools":
+        specifier: ^5.100.11
+        version: 5.100.11(@tanstack/react-query@5.100.10(react@19.2.6))(react@19.2.6)
       "@testing-library/dom":
         specifier: ^10.4.1
         version: 10.4.1
@@ -332,6 +347,40 @@ packages:
       }
     engines: { node: ">=20.19.0" }
 
+  "@dnd-kit/accessibility@3.1.1":
+    resolution:
+      {
+        integrity: sha512-2P+YgaXF+gRsIihwwY1gCsQSYnu9Zyj2py8kY5fFvUM1qm2WA2u639R6YNVfU4GWr+ZM5mqEsfHZZLoRONbemw==,
+      }
+    peerDependencies:
+      react: ">=16.8.0"
+
+  "@dnd-kit/core@6.3.1":
+    resolution:
+      {
+        integrity: sha512-xkGBRQQab4RLwgXxoqETICr6S5JlogafbhNsidmrkVv2YRs5MLwpjoF2qpiGjQt8S9AoxtIV603s0GIUpY5eYQ==,
+      }
+    peerDependencies:
+      react: ">=16.8.0"
+      react-dom: ">=16.8.0"
+
+  "@dnd-kit/sortable@10.0.0":
+    resolution:
+      {
+        integrity: sha512-+xqhmIIzvAYMGfBYYnbKuNicfSsk4RksY2XdmJhT+HAC01nix6fHCztU68jooFiMUB01Ky3F0FyOvhG/BZrWkg==,
+      }
+    peerDependencies:
+      "@dnd-kit/core": ^6.3.0
+      react: ">=16.8.0"
+
+  "@dnd-kit/utilities@3.2.2":
+    resolution:
+      {
+        integrity: sha512-+MKAJEOfaBe5SmV6t34p80MMKhjvUz0vRrvVJbPT0WElzaOJ/1xs+D+KDv+tD/NE5ujfrChEcshd4fLn0wpiqg==,
+      }
+    peerDependencies:
+      react: ">=16.8.0"
+
   "@emnapi/core@1.10.0":
     resolution:
       {
@@ -424,6 +473,14 @@ packages:
     peerDependenciesMeta:
       "@noble/hashes":
         optional: true
+
+  "@heroicons/react@2.2.0":
+    resolution:
+      {
+        integrity: sha512-LMcepvRaS9LYHJGsF0zzmgKCUim/X3N/DQKc4jepAXJ7l8QxJ1PmxJzqplF2Z3FE4PqBAIGyJAQ/w4B5dsqbtQ==,
+      }
+    peerDependencies:
+      react: ">= 16 || ^19.0.0-rc"
 
   "@humanfs/core@0.19.2":
     resolution:
@@ -820,6 +877,21 @@ packages:
       {
         integrity: sha512-8UR0yJR+GiQ40m3lPhUr0xbfAupe6GSQiksSBSa9SM2NjezFyxXCIA69/lz8cSoNKZLrw1/PktIyQBJcVeMi3w==,
       }
+
+  "@tanstack/query-devtools@5.100.11":
+    resolution:
+      {
+        integrity: sha512-47rVBDuGMW/A4ekt3YQdz+q0JSIwktwGnWCYyQUvSs2/g/Oa+6Fi2/IQk4/Y4vf6u1uwI7hOogHslgMC8f3X/Q==,
+      }
+
+  "@tanstack/react-query-devtools@5.100.11":
+    resolution:
+      {
+        integrity: sha512-75RFlJEG53Ed/Cxe5WLmgIpOElPNpgLZq7h0fLFnM5XwTYxSTk1rX/gC6MqGVXsSdrbP7zn7hPSJx9MinwiUHA==,
+      }
+    peerDependencies:
+      "@tanstack/react-query": ^5.100.11
+      react: ^18 || ^19
 
   "@tanstack/react-query@5.100.10":
     resolution:
@@ -3597,6 +3669,31 @@ snapshots:
 
   "@csstools/css-tokenizer@4.0.0": {}
 
+  "@dnd-kit/accessibility@3.1.1(react@19.2.6)":
+    dependencies:
+      react: 19.2.6
+      tslib: 2.8.1
+
+  "@dnd-kit/core@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)":
+    dependencies:
+      "@dnd-kit/accessibility": 3.1.1(react@19.2.6)
+      "@dnd-kit/utilities": 3.2.2(react@19.2.6)
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+      tslib: 2.8.1
+
+  "@dnd-kit/sortable@10.0.0(@dnd-kit/core@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react@19.2.6)":
+    dependencies:
+      "@dnd-kit/core": 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      "@dnd-kit/utilities": 3.2.2(react@19.2.6)
+      react: 19.2.6
+      tslib: 2.8.1
+
+  "@dnd-kit/utilities@3.2.2(react@19.2.6)":
+    dependencies:
+      react: 19.2.6
+      tslib: 2.8.1
+
   "@emnapi/core@1.10.0":
     dependencies:
       "@emnapi/wasi-threads": 1.2.1
@@ -3648,6 +3745,10 @@ snapshots:
       levn: 0.4.1
 
   "@exodus/bytes@1.15.0": {}
+
+  "@heroicons/react@2.2.0(react@19.2.6)":
+    dependencies:
+      react: 19.2.6
 
   "@humanfs/core@0.19.2":
     dependencies:
@@ -3827,6 +3928,14 @@ snapshots:
       vite: 8.0.13(@types/node@24.12.4)(jiti@2.7.0)
 
   "@tanstack/query-core@5.100.10": {}
+
+  "@tanstack/query-devtools@5.100.11": {}
+
+  "@tanstack/react-query-devtools@5.100.11(@tanstack/react-query@5.100.10(react@19.2.6))(react@19.2.6)":
+    dependencies:
+      "@tanstack/query-devtools": 5.100.11
+      "@tanstack/react-query": 5.100.10(react@19.2.6)
+      react: 19.2.6
 
   "@tanstack/react-query@5.100.10(react@19.2.6)":
     dependencies:
@@ -5374,8 +5483,7 @@ snapshots:
     dependencies:
       typescript: 6.0.3
 
-  tslib@2.8.1:
-    optional: true
+  tslib@2.8.1: {}
 
   type-check@0.4.0:
     dependencies:

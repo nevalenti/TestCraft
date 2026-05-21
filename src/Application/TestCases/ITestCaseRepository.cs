@@ -5,6 +5,7 @@ namespace Application.TestCases;
 public interface ITestCaseRepository
 {
     Task<IEnumerable<TestCaseDto>> GetAllAsync(Guid projectId, Guid suiteId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<TestCaseDto>> GetAllByProjectAsync(Guid projectId, CancellationToken cancellationToken = default);
     Task<TestCaseDto?> GetByIdAsync(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsInProjectAsync(Guid projectId, Guid id, CancellationToken cancellationToken = default);

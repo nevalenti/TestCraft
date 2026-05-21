@@ -4,6 +4,9 @@ import { queryKeys } from "@/api/queryKeys";
 import { testCaseQueries, testCasesApi } from "@/api/testCases";
 import type { CreateTestCaseDto, UpdateTestCaseDto } from "@/types";
 
+export const useProjectTestCases = (projectId: string) =>
+  useQuery(testCaseQueries.byProject(projectId));
+
 export const useTestCases = (projectId: string, suiteId: string) =>
   useQuery(testCaseQueries.all(projectId, suiteId));
 

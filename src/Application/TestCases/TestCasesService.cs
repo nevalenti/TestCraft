@@ -9,6 +9,9 @@ public class TestCasesService(ITestSuiteRepository suites, ITestCaseRepository c
     public Task<IEnumerable<TestCaseDto>> GetAllAsync(Guid projectId, Guid suiteId, CancellationToken cancellationToken = default)
         => cases.GetAllAsync(projectId, suiteId, cancellationToken);
 
+    public Task<IEnumerable<TestCaseDto>> GetAllByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
+        => cases.GetAllByProjectAsync(projectId, cancellationToken);
+
     public Task<TestCaseDto?> GetByIdAsync(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken = default)
         => cases.GetByIdAsync(projectId, suiteId, id, cancellationToken);
 

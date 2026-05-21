@@ -13,6 +13,10 @@ const BASE = (projectId: string, suiteId: string) =>
   `/api/v1/projects/${projectId}/suites/${suiteId}/cases`;
 
 export const testCasesApi = {
+  getAllByProject: (projectId: string) =>
+    client
+      .get<TestCaseDto[]>(`/api/v1/projects/${projectId}/cases`)
+      .then((r) => r.data),
   getAll: (projectId: string, suiteId: string) =>
     client.get<TestCaseDto[]>(BASE(projectId, suiteId)).then((r) => r.data),
   getById: (projectId: string, suiteId: string, id: string) =>
@@ -35,6 +39,12 @@ export const testCasesApi = {
 };
 
 export const testCaseQueries = {
+  byProject: (projectId: string) =>
+    queryOptions({
+      queryKey: queryKeys.testCases.byProject(projectId),
+      queryFn: () => testCasesApi.getAllByProject(projectId),
+      enabled: !!projectId,
+    }),
   all: (projectId: string, suiteId: string) =>
     queryOptions({
       queryKey: queryKeys.testCases.all(projectId, suiteId),

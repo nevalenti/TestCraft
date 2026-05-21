@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { FolderIcon } from "@heroicons/react/24/outline";
 
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { formatDate } from "@/lib/format";
@@ -15,19 +15,24 @@ export const ProjectCard = ({
   onEdit,
   onDelete,
 }: ProjectCardProps) => (
-  <ResourceCard onEdit={onEdit} onDelete={onDelete} label="project">
+  <ResourceCard
+    to={`/projects/${project.id}`}
+    onEdit={onEdit}
+    onDelete={onDelete}
+    label="project"
+    cardBg="bg-base-content/[6%]"
+    accentText="text-base-content/50"
+    typeIcon={<FolderIcon className="size-3.5" />}
+  >
     <div className="flex flex-col gap-1.5">
-      <Link
-        to={`/projects/${project.id}`}
-        className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
-      >
+      <span className="text-base font-semibold leading-snug line-clamp-2">
         {project.name}
-      </Link>
-      {project.description && (
-        <p className="text-base-content/55 line-clamp-2 text-sm leading-relaxed">
-          {project.description}
-        </p>
-      )}
+      </span>
+      <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
+        {project.description ?? (
+          <span className="italic text-base-content/30">No description</span>
+        )}
+      </p>
     </div>
     <div className="mt-4 flex items-center justify-between gap-2">
       {project.suiteCount !== undefined && project.runCount !== undefined ? (

@@ -41,7 +41,24 @@ export const ProjectsPage = () => {
     deleteProject.mutate(id, { onSuccess: close });
 
   if (isError)
-    return <p className="text-error p-8">Failed to load projects.</p>;
+    return (
+      <div className="flex flex-1 items-center justify-center p-8">
+        <div className="text-center">
+          <p className="text-error font-semibold mb-2">
+            Failed to load projects
+          </p>
+          <p className="text-base-content/60 text-sm mb-4">
+            Please check your connection and try again.
+          </p>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => window.location.reload()}
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
@@ -57,7 +74,7 @@ export const ProjectsPage = () => {
           </p>
         </div>
         <button
-          className="btn btn-primary btn-sm shrink-0"
+          className="btn btn-accent btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
           New Project
@@ -71,10 +88,10 @@ export const ProjectsPage = () => {
           ) : projects?.length === 0 ? (
             <EmptyState
               title="No projects yet"
-              description="Create your first project to start organising your test cases."
+              description="Projects group your test suites and runs. Create a project → add test suites → write test cases → start a test run."
               action={
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-accent btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
                   Create First Project

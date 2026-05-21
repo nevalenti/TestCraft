@@ -112,6 +112,7 @@ export interface TestResultDto {
   id: string;
   testRunId: string;
   testCaseId: string;
+  testCaseName: string;
   status: TestResultStatus;
   notes?: string;
   executedAt: string;

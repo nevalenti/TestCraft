@@ -1,3 +1,4 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { useLayoutEffect, useRef, useState } from "react";
 
 interface ModalProps {
@@ -45,8 +46,9 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
           type="button"
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           onClick={onClose}
+          aria-label="Close dialog"
         >
-          ✕
+          <XMarkIcon className="size-4" aria-hidden="true" />
         </button>
         <h3 className="mb-4 text-lg font-bold">{title}</h3>
         {isOpen ? children : cachedChildren}

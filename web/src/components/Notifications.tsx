@@ -1,3 +1,5 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
 import { useNotificationsStore } from "@/stores/notifications";
 
 const alertClass: Record<string, string> = {
@@ -30,9 +32,10 @@ export const Notifications = () => {
           <span>{n.message}</span>
           <button
             onClick={() => remove(n.id)}
-            className={`btn btn-active btn-sm ${btnClass[n.type] ?? ""}`}
+            className={`btn btn-active btn-sm btn-square ${btnClass[n.type] ?? ""}`}
+            aria-label="Dismiss notification"
           >
-            ✕
+            <XMarkIcon className="size-4" aria-hidden="true" />
           </button>
         </div>
       ))}

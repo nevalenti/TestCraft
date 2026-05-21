@@ -6,7 +6,7 @@
 @plugin "daisyui" {
   themes:
     emerald --default,
-    dracula --prefersdark;
+    dim --prefersdark;
 }
 
 @theme {
@@ -14,6 +14,34 @@
   --font-display: "Raleway", ui-sans-serif, system-ui, sans-serif;
   --color-border: oklch(0 0 0 / 0.13);
   --color-surface: oklch(1 0 0 / 0.6);
+}
+
+@layer utilities {
+  .card-bg-info {
+    background-color: oklch(
+      from var(--color-info) l c h / var(--card-bg-alpha, 0.2)
+    );
+  }
+  .card-bg-warning {
+    background-color: oklch(
+      from var(--color-warning) l c h / var(--card-bg-alpha, 0.2)
+    );
+  }
+  .card-bg-success {
+    background-color: oklch(
+      from var(--color-success) l c h / var(--card-bg-alpha, 0.2)
+    );
+  }
+  .card-bg-error {
+    background-color: oklch(
+      from var(--color-error) l c h / var(--card-bg-alpha, 0.2)
+    );
+  }
+  .card-bg-primary {
+    background-color: oklch(
+      from var(--color-primary) l c h / var(--card-bg-alpha, 0.2)
+    );
+  }
 }
 
 @layer utilities {
@@ -33,7 +61,7 @@
     );
   }
 
-  [data-theme="dracula"] .header-stripes {
+  [data-theme="dim"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -88,15 +116,26 @@
         0 8px 16px -4px oklch(0 0 0 / 0.1);
     }
 
-    [data-theme="dracula"] .app-shadow {
+    [data-theme="dim"] .app-shadow {
       box-shadow:
-        0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
+        0 0 0 1px oklch(from var(--color-accent) l c h / 0.2),
         0 8px 24px -4px oklch(0 0 0 / 0.5);
     }
   }
 }
 
 @layer base {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
   html {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
@@ -112,8 +151,9 @@
     );
   }
 
-  [data-theme="dracula"] {
+  [data-theme="dim"] {
     --color-border: oklch(1 0 0 / 0.1);
+    --card-bg-alpha: 0.12;
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -124,7 +164,23 @@
   }
 
   [data-theme="emerald"] {
-    --color-border: oklch(0 0 0 / 0.13);
+    --color-border: oklch(0 0 0 / 0.11);
+    --card-bg-alpha: 0.2;
+  }
+
+  @keyframes modal-enter {
+    from {
+      opacity: 0;
+      transform: scale(0.96) translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  dialog[open] .modal-box {
+    animation: modal-enter 0.15s ease-out;
   }
 
   :focus-visible {
@@ -157,14 +213,4 @@
     border-color: var(--color-neutral);
     outline-color: var(--color-neutral);
   }
-}
-
-[data-theme="emerald"] {
-  --color-primary: var(--color-accent);
-  --color-primary-content: var(--color-accent-content);
-}
-
-[data-theme="dracula"] {
-  --color-primary: var(--color-secondary);
-  --color-primary-content: var(--color-secondary-content);
 }

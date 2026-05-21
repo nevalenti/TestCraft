@@ -19,7 +19,7 @@ export const StepForm = ({
   onCancel,
   isLoading,
 }: StepFormProps) => {
-  const [order, setOrder] = useState(defaultValues?.order ?? nextOrder);
+  const order = defaultValues?.order ?? nextOrder;
   const [action, setAction] = useState(defaultValues?.action ?? "");
   const [expectedResult, setExpectedResult] = useState(
     defaultValues?.expectedResult ?? "",
@@ -32,36 +32,29 @@ export const StepForm = ({
       }}
       className="space-y-4"
     >
-      <FormField label="Order">
-        <input
-          type="number"
-          className="input input-bordered bg-base-200 w-24"
-          value={order}
-          onChange={(e) => setOrder(Number(e.target.value))}
-          required
-          min={1}
-        />
-      </FormField>
-      <FormField label="Action">
+      <FormField label="Action" htmlFor="step-action">
         <textarea
+          id="step-action"
           className="textarea textarea-bordered bg-base-200 w-full"
           value={action}
           onChange={(e) => setAction(e.target.value)}
           required
           maxLength={255}
           placeholder="Navigate to the login page"
-          rows={4}
+          rows={3}
+          autoFocus
         />
       </FormField>
-      <FormField label="Expected Result">
+      <FormField label="Expected Result" htmlFor="step-expected-result">
         <textarea
+          id="step-expected-result"
           className="textarea textarea-bordered bg-base-200 w-full"
           value={expectedResult}
           onChange={(e) => setExpectedResult(e.target.value)}
           required
           maxLength={255}
           placeholder="Login page is displayed"
-          rows={4}
+          rows={3}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

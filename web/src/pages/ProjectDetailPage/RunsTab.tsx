@@ -1,5 +1,5 @@
+import { BoltIcon } from "@heroicons/react/24/outline";
 import { forwardRef, useImperativeHandle, useState } from "react";
-import { Link } from "react-router";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -57,7 +57,7 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
             description="Start a test run to record and track results."
             action={
               <button
-                className="btn btn-primary btn-sm"
+                className="btn btn-accent btn-sm"
                 onClick={() => setModal({ type: "create" })}
               >
                 Create First Run
@@ -71,15 +71,16 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
                 key={run.id}
                 onEdit={() => setModal({ type: "edit", item: run })}
                 onDelete={() => setModal({ type: "delete", item: run })}
-                label="run"
+                to={`/projects/${projectId}/runs/${run.id}`}
+                label="test run"
+                cardBg="card-bg-success"
+                accentText="text-success"
+                typeIcon={<BoltIcon className="size-3.5" />}
               >
                 <div className="flex flex-col gap-1.5">
-                  <Link
-                    to={`/projects/${projectId}/runs/${run.id}`}
-                    className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
-                  >
+                  <span className="text-base font-semibold leading-snug line-clamp-2">
                     {run.name}
-                  </Link>
+                  </span>
                   <p className="text-base-content/60 text-sm font-medium">
                     {run.environment}
                   </p>

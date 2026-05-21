@@ -1,4 +1,4 @@
-import { InboxIcon } from "@/components/ui/icons";
+import { InboxIcon } from "@heroicons/react/24/outline";
 
 interface EmptyStateProps {
   title: string;
@@ -14,8 +14,8 @@ export const EmptyState = ({
   icon,
 }: EmptyStateProps) => (
   <div className="flex flex-col items-center justify-center py-20 text-center select-none">
-    <div className="mb-5 flex size-14 items-center justify-center bg-base-200 text-base-content/40 border border-border/60 shadow-sm">
-      {icon ?? <InboxIcon size="size-6" />}
+    <div className="mb-5 flex size-14 items-center justify-center rounded-xl bg-base-200 text-base-content/40 border border-border/60 shadow-sm">
+      {icon ?? <InboxIcon className="size-6" />}
     </div>
     <p className="text-sm font-semibold text-base-content/80 tracking-tight">
       {title}

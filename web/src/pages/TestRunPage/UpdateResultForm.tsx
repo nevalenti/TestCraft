@@ -31,8 +31,10 @@ export const UpdateResultForm = ({
       }}
       className="space-y-4"
     >
-      <FormField label="Status">
+      <FormField label="Status" htmlFor="update-result-status">
         <select
+          id="update-result-status"
+          autoFocus
           className="select select-bordered w-full"
           value={status}
           onChange={(e) =>
@@ -47,13 +49,14 @@ export const UpdateResultForm = ({
           ))}
         </select>
       </FormField>
-      <FormField label="Notes">
+      <FormField label="Notes" htmlFor="update-result-notes">
         <textarea
+          id="update-result-notes"
           className="textarea textarea-bordered bg-base-200 w-full"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Optional"
-          rows={4}
+          rows={2}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

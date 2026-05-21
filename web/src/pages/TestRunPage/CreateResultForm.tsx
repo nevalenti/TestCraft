@@ -2,8 +2,7 @@ import { useState } from "react";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
-import { useTestCases } from "@/hooks/useTestCases";
-import { useTestSuites } from "@/hooks/useTestSuites";
+import { useProjectTestCases } from "@/hooks/useTestCases";
 import {
   type CreateTestResultDto,
   statusOptions,
@@ -15,17 +14,6 @@ const toDatetimeLocal = (iso: string) => {
   return new Date(d.getTime() - d.getTimezoneOffset() * 60_000)
     .toISOString()
     .slice(0, 16);
-};
-
-const caseSelectPlaceholder = (
-  selectedSuiteId: string,
-  loadingCases: boolean,
-  caseCount: number | undefined,
-) => {
-  if (!selectedSuiteId) return "Select a suite first";
-  if (loadingCases) return "Loading…";
-  if (caseCount === 0) return "No test cases in this suite";
-  return "Select a test case";
 };
 
 interface CreateResultFormProps {
@@ -41,7 +29,6 @@ export const CreateResultForm = ({
   onCancel,
   isLoading,
 }: CreateResultFormProps) => {
-  const [selectedSuiteId, setSelectedSuiteId] = useState("");
   const [testCaseId, setTestCaseId] = useState("");
   const [status, setStatus] = useState<TestResultStatus>(
     TestResultStatus.Passed,
@@ -50,11 +37,8 @@ export const CreateResultForm = ({
   const [executedAt, setExecutedAt] = useState(
     toDatetimeLocal(new Date().toISOString()),
   );
-  const { data: suites, isPending: loadingSuites } = useTestSuites(projectId);
-  const { data: cases, isPending: loadingCases } = useTestCases(
-    projectId,
-    selectedSuiteId,
-  );
+  const { data: cases, isPending: loadingCases } =
+    useProjectTestCases(projectId);
 
   return (
     <form
@@ -69,41 +53,22 @@ export const CreateResultForm = ({
       }}
       className="space-y-4"
     >
-      <FormField label="Test Suite">
+      <FormField label="Test Case" htmlFor="result-test-case">
         <select
-          className="select select-bordered w-full"
-          value={selectedSuiteId}
-          onChange={(e) => {
-            setSelectedSuiteId(e.target.value);
-            setTestCaseId("");
-          }}
-          required
-          disabled={loadingSuites}
-        >
-          <option value="">
-            {loadingSuites ? "Loading…" : "Select a suite"}
-          </option>
-          {suites?.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.name}
-            </option>
-          ))}
-        </select>
-      </FormField>
-      <FormField label="Test Case">
-        <select
+          id="result-test-case"
           className="select select-bordered w-full"
           value={testCaseId}
           onChange={(e) => setTestCaseId(e.target.value)}
           required
-          disabled={!selectedSuiteId || loadingCases}
+          disabled={loadingCases}
+          autoFocus
         >
           <option value="">
-            {caseSelectPlaceholder(
-              selectedSuiteId,
-              loadingCases,
-              cases?.length,
-            )}
+            {loadingCases
+              ? "Loading…"
+              : cases?.length === 0
+                ? "No test cases in project"
+                : "Select a test case"}
           </option>
           {cases?.map((c) => (
             <option key={c.id} value={c.id}>
@@ -112,8 +77,9 @@ export const CreateResultForm = ({
           ))}
         </select>
       </FormField>
-      <FormField label="Status">
+      <FormField label="Status" htmlFor="result-status">
         <select
+          id="result-status"
           className="select select-bordered w-full"
           value={status}
           onChange={(e) =>
@@ -128,8 +94,9 @@ export const CreateResultForm = ({
           ))}
         </select>
       </FormField>
-      <FormField label="Executed At">
+      <FormField label="Executed At" htmlFor="result-executed-at">
         <input
+          id="result-executed-at"
           type="datetime-local"
           className="input input-bordered bg-base-200 w-full"
           value={executedAt}
@@ -137,13 +104,14 @@ export const CreateResultForm = ({
           required
         />
       </FormField>
-      <FormField label="Notes">
+      <FormField label="Notes" htmlFor="result-notes">
         <textarea
+          id="result-notes"
           className="textarea textarea-bordered bg-base-200 w-full"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Optional"
-          rows={4}
+          rows={2}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

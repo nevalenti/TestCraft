@@ -29,18 +29,21 @@ export const RunForm = ({
       }}
       className="space-y-4"
     >
-      <FormField label="Name">
+      <FormField label="Name" htmlFor="run-name">
         <input
+          id="run-name"
           className="input input-bordered bg-base-200 w-full"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
           maxLength={255}
           placeholder="Sprint 42 Regression"
+          autoFocus
         />
       </FormField>
-      <FormField label="Environment">
+      <FormField label="Environment" htmlFor="run-environment">
         <input
+          id="run-environment"
           className="input input-bordered bg-base-200 w-full"
           value={environment}
           onChange={(e) => setEnvironment(e.target.value)}

@@ -1,42 +1,50 @@
 import { ResourceActions } from "@/components/ui/ResourceActions";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import type { TestResultDto } from "@/types";
-
-import { statusBorderRightClass } from "./constants";
 
 interface ResultRowProps {
   result: TestResultDto;
+  index: number;
   onEdit: () => void;
   onDelete: () => void;
 }
 
-export const ResultRow = ({ result, onEdit, onDelete }: ResultRowProps) => (
-  <div
-    className={`relative bg-base-100 border border-border/80 border-l-4 border-l-primary border-r-4 ${statusBorderRightClass[result.status]} shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 group overflow-hidden`}
-  >
-    <div className="p-5 flex flex-row gap-4 items-stretch">
-      <div className="flex-1 flex flex-col justify-between min-w-0">
-        <div className="flex flex-col gap-2">
-          <StatusBadge status={result.status} />
-          {result.notes && (
-            <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
-              {result.notes}
-            </p>
-          )}
-        </div>
-        <div className="mt-3 space-y-0.5">
-          <p className="text-base-content/50 text-xs tabular-nums">
-            Executed {formatDateTime(result.executedAt)}
-          </p>
-          <p className="text-base-content/45 text-xs tabular-nums">
-            Logged {formatDate(result.createdAt)}
-          </p>
-        </div>
+export const ResultRow = ({
+  result,
+  index,
+  onEdit,
+  onDelete,
+}: ResultRowProps) => (
+  <tr className="group hover:bg-base-200/50 transition-colors">
+    <td className="text-base-content/40 tabular-nums text-xs w-8 pr-0">
+      {index}
+    </td>
+    <td className="font-medium text-sm max-w-xs">
+      <span className="line-clamp-1">{result.testCaseName}</span>
+    </td>
+    <td>
+      <StatusBadge status={result.status} />
+    </td>
+    <td className="text-sm text-base-content/60 max-w-[200px]">
+      {result.notes ? (
+        <span className="line-clamp-1">{result.notes}</span>
+      ) : (
+        <span className="text-base-content/30 italic">—</span>
+      )}
+    </td>
+    <td className="text-xs tabular-nums text-base-content/50 whitespace-nowrap">
+      {formatDateTime(result.executedAt)}
+    </td>
+    <td>
+      <div className="flex justify-end gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+        <ResourceActions
+          onEdit={onEdit}
+          onDelete={onDelete}
+          label="result"
+          size="xs"
+        />
       </div>
-      <div className="flex shrink-0 items-start gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <ResourceActions onEdit={onEdit} onDelete={onDelete} label="result" />
-      </div>
-    </div>
-  </div>
+    </td>
+  </tr>
 );

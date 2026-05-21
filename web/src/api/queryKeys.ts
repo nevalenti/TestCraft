@@ -13,6 +13,7 @@ export const queryKeys = {
       ["projects", projectId, "suites", suiteId, "cases"] as const,
     detail: (projectId: string, suiteId: string, id: string) =>
       ["projects", projectId, "suites", suiteId, "cases", id] as const,
+    byProject: (projectId: string) => ["projects", projectId, "cases"] as const,
   },
   testCaseSteps: {
     all: (projectId: string, suiteId: string, caseId: string) =>

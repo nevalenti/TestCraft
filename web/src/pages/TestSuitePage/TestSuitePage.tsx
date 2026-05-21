@@ -1,5 +1,5 @@
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import { Link } from "react-router";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -35,7 +35,11 @@ export const TestSuitePage = () => {
 
   const { data: project } = useProject(projectId);
   const { data: suite } = useTestSuite(projectId, suiteId);
-  const { data: testCases, isPending } = useTestCases(projectId, suiteId);
+  const {
+    data: testCases,
+    isPending,
+    isError,
+  } = useTestCases(projectId, suiteId);
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
@@ -62,14 +66,16 @@ export const TestSuitePage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
-            {suite?.name}
+            {suite?.name ?? (
+              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+            )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
             {suite?.description ?? "Test cases in this suite"}
           </p>
         </div>
         <button
-          className="btn btn-primary btn-sm shrink-0"
+          className="btn btn-accent btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
           New Test Case
@@ -80,13 +86,28 @@ export const TestSuitePage = () => {
         <div className="min-h-80">
           {isPending ? (
             <SkeletonGrid />
+          ) : isError ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <p className="text-error font-semibold mb-2">Failed to load</p>
+                <p className="text-base-content/60 text-sm mb-4">
+                  Please check your connection and try again.
+                </p>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  onClick={() => window.location.reload()}
+                >
+                  Retry
+                </button>
+              </div>
+            </div>
           ) : testCases?.length === 0 ? (
             <EmptyState
               title="No test cases yet"
               description="Add test cases to document expected behaviour."
               action={
                 <button
-                  className="btn btn-primary btn-sm"
+                  className="btn btn-accent btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
                   Create First Test Case
@@ -100,20 +121,23 @@ export const TestSuitePage = () => {
                   key={tc.id}
                   onEdit={() => setModal({ type: "edit", item: tc })}
                   onDelete={() => setModal({ type: "delete", item: tc })}
+                  to={`/projects/${projectId}/suites/${suiteId}/cases/${tc.id}`}
                   label="test case"
+                  cardBg="card-bg-warning"
+                  accentText="text-warning"
+                  typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
                 >
                   <div className="flex flex-col gap-1.5">
-                    <Link
-                      to={`/projects/${projectId}/suites/${suiteId}/cases/${tc.id}`}
-                      className="text-[15px] font-semibold leading-snug line-clamp-2 transition-colors hover:text-primary"
-                    >
+                    <span className="text-base font-semibold leading-snug line-clamp-2">
                       {tc.name}
-                    </Link>
-                    {tc.description && (
-                      <p className="text-base-content/65 line-clamp-2 text-sm leading-relaxed">
-                        {tc.description}
-                      </p>
-                    )}
+                    </span>
+                    <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
+                      {tc.description ?? (
+                        <span className="italic text-base-content/30">
+                          No description
+                        </span>
+                      )}
+                    </p>
                   </div>
                   <p className="text-base-content/50 mt-3 text-xs tabular-nums">
                     {formatDate(tc.createdAt)}
