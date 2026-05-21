@@ -12,7 +12,7 @@ export const CookieConsent = () => {
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
-      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-4"
+      className="fixed bottom-0 left-0 right-0 z-50 flex justify-center px-4 pb-8"
     >
       <div className="bg-base-200 border-border w-full max-w-2xl border rounded-lg shadow-2xl">
         <div className="p-5 flex items-center gap-6">
