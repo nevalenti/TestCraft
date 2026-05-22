@@ -10,8 +10,10 @@ namespace Infrastructure.Repositories;
 
 public class ProjectRepository(AppDbContext db) : IProjectRepository
 {
-    public async Task<IEnumerable<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<ProjectDto>> GetAllAsync(string? search = null, CancellationToken cancellationToken = default)
         => await db.Projects
+            .AsNoTracking()
+            .Where(p => search == null || p.Name.ToLower().Contains(search.ToLower()))
             .Select(p => new ProjectDto(
                 p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
                 p.TestSuites.Count(s => !s.IsDeleted),
@@ -20,6 +22,7 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
 
     public async Task<ProjectDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => await db.Projects
+            .AsNoTracking()
             .Where(p => p.Id == id)
             .Select(p => new ProjectDto(
                 p.Id, p.Name, p.Description, p.CreatedAt, p.UpdatedAt,
@@ -34,7 +37,6 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
     {
         db.Projects.Add(project);
         await db.SaveChangesAsync(cancellationToken);
-
         return new ProjectDto(project.Id, project.Name, project.Description, project.CreatedAt, project.UpdatedAt);
     }
 
@@ -42,10 +44,8 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
     {
         var project = await db.Projects.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (project is null) return false;
-
         mutate(project);
         await db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 
@@ -53,10 +53,8 @@ public class ProjectRepository(AppDbContext db) : IProjectRepository
     {
         var project = await db.Projects.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
         if (project is null) return false;
-
         project.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 }

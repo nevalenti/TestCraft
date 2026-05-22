@@ -37,11 +37,23 @@ export interface UpdateTestSuiteDto {
   description?: string;
 }
 
+export const TestCasePriority = {
+  Low: 1,
+  Medium: 2,
+  High: 3,
+  Critical: 4,
+} as const;
+
+export type TestCasePriority =
+  (typeof TestCasePriority)[keyof typeof TestCasePriority];
+
 export interface TestCaseDto {
   id: string;
   suiteId: string;
   name: string;
   description?: string;
+  priority: TestCasePriority;
+  stepCount: number;
   createdAt: string;
   updatedAt?: string;
 }
@@ -49,11 +61,13 @@ export interface TestCaseDto {
 export interface CreateTestCaseDto {
   name: string;
   description?: string;
+  priority?: TestCasePriority;
 }
 
 export interface UpdateTestCaseDto {
   name: string;
   description?: string;
+  priority: TestCasePriority;
 }
 
 export interface TestCaseStepDto {
@@ -78,11 +92,24 @@ export interface UpdateTestCaseStepDto {
   expectedResult: string;
 }
 
+export interface BulkReorderStepsDto {
+  steps: { id: string; order: number }[];
+}
+
+export const TestRunStatus = {
+  Active: 1,
+  Completed: 2,
+  Archived: 3,
+} as const;
+
+export type TestRunStatus = (typeof TestRunStatus)[keyof typeof TestRunStatus];
+
 export interface TestRunDto {
   id: string;
   projectId: string;
   name: string;
   environment: string;
+  status: TestRunStatus;
   executedById?: string;
   createdAt: string;
   updatedAt?: string;
@@ -91,11 +118,22 @@ export interface TestRunDto {
 export interface CreateTestRunDto {
   name: string;
   environment: string;
+  status?: TestRunStatus;
 }
 
 export interface UpdateTestRunDto {
   name: string;
   environment: string;
+  status: TestRunStatus;
+}
+
+export interface TestRunSummaryDto {
+  total: number;
+  passed: number;
+  failed: number;
+  blocked: number;
+  skipped: number;
+  passRate: number;
 }
 
 export const TestResultStatus = {
@@ -112,6 +150,7 @@ export interface TestResultDto {
   id: string;
   testRunId: string;
   testCaseId: string;
+  suiteId: string;
   testCaseName: string;
   status: TestResultStatus;
   notes?: string;
@@ -144,4 +183,17 @@ export const statusOptions = [
   { value: TestResultStatus.Failed, label: "Failed" },
   { value: TestResultStatus.Blocked, label: "Blocked" },
   { value: TestResultStatus.Skipped, label: "Skipped" },
+] as const;
+
+export const priorityOptions = [
+  { value: TestCasePriority.Low, label: "Low" },
+  { value: TestCasePriority.Medium, label: "Medium" },
+  { value: TestCasePriority.High, label: "High" },
+  { value: TestCasePriority.Critical, label: "Critical" },
+] as const;
+
+export const runStatusOptions = [
+  { value: TestRunStatus.Active, label: "Active" },
+  { value: TestRunStatus.Completed, label: "Completed" },
+  { value: TestRunStatus.Archived, label: "Archived" },
 ] as const;

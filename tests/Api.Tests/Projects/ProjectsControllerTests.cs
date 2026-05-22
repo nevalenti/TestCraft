@@ -30,9 +30,9 @@ public class ProjectsControllerTests
             new(Guid.NewGuid(), "Alpha", null, DateTime.UtcNow, null),
             new(Guid.NewGuid(), "Beta", "desc", DateTime.UtcNow, null)
         };
-        _service.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(projects);
+        _service.Setup(s => s.GetAllAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync(projects);
 
-        var result = await _controller.GetProjects(CancellationToken.None);
+        var result = await _controller.GetProjects(null, CancellationToken.None);
 
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(projects);
@@ -41,9 +41,9 @@ public class ProjectsControllerTests
     [Fact]
     public async Task GetProjects_WhenEmpty_ReturnsOkWithEmptyList()
     {
-        _service.Setup(s => s.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _service.Setup(s => s.GetAllAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
-        var result = await _controller.GetProjects(CancellationToken.None);
+        var result = await _controller.GetProjects(null, CancellationToken.None);
 
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(Array.Empty<ProjectDto>());

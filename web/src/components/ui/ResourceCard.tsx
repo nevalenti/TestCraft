@@ -33,7 +33,7 @@ export const ResourceCard = ({
         aria-label={`Open ${label}`}
       />
     )}
-    <div className="p-5 pr-10 flex flex-col justify-between min-h-[120px]">
+    <div className="p-4 pr-10 flex flex-col justify-between min-h-[120px]">
       {typeIcon && (
         <div
           className={`flex items-center gap-1.5 mb-3 ${accentText} font-bold`}

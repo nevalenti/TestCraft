@@ -6,8 +6,8 @@ namespace Application.TestCases;
 
 public class TestCasesService(ITestSuiteRepository suites, ITestCaseRepository cases) : ITestCasesService
 {
-    public Task<IEnumerable<TestCaseDto>> GetAllAsync(Guid projectId, Guid suiteId, CancellationToken cancellationToken = default)
-        => cases.GetAllAsync(projectId, suiteId, cancellationToken);
+    public Task<IEnumerable<TestCaseDto>> GetAllAsync(Guid projectId, Guid suiteId, string? search = null, CancellationToken cancellationToken = default)
+        => cases.GetAllAsync(projectId, suiteId, search, cancellationToken);
 
     public Task<IEnumerable<TestCaseDto>> GetAllByProjectAsync(Guid projectId, CancellationToken cancellationToken = default)
         => cases.GetAllByProjectAsync(projectId, cancellationToken);
@@ -21,12 +21,17 @@ public class TestCasesService(ITestSuiteRepository suites, ITestCaseRepository c
             return null;
 
         return await cases.AddAsync(
-            new TestCase { Name = dto.Name, Description = dto.Description, SuiteId = suiteId },
+            new TestCase { Name = dto.Name, Description = dto.Description, Priority = dto.Priority, SuiteId = suiteId },
             cancellationToken);
     }
 
     public Task<bool> UpdateAsync(Guid projectId, Guid suiteId, Guid id, UpdateTestCaseDto dto, CancellationToken cancellationToken = default)
-        => cases.UpdateAsync(projectId, suiteId, id, c => { c.Name = dto.Name; c.Description = dto.Description; }, cancellationToken);
+        => cases.UpdateAsync(projectId, suiteId, id, c =>
+        {
+            c.Name = dto.Name;
+            c.Description = dto.Description;
+            c.Priority = dto.Priority;
+        }, cancellationToken);
 
     public Task<bool> DeleteAsync(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken = default)
         => cases.DeleteAsync(projectId, suiteId, id, cancellationToken);

@@ -3,7 +3,7 @@ import {
   MinusIcon,
   NoSymbolIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
+} from "@heroicons/react/24/solid";
 
 import { TestResultStatus } from "@/types";
 

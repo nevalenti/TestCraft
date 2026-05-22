@@ -1,12 +1,20 @@
-import { Bars3Icon, FolderIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  Bars3Icon,
+  FolderIcon,
+  HomeIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import { useRef } from "react";
 import { Link } from "react-router";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoMark } from "@/layout/LogoMark";
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
+  const breadcrumbs = useBreadcrumbsStore((s) => s.items);
+  const crumbs = breadcrumbs.filter((b) => b.label !== "home");
 
   const closeMobileNav = () => {
     if (drawerRef.current) drawerRef.current.checked = false;
@@ -15,10 +23,10 @@ export const Header = () => {
   return (
     <>
       <nav className="navbar border-border bg-base-200 h-14 border-b px-4 sm:px-6 lg:px-8 header-stripes shrink-0">
-        <div className="navbar-start">
+        <div className="flex-1 flex items-center min-w-0">
           <Link
             to="/"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content"
+            className="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0"
           >
             <LogoMark />
             <span
@@ -28,9 +36,48 @@ export const Header = () => {
               TestCraft
             </span>
           </Link>
+
+          {crumbs.length > 0 && (
+            <ol
+              aria-label="Breadcrumb"
+              className="hidden sm:flex items-center min-w-0 ml-1"
+            >
+              {crumbs.map((item, index) => {
+                const isLast = index === crumbs.length - 1;
+                return (
+                  <li
+                    key={item.href ?? item.label}
+                    className="flex items-center gap-1 min-w-0"
+                  >
+                    <span
+                      className="text-base-content/35 text-[13px] select-none px-0.5"
+                      aria-hidden="true"
+                    >
+                      /
+                    </span>
+                    {item.href ? (
+                      <Link
+                        to={item.href}
+                        className="text-[13px] font-medium text-base-content/65 hover:text-base-content transition-colors whitespace-nowrap"
+                      >
+                        {item.label}
+                      </Link>
+                    ) : (
+                      <span
+                        aria-current={isLast ? "page" : undefined}
+                        className="text-[13px] font-semibold text-base-content truncate max-w-44"
+                      >
+                        {item.label}
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
+            </ol>
+          )}
         </div>
 
-        <div className="navbar-end gap-1.5">
+        <div className="flex items-center gap-1.5 shrink-0">
           <ThemeToggle />
           <label
             htmlFor="mobile-nav-drawer"
@@ -79,6 +126,14 @@ export const Header = () => {
               <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-widest text-base-content/55">
                 Menu
               </p>
+              <Link
+                to="/"
+                onClick={closeMobileNav}
+                className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-base-content/80 hover:bg-base-200 hover:text-base-content transition-colors"
+              >
+                <HomeIcon className="size-4" aria-hidden="true" />
+                Overview
+              </Link>
               <Link
                 to="/projects"
                 onClick={closeMobileNav}

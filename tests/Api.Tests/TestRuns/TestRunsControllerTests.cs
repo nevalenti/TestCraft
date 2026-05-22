@@ -4,6 +4,8 @@ using Application.TestRuns;
 
 using AwesomeAssertions;
 
+using Domain.Enums;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -28,8 +30,8 @@ public class TestRunsControllerTests
         var projectId = Guid.NewGuid();
         var runs = new List<TestRunDto>
         {
-            new(Guid.NewGuid(), projectId, "Run 1", "Staging", null, DateTime.UtcNow, null),
-            new(Guid.NewGuid(), projectId, "Run 2", "Production", null, DateTime.UtcNow, null)
+            new(Guid.NewGuid(), projectId, "Run 1", "Staging", TestRunStatus.Active, null, DateTime.UtcNow, null),
+            new(Guid.NewGuid(), projectId, "Run 2", "Production", TestRunStatus.Completed, null, DateTime.UtcNow, null)
         };
         _service.Setup(s => s.GetAllAsync(projectId, It.IsAny<CancellationToken>())).ReturnsAsync(runs);
 
@@ -56,7 +58,7 @@ public class TestRunsControllerTests
     {
         var projectId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var run = new TestRunDto(id, projectId, "Run 1", "Staging", null, DateTime.UtcNow, null);
+        var run = new TestRunDto(id, projectId, "Run 1", "Staging", TestRunStatus.Active, null, DateTime.UtcNow, null);
         _service.Setup(s => s.GetByIdAsync(projectId, id, It.IsAny<CancellationToken>())).ReturnsAsync(run);
 
         var result = await _controller.GetRun(projectId, id, CancellationToken.None);
@@ -82,7 +84,7 @@ public class TestRunsControllerTests
     {
         var projectId = Guid.NewGuid();
         var request = new CreateTestRunDto("Run 1", "Staging");
-        var created = new TestRunDto(Guid.NewGuid(), projectId, "Run 1", "Staging", null, DateTime.UtcNow, null);
+        var created = new TestRunDto(Guid.NewGuid(), projectId, "Run 1", "Staging", TestRunStatus.Active, null, DateTime.UtcNow, null);
         _service.Setup(s => s.CreateAsync(projectId, request, It.IsAny<CancellationToken>())).ReturnsAsync(created);
 
         var result = await _controller.CreateRun(projectId, request, CancellationToken.None);
@@ -116,7 +118,7 @@ public class TestRunsControllerTests
         _service.Setup(s => s.UpdateAsync(projectId, id, It.IsAny<UpdateTestRunDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(exists);
 
-        var result = await _controller.UpdateRun(projectId, id, new UpdateTestRunDto("Updated", "Production"), CancellationToken.None);
+        var result = await _controller.UpdateRun(projectId, id, new UpdateTestRunDto("Updated", "Production", TestRunStatus.Active), CancellationToken.None);
 
         result.Should().BeOfType(expected);
         _service.Verify(s => s.UpdateAsync(projectId, id, It.IsAny<UpdateTestRunDto>(), It.IsAny<CancellationToken>()), Times.Once);

@@ -4,6 +4,7 @@ using Application.TestSuites;
 using AwesomeAssertions;
 
 using Domain.Entities;
+using Domain.Enums;
 
 using Moq;
 
@@ -27,8 +28,8 @@ public class TestCasesServiceTests
     {
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
-        var expected = new List<TestCaseDto> { new(Guid.NewGuid(), suiteId, "Case A", null, DateTime.UtcNow, null) };
-        _cases.Setup(r => r.GetAllAsync(projectId, suiteId, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+        var expected = new List<TestCaseDto> { new(Guid.NewGuid(), suiteId, "Case A", null, TestCasePriority.Medium, 0, DateTime.UtcNow, null) };
+        _cases.Setup(r => r.GetAllAsync(projectId, suiteId, It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
         var result = await _service.GetAllAsync(projectId, suiteId);
 
@@ -41,7 +42,7 @@ public class TestCasesServiceTests
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var expected = new TestCaseDto(id, suiteId, "Case A", null, DateTime.UtcNow, null);
+        var expected = new TestCaseDto(id, suiteId, "Case A", null, TestCasePriority.Medium, 0, DateTime.UtcNow, null);
         _cases.Setup(r => r.GetByIdAsync(projectId, suiteId, id, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
         var result = await _service.GetByIdAsync(projectId, suiteId, id);
@@ -66,7 +67,7 @@ public class TestCasesServiceTests
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
         var dto = new CreateTestCaseDto("Case A", "desc");
-        var expected = new TestCaseDto(Guid.NewGuid(), suiteId, "Case A", "desc", DateTime.UtcNow, null);
+        var expected = new TestCaseDto(Guid.NewGuid(), suiteId, "Case A", "desc", TestCasePriority.Medium, 0, DateTime.UtcNow, null);
         _suites.Setup(r => r.ExistsAsync(projectId, suiteId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _cases.Setup(r => r.AddAsync(It.IsAny<TestCase>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
@@ -84,7 +85,7 @@ public class TestCasesServiceTests
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var dto = new UpdateTestCaseDto("Updated", "New desc");
+        var dto = new UpdateTestCaseDto("Updated", "New desc", TestCasePriority.High);
         Action<TestCase>? captured = null;
         _cases.Setup(r => r.UpdateAsync(projectId, suiteId, id, It.IsAny<Action<TestCase>>(), It.IsAny<CancellationToken>()))
             .Callback<Guid, Guid, Guid, Action<TestCase>, CancellationToken>((_, _, _, mutate, _) => captured = mutate)

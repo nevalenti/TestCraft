@@ -2,7 +2,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testCaseStepQueries, testCaseStepsApi } from "@/api/testCaseSteps";
-import type { CreateTestCaseStepDto, UpdateTestCaseStepDto } from "@/types";
+import { useNotificationsStore } from "@/stores/notifications";
+import type {
+  BulkReorderStepsDto,
+  CreateTestCaseStepDto,
+  UpdateTestCaseStepDto,
+} from "@/types";
+
+const notify = (message: string) =>
+  useNotificationsStore
+    .getState()
+    .add({ type: "success", message, timeout: 3000 });
 
 export const useTestCaseSteps = (
   projectId: string,
@@ -26,10 +36,12 @@ export const useCreateTestCaseStep = (
   return useMutation({
     mutationFn: (dto: CreateTestCaseStepDto) =>
       testCaseStepsApi.create(projectId, suiteId, caseId, dto),
-    onSuccess: () =>
+    onSuccess: () => {
+      notify("Step added");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
-      }),
+      });
+    },
   });
 };
 
@@ -43,6 +55,7 @@ export const useUpdateTestCaseStep = (
     mutationFn: ({ id, ...dto }: { id: string } & UpdateTestCaseStepDto) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, dto),
     onSuccess: (_, { id }) => {
+      notify("Step updated");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });
@@ -58,6 +71,22 @@ export const useUpdateTestCaseStep = (
   });
 };
 
+export const useBulkReorderSteps = (
+  projectId: string,
+  suiteId: string,
+  caseId: string,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: BulkReorderStepsDto) =>
+      testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, dto),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
+      }),
+  });
+};
+
 export const useDeleteTestCaseStep = (
   projectId: string,
   suiteId: string,
@@ -68,6 +97,7 @@ export const useDeleteTestCaseStep = (
     mutationFn: (id: string) =>
       testCaseStepsApi.delete(projectId, suiteId, caseId, id),
     onSuccess: (_, id) => {
+      notify("Step deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });

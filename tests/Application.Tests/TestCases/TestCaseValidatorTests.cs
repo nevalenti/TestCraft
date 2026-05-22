@@ -1,5 +1,7 @@
 using Application.TestCases;
 
+using Domain.Enums;
+
 using FluentValidation.TestHelper;
 
 using Xunit;
@@ -48,7 +50,7 @@ public class UpdateTestCaseDtoValidatorTests
     [Fact]
     public void Valid_PassesValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestCaseDto("My Test Case", "desc"));
+        var result = _validator.TestValidate(new UpdateTestCaseDto("My Test Case", "desc", TestCasePriority.Medium));
         result.ShouldNotHaveAnyValidationErrors();
     }
 
@@ -57,21 +59,21 @@ public class UpdateTestCaseDtoValidatorTests
     [InlineData(" ")]
     public void Name_WhenEmpty_FailsValidation(string name)
     {
-        var result = _validator.TestValidate(new UpdateTestCaseDto(name, null));
+        var result = _validator.TestValidate(new UpdateTestCaseDto(name, null, TestCasePriority.Medium));
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Fact]
     public void Name_WhenAtMaxLength_PassesValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestCaseDto(new string('a', 255), null));
+        var result = _validator.TestValidate(new UpdateTestCaseDto(new string('a', 255), null, TestCasePriority.Medium));
         result.ShouldNotHaveValidationErrorFor(x => x.Name);
     }
 
     [Fact]
     public void Name_WhenExceedsMaxLength_FailsValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestCaseDto(new string('a', 256), null));
+        var result = _validator.TestValidate(new UpdateTestCaseDto(new string('a', 256), null, TestCasePriority.Medium));
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 }

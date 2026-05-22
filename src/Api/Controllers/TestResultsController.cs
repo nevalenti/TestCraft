@@ -2,6 +2,8 @@ using Application.TestResults;
 
 using Asp.Versioning;
 
+using Domain.Enums;
+
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
@@ -13,8 +15,8 @@ public class TestResultsController(ITestResultsService service) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<TestResultDto>>> GetResults(Guid projectId, Guid runId, CancellationToken cancellationToken)
-        => Ok(await service.GetAllAsync(projectId, runId, cancellationToken));
+    public async Task<ActionResult<IEnumerable<TestResultDto>>> GetResults(Guid projectId, Guid runId, [FromQuery] TestResultStatus? status, CancellationToken cancellationToken)
+        => Ok(await service.GetAllAsync(projectId, runId, status, cancellationToken));
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -22,7 +24,6 @@ public class TestResultsController(ITestResultsService service) : ControllerBase
     public async Task<ActionResult<TestResultDto>> GetResult(Guid projectId, Guid runId, Guid id, CancellationToken cancellationToken)
     {
         var result = await service.GetByIdAsync(projectId, runId, id, cancellationToken);
-
         return result is null ? NotFound() : Ok(result);
     }
 
@@ -33,10 +34,7 @@ public class TestResultsController(ITestResultsService service) : ControllerBase
     public async Task<ActionResult<TestResultDto>> CreateResult(Guid projectId, Guid runId, CreateTestResultDto request, CancellationToken cancellationToken)
     {
         var result = await service.CreateAsync(projectId, runId, request, cancellationToken);
-
-        if (result is null)
-            return NotFound();
-
+        if (result is null) return NotFound();
         return CreatedAtAction(nameof(GetResult), new { projectId, runId, id = result.Id }, result);
     }
 

@@ -24,7 +24,7 @@ public class ProjectsServiceTests
     public async Task GetAllAsync_ReturnsRepositoryResult()
     {
         var expected = new List<ProjectDto> { new(Guid.NewGuid(), "Alpha", null, DateTime.UtcNow, null) };
-        _repo.Setup(r => r.GetAllAsync(It.IsAny<CancellationToken>())).ReturnsAsync(expected);
+        _repo.Setup(r => r.GetAllAsync(It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
         var result = await _service.GetAllAsync();
 

@@ -1,9 +1,11 @@
 using Application.Projects;
+using Application.TestResults;
 using Application.TestRuns;
 
 using AwesomeAssertions;
 
 using Domain.Entities;
+using Domain.Enums;
 
 using Moq;
 
@@ -15,18 +17,19 @@ public class TestRunsServiceTests
 {
     private readonly Mock<IProjectRepository> _projects = new();
     private readonly Mock<ITestRunRepository> _runs = new();
+    private readonly Mock<ITestResultRepository> _results = new();
     private readonly TestRunsService _service;
 
     public TestRunsServiceTests()
     {
-        _service = new TestRunsService(_projects.Object, _runs.Object);
+        _service = new TestRunsService(_projects.Object, _runs.Object, _results.Object);
     }
 
     [Fact]
     public async Task GetAllAsync_ReturnsRepositoryResult()
     {
         var projectId = Guid.NewGuid();
-        var expected = new List<TestRunDto> { new(Guid.NewGuid(), projectId, "Run 1", "Staging", null, DateTime.UtcNow, null) };
+        var expected = new List<TestRunDto> { new(Guid.NewGuid(), projectId, "Run 1", "Staging", TestRunStatus.Active, null, DateTime.UtcNow, null) };
         _runs.Setup(r => r.GetAllAsync(projectId, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
         var result = await _service.GetAllAsync(projectId);
@@ -39,7 +42,7 @@ public class TestRunsServiceTests
     {
         var projectId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var expected = new TestRunDto(id, projectId, "Run 1", "Staging", null, DateTime.UtcNow, null);
+        var expected = new TestRunDto(id, projectId, "Run 1", "Staging", TestRunStatus.Active, null, DateTime.UtcNow, null);
         _runs.Setup(r => r.GetByIdAsync(projectId, id, It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
         var result = await _service.GetByIdAsync(projectId, id);
@@ -63,7 +66,7 @@ public class TestRunsServiceTests
     {
         var projectId = Guid.NewGuid();
         var dto = new CreateTestRunDto("Smoke Test", "Production");
-        var expected = new TestRunDto(Guid.NewGuid(), projectId, "Smoke Test", "Production", null, DateTime.UtcNow, null);
+        var expected = new TestRunDto(Guid.NewGuid(), projectId, "Smoke Test", "Production", TestRunStatus.Active, null, DateTime.UtcNow, null);
         _projects.Setup(r => r.ExistsAsync(projectId, It.IsAny<CancellationToken>())).ReturnsAsync(true);
         _runs.Setup(r => r.AddAsync(It.IsAny<TestRun>(), It.IsAny<CancellationToken>())).ReturnsAsync(expected);
 
@@ -80,7 +83,7 @@ public class TestRunsServiceTests
     {
         var projectId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var dto = new UpdateTestRunDto("Updated Run", "QA");
+        var dto = new UpdateTestRunDto("Updated Run", "QA", TestRunStatus.Completed);
         Action<TestRun>? captured = null;
         _runs.Setup(r => r.UpdateAsync(projectId, id, It.IsAny<Action<TestRun>>(), It.IsAny<CancellationToken>()))
             .Callback<Guid, Guid, Action<TestRun>, CancellationToken>((_, _, mutate, _) => captured = mutate)

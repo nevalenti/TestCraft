@@ -1,4 +1,4 @@
-import { BoltIcon } from "@heroicons/react/24/outline";
+import { BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -57,9 +57,10 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
             description="Start a test run to record and track results."
             action={
               <button
-                className="btn btn-accent btn-sm"
+                className="btn btn-primary btn-sm"
                 onClick={() => setModal({ type: "create" })}
               >
+                <PlusIcon className="size-4" />
                 Create First Run
               </button>
             }
@@ -73,8 +74,8 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
                 onDelete={() => setModal({ type: "delete", item: run })}
                 to={`/projects/${projectId}/runs/${run.id}`}
                 label="test run"
-                cardBg="card-bg-success"
-                accentText="text-success"
+                cardBg="card-bg-warning"
+                accentText="text-warning"
                 typeIcon={<BoltIcon className="size-3.5" />}
               >
                 <div className="flex flex-col gap-1.5">
@@ -117,6 +118,7 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
               defaultValues={{
                 name: modal.item.name,
                 environment: modal.item.environment,
+                status: modal.item.status,
               }}
               onSubmit={handleUpdate(modal.item.id)}
               onCancel={close}

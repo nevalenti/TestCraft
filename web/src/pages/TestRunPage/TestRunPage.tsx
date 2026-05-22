@@ -1,3 +1,4 @@
+import { PlusIcon } from "@heroicons/react/24/solid";
 import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -91,7 +92,7 @@ export const TestRunPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col min-h-0">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
@@ -104,14 +105,15 @@ export const TestRunPage = () => {
           </p>
         </div>
         <button
-          className="btn btn-accent btn-sm shrink-0"
+          className="btn btn-primary btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
+          <PlusIcon className="size-4" />
           Add Result
         </button>
       </header>
 
-      <section className="page-content flex-1">
+      <section className="page-content flex-1 overflow-y-auto min-h-0">
         {summary && (
           <p className="text-sm text-base-content/60 mb-4">
             <span className="font-semibold text-base-content">
@@ -192,9 +194,10 @@ export const TestRunPage = () => {
               description="Add results to track the outcome of each test case in this run."
               action={
                 <button
-                  className="btn btn-accent btn-sm"
+                  className="btn btn-primary btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
+                  <PlusIcon className="size-4" />
                   Add First Result
                 </button>
               }

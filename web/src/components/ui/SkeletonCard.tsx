@@ -1,6 +1,6 @@
 export const SkeletonCard = () => (
   <div
-    className="bg-base-100 border border-border rounded-lg p-5 shadow-md"
+    className="bg-base-100 border border-border rounded-lg p-4 shadow-md"
     aria-hidden="true"
   >
     <div className="flex flex-col gap-3">

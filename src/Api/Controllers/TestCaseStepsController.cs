@@ -22,7 +22,6 @@ public class TestCaseStepsController(ITestCaseStepsService service) : Controller
     public async Task<ActionResult<TestCaseStepDto>> GetStep(Guid projectId, Guid suiteId, Guid caseId, Guid id, CancellationToken cancellationToken)
     {
         var step = await service.GetByIdAsync(projectId, suiteId, caseId, id, cancellationToken);
-
         return step is null ? NotFound() : Ok(step);
     }
 
@@ -33,10 +32,7 @@ public class TestCaseStepsController(ITestCaseStepsService service) : Controller
     public async Task<ActionResult<TestCaseStepDto>> CreateStep(Guid projectId, Guid suiteId, Guid caseId, CreateTestCaseStepDto request, CancellationToken cancellationToken)
     {
         var step = await service.CreateAsync(projectId, suiteId, caseId, request, cancellationToken);
-
-        if (step is null)
-            return NotFound();
-
+        if (step is null) return NotFound();
         return CreatedAtAction(nameof(GetStep), new { projectId, suiteId, caseId, id = step.Id }, step);
     }
 
@@ -46,6 +42,13 @@ public class TestCaseStepsController(ITestCaseStepsService service) : Controller
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> UpdateStep(Guid projectId, Guid suiteId, Guid caseId, Guid id, UpdateTestCaseStepDto request, CancellationToken cancellationToken)
         => await service.UpdateAsync(projectId, suiteId, caseId, id, request, cancellationToken) ? NoContent() : NotFound();
+
+    [HttpPut("reorder")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> ReorderSteps(Guid projectId, Guid suiteId, Guid caseId, BulkReorderStepsDto request, CancellationToken cancellationToken)
+        => await service.BulkReorderAsync(projectId, suiteId, caseId, request, cancellationToken) ? NoContent() : NotFound();
 
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

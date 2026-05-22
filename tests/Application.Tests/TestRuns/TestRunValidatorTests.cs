@@ -1,5 +1,7 @@
 using Application.TestRuns;
 
+using Domain.Enums;
+
 using FluentValidation.TestHelper;
 
 using Xunit;
@@ -71,7 +73,7 @@ public class UpdateTestRunDtoValidatorTests
     [Fact]
     public void Valid_PassesValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", "Staging"));
+        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", "Staging", TestRunStatus.Active));
         result.ShouldNotHaveAnyValidationErrors();
     }
 
@@ -80,21 +82,21 @@ public class UpdateTestRunDtoValidatorTests
     [InlineData(" ")]
     public void Name_WhenEmpty_FailsValidation(string name)
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto(name, "Staging"));
+        var result = _validator.TestValidate(new UpdateTestRunDto(name, "Staging", TestRunStatus.Active));
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
     [Fact]
     public void Name_WhenAtMaxLength_PassesValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto(new string('a', 255), "Staging"));
+        var result = _validator.TestValidate(new UpdateTestRunDto(new string('a', 255), "Staging", TestRunStatus.Active));
         result.ShouldNotHaveValidationErrorFor(x => x.Name);
     }
 
     [Fact]
     public void Name_WhenExceedsMaxLength_FailsValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto(new string('a', 256), "Staging"));
+        var result = _validator.TestValidate(new UpdateTestRunDto(new string('a', 256), "Staging", TestRunStatus.Active));
         result.ShouldHaveValidationErrorFor(x => x.Name);
     }
 
@@ -103,21 +105,21 @@ public class UpdateTestRunDtoValidatorTests
     [InlineData(" ")]
     public void Environment_WhenEmpty_FailsValidation(string environment)
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", environment));
+        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", environment, TestRunStatus.Active));
         result.ShouldHaveValidationErrorFor(x => x.Environment);
     }
 
     [Fact]
     public void Environment_WhenAtMaxLength_PassesValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", new string('a', 255)));
+        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", new string('a', 255), TestRunStatus.Active));
         result.ShouldNotHaveValidationErrorFor(x => x.Environment);
     }
 
     [Fact]
     public void Environment_WhenExceedsMaxLength_FailsValidation()
     {
-        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", new string('a', 256)));
+        var result = _validator.TestValidate(new UpdateTestRunDto("Run 1", new string('a', 256), TestRunStatus.Active));
         result.ShouldHaveValidationErrorFor(x => x.Environment);
     }
 }

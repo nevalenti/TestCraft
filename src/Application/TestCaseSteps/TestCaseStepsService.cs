@@ -23,7 +23,15 @@ public class TestCaseStepsService(ITestCaseRepository cases, ITestCaseStepReposi
     }
 
     public Task<bool> UpdateAsync(Guid projectId, Guid suiteId, Guid caseId, Guid id, UpdateTestCaseStepDto dto, CancellationToken cancellationToken = default)
-        => steps.UpdateAsync(projectId, suiteId, caseId, id, s => { s.Order = dto.Order; s.Action = dto.Action; s.ExpectedResult = dto.ExpectedResult; }, cancellationToken);
+        => steps.UpdateAsync(projectId, suiteId, caseId, id, s =>
+        {
+            s.Order = dto.Order;
+            s.Action = dto.Action;
+            s.ExpectedResult = dto.ExpectedResult;
+        }, cancellationToken);
+
+    public Task<bool> BulkReorderAsync(Guid projectId, Guid suiteId, Guid caseId, BulkReorderStepsDto dto, CancellationToken cancellationToken = default)
+        => steps.BulkReorderAsync(projectId, suiteId, caseId, dto.Steps, cancellationToken);
 
     public Task<bool> DeleteAsync(Guid projectId, Guid suiteId, Guid caseId, Guid id, CancellationToken cancellationToken = default)
         => steps.DeleteAsync(projectId, suiteId, caseId, id, cancellationToken);

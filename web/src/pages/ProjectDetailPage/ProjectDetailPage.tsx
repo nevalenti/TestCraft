@@ -1,3 +1,4 @@
+import { PlusIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
@@ -25,7 +26,7 @@ export const ProjectDetailPage = () => {
 
   if (isPending)
     return (
-      <div className="w-full flex flex-col">
+      <div className="w-full flex flex-col min-h-0">
         <div className="page-header flex items-center justify-between gap-4">
           <div>
             <div className="text-2xl font-bold tracking-tight font-display mb-0.5">
@@ -70,7 +71,7 @@ export const ProjectDetailPage = () => {
       : runsRef.current?.open();
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col min-h-0">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
@@ -81,7 +82,11 @@ export const ProjectDetailPage = () => {
               "Manage test suites and runs for this project"}
           </p>
         </div>
-        <button className="btn btn-accent btn-sm shrink-0" onClick={openCreate}>
+        <button
+          className="btn btn-primary btn-sm shrink-0"
+          onClick={openCreate}
+        >
+          <PlusIcon className="size-4" />
           {activeTab === "suites" ? "New Suite" : "New Run"}
         </button>
       </header>
@@ -93,7 +98,7 @@ export const ProjectDetailPage = () => {
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full cursor-pointer transition-colors ${
               activeTab === key
-                ? "bg-accent/15 text-accent font-semibold"
+                ? "bg-primary/15 text-primary font-semibold"
                 : "text-base-content/70 hover:text-base-content hover:bg-base-200"
             }`}
           >
@@ -107,7 +112,7 @@ export const ProjectDetailPage = () => {
         ))}
       </div>
 
-      <section className="page-content flex-1">
+      <section className="page-content flex-1 overflow-y-auto min-h-0">
         {activeTab === "suites" ? (
           <SuitesSection ref={suitesRef} projectId={projectId} />
         ) : (

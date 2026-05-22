@@ -12,6 +12,7 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
 {
     public async Task<IEnumerable<TestCaseStepDto>> GetAllAsync(Guid projectId, Guid suiteId, Guid caseId, CancellationToken cancellationToken = default)
         => await db.TestCaseSteps
+            .AsNoTracking()
             .Where(s => s.TestCaseId == caseId && s.TestCase.SuiteId == suiteId && s.TestCase.Suite.ProjectId == projectId)
             .OrderBy(s => s.Order)
             .Select(s => new TestCaseStepDto(s.Id, s.TestCaseId, s.Order, s.Action, s.ExpectedResult, s.CreatedAt, s.UpdatedAt))
@@ -19,6 +20,7 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
 
     public async Task<TestCaseStepDto?> GetByIdAsync(Guid projectId, Guid suiteId, Guid caseId, Guid id, CancellationToken cancellationToken = default)
         => await db.TestCaseSteps
+            .AsNoTracking()
             .Where(s => s.Id == id && s.TestCaseId == caseId && s.TestCase.SuiteId == suiteId && s.TestCase.Suite.ProjectId == projectId)
             .Select(s => new TestCaseStepDto(s.Id, s.TestCaseId, s.Order, s.Action, s.ExpectedResult, s.CreatedAt, s.UpdatedAt))
             .FirstOrDefaultAsync(cancellationToken);
@@ -27,7 +29,6 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
     {
         db.TestCaseSteps.Add(step);
         await db.SaveChangesAsync(cancellationToken);
-
         return new TestCaseStepDto(step.Id, step.TestCaseId, step.Order, step.Action, step.ExpectedResult, step.CreatedAt, step.UpdatedAt);
     }
 
@@ -36,10 +37,25 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
         var step = await db.TestCaseSteps
             .FirstOrDefaultAsync(s => s.Id == id && s.TestCaseId == caseId && s.TestCase.SuiteId == suiteId && s.TestCase.Suite.ProjectId == projectId, cancellationToken);
         if (step is null) return false;
-
         mutate(step);
         await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
 
+    public async Task<bool> BulkReorderAsync(Guid projectId, Guid suiteId, Guid caseId, IList<StepOrderDto> steps, CancellationToken cancellationToken = default)
+    {
+        var ids = steps.Select(s => s.Id).ToList();
+        var entities = await db.TestCaseSteps
+            .Where(s => ids.Contains(s.Id) && s.TestCaseId == caseId)
+            .ToListAsync(cancellationToken);
+
+        if (entities.Count != steps.Count) return false;
+
+        var orderMap = steps.ToDictionary(s => s.Id, s => s.Order);
+        foreach (var entity in entities)
+            entity.Order = orderMap[entity.Id];
+
+        await db.SaveChangesAsync(cancellationToken);
         return true;
     }
 
@@ -48,10 +64,8 @@ public class TestCaseStepRepository(AppDbContext db) : ITestCaseStepRepository
         var step = await db.TestCaseSteps
             .FirstOrDefaultAsync(s => s.Id == id && s.TestCaseId == caseId && s.TestCase.SuiteId == suiteId && s.TestCase.Suite.ProjectId == projectId, cancellationToken);
         if (step is null) return false;
-
         step.SoftDelete();
         await db.SaveChangesAsync(cancellationToken);
-
         return true;
     }
 }

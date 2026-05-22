@@ -2,11 +2,19 @@ import { useState } from "react";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
-import type { CreateTestCaseDto, UpdateTestCaseDto } from "@/types";
+import { priorityOptions, TestCasePriority } from "@/types";
 
 interface TestCaseFormProps {
-  defaultValues?: { name: string; description: string };
-  onSubmit: (data: CreateTestCaseDto | UpdateTestCaseDto) => void;
+  defaultValues?: {
+    name: string;
+    description: string;
+    priority: TestCasePriority;
+  };
+  onSubmit: (data: {
+    name: string;
+    description?: string;
+    priority: TestCasePriority;
+  }) => void;
   onCancel: () => void;
   isLoading: boolean;
 }
@@ -21,11 +29,14 @@ export const TestCaseForm = ({
   const [description, setDescription] = useState(
     defaultValues?.description ?? "",
   );
+  const [priority, setPriority] = useState<TestCasePriority>(
+    defaultValues?.priority ?? TestCasePriority.Medium,
+  );
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ name, description: description || undefined });
+        onSubmit({ name, description: description || undefined, priority });
       }}
       className="space-y-4"
     >
@@ -40,6 +51,22 @@ export const TestCaseForm = ({
           placeholder="User can log in with valid credentials"
           autoFocus
         />
+      </FormField>
+      <FormField label="Priority" htmlFor="case-priority">
+        <select
+          id="case-priority"
+          className="select select-bordered w-full"
+          value={priority}
+          onChange={(e) =>
+            setPriority(Number(e.target.value) as TestCasePriority)
+          }
+        >
+          {priorityOptions.map((o) => (
+            <option key={o.value} value={o.value}>
+              {o.label}
+            </option>
+          ))}
+        </select>
       </FormField>
       <FormField label="Description" htmlFor="case-description">
         <textarea

@@ -2,7 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testRunQueries, testRunsApi } from "@/api/testRuns";
+import { useNotificationsStore } from "@/stores/notifications";
 import type { CreateTestRunDto, UpdateTestRunDto } from "@/types";
+
+const notify = (message: string) =>
+  useNotificationsStore
+    .getState()
+    .add({ type: "success", message, timeout: 3000 });
 
 export const useTestRuns = (projectId: string) =>
   useQuery(testRunQueries.all(projectId));
@@ -14,10 +20,12 @@ export const useCreateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (dto: CreateTestRunDto) => testRunsApi.create(projectId, dto),
-    onSuccess: () =>
+    onSuccess: () => {
+      notify("Test run created");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
-      }),
+      });
+    },
   });
 };
 
@@ -27,6 +35,7 @@ export const useUpdateTestRun = (projectId: string) => {
     mutationFn: ({ id, ...dto }: { id: string } & UpdateTestRunDto) =>
       testRunsApi.update(projectId, id, dto),
     onSuccess: (_, { id }) => {
+      notify("Test run updated");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -42,6 +51,7 @@ export const useDeleteTestRun = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testRunsApi.delete(projectId, id),
     onSuccess: (_, id) => {
+      notify("Test run deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });

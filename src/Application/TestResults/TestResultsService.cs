@@ -2,13 +2,14 @@ using Application.TestCases;
 using Application.TestRuns;
 
 using Domain.Entities;
+using Domain.Enums;
 
 namespace Application.TestResults;
 
 public class TestResultsService(ITestRunRepository runs, ITestCaseRepository cases, ITestResultRepository results) : ITestResultsService
 {
-    public Task<IEnumerable<TestResultDto>> GetAllAsync(Guid projectId, Guid runId, CancellationToken cancellationToken = default)
-        => results.GetAllAsync(projectId, runId, cancellationToken);
+    public Task<IEnumerable<TestResultDto>> GetAllAsync(Guid projectId, Guid runId, TestResultStatus? status = null, CancellationToken cancellationToken = default)
+        => results.GetAllAsync(projectId, runId, status, cancellationToken);
 
     public Task<TestResultDto?> GetByIdAsync(Guid projectId, Guid runId, Guid id, CancellationToken cancellationToken = default)
         => results.GetByIdAsync(projectId, runId, id, cancellationToken);

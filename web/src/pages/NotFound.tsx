@@ -1,4 +1,4 @@
-import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { Link } from "react-router";
 
 export const NotFound = () => {

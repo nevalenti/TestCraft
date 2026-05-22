@@ -4,8 +4,8 @@ namespace Application.Projects;
 
 public class ProjectsService(IProjectRepository repository) : IProjectsService
 {
-    public Task<IEnumerable<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default)
-        => repository.GetAllAsync(cancellationToken);
+    public Task<IEnumerable<ProjectDto>> GetAllAsync(string? search = null, CancellationToken cancellationToken = default)
+        => repository.GetAllAsync(search, cancellationToken);
 
     public Task<ProjectDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         => repository.GetByIdAsync(id, cancellationToken);

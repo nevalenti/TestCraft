@@ -2,7 +2,7 @@ namespace Application.Projects;
 
 public interface IProjectsService
 {
-    Task<IEnumerable<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProjectDto>> GetAllAsync(string? search = null, CancellationToken cancellationToken = default);
     Task<ProjectDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<ProjectDto> CreateAsync(CreateProjectDto dto, CancellationToken cancellationToken = default);
     Task<bool> UpdateAsync(Guid id, UpdateProjectDto dto, CancellationToken cancellationToken = default);

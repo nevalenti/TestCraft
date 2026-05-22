@@ -1,4 +1,4 @@
-import { RectangleGroupIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, RectangleGroupIcon } from "@heroicons/react/24/solid";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -60,9 +60,10 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
             description="Group related test cases together into suites."
             action={
               <button
-                className="btn btn-accent btn-sm"
+                className="btn btn-primary btn-sm"
                 onClick={() => setModal({ type: "create" })}
               >
+                <PlusIcon className="size-4" />
                 Create First Suite
               </button>
             }
@@ -76,8 +77,8 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
                 onDelete={() => setModal({ type: "delete", item: suite })}
                 to={`/projects/${projectId}/suites/${suite.id}`}
                 label="test suite"
-                cardBg="card-bg-info"
-                accentText="text-info"
+                cardBg="card-bg-success"
+                accentText="text-success"
                 typeIcon={<RectangleGroupIcon className="size-3.5" />}
               >
                 <div className="flex flex-col gap-1.5">

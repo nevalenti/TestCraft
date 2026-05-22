@@ -4,7 +4,7 @@ namespace Application.Projects;
 
 public interface IProjectRepository
 {
-    Task<IEnumerable<ProjectDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<ProjectDto>> GetAllAsync(string? search = null, CancellationToken cancellationToken = default);
     Task<ProjectDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default);
     Task<ProjectDto> AddAsync(Project project, CancellationToken cancellationToken = default);

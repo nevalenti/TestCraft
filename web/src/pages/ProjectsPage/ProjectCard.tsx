@@ -1,4 +1,4 @@
-import { FolderIcon } from "@heroicons/react/24/outline";
+import { FolderIcon } from "@heroicons/react/24/solid";
 
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { formatDate } from "@/lib/format";

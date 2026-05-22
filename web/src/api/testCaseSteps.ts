@@ -1,6 +1,7 @@
 import { queryOptions } from "@tanstack/react-query";
 
 import type {
+  BulkReorderStepsDto,
   CreateTestCaseStepDto,
   TestCaseStepDto,
   UpdateTestCaseStepDto,
@@ -40,6 +41,12 @@ export const testCaseStepsApi = {
     client
       .put<TestCaseStepDto>(`${BASE(projectId, suiteId, caseId)}/${id}`, dto)
       .then((r) => r.data),
+  bulkReorder: (
+    projectId: string,
+    suiteId: string,
+    caseId: string,
+    dto: BulkReorderStepsDto,
+  ) => client.put(`${BASE(projectId, suiteId, caseId)}/reorder`, dto),
   delete: (projectId: string, suiteId: string, caseId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId, caseId)}/${id}`),
 };

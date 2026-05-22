@@ -8,7 +8,10 @@ import { queryKeys } from "./queryKeys";
 const BASE = "/api/v1/projects";
 
 export const projectsApi = {
-  getAll: () => client.get<ProjectDto[]>(BASE).then((r) => r.data),
+  getAll: (search?: string) =>
+    client
+      .get<ProjectDto[]>(BASE, { params: search ? { search } : undefined })
+      .then((r) => r.data),
   getById: (id: string) =>
     client.get<ProjectDto>(`${BASE}/${id}`).then((r) => r.data),
   create: (dto: CreateProjectDto) =>
@@ -19,10 +22,10 @@ export const projectsApi = {
 };
 
 export const projectQueries = {
-  all: () =>
+  all: (search?: string) =>
     queryOptions({
-      queryKey: queryKeys.projects.all,
-      queryFn: projectsApi.getAll,
+      queryKey: [...queryKeys.projects.all, search],
+      queryFn: () => projectsApi.getAll(search),
     }),
   detail: (id: string) =>
     queryOptions({

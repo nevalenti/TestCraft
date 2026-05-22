@@ -13,8 +13,8 @@ public class TestCasesController(ITestCasesService service) : ControllerBase
 {
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<TestCaseDto>>> GetCases(Guid projectId, Guid suiteId, CancellationToken cancellationToken)
-        => Ok(await service.GetAllAsync(projectId, suiteId, cancellationToken));
+    public async Task<ActionResult<IEnumerable<TestCaseDto>>> GetCases(Guid projectId, Guid suiteId, [FromQuery] string? search, CancellationToken cancellationToken)
+        => Ok(await service.GetAllAsync(projectId, suiteId, search, cancellationToken));
 
     [HttpGet("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -22,7 +22,6 @@ public class TestCasesController(ITestCasesService service) : ControllerBase
     public async Task<ActionResult<TestCaseDto>> GetCase(Guid projectId, Guid suiteId, Guid id, CancellationToken cancellationToken)
     {
         var testCase = await service.GetByIdAsync(projectId, suiteId, id, cancellationToken);
-
         return testCase is null ? NotFound() : Ok(testCase);
     }
 
@@ -33,10 +32,7 @@ public class TestCasesController(ITestCasesService service) : ControllerBase
     public async Task<ActionResult<TestCaseDto>> CreateCase(Guid projectId, Guid suiteId, CreateTestCaseDto request, CancellationToken cancellationToken)
     {
         var testCase = await service.CreateAsync(projectId, suiteId, request, cancellationToken);
-
-        if (testCase is null)
-            return NotFound();
-
+        if (testCase is null) return NotFound();
         return CreatedAtAction(nameof(GetCase), new { projectId, suiteId, id = testCase.Id }, testCase);
     }
 

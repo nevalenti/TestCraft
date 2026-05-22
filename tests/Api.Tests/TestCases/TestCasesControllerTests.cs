@@ -4,6 +4,8 @@ using Application.TestCases;
 
 using AwesomeAssertions;
 
+using Domain.Enums;
+
 using Microsoft.AspNetCore.Mvc;
 
 using Moq;
@@ -29,12 +31,12 @@ public class TestCasesControllerTests
         var suiteId = Guid.NewGuid();
         var cases = new List<TestCaseDto>
         {
-            new(Guid.NewGuid(), suiteId, "Case A", null, DateTime.UtcNow, null),
-            new(Guid.NewGuid(), suiteId, "Case B", "desc", DateTime.UtcNow, null)
+            new(Guid.NewGuid(), suiteId, "Case A", null, TestCasePriority.Medium, 0, DateTime.UtcNow, null),
+            new(Guid.NewGuid(), suiteId, "Case B", "desc", TestCasePriority.High, 2, DateTime.UtcNow, null)
         };
-        _service.Setup(s => s.GetAllAsync(projectId, suiteId, It.IsAny<CancellationToken>())).ReturnsAsync(cases);
+        _service.Setup(s => s.GetAllAsync(projectId, suiteId, It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync(cases);
 
-        var result = await _controller.GetCases(projectId, suiteId, CancellationToken.None);
+        var result = await _controller.GetCases(projectId, suiteId, null, CancellationToken.None);
 
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(cases);
@@ -45,9 +47,9 @@ public class TestCasesControllerTests
     {
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
-        _service.Setup(s => s.GetAllAsync(projectId, suiteId, It.IsAny<CancellationToken>())).ReturnsAsync([]);
+        _service.Setup(s => s.GetAllAsync(projectId, suiteId, It.IsAny<string?>(), It.IsAny<CancellationToken>())).ReturnsAsync([]);
 
-        var result = await _controller.GetCases(projectId, suiteId, CancellationToken.None);
+        var result = await _controller.GetCases(projectId, suiteId, null, CancellationToken.None);
 
         var ok = result.Result.Should().BeOfType<OkObjectResult>().Subject;
         ok.Value.Should().BeEquivalentTo(Array.Empty<TestCaseDto>());
@@ -59,7 +61,7 @@ public class TestCasesControllerTests
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
         var id = Guid.NewGuid();
-        var testCase = new TestCaseDto(id, suiteId, "Case A", null, DateTime.UtcNow, null);
+        var testCase = new TestCaseDto(id, suiteId, "Case A", null, TestCasePriority.Medium, 0, DateTime.UtcNow, null);
         _service.Setup(s => s.GetByIdAsync(projectId, suiteId, id, It.IsAny<CancellationToken>())).ReturnsAsync(testCase);
 
         var result = await _controller.GetCase(projectId, suiteId, id, CancellationToken.None);
@@ -87,7 +89,7 @@ public class TestCasesControllerTests
         var projectId = Guid.NewGuid();
         var suiteId = Guid.NewGuid();
         var request = new CreateTestCaseDto("Case A", null);
-        var created = new TestCaseDto(Guid.NewGuid(), suiteId, "Case A", null, DateTime.UtcNow, null);
+        var created = new TestCaseDto(Guid.NewGuid(), suiteId, "Case A", null, TestCasePriority.Medium, 0, DateTime.UtcNow, null);
         _service.Setup(s => s.CreateAsync(projectId, suiteId, request, It.IsAny<CancellationToken>())).ReturnsAsync(created);
 
         var result = await _controller.CreateCase(projectId, suiteId, request, CancellationToken.None);
@@ -123,7 +125,7 @@ public class TestCasesControllerTests
         _service.Setup(s => s.UpdateAsync(projectId, suiteId, id, It.IsAny<UpdateTestCaseDto>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(exists);
 
-        var result = await _controller.UpdateCase(projectId, suiteId, id, new UpdateTestCaseDto("Updated", null), CancellationToken.None);
+        var result = await _controller.UpdateCase(projectId, suiteId, id, new UpdateTestCaseDto("Updated", null, TestCasePriority.Medium), CancellationToken.None);
 
         result.Should().BeOfType(expected);
         _service.Verify(s => s.UpdateAsync(projectId, suiteId, id, It.IsAny<UpdateTestCaseDto>(), It.IsAny<CancellationToken>()), Times.Once);

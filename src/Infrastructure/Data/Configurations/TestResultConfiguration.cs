@@ -1,5 +1,4 @@
 using Domain.Entities;
-using Domain.Enums;
 
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -19,5 +18,7 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
         builder.HasQueryFilter(r => !r.IsDeleted);
         builder.HasIndex(r => r.TestRunId);
         builder.HasIndex(r => r.TestCaseId);
+        builder.HasIndex(r => r.Status);
+        builder.HasIndex(r => r.ExecutedAt);
     }
 }

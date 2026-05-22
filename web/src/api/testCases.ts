@@ -17,8 +17,12 @@ export const testCasesApi = {
     client
       .get<TestCaseDto[]>(`/api/v1/projects/${projectId}/cases`)
       .then((r) => r.data),
-  getAll: (projectId: string, suiteId: string) =>
-    client.get<TestCaseDto[]>(BASE(projectId, suiteId)).then((r) => r.data),
+  getAll: (projectId: string, suiteId: string, search?: string) =>
+    client
+      .get<TestCaseDto[]>(BASE(projectId, suiteId), {
+        params: search ? { search } : undefined,
+      })
+      .then((r) => r.data),
   getById: (projectId: string, suiteId: string, id: string) =>
     client
       .get<TestCaseDto>(`${BASE(projectId, suiteId)}/${id}`)
@@ -45,10 +49,10 @@ export const testCaseQueries = {
       queryFn: () => testCasesApi.getAllByProject(projectId),
       enabled: !!projectId,
     }),
-  all: (projectId: string, suiteId: string) =>
+  all: (projectId: string, suiteId: string, search?: string) =>
     queryOptions({
-      queryKey: queryKeys.testCases.all(projectId, suiteId),
-      queryFn: () => testCasesApi.getAll(projectId, suiteId),
+      queryKey: [...queryKeys.testCases.all(projectId, suiteId), search],
+      queryFn: () => testCasesApi.getAll(projectId, suiteId, search),
       enabled: !!projectId && !!suiteId,
     }),
   detail: (projectId: string, suiteId: string, id: string) =>

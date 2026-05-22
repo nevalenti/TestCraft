@@ -22,8 +22,16 @@ public class TestRunsController(ITestRunsService service) : ControllerBase
     public async Task<ActionResult<TestRunDto>> GetRun(Guid projectId, Guid id, CancellationToken cancellationToken)
     {
         var run = await service.GetByIdAsync(projectId, id, cancellationToken);
-
         return run is null ? NotFound() : Ok(run);
+    }
+
+    [HttpGet("{id:guid}/summary")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<TestRunSummaryDto>> GetRunSummary(Guid projectId, Guid id, CancellationToken cancellationToken)
+    {
+        var summary = await service.GetSummaryAsync(projectId, id, cancellationToken);
+        return summary is null ? NotFound() : Ok(summary);
     }
 
     [HttpPost]
@@ -33,10 +41,7 @@ public class TestRunsController(ITestRunsService service) : ControllerBase
     public async Task<ActionResult<TestRunDto>> CreateRun(Guid projectId, CreateTestRunDto request, CancellationToken cancellationToken)
     {
         var run = await service.CreateAsync(projectId, request, cancellationToken);
-
-        if (run is null)
-            return NotFound();
-
+        if (run is null) return NotFound();
         return CreatedAtAction(nameof(GetRun), new { projectId, id = run.Id }, run);
     }
 

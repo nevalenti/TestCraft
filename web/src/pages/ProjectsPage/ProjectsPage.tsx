@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { PlusIcon } from "@heroicons/react/24/solid";
+import { useMemo, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -22,10 +23,22 @@ import { ProjectCard } from "./ProjectCard";
 import { ProjectForm } from "./ProjectForm";
 
 export const ProjectsPage = () => {
+  const [search, setSearch] = useState("");
   const [modal, setModal] = useState<ModalState<ProjectDto>>({
     type: "closed",
   });
   const { data: projects, isPending, isError } = useProjects();
+  const filtered = useMemo(
+    () =>
+      !search
+        ? projects
+        : projects?.filter(
+            (p) =>
+              p.name.toLowerCase().includes(search.toLowerCase()) ||
+              p.description?.toLowerCase().includes(search.toLowerCase()),
+          ),
+    [projects, search],
+  );
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
@@ -63,7 +76,7 @@ export const ProjectsPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col">
+    <div className="w-full flex flex-col min-h-0">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight font-display">
@@ -74,33 +87,44 @@ export const ProjectsPage = () => {
           </p>
         </div>
         <button
-          className="btn btn-accent btn-sm shrink-0"
+          className="btn btn-primary btn-sm shrink-0"
           onClick={() => setModal({ type: "create" })}
         >
+          <PlusIcon className="size-4" />
           New Project
         </button>
       </header>
 
-      <section className="page-content flex-1">
+      <section className="page-content flex-1 overflow-y-auto min-h-0">
+        <div className="mb-4">
+          <input
+            type="search"
+            className="input input-bordered bg-base-200 w-full max-w-sm"
+            placeholder="Search projects…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
         <div className="min-h-80">
           {isPending ? (
             <SkeletonGrid />
-          ) : projects?.length === 0 ? (
+          ) : filtered?.length === 0 ? (
             <EmptyState
               title="No projects yet"
               description="Projects group your test suites and runs. Create a project → add test suites → write test cases → start a test run."
               action={
                 <button
-                  className="btn btn-accent btn-sm"
+                  className="btn btn-primary btn-sm"
                   onClick={() => setModal({ type: "create" })}
                 >
+                  <PlusIcon className="size-4" />
                   Create First Project
                 </button>
               }
             />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {projects?.map((project) => (
+              {filtered?.map((project) => (
                 <ProjectCard
                   key={project.id}
                   project={project}

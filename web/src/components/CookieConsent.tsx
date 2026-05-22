@@ -1,4 +1,4 @@
-import { ShieldCheckIcon } from "@heroicons/react/24/outline";
+import { ShieldCheckIcon } from "@heroicons/react/24/solid";
 
 import { useCookieConsent } from "@/hooks/useCookieConsent";
 
@@ -33,7 +33,7 @@ export const CookieConsent = () => {
             <button onClick={decline} className="btn btn-ghost btn-sm">
               Decline
             </button>
-            <button onClick={accept} className="btn btn-accent btn-sm">
+            <button onClick={accept} className="btn btn-primary btn-sm">
               Accept all
             </button>
           </div>

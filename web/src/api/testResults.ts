@@ -3,6 +3,8 @@ import { queryOptions } from "@tanstack/react-query";
 import type {
   CreateTestResultDto,
   TestResultDto,
+  TestResultStatus,
+  TestRunSummaryDto,
   UpdateTestResultDto,
 } from "@/types";
 
@@ -13,11 +15,21 @@ const BASE = (projectId: string, runId: string) =>
   `/api/v1/projects/${projectId}/runs/${runId}/results`;
 
 export const testResultsApi = {
-  getAll: (projectId: string, runId: string) =>
-    client.get<TestResultDto[]>(BASE(projectId, runId)).then((r) => r.data),
+  getAll: (projectId: string, runId: string, status?: TestResultStatus) =>
+    client
+      .get<TestResultDto[]>(BASE(projectId, runId), {
+        params: status !== undefined ? { status } : undefined,
+      })
+      .then((r) => r.data),
   getById: (projectId: string, runId: string, id: string) =>
     client
       .get<TestResultDto>(`${BASE(projectId, runId)}/${id}`)
+      .then((r) => r.data),
+  getSummary: (projectId: string, runId: string) =>
+    client
+      .get<TestRunSummaryDto>(
+        `/api/v1/projects/${projectId}/runs/${runId}/summary`,
+      )
       .then((r) => r.data),
   create: (projectId: string, runId: string, dto: CreateTestResultDto) =>
     client.post<TestResultDto>(BASE(projectId, runId), dto).then((r) => r.data),

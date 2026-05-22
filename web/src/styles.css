@@ -5,14 +5,14 @@
 
 @plugin "daisyui" {
   themes:
-    emerald --default,
-    dim --prefersdark;
+    light --default,
+    dark --prefersdark;
 }
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Raleway", ui-sans-serif, system-ui, sans-serif;
-  --color-border: oklch(0 0 0 / 0.13);
+  --color-border: oklch(0 0 0 / 0.18);
   --color-surface: oklch(1 0 0 / 0.6);
 }
 
@@ -61,7 +61,7 @@
     );
   }
 
-  [data-theme="dim"] .header-stripes {
+  [data-theme="dark"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -116,9 +116,9 @@
         0 8px 16px -4px oklch(0 0 0 / 0.1);
     }
 
-    [data-theme="dim"] .app-shadow {
+    [data-theme="dark"] .app-shadow {
       box-shadow:
-        0 0 0 1px oklch(from var(--color-accent) l c h / 0.2),
+        0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
         0 8px 24px -4px oklch(0 0 0 / 0.5);
     }
   }
@@ -151,7 +151,7 @@
     );
   }
 
-  [data-theme="dim"] {
+  [data-theme="dark"] {
     --color-border: oklch(1 0 0 / 0.1);
     --card-bg-alpha: 0.12;
     background-image: repeating-linear-gradient(
@@ -163,8 +163,8 @@
     );
   }
 
-  [data-theme="emerald"] {
-    --color-border: oklch(0 0 0 / 0.11);
+  [data-theme="light"] {
+    --color-border: oklch(0 0 0 / 0.18);
     --card-bg-alpha: 0.2;
   }
 

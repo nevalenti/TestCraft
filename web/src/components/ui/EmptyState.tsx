@@ -1,4 +1,4 @@
-import { InboxIcon } from "@heroicons/react/24/outline";
+import { InboxIcon } from "@heroicons/react/24/solid";
 
 interface EmptyStateProps {
   title: string;
