@@ -2,6 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { BrowserRouter } from "react-router";
 
+import { AuthProvider } from "@/auth/AuthProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import AppLayout from "@/layout/AppLayout";
 
@@ -16,14 +17,16 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <AppLayout />
-        </ThemeProvider>
-      </BrowserRouter>
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <AuthProvider>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <ThemeProvider>
+            <AppLayout />
+          </ThemeProvider>
+        </BrowserRouter>
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </AuthProvider>
   );
 };
 

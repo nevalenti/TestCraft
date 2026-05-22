@@ -9,6 +9,10 @@
     <PackageReference Include="DotNetEnv" />
   </ItemGroup>
 
+  <ItemGroup Label="Authentication">
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+  </ItemGroup>
+
   <ItemGroup Label="Entity Framework Core">
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
@@ -47,6 +51,10 @@
 
   <ItemGroup Label="HealthChecks">
     <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Configuration\Web\" />
   </ItemGroup>
 
 </Project>

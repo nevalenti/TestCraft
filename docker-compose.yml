@@ -55,6 +55,26 @@ services:
       - ./e2e/playwright-report:/e2e/playwright-report
       - ./e2e/test-results:/e2e/test-results
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: testcraft-keycloak
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+    ports:
+      - "8080:8080"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test:
+        ["CMD-SHELL", "curl -sf http://localhost:8080/health/ready || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
 volumes:
   postgres_data:
   seq_data:
+  keycloak_data:

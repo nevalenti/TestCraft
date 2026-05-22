@@ -1,5 +1,6 @@
 import axios from "axios";
 
+import keycloak from "@/auth/keycloak";
 import { useNotificationsStore } from "@/stores/notifications";
 
 const client = axios.create({
@@ -7,6 +8,18 @@ const client = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+});
+
+client.interceptors.request.use(async (config) => {
+  if (keycloak.authenticated) {
+    try {
+      await keycloak.updateToken(30);
+    } catch {
+      keycloak.login();
+    }
+    config.headers.Authorization = `Bearer ${keycloak.token}`;
+  }
+  return config;
 });
 
 client.interceptors.response.use(

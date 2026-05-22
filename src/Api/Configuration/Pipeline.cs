@@ -33,12 +33,14 @@ public static class Pipeline
 
         app.UseRouting();
         app.UseCorsPolicy();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         if (isDevelopment)
             app.UseApiDocumentation();
 
-        app.MapControllers();
-        app.MapHealthChecks("/health");
+        app.MapControllers().RequireAuthorization();
+        app.MapHealthChecks("/health").AllowAnonymous();
         app.MapPrometheusScrapingEndpoint();
 
         return app;

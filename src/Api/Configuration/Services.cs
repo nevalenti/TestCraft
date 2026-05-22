@@ -1,7 +1,9 @@
 using Api.Configuration.Infrastructure;
 using Api.Configuration.Web;
 using Api.Exceptions;
+using Api.Services;
 
+using Application.Common;
 using Application.Projects;
 using Application.TestCases;
 using Application.TestCaseSteps;
@@ -25,6 +27,7 @@ public static class Services
         {
             services.AddDatabase(configuration);
             services.AddTelemetry(configuration);
+            services.AddKeycloakAuthentication(configuration);
 
             services.AddProblemDetails();
             services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -48,6 +51,9 @@ public static class Services
 
         private IServiceCollection AddApplicationServices()
         {
+            services.AddHttpContextAccessor();
+            services.AddScoped<ICurrentUser, CurrentUser>();
+
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<ITestSuiteRepository, TestSuiteRepository>();
             services.AddScoped<ITestCaseRepository, TestCaseRepository>();
