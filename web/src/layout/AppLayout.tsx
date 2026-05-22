@@ -14,7 +14,7 @@ import { TestRunPage } from "@/pages/TestRunPage/TestRunPage";
 import { TestSuitePage } from "@/pages/TestSuitePage/TestSuitePage";
 
 const AppLayout = () => (
-  <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:border sm:border-border sm:rounded-box sm:h-[calc(100vh-2rem)] sm:my-4 app-shadow">
+  <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:border sm:border-border">
     <Header />
     <main className="flex flex-1 min-h-0">
       <ErrorBoundary>
