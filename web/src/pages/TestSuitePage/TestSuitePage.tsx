@@ -64,7 +64,7 @@ export const TestSuitePage = () => {
     deleteCase.mutate(id, { onSuccess: close });
 
   useBreadcrumbs([
-    { label: "home", href: "/" },
+    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: suite?.name ?? "…" },

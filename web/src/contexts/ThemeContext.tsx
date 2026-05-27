@@ -22,8 +22,8 @@ export const useTheme = (): ThemeContextValue => {
 };
 
 const THEME_KEY = "app-theme";
-const LIGHT = "light";
-const DARK = "dark";
+const LIGHT = "emerald";
+const DARK = "dracula";
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);

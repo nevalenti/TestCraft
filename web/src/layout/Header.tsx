@@ -4,17 +4,14 @@ import {
   HomeIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
+import { Link } from "@tanstack/react-router";
 import { useRef } from "react";
-import { Link } from "react-router";
 
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoMark } from "@/layout/LogoMark";
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
-  const breadcrumbs = useBreadcrumbsStore((s) => s.items);
-  const crumbs = breadcrumbs.filter((b) => b.label !== "home");
 
   const closeMobileNav = () => {
     if (drawerRef.current) drawerRef.current.checked = false;
@@ -36,45 +33,6 @@ export const Header = () => {
               TestCraft
             </span>
           </Link>
-
-          {crumbs.length > 0 && (
-            <ol
-              aria-label="Breadcrumb"
-              className="hidden sm:flex items-center min-w-0 ml-1"
-            >
-              {crumbs.map((item, index) => {
-                const isLast = index === crumbs.length - 1;
-                return (
-                  <li
-                    key={item.href ?? item.label}
-                    className="flex items-center gap-1 min-w-0"
-                  >
-                    <span
-                      className="text-base-content/35 text-[13px] select-none px-0.5"
-                      aria-hidden="true"
-                    >
-                      /
-                    </span>
-                    {item.href ? (
-                      <Link
-                        to={item.href}
-                        className="text-[13px] font-medium text-base-content/65 hover:text-base-content transition-colors whitespace-nowrap"
-                      >
-                        {item.label}
-                      </Link>
-                    ) : (
-                      <span
-                        aria-current={isLast ? "page" : undefined}
-                        className="text-[13px] font-semibold text-base-content truncate max-w-44"
-                      >
-                        {item.label}
-                      </span>
-                    )}
-                  </li>
-                );
-              })}
-            </ol>
-          )}
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">

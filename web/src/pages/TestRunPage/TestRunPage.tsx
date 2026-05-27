@@ -83,7 +83,7 @@ export const TestRunPage = () => {
   }, [results, statusFilter]);
 
   useBreadcrumbs([
-    { label: "home", href: "/" },
+    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: run?.name ?? "…" },

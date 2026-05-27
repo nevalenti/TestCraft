@@ -19,7 +19,7 @@ export const ProjectDetailPage = () => {
   const { data: project, isPending } = useProject(projectId);
 
   useBreadcrumbs([
-    { label: "home", href: "/" },
+    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…" },
   ]);

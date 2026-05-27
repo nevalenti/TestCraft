@@ -1,12 +1,11 @@
 @import url("https://rsms.me/inter/inter.css");
-@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@600;700;800&display=swap");
 
 @import "tailwindcss";
 
 @plugin "daisyui" {
   themes:
-    light --default,
-    dark --prefersdark;
+    emerald --default,
+    dracula --prefersdark;
 }
 
 @theme {
@@ -61,7 +60,7 @@
     );
   }
 
-  [data-theme="dark"] .header-stripes {
+  [data-theme="dracula"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -116,7 +115,7 @@
         0 8px 16px -4px oklch(0 0 0 / 0.1);
     }
 
-    [data-theme="dark"] .app-shadow {
+    [data-theme="dracula"] .app-shadow {
       box-shadow:
         0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
         0 8px 24px -4px oklch(0 0 0 / 0.5);
@@ -151,7 +150,7 @@
     );
   }
 
-  [data-theme="dark"] {
+  [data-theme="dracula"] {
     --color-border: oklch(1 0 0 / 0.1);
     --card-bg-alpha: 0.12;
     background-image: repeating-linear-gradient(
@@ -163,7 +162,7 @@
     );
   }
 
-  [data-theme="light"] {
+  [data-theme="emerald"] {
     --color-border: oklch(0 0 0 / 0.18);
     --card-bg-alpha: 0.2;
   }

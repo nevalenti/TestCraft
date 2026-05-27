@@ -1,5 +1,5 @@
 import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
-import { Link } from "react-router";
+import { Link } from "@tanstack/react-router";
 
 export const NotFound = () => {
   return (

@@ -17,13 +17,13 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@heroicons/react": "^2.2.0",
-    "keycloak-js": "^26.2.0",
     "@tanstack/react-query": "^5.100.10",
+    "@tanstack/react-router": "^1.170.8",
     "axios": "^1.16.1",
+    "keycloak-js": "^26.2.0",
     "nanoid": "^5.1.11",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
-    "react-router": "^7.15.1",
     "zustand": "^5.0.13"
   },
   "devDependencies": {

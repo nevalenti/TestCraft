@@ -6,8 +6,8 @@ import {
   QueueListIcon,
 } from "@heroicons/react/24/solid";
 import { useQueries } from "@tanstack/react-query";
+import { Link } from "@tanstack/react-router";
 import { useMemo } from "react";
-import { Link } from "react-router";
 
 import { testRunQueries } from "@/api/testRuns";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
@@ -37,7 +37,7 @@ export const DashboardPage = () => {
     }),
   });
 
-  useBreadcrumbs([{ label: "home", href: "/" }]);
+  useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
 
   const totalSuites = (projects ?? []).reduce(
     (sum, p) => sum + (p.suiteCount ?? 0),
@@ -111,8 +111,9 @@ export const DashboardPage = () => {
                   return (
                     <li key={run.id}>
                       <Link
-                        to={`/projects/${run.projectId}/runs/${run.id}`}
-                        className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-primary/10 transition-colors group"
+                        to="/projects/$projectId/runs/$runId"
+                        params={{ projectId: run.projectId, runId: run.id }}
+                        className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-neutral/10 transition-colors group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <BoltIcon className="size-4 text-warning shrink-0" />

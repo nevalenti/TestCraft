@@ -43,7 +43,7 @@ export const ProjectsPage = () => {
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
-  useBreadcrumbs([{ label: "home", href: "/" }, { label: "Projects" }]);
+  useBreadcrumbs([{ label: "Dashboard", href: "/" }, { label: "Projects" }]);
   const close = () => setModal({ type: "closed" });
 
   const handleCreate = (dto: CreateProjectDto) =>

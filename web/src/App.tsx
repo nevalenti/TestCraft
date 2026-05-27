@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { BrowserRouter } from "react-router";
+import { RouterProvider } from "@tanstack/react-router";
 
 import { AuthProvider } from "@/auth/AuthProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
-import AppLayout from "@/layout/AppLayout";
+import { router } from "@/router";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -15,19 +15,15 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
-  return (
-    <AuthProvider>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ThemeProvider>
-            <AppLayout />
-          </ThemeProvider>
-        </BrowserRouter>
-        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-      </QueryClientProvider>
-    </AuthProvider>
-  );
-};
+const App = () => (
+  <AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <RouterProvider router={router} />
+      </ThemeProvider>
+      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+    </QueryClientProvider>
+  </AuthProvider>
+);
 
 export default App;
