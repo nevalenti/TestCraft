@@ -1,16 +1,32 @@
+x-common: &common
+  restart: always
+  networks:
+    - backend
+
 services:
+  redis:
+    <<: *common
+    image: redis:${REDIS_VERSION:-7-alpine}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.25"
+
   postgres:
-    image: postgres:17-alpine
-    env_file: .env
+    <<: *common
+    image: postgres:${POSTGRES_VERSION:-16-alpine}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - backend
-    restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
       interval: 10s
@@ -22,32 +38,43 @@ services:
           memory: 512m
           cpus: "1"
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    environment:
-      COLLECTOR_OTLP_ENABLED: "true"
+  loki:
+    <<: *common
+    image: grafana/loki:${LOKI_VERSION:-3.4.3}
     volumes:
-      - jaeger_data:/badger
-    networks:
-      - backend
-    restart: always
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
     deploy:
       resources:
         limits:
-          memory: 256m
+          memory: 512m
+          cpus: "0.5"
+
+  tempo:
+    <<: *common
+    image: grafana/tempo:${TEMPO_VERSION:-2.7.1}
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./infra/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/var/tempo
+    deploy:
+      resources:
+        limits:
+          memory: 512m
           cpus: "0.5"
 
   prometheus:
-    image: prom/prometheus:latest
+    <<: *common
+    image: prom/prometheus:${PROMETHEUS_VERSION:-v3.4.0}
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=30d
-    networks:
-      - backend
-    restart: always
+    depends_on:
+      api:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -55,9 +82,10 @@ services:
           cpus: "0.5"
 
   grafana:
-    image: grafana/grafana:latest
+    <<: *common
+    image: grafana/grafana:${GRAFANA_VERSION:-11.6.0}
     ports:
-      - "3000:3000"
+      - "3001:3000"
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
@@ -66,22 +94,58 @@ services:
       - grafana_data:/var/lib/grafana
       - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
+      - loki
+      - tempo
       - prometheus
-      - jaeger
-    networks:
-      - backend
-    restart: always
     deploy:
       resources:
         limits:
           memory: 256m
           cpus: "0.5"
 
+  api:
+    <<: *common
+    image: testcraft-api:${IMAGE_TAG:-latest}
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://tempo:4318
+      LOKI_URL: http://loki:3100
+      REDIS_URL: redis://redis:6379
+      APPLY_MIGRATIONS: "true"
+      SEED_DATA: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      loki:
+        condition: service_started
+      tempo:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "1"
+
   web:
-    image: testcraft-web:latest
-    networks:
-      - backend
-    restart: always
+    <<: *common
+    image: testcraft-web:${IMAGE_TAG:-latest}
+    depends_on:
+      api:
+        condition: service_healthy
     deploy:
       resources:
         limits:
@@ -89,16 +153,15 @@ services:
           cpus: "0.5"
 
   gateway:
-    image: nginx:1.27-alpine
+    <<: *common
+    image: nginx:${NGINX_VERSION:-1.27-alpine}
     ports:
       - "80:80"
     volumes:
       - ./infra/nginx/production.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - web
-    networks:
-      - backend
-    restart: always
+      - api
     deploy:
       resources:
         limits:
@@ -107,7 +170,8 @@ services:
 
 volumes:
   postgres_data:
-  jaeger_data:
+  loki_data:
+  tempo_data:
   prometheus_data:
   grafana_data:
 

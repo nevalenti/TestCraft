@@ -1,0 +1,2 @@
+-P ubuntu-latest=node:24-alpine
+--secret-file .secrets
