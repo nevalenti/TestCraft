@@ -41,8 +41,8 @@ export const useCreateTestCaseStep = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dto: CreateTestCaseStepInput) =>
-      testCaseStepsApi.create(projectId, suiteId, caseId, dto),
+    mutationFn: (input: CreateTestCaseStepInput) =>
+      testCaseStepsApi.create(projectId, suiteId, caseId, input),
     onSuccess: () => {
       notify("Step added");
       queryClient.invalidateQueries({
@@ -59,8 +59,8 @@ export const useUpdateTestCaseStep = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...dto }: { id: string } & UpdateTestCaseStepInput) =>
-      testCaseStepsApi.update(projectId, suiteId, caseId, id, dto),
+    mutationFn: ({ id, ...input }: { id: string } & UpdateTestCaseStepInput) =>
+      testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
     onSuccess: (_, { id }) => {
       notify("Step updated");
       queryClient.invalidateQueries({
@@ -86,9 +86,9 @@ export const useBulkReorderSteps = (
   const queryClient = useQueryClient();
   const queryKey = queryKeys.testCaseSteps.all(projectId, suiteId, caseId);
   return useMutation({
-    mutationFn: (dto: BulkReorderStepsInput) =>
-      testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, dto),
-    onMutate: async (dto) => {
+    mutationFn: (input: BulkReorderStepsInput) =>
+      testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, input),
+    onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey });
       const previous =
         queryClient.getQueryData<Paginated<TestCaseStep>>(queryKey);
@@ -96,7 +96,7 @@ export const useBulkReorderSteps = (
         queryKey,
         produce((draft) => {
           if (!draft) return;
-          const orderMap = new Map(dto.steps.map((s) => [s.id, s.order]));
+          const orderMap = new Map(input.steps.map((s) => [s.id, s.order]));
           for (const item of draft.items) {
             const next = orderMap.get(item.id);
             if (next !== undefined) item.order = next;

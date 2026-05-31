@@ -53,10 +53,10 @@ export const TestSuitePage = () => {
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
 
-  const handleCreate = (dto: CreateTestCaseInput) =>
-    createCase.mutate(dto, { onSuccess: close });
-  const handleUpdate = (id: string) => (dto: UpdateTestCaseInput) =>
-    updateCase.mutate({ id, ...dto }, { onSuccess: close });
+  const handleCreate = (input: CreateTestCaseInput) =>
+    createCase.mutate(input, { onSuccess: close });
+  const handleUpdate = (id: string) => (input: UpdateTestCaseInput) =>
+    updateCase.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteCase.mutate(id, { onSuccess: close });
 

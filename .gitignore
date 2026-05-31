@@ -5,17 +5,26 @@ packages/*/dist/
 apps/api/src/generated/
 
 .turbo/
-
-.idea/
-.vscode/
+*.tsbuildinfo
+.vite/
 
 coverage/
 test-results/
 playwright-report/
+e2e-results/
 apps/web/e2e/.auth/
 
 .env
+.env.*
+!.env.example
 .secrets
+
+*.log
+.eslintcache
+.stylelintcache
+
+.idea/
+.vscode/
 
 **/.terraform/
 *.tfstate

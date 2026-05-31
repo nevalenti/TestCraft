@@ -21,10 +21,12 @@ export const testSuitesApi = {
       .then((r) => r.data),
   getById: (projectId: string, id: string) =>
     client.get<TestSuite>(`${BASE(projectId)}/${id}`).then((r) => r.data),
-  create: (projectId: string, dto: CreateTestSuiteInput) =>
-    client.post<TestSuite>(BASE(projectId), dto).then((r) => r.data),
-  update: (projectId: string, id: string, dto: UpdateTestSuiteInput) =>
-    client.put<TestSuite>(`${BASE(projectId)}/${id}`, dto).then((r) => r.data),
+  create: (projectId: string, input: CreateTestSuiteInput) =>
+    client.post<TestSuite>(BASE(projectId), input).then((r) => r.data),
+  update: (projectId: string, id: string, input: UpdateTestSuiteInput) =>
+    client
+      .put<TestSuite>(`${BASE(projectId)}/${id}`, input)
+      .then((r) => r.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
 };

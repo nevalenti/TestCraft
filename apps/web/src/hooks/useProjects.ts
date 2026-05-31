@@ -27,7 +27,7 @@ export const useProject = (id: string) => useQuery(projectQueries.detail(id));
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (dto: CreateProjectInput) => projectsApi.create(dto),
+    mutationFn: (input: CreateProjectInput) => projectsApi.create(input),
     onSuccess: () => {
       notify("Project created");
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
@@ -38,8 +38,8 @@ export const useCreateProject = () => {
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...dto }: { id: string } & UpdateProjectInput) =>
-      projectsApi.update(id, dto),
+    mutationFn: ({ id, ...input }: { id: string } & UpdateProjectInput) =>
+      projectsApi.update(id, input),
     onSuccess: (_, { id }) => {
       notify("Project updated");
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });

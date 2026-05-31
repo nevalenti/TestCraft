@@ -21,10 +21,10 @@ export const testRunsApi = {
       .then((r) => r.data),
   getById: (projectId: string, id: string) =>
     client.get<TestRun>(`${BASE(projectId)}/${id}`).then((r) => r.data),
-  create: (projectId: string, dto: CreateTestRunInput) =>
-    client.post<TestRun>(BASE(projectId), dto).then((r) => r.data),
-  update: (projectId: string, id: string, dto: UpdateTestRunInput) =>
-    client.put<TestRun>(`${BASE(projectId)}/${id}`, dto).then((r) => r.data),
+  create: (projectId: string, input: CreateTestRunInput) =>
+    client.post<TestRun>(BASE(projectId), input).then((r) => r.data),
+  update: (projectId: string, id: string, input: UpdateTestRunInput) =>
+    client.put<TestRun>(`${BASE(projectId)}/${id}`, input).then((r) => r.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
 };

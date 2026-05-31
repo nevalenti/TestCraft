@@ -33,10 +33,10 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
 
     useImperativeHandle(ref, () => ({ open: openCreate }));
 
-    const handleCreate = (dto: CreateTestRunInput) =>
-      createRun.mutate(dto, { onSuccess: close });
-    const handleUpdate = (id: string) => (dto: UpdateTestRunInput) =>
-      updateRun.mutate({ id, ...dto }, { onSuccess: close });
+    const handleCreate = (input: CreateTestRunInput) =>
+      createRun.mutate(input, { onSuccess: close });
+    const handleUpdate = (id: string) => (input: UpdateTestRunInput) =>
+      updateRun.mutate({ id, ...input }, { onSuccess: close });
     const handleDelete = (id: string) =>
       deleteRun.mutate(id, { onSuccess: close });
 

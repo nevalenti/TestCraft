@@ -38,10 +38,10 @@ export const ProjectsPage = () => {
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }, { label: "Projects" }]);
 
-  const handleCreate = (dto: CreateProjectInput) =>
-    createProject.mutate(dto, { onSuccess: close });
-  const handleUpdate = (id: string) => (dto: UpdateProjectInput) =>
-    updateProject.mutate({ id, ...dto }, { onSuccess: close });
+  const handleCreate = (input: CreateProjectInput) =>
+    createProject.mutate(input, { onSuccess: close });
+  const handleUpdate = (id: string) => (input: UpdateProjectInput) =>
+    updateProject.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteProject.mutate(id, { onSuccess: close });
 
