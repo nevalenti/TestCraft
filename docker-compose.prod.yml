@@ -22,22 +22,6 @@ services:
           memory: 512m
           cpus: "1"
 
-  seq:
-    image: datalust/seq
-    environment:
-      ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
-    volumes:
-      - seq_data:/data
-    networks:
-      - backend
-    restart: always
-    deploy:
-      resources:
-        limits:
-          memory: 512m
-          cpus: "0.5"
-
   jaeger:
     image: jaegertracing/all-in-one:latest
     environment:
@@ -61,9 +45,6 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=30d
-    depends_on:
-      api:
-        condition: service_healthy
     networks:
       - backend
     restart: always
@@ -96,46 +77,8 @@ services:
           memory: 256m
           cpus: "0.5"
 
-  api:
-    image: testcraft-api:latest
-    env_file: .env
-    environment:
-      ASPNETCORE_ENVIRONMENT: Production
-      ASPNETCORE_URLS: http://+:8080
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      OpenTelemetry__OtlpEndpoint: http://jaeger:4318
-      Seq__ServerUrl: http://seq:5341
-    depends_on:
-      postgres:
-        condition: service_healthy
-      seq:
-        condition: service_started
-      jaeger:
-        condition: service_started
-    networks:
-      - backend
-    restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      start_period: 15s
-      retries: 3
-    deploy:
-      resources:
-        limits:
-          memory: 512m
-          cpus: "1"
-
   web:
     image: testcraft-web:latest
-    depends_on:
-      api:
-        condition: service_healthy
     networks:
       - backend
     restart: always
@@ -153,7 +96,6 @@ services:
       - ./infra/nginx/production.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - web
-      - api
     networks:
       - backend
     restart: always
@@ -165,7 +107,6 @@ services:
 
 volumes:
   postgres_data:
-  seq_data:
   jaeger_data:
   prometheus_data:
   grafana_data:

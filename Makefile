@@ -4,18 +4,16 @@ API_IMAGE=testcraft-api
 WEB_IMAGE=testcraft-web
 
 dev:
-	docker compose up -d postgres seq
+	docker compose up -d postgres
 
 down:
 	docker compose down
 
 prod:
-	docker build -t $(API_IMAGE) -f src/Api/Dockerfile .
 	docker build -t $(WEB_IMAGE) -f web/Dockerfile .
 	docker compose -f docker-compose.prod.yml up -d
 
 build:
-	docker build -t $(API_IMAGE) -f src/Api/Dockerfile .
 	docker build -t $(WEB_IMAGE) -f web/Dockerfile .
 
 clean:
@@ -23,7 +21,6 @@ clean:
 	docker compose -f docker-compose.prod.yml down -v || true
 
 format:
-	dotnet format
 	pnpm dlx prettier . --write
 
 e2e:

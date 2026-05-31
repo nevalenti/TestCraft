@@ -17,18 +17,6 @@ services:
       timeout: 5s
       retries: 5
 
-  seq:
-    image: datalust/seq
-    container_name: testcraft-seq
-    environment:
-      ACCEPT_EULA: "Y"
-      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
-    ports:
-      - "5341:5341"
-      - "8090:80"
-    volumes:
-      - seq_data:/data
-
   jaeger:
     image: jaegertracing/all-in-one:latest
     container_name: testcraft-jaeger
@@ -76,5 +64,4 @@ services:
 
 volumes:
   postgres_data:
-  seq_data:
   keycloak_data:
