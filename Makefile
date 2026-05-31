@@ -10,11 +10,11 @@ down:
 	docker compose down
 
 prod:
-	docker build -t $(WEB_IMAGE) -f web/Dockerfile .
+	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
 	docker compose -f docker-compose.prod.yml up -d
 
 build:
-	docker build -t $(WEB_IMAGE) -f web/Dockerfile .
+	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
 
 clean:
 	docker compose down -v

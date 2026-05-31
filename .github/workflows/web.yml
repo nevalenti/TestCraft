@@ -4,12 +4,16 @@ on:
   push:
     branches: [main]
     paths:
-      - "web/**"
+      - "apps/web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
       - ".github/workflows/web.yml"
   pull_request:
     branches: [main]
     paths:
-      - "web/**"
+      - "apps/web/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
       - ".github/workflows/web.yml"
 
 concurrency:
@@ -27,9 +31,6 @@ jobs:
     name: build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    defaults:
-      run:
-        working-directory: web
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,7 +38,6 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10.0.0
           run_install: false
 
       - name: Setup Node
@@ -45,26 +45,75 @@ jobs:
         with:
           node-version-file: .node-version
           cache: pnpm
-          cache-dependency-path: web/pnpm-lock.yaml
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Lint
-        run: pnpm run lint
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high --filter testcraft-web
 
-      - name: Typecheck & build
-        run: pnpm run build
+      - name: Lint
+        run: pnpm --filter testcraft-web run lint
+
+      - name: Typecheck
+        run: pnpm --filter testcraft-web run typecheck
+
+      - name: Build
+        run: pnpm turbo build --filter testcraft-web
 
       - name: Test
-        run: pnpm run test
+        run: pnpm --filter testcraft-web run test
+
+      - name: Upload test report
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-test-results
+          path: apps/web/test-results
+          retention-days: 7
 
       - name: Upload build artifact
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: web-dist
-          path: web/dist
+          path: apps/web/dist
           retention-days: 7
+
+  pages:
+    name: publish report
+    needs: build-test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Download test report
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: web-test-results
+          path: test-results
+
+      - name: Upload Pages artifact
+        if: steps.download.outcome == 'success'
+        continue-on-error: true
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: test-results
+
+      - name: Deploy to GitHub Pages
+        if: steps.download.outcome == 'success'
+        continue-on-error: true
+        id: deploy
+        uses: actions/deploy-pages@v4
 
   docker:
     name: docker build & push
@@ -74,6 +123,7 @@ jobs:
     permissions:
       contents: read
       packages: write
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -100,11 +150,36 @@ jobs:
             type=sha,format=long
             type=raw,value=latest,enable={{is_default_branch}}
 
+      - name: Build image for scanning
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: apps/web/Dockerfile
+          load: true
+          tags: web-scan:${{ github.sha }}
+          cache-from: type=gha,scope=web
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: web-scan:${{ github.sha }}
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+
+      - name: Upload scan results to Security tab
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-results.sarif
+
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: web/Dockerfile
+          file: apps/web/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}

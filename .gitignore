@@ -1,7 +1,21 @@
+node_modules/
+
+dist/
+packages/*/dist/
+apps/api/src/generated/
+
+.turbo/
+
 .idea/
 .vscode/
 
+coverage/
+test-results/
+playwright-report/
+apps/web/e2e/.auth/
+
 .env
+.secrets
 
 **/.terraform/
 *.tfstate

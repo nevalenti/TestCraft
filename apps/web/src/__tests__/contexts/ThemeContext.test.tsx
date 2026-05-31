@@ -1,0 +1,95 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
+import { ThemeProvider, useTheme } from "@/contexts/ThemeContext";
+
+const clearThemeCookie = () => {
+  document.cookie = "app-theme=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+};
+
+const TestConsumer = () => {
+  const { isDark, toggleTheme } = useTheme();
+  return (
+    <>
+      <span data-testid="state">{isDark ? "dark" : "light"}</span>
+      <button onClick={toggleTheme}>toggle</button>
+    </>
+  );
+};
+
+beforeEach(clearThemeCookie);
+afterEach(clearThemeCookie);
+
+describe("ThemeProvider", () => {
+  describe("ThemeProvider — on initial render with no cookie — defaults to light theme", () => {
+    it("exposes isDark as false", () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>,
+      );
+      expect(screen.getByTestId("state")).toHaveTextContent("light");
+    });
+
+    it("sets data-theme to the light value on the document element", () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>,
+      );
+      expect(document.documentElement.getAttribute("data-theme")).toBe(
+        "emerald",
+      );
+    });
+  });
+
+  describe("ThemeProvider — when toggleTheme is called — switches to dark theme", () => {
+    it("updates isDark to true", async () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "toggle" }));
+      expect(screen.getByTestId("state")).toHaveTextContent("dark");
+    });
+
+    it("updates the data-theme attribute to the dark value", async () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "toggle" }));
+      expect(document.documentElement.getAttribute("data-theme")).toBe("dim");
+    });
+  });
+
+  describe("ThemeProvider — when toggled twice — returns to light theme", () => {
+    it("isDark is false again", async () => {
+      render(
+        <ThemeProvider>
+          <TestConsumer />
+        </ThemeProvider>,
+      );
+      await userEvent.click(screen.getByRole("button", { name: "toggle" }));
+      await userEvent.click(screen.getByRole("button", { name: "toggle" }));
+      expect(screen.getByTestId("state")).toHaveTextContent("light");
+    });
+  });
+});
+
+describe("useTheme", () => {
+  describe("useTheme — when used outside ThemeProvider — throws a descriptive error", () => {
+    it("throws with the expected message", () => {
+      const BareConsumer = () => {
+        useTheme();
+        return null;
+      };
+      expect(() => render(<BareConsumer />)).toThrow(
+        "useTheme must be used inside ThemeProvider",
+      );
+    });
+  });
+});

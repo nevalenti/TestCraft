@@ -1,0 +1,13 @@
+import { SkeletonCard } from "@/components/ui/SkeletonCard";
+
+export const SkeletonGrid = ({ count = 6 }: { count?: number }) => (
+  <div
+    className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+    aria-busy="true"
+    aria-label="Loading content"
+  >
+    {Array.from({ length: count }).map((_, i) => (
+      <SkeletonCard key={i} />
+    ))}
+  </div>
+);

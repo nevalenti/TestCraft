@@ -60,7 +60,6 @@ resource "keycloak_user" "dev" {
   }
 }
 
-# Adds "testcraft-web" as an audience claim so the API can validate tokens
 resource "keycloak_openid_audience_protocol_mapper" "web" {
   realm_id  = keycloak_realm.testcraft.id
   client_id = keycloak_openid_client.web.id

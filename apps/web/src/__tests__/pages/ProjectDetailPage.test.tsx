@@ -1,0 +1,116 @@
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+
+beforeAll(() => {
+  HTMLDialogElement.prototype.showModal = vi.fn(function (
+    this: HTMLDialogElement,
+  ) {
+    this.setAttribute("open", "");
+  });
+  HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+    this.removeAttribute("open");
+  });
+});
+
+vi.mock("@tanstack/react-router", () => ({
+  Link: ({ children, to }: { children?: React.ReactNode; to: string }) => (
+    <a href={to}>{children}</a>
+  ),
+}));
+
+vi.mock("@/hooks/useRequiredParam", () => ({
+  useRequiredParam: vi.fn().mockReturnValue("proj-1"),
+}));
+
+vi.mock("@/hooks/useProjects", () => ({
+  useProject: vi.fn(),
+}));
+
+vi.mock("@/hooks/useBreadcrumbs", () => ({ useBreadcrumbs: vi.fn() }));
+
+vi.mock("@/pages/ProjectDetailPage/SuitesTab", () => ({
+  SuitesSection: vi.fn(() => <div data-testid="suites-section" />),
+}));
+
+vi.mock("@/pages/ProjectDetailPage/RunsTab", () => ({
+  RunsSection: vi.fn(() => <div data-testid="runs-section" />),
+}));
+
+import { useProject } from "@/hooks/useProjects";
+import { ProjectDetailPage } from "@/pages/ProjectDetailPage/ProjectDetailPage";
+
+const makeProject = () => ({
+  id: "proj-1",
+  name: "Alpha",
+  description: "An alpha project",
+  suiteCount: 3,
+  runCount: 2,
+  createdAt: "2026-01-15",
+  updatedAt: "2026-01-15",
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
+});
+
+describe("ProjectDetailPage", () => {
+  describe("loading state — shows skeleton", () => {
+    it("renders skeleton elements when isPending", () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: undefined,
+        isPending: true,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      const { container } = render(<ProjectDetailPage />);
+      expect(container.querySelector(".skeleton")).toBeInTheDocument();
+    });
+  });
+
+  describe("not found state — shows error message", () => {
+    it("renders project not found", () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: undefined,
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      render(<ProjectDetailPage />);
+      expect(screen.getByText("Project not found")).toBeInTheDocument();
+    });
+  });
+
+  describe("with project data — renders the project", () => {
+    it("displays the project name as heading", () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      render(<ProjectDetailPage />);
+      expect(
+        screen.getByRole("heading", { name: "Alpha" }),
+      ).toBeInTheDocument();
+    });
+
+    it("renders the Test Suites tab by default", () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      render(<ProjectDetailPage />);
+      expect(screen.getByTestId("suites-section")).toBeInTheDocument();
+    });
+
+    it("switches to Test Runs tab when clicked", async () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      render(<ProjectDetailPage />);
+      await userEvent.click(screen.getByRole("button", { name: /test runs/i }));
+      expect(screen.getByTestId("runs-section")).toBeInTheDocument();
+    });
+  });
+});
