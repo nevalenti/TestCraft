@@ -21,10 +21,10 @@ export const projectsApi = {
       .then((r) => r.data),
   getById: (id: string) =>
     client.get<Project>(`${BASE}/${id}`).then((r) => r.data),
-  create: (dto: CreateProjectInput) =>
-    client.post<Project>(BASE, dto).then((r) => r.data),
-  update: (id: string, dto: UpdateProjectInput) =>
-    client.put<Project>(`${BASE}/${id}`, dto).then((r) => r.data),
+  create: (input: CreateProjectInput) =>
+    client.post<Project>(BASE, input).then((r) => r.data),
+  update: (id: string, input: UpdateProjectInput) =>
+    client.put<Project>(`${BASE}/${id}`, input).then((r) => r.data),
   delete: (id: string) => client.delete(`${BASE}/${id}`),
 };
 

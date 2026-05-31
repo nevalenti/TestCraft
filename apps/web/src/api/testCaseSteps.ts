@@ -29,27 +29,27 @@ export const testCaseStepsApi = {
     projectId: string,
     suiteId: string,
     caseId: string,
-    dto: CreateTestCaseStepInput,
+    input: CreateTestCaseStepInput,
   ) =>
     client
-      .post<TestCaseStep>(BASE(projectId, suiteId, caseId), dto)
+      .post<TestCaseStep>(BASE(projectId, suiteId, caseId), input)
       .then((r) => r.data),
   update: (
     projectId: string,
     suiteId: string,
     caseId: string,
     id: string,
-    dto: UpdateTestCaseStepInput,
+    input: UpdateTestCaseStepInput,
   ) =>
     client
-      .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, dto)
+      .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, input)
       .then((r) => r.data),
   bulkReorder: (
     projectId: string,
     suiteId: string,
     caseId: string,
-    dto: BulkReorderStepsInput,
-  ) => client.put(`${BASE(projectId, suiteId, caseId)}/reorder`, dto),
+    input: BulkReorderStepsInput,
+  ) => client.put(`${BASE(projectId, suiteId, caseId)}/reorder`, input),
   delete: (projectId: string, suiteId: string, caseId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId, caseId)}/${id}`),
 };

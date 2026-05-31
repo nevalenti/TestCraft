@@ -30,16 +30,16 @@ export const testCasesApi = {
     client
       .get<TestCase>(`${BASE(projectId, suiteId)}/${id}`)
       .then((r) => r.data),
-  create: (projectId: string, suiteId: string, dto: CreateTestCaseInput) =>
-    client.post<TestCase>(BASE(projectId, suiteId), dto).then((r) => r.data),
+  create: (projectId: string, suiteId: string, input: CreateTestCaseInput) =>
+    client.post<TestCase>(BASE(projectId, suiteId), input).then((r) => r.data),
   update: (
     projectId: string,
     suiteId: string,
     id: string,
-    dto: UpdateTestCaseInput,
+    input: UpdateTestCaseInput,
   ) =>
     client
-      .put<TestCase>(`${BASE(projectId, suiteId)}/${id}`, dto)
+      .put<TestCase>(`${BASE(projectId, suiteId)}/${id}`, input)
       .then((r) => r.data),
   delete: (projectId: string, suiteId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId)}/${id}`),

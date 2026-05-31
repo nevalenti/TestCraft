@@ -87,10 +87,10 @@ export const TestCasePage = () => {
     ? localSteps.find((s) => s.id === activeId)
     : null;
 
-  const handleCreate = (dto: CreateTestCaseStepInput) =>
-    createStep.mutate(dto, { onSuccess: close });
-  const handleUpdate = (id: string) => (dto: UpdateTestCaseStepInput) =>
-    updateStep.mutate({ id, ...dto }, { onSuccess: close });
+  const handleCreate = (input: CreateTestCaseStepInput) =>
+    createStep.mutate(input, { onSuccess: close });
+  const handleUpdate = (id: string) => (input: UpdateTestCaseStepInput) =>
+    updateStep.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteStep.mutate(id, { onSuccess: close });
 

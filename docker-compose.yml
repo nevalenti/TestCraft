@@ -1,8 +1,30 @@
 services:
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: testcraft-rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: testcraft-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   postgres:
-    image: postgres:17-alpine
+    image: postgres:16-alpine
     container_name: testcraft-postgres
-    env_file: .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -17,46 +39,82 @@ services:
       timeout: 5s
       retries: 5
 
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: testcraft-jaeger
-    ports:
-      - "16686:16686"
-      - "4318:4318"
-
-  web:
-    build:
-      context: .
-      dockerfile: apps/web/Dockerfile
-    profiles: [e2e]
-
-  e2e:
-    build:
-      context: e2e
-    profiles: [e2e]
-    depends_on:
-      web:
-        condition: service_healthy
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.17.1
+    container_name: testcraft-postgres-exporter
     environment:
-      BASE_URL: http://web:8080
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  loki:
+    image: grafana/loki:3.4.3
+    container_name: testcraft-loki
+    ports:
+      - "3100:3100"
     volumes:
-      - ./e2e/playwright-report:/e2e/playwright-report
-      - ./e2e/test-results:/e2e/test-results
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+
+  tempo:
+    image: grafana/tempo:2.7.1
+    container_name: testcraft-tempo
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./infra/tempo/tempo.yaml:/etc/tempo.yaml
+      - tempo_data:/var/tempo
+    ports:
+      - "4318:4318"
+      - "3200:3200"
+
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    container_name: testcraft-prometheus
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: testcraft-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - loki
+      - tempo
+      - prometheus
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
     container_name: testcraft-keycloak
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
+      KC_HEALTH_ENABLED: "true"
     ports:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
+      - ./infra/keycloak/testcraft-realm.json:/opt/keycloak/data/import/testcraft-realm.json:ro
     healthcheck:
       test:
-        ["CMD-SHELL", "curl -sf http://localhost:8080/health/ready || exit 1"]
+        [
+          "CMD-SHELL",
+          'exec 3<>/dev/tcp/localhost/9000 && echo -e "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3 && grep -q "UP" <&3',
+        ]
       interval: 15s
       timeout: 5s
       retries: 10
@@ -64,4 +122,8 @@ services:
 
 volumes:
   postgres_data:
+  loki_data:
+  tempo_data:
+  prometheus_data:
+  grafana_data:
   keycloak_data:

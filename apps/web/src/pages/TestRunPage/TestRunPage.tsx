@@ -48,10 +48,10 @@ export const TestRunPage = () => {
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
 
-  const handleCreate = (dto: CreateTestResultInput) =>
-    createResult.mutate(dto, { onSuccess: close });
-  const handleUpdate = (id: string) => (dto: UpdateTestResultInput) =>
-    updateResult.mutate({ id, ...dto }, { onSuccess: close });
+  const handleCreate = (input: CreateTestResultInput) =>
+    createResult.mutate(input, { onSuccess: close });
+  const handleUpdate = (id: string) => (input: UpdateTestResultInput) =>
+    updateResult.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteResult.mutate(id, { onSuccess: close });
 

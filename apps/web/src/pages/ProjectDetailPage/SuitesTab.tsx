@@ -36,10 +36,10 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
 
     useImperativeHandle(ref, () => ({ open: openCreate }));
 
-    const handleCreate = (dto: CreateTestSuiteInput) =>
-      createSuite.mutate(dto, { onSuccess: close });
-    const handleUpdate = (id: string) => (dto: UpdateTestSuiteInput) =>
-      updateSuite.mutate({ id, ...dto }, { onSuccess: close });
+    const handleCreate = (input: CreateTestSuiteInput) =>
+      createSuite.mutate(input, { onSuccess: close });
+    const handleUpdate = (id: string) => (input: UpdateTestSuiteInput) =>
+      updateSuite.mutate({ id, ...input }, { onSuccess: close });
     const handleDelete = (id: string) =>
       deleteSuite.mutate(id, { onSuccess: close });
 

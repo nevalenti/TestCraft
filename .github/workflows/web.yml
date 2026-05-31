@@ -23,6 +23,10 @@ concurrency:
 permissions:
   contents: read
 
+defaults:
+  run:
+    shell: sh
+
 env:
   IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-web
 
@@ -43,7 +47,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version-file: .node-version
+          node-version-file: .nvmrc
           cache: pnpm
 
       - name: Install dependencies

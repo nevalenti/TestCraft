@@ -63,7 +63,7 @@ export const DashboardPage = () => {
         </Link>
       </header>
 
-      <section className="page-content flex-1 flex flex-col gap-6 min-h-0">
+      <section className="page-content flex flex-col gap-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
           <StatCard
             label="Projects"
@@ -88,8 +88,8 @@ export const DashboardPage = () => {
           />
         </div>
 
-        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-base-content/50 mb-3 shrink-0">
+        <div className="flex flex-col">
+          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-base-content/50 mb-3">
             Active Runs
           </h2>
           {isLoadingRuns ? (
@@ -104,7 +104,7 @@ export const DashboardPage = () => {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-border bg-base-100 shadow-sm overflow-y-auto min-h-0 flex-1">
+            <div className="rounded-lg border border-border bg-base-100 shadow-sm">
               <ul className="divide-y divide-border">
                 {activeRuns.map((run) => {
                   const project = projectMap.get(run.projectId);

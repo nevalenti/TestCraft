@@ -28,16 +28,16 @@ export const testResultsApi = {
     client
       .get<TestResult>(`${BASE(projectId, runId)}/${id}`)
       .then((r) => r.data),
-  create: (projectId: string, runId: string, dto: CreateTestResultInput) =>
-    client.post<TestResult>(BASE(projectId, runId), dto).then((r) => r.data),
+  create: (projectId: string, runId: string, input: CreateTestResultInput) =>
+    client.post<TestResult>(BASE(projectId, runId), input).then((r) => r.data),
   update: (
     projectId: string,
     runId: string,
     id: string,
-    dto: UpdateTestResultInput,
+    input: UpdateTestResultInput,
   ) =>
     client
-      .put<TestResult>(`${BASE(projectId, runId)}/${id}`, dto)
+      .put<TestResult>(`${BASE(projectId, runId)}/${id}`, input)
       .then((r) => r.data),
   delete: (projectId: string, runId: string, id: string) =>
     client.delete(`${BASE(projectId, runId)}/${id}`),

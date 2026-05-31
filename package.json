@@ -5,13 +5,16 @@
   "scripts": {
     "dev": "turbo dev",
     "build": "turbo build",
+    "test": "turbo test",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
-    "test": "turbo test",
     "format": "prettier . --write"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint-plugin-simple-import-sort": "^13.0.0",
     "prettier": "^3.8.3",
-    "turbo": "^2.9.15"
+    "turbo": "^2.9.15",
+    "typescript-eslint": "^8.59.4"
   }
 }
