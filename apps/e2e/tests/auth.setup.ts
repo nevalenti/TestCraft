@@ -10,8 +10,8 @@ setup("authenticate via Keycloak", async ({ page }) => {
 
   await page.waitForURL(/\/realms\/testcraft\/protocol\/openid-connect\/auth/);
 
-  await page.locator("#username").fill(process.env.E2E_USERNAME ?? "dev");
-  await page.locator("#password").fill(process.env.E2E_PASSWORD ?? "dev");
+  await page.locator("#username").fill(process.env.E2E_USERNAME);
+  await page.locator("#password").fill(process.env.E2E_PASSWORD);
   await page.locator("#kc-login").click();
 
   await page.waitForURL(/localhost:3000/);

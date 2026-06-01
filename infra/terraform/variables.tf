@@ -16,12 +16,6 @@ variable "keycloak_admin_password" {
   sensitive   = true
 }
 
-variable "web_url" {
-  description = "Frontend origin URL (used for redirect URIs and CORS)"
-  type        = string
-  default     = "http://localhost:3000"
-}
-
 variable "dev_user_password" {
   description = "Password for the dev user created in the testcraft realm"
   type        = string

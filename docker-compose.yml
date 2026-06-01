@@ -99,7 +99,7 @@ services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
     container_name: testcraft-keycloak
-    command: start-dev --import-realm
+    command: start-dev
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin}
@@ -108,7 +108,6 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infra/keycloak/testcraft-realm.json:/opt/keycloak/data/import/testcraft-realm.json:ro
     healthcheck:
       test:
         [

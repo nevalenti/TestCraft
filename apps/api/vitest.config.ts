@@ -12,9 +12,7 @@ export default defineConfig({
     tags: [{ name: "unit" }, { name: "integration" }, { name: "e2e" }],
     env: {
       NODE_ENV: "test",
-      DATABASE_URL:
-        process.env.DATABASE_URL ??
-        "postgresql://test:test@localhost:5432/testcraft_test",
+      DATABASE_URL: process.env.DATABASE_URL,
     },
     coverage: {
       provider: "v8",

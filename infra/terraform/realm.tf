@@ -1,8 +1,9 @@
 resource "keycloak_realm" "testcraft" {
-  realm   = "testcraft"
-  enabled = true
-
+  realm        = "testcraft"
+  enabled      = true
   display_name = "TestCraft"
+
+  ssl_required = "none"
 
   access_token_lifespan    = "15m"
   sso_session_idle_timeout = "30m"
@@ -24,21 +25,18 @@ resource "keycloak_openid_client" "web" {
   pkce_code_challenge_method = "S256"
 
   valid_redirect_uris = [
-    "${var.web_url}/*",
     "http://localhost:3000/*",
     "http://localhost:5173/*",
     "http://localhost:5999/*",
   ]
 
   valid_post_logout_redirect_uris = [
-    var.web_url,
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5999",
   ]
 
   web_origins = [
-    var.web_url,
     "http://localhost:3000",
     "http://localhost:5173",
     "http://localhost:5999",
@@ -50,9 +48,10 @@ resource "keycloak_user" "dev" {
   username = "dev"
   enabled  = true
 
-  email      = "dev@testcraft.local"
-  first_name = "Dev"
-  last_name  = "User"
+  email          = "dev@testcraft.local"
+  email_verified = true
+  first_name     = "Dev"
+  last_name      = "User"
 
   initial_password {
     value     = var.dev_user_password

@@ -106,7 +106,7 @@ services:
   keycloak:
     <<: *common
     image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.2}
-    command: start-dev --import-realm
+    command: start-dev
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN:-admin}
       KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
@@ -115,7 +115,6 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infra/keycloak/testcraft-realm.json:/opt/keycloak/data/import/testcraft-realm.json:ro
     healthcheck:
       test:
         [
@@ -146,7 +145,7 @@ services:
       KEYCLOAK_AUTHORITY: http://keycloak:8080/realms/testcraft
       KEYCLOAK_AUDIENCE: testcraft-web
       KEYCLOAK_REQUIRE_HTTPS_METADATA: "false"
-      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://rpi5.local}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
       METRICS_TOKEN: ${METRICS_TOKEN:-}
     depends_on:
       postgres:
