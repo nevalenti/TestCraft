@@ -10,19 +10,13 @@ const env = createEnv({
       .default("development"),
     PORT: z.coerce.number().default(5000),
     DATABASE_URL: z.string().url(),
-    KEYCLOAK_AUTHORITY: z
-      .string()
-      .url()
-      .default("http://localhost:8080/realms/testcraft"),
+    KEYCLOAK_AUTHORITY: z.string().url(),
     KEYCLOAK_AUDIENCE: z.string().default("testcraft-web"),
     KEYCLOAK_REQUIRE_HTTPS_METADATA: z
       .string()
       .default("true")
       .transform((v) => v !== "false"),
-    CORS_ALLOWED_ORIGINS: z
-      .string()
-      .default("http://localhost:5173")
-      .transform((s) => s.split(",")),
+    CORS_ALLOWED_ORIGINS: z.string().transform((s) => s.split(",")),
     OTEL_SERVICE_NAME: z.string().default("testcraft-api"),
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
     LOKI_URL: z.string().url().optional(),
