@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: keycloak-data
+  namespace: testcraft
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak
+  namespace: testcraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak
+  template:
+    metadata:
+      labels:
+        app: keycloak
+    spec:
+      initContainers:
+        - name: copy-realm
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - mkdir -p /data/import && cp /realm-source/testcraft-realm.json /data/import/testcraft-realm.json
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: realm-source
+              mountPath: /realm-source
+      containers:
+        - name: keycloak
+          image: quay.io/keycloak/keycloak:26.2
+          args: ["start-dev", "--import-realm"]
+          env:
+            - name: KC_BOOTSTRAP_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: KEYCLOAK_ADMIN
+            - name: KC_BOOTSTRAP_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: KEYCLOAK_ADMIN_PASSWORD
+            - name: KC_HEALTH_ENABLED
+              value: "true"
+            - name: JAVA_OPTS_APPEND
+              value: "-Xms256m -Xmx768m"
+          ports:
+            - containerPort: 8080
+            - containerPort: 9000
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: 9000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            failureThreshold: 10
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: "250m"
+            limits:
+              memory: 1Gi
+              cpu: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /opt/keycloak/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: keycloak-data
+        - name: realm-source
+          configMap:
+            name: keycloak-realm
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  namespace: testcraft
+spec:
+  type: ClusterIP
+  selector:
+    app: keycloak
+  ports:
+    - port: 8080
+      targetPort: 8080

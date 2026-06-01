@@ -1,5 +1,6 @@
-import prisma from "@/infrastructure/database/prisma.client";
 import { logger } from "@/infrastructure/logging/logger";
+
+import prisma from "./prisma.client.js";
 
 export const seedDatabase = async () => {
   const existingProjects = await prisma.project.count({

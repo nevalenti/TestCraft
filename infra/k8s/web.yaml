@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web
+  namespace: testcraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-secret
+      containers:
+        - name: web
+          image: ghcr.io/nevalenti/testcraft-web:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: "50m"
+            limits:
+              memory: 128Mi
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web
+  namespace: testcraft
+spec:
+  selector:
+    app: web
+  ports:
+    - port: 8080
+      targetPort: 8080
