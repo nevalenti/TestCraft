@@ -6,12 +6,7 @@ import type {
 
 import { queryKeys } from "@/api/queryKeys";
 import { testSuiteQueries, testSuitesApi } from "@/api/testSuites";
-import { useNotificationsStore } from "@/stores/notifications";
-
-const notify = (message: string) =>
-  useNotificationsStore
-    .getState()
-    .add({ type: "success", message, timeout: 6000 });
+import { notify } from "@/lib/notify";
 
 export const useTestSuites = (projectId: string) =>
   useQuery({

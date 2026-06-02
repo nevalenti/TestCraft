@@ -44,10 +44,12 @@ export const testResultsApi = {
 };
 
 export const testResultQueries = {
-  all: (projectId: string, runId: string) =>
+  all: (projectId: string, runId: string, status?: TestResultStatus) =>
     queryOptions({
-      queryKey: queryKeys.testResults.all(projectId, runId),
-      queryFn: () => testResultsApi.getAll(projectId, runId),
+      queryKey: status
+        ? ([...queryKeys.testResults.all(projectId, runId), status] as const)
+        : queryKeys.testResults.all(projectId, runId),
+      queryFn: () => testResultsApi.getAll(projectId, runId, status),
       enabled: !!projectId && !!runId,
     }),
   detail: (projectId: string, runId: string, id: string) =>

@@ -4,6 +4,7 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 
+import { RootError } from "@/components/RootError";
 import AppLayout from "@/layout/AppLayout";
 import {
   LazyDashboardPage,
@@ -18,6 +19,7 @@ import { NotFound } from "@/pages/NotFound";
 const rootRoute = createRootRoute({
   component: AppLayout,
   notFoundComponent: NotFound,
+  errorComponent: RootError,
 });
 
 const indexRoute = createRoute({

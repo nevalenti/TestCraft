@@ -3,6 +3,7 @@ import type {
   CreateTestRunInput,
   Paginated,
   TestRun,
+  TestRunSummary,
   UpdateTestRunInput,
 } from "@testcraft/types";
 
@@ -27,6 +28,10 @@ export const testRunsApi = {
     client.put<TestRun>(`${BASE(projectId)}/${id}`, input).then((r) => r.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
+  getSummary: (projectId: string, id: string) =>
+    client
+      .get<TestRunSummary>(`${BASE(projectId)}/${id}/summary`)
+      .then((r) => r.data),
 };
 
 export const testRunQueries = {
@@ -40,6 +45,12 @@ export const testRunQueries = {
     queryOptions({
       queryKey: queryKeys.testRuns.detail(projectId, id),
       queryFn: () => testRunsApi.getById(projectId, id),
+      enabled: !!projectId && !!id,
+    }),
+  summary: (projectId: string, id: string) =>
+    queryOptions({
+      queryKey: queryKeys.testRuns.summary(projectId, id),
+      queryFn: () => testRunsApi.getSummary(projectId, id),
       enabled: !!projectId && !!id,
     }),
 };

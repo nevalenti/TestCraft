@@ -10,12 +10,7 @@ import { produce } from "immer";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testCaseStepQueries, testCaseStepsApi } from "@/api/testCaseSteps";
-import { useNotificationsStore } from "@/stores/notifications";
-
-const notify = (message: string) =>
-  useNotificationsStore
-    .getState()
-    .add({ type: "success", message, timeout: 6000 });
+import { notify } from "@/lib/notify";
 
 export const useTestCaseSteps = (
   projectId: string,

@@ -1,21 +1,21 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateTestResultInput,
+  TestResultStatus,
   UpdateTestResultInput,
 } from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testResultQueries, testResultsApi } from "@/api/testResults";
-import { useNotificationsStore } from "@/stores/notifications";
+import { notify } from "@/lib/notify";
 
-const notify = (message: string) =>
-  useNotificationsStore
-    .getState()
-    .add({ type: "success", message, timeout: 6000 });
-
-export const useTestResults = (projectId: string, runId: string) =>
+export const useTestResults = (
+  projectId: string,
+  runId: string,
+  status?: TestResultStatus,
+) =>
   useQuery({
-    ...testResultQueries.all(projectId, runId),
+    ...testResultQueries.all(projectId, runId, status),
     select: (data) => data.items,
   });
 
@@ -31,6 +31,9 @@ export const useCreateTestResult = (projectId: string, runId: string) => {
       notify("Result saved");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
       });
     },
   });
@@ -49,6 +52,9 @@ export const useUpdateTestResult = (projectId: string, runId: string) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.detail(projectId, runId, id),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
+      });
     },
   });
 };
@@ -64,6 +70,9 @@ export const useDeleteTestResult = (projectId: string, runId: string) => {
       });
       queryClient.removeQueries({
         queryKey: queryKeys.testResults.detail(projectId, runId, id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
       });
     },
   });

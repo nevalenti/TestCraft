@@ -3,12 +3,7 @@ import type { CreateTestRunInput, UpdateTestRunInput } from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testRunQueries, testRunsApi } from "@/api/testRuns";
-import { useNotificationsStore } from "@/stores/notifications";
-
-const notify = (message: string) =>
-  useNotificationsStore
-    .getState()
-    .add({ type: "success", message, timeout: 6000 });
+import { notify } from "@/lib/notify";
 
 export const useTestRuns = (projectId: string) =>
   useQuery({
@@ -18,6 +13,9 @@ export const useTestRuns = (projectId: string) =>
 
 export const useTestRun = (projectId: string, id: string) =>
   useQuery(testRunQueries.detail(projectId, id));
+
+export const useTestRunSummary = (projectId: string, id: string) =>
+  useQuery(testRunQueries.summary(projectId, id));
 
 export const useCreateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();

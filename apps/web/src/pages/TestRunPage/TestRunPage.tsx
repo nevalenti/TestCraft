@@ -22,11 +22,20 @@ import {
   useTestResults,
   useUpdateTestResult,
 } from "@/hooks/useTestResults";
-import { useTestRun } from "@/hooks/useTestRuns";
+import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
 import { statusOptions } from "@/lib/constants";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
 import { ResultRow } from "@/pages/TestRunPage/ResultRow";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
+
+type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
+
+const SUMMARY_KEY: Record<string, SummaryCountKey> = {
+  Passed: "passed",
+  Failed: "failed",
+  Blocked: "blocked",
+  Skipped: "skipped",
+};
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
@@ -39,6 +48,7 @@ export const TestRunPage = () => {
 
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
+  const { data: runSummary } = useTestRunSummary(projectId, runId);
   const {
     data: results,
     isPending,
@@ -54,25 +64,6 @@ export const TestRunPage = () => {
     updateResult.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteResult.mutate(id, { onSuccess: close });
-
-  const statusCounts = useMemo(() => {
-    if (!results) return undefined;
-    return results.reduce(
-      (acc, r) => {
-        acc[r.status] = (acc[r.status] ?? 0) + 1;
-        return acc;
-      },
-      {} as Record<TestResultStatus, number>,
-    );
-  }, [results]);
-
-  const summary = useMemo(() => {
-    if (!results || results.length === 0) return null;
-    const total = results.length;
-    const passed = statusCounts?.[TestResultStatus.Passed] ?? 0;
-    const passRate = Math.round((passed / total) * 100);
-    return { total, passed, passRate };
-  }, [results, statusCounts]);
 
   const filteredResults = useMemo(() => {
     if (!results || statusFilter === null) return results;
@@ -111,28 +102,28 @@ export const TestRunPage = () => {
       </header>
 
       <section className="page-content flex-1 overflow-y-auto min-h-0">
-        {summary && (
+        {runSummary && runSummary.total > 0 && (
           <p className="text-sm text-base-content/60 mb-4">
             <span className="font-semibold text-base-content">
-              {summary.total}
+              {runSummary.total}
             </span>{" "}
-            result{summary.total !== 1 ? "s" : ""} ·{" "}
+            result{runSummary.total !== 1 ? "s" : ""} ·{" "}
             <span
               className={`font-semibold ${
-                summary.passRate >= 80
+                runSummary.passRate >= 80
                   ? "text-success"
-                  : summary.passRate >= 50
+                  : runSummary.passRate >= 50
                     ? "text-warning"
                     : "text-error"
               }`}
             >
-              {summary.passRate}%
+              {runSummary.passRate}%
             </span>{" "}
             pass rate
           </p>
         )}
 
-        {statusCounts && results && results.length > 0 && (
+        {runSummary && runSummary.total > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
             {statusFilter !== null && (
               <button
@@ -142,8 +133,9 @@ export const TestRunPage = () => {
                 All results
               </button>
             )}
-            {statusOptions.map(({ value }) =>
-              statusCounts[value] ? (
+            {statusOptions.map(({ value }) => {
+              const count = runSummary[SUMMARY_KEY[value]];
+              return count > 0 ? (
                 <button
                   key={value}
                   onClick={() =>
@@ -157,11 +149,11 @@ export const TestRunPage = () => {
                 >
                   <StatusBadge status={value} />
                   <span className="font-bold text-base-content/75 tabular-nums text-sm">
-                    {statusCounts[value]}
+                    {count}
                   </span>
                 </button>
-              ) : null,
-            )}
+              ) : null;
+            })}
           </div>
         )}
 

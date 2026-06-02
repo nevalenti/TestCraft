@@ -1,6 +1,7 @@
 import { Request, RequestHandler } from "express";
 import { ZodSchema } from "zod";
 
+import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
 import { problem, problems } from "@/presentation/errors/problem";
 
 export const validateBody =
@@ -41,6 +42,6 @@ export const validateQuery =
   };
 
 export const extractPagination = (query: Request["query"]) => ({
-  page: Number(query.page),
-  pageSize: Number(query.pageSize),
+  page: Number(query.page) || DEFAULT_PAGE,
+  pageSize: Number(query.pageSize) || DEFAULT_PAGE_SIZE,
 });

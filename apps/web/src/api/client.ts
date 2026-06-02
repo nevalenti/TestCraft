@@ -25,15 +25,17 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message =
-      error.response?.data?.detail ??
-      error.response?.data?.title ??
-      error.message ??
-      "An unexpected error occurred.";
+    if (error.config?.method !== "get") {
+      const message =
+        error.response?.data?.detail ??
+        error.response?.data?.title ??
+        error.message ??
+        "An unexpected error occurred.";
 
-    useNotificationsStore
-      .getState()
-      .add({ type: "error", message, timeout: 10000 });
+      useNotificationsStore
+        .getState()
+        .add({ type: "error", message, timeout: 10000 });
+    }
 
     return Promise.reject(error);
   },

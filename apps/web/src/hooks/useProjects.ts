@@ -8,12 +8,7 @@ import type { CreateProjectInput, UpdateProjectInput } from "@testcraft/types";
 
 import { projectQueries, projectsApi } from "@/api/projects";
 import { queryKeys } from "@/api/queryKeys";
-import { useNotificationsStore } from "@/stores/notifications";
-
-const notify = (message: string) =>
-  useNotificationsStore
-    .getState()
-    .add({ type: "success", message, timeout: 6000 });
+import { notify } from "@/lib/notify";
 
 export const useProjects = (search?: string) =>
   useQuery({
