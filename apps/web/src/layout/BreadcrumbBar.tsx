@@ -21,7 +21,7 @@ export const BreadcrumbBar = () => {
                 >
                   {index > 0 && (
                     <span
-                      className="text-base-content/40 text-sm select-none"
+                      className="text-base-content/40 text-xs select-none"
                       aria-hidden="true"
                     >
                       /
@@ -31,7 +31,7 @@ export const BreadcrumbBar = () => {
                     <Link
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       to={item.href as any}
-                      className="flex items-center text-sm font-medium text-base-content/65 hover:text-base-content transition-colors"
+                      className="flex items-center text-xs font-medium text-base-content/65 hover:text-base-content transition-colors"
                     >
                       {item.label}
                     </Link>
@@ -39,7 +39,7 @@ export const BreadcrumbBar = () => {
                     <span
                       aria-current={isLast ? "page" : undefined}
                       title={item.label}
-                      className={`text-sm font-semibold truncate max-w-48 ${
+                      className={`text-xs font-semibold truncate max-w-48 ${
                         isLast ? "text-base-content" : "text-base-content/80"
                       }`}
                     >

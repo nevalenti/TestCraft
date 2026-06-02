@@ -77,7 +77,7 @@ test.describe("Test Runs tab", () => {
   });
 
   test("creates and deletes a run", async ({ page }) => {
-    const name = `Run ${Date.now()}`;
+    const name = `E2E Run ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Run" }).click();
     await page.getByLabel("Name").fill(name);
@@ -102,7 +102,7 @@ test.describe("Test Runs tab", () => {
   });
 
   test("edits a run", async ({ page }) => {
-    const name = `Run Edit ${Date.now()}`;
+    const name = `E2E Run Edit ${Date.now()}`;
     const updated = `${name} Updated`;
 
     await page.getByRole("button", { name: "New Run" }).click();
@@ -150,7 +150,7 @@ test.describe("Test Runs tab", () => {
   });
 
   test("navigates into a run on card click", async ({ page }) => {
-    const name = `Run Nav ${Date.now()}`;
+    const name = `E2E Run Nav ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Run" }).click();
     await page.getByLabel("Name").fill(name);

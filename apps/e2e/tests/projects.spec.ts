@@ -49,7 +49,7 @@ test.describe("Projects page", () => {
   });
 
   test("filters projects by search", async ({ page }) => {
-    const name = `SearchTarget ${Date.now()}`;
+    const name = `E2E SearchTarget ${Date.now()}`;
 
     await page.getByRole("button", { name: /new project/i }).click();
     await page.getByLabel("Name").fill(name);

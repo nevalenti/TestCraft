@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
+try {
+  process.loadEnvFile(new URL(".env", import.meta.url));
+} catch {}
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
@@ -37,7 +41,7 @@ export default defineConfig({
     },
     {
       command: "pnpm --filter testcraft-api dev",
-      url: "http://localhost:5000/health",
+      url: "http://localhost:5000/ready",
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

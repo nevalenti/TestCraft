@@ -15,6 +15,7 @@ on:
       - "packages/**"
       - "pnpm-lock.yaml"
       - ".github/workflows/api.yml"
+  workflow_dispatch:
 
 concurrency:
   group: api-${{ github.ref }}
@@ -35,7 +36,6 @@ jobs:
     name: build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    container: node:24-alpine
     services:
       postgres:
         image: postgres:17-alpine
@@ -48,13 +48,11 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-      - name: Install GNU tar (Alpine compat)
-        shell: sh
-        run: apk add --no-cache tar
 
       - name: Lint Dockerfile
         shell: sh
@@ -96,12 +94,12 @@ jobs:
       - name: Migrate test database
         run: pnpm --filter testcraft-api run db:migrate
         env:
-          DATABASE_URL: postgresql://test:test@postgres:5432/testcraft_test
+          DATABASE_URL: postgresql://test:test@localhost:5432/testcraft_test
 
       - name: Test
         run: pnpm --filter testcraft-api run test
         env:
-          DATABASE_URL: postgresql://test:test@postgres:5432/testcraft_test
+          DATABASE_URL: postgresql://test:test@localhost:5432/testcraft_test
 
   docker:
     name: docker build & push
@@ -168,7 +166,7 @@ jobs:
         with:
           context: .
           file: apps/api/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

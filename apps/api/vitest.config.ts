@@ -13,6 +13,8 @@ export default defineConfig({
     env: {
       NODE_ENV: "test",
       DATABASE_URL: process.env.DATABASE_URL,
+      KEYCLOAK_AUTHORITY: "http://localhost:8080/realms/testcraft",
+      CORS_ALLOWED_ORIGINS: "http://localhost:5173",
     },
     coverage: {
       provider: "v8",

@@ -83,7 +83,7 @@ test.describe("Test Cases", () => {
   });
 
   test("creates and deletes a test case", async ({ page }) => {
-    const name = `Case ${Date.now()}`;
+    const name = `E2E Case ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Test Case" }).click();
     await page.getByLabel("Name").fill(name);
@@ -106,7 +106,7 @@ test.describe("Test Cases", () => {
   });
 
   test("creates a test case with High priority", async ({ page }) => {
-    const name = `Case Priority ${Date.now()}`;
+    const name = `E2E Case Priority ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Test Case" }).click();
     await page.getByLabel("Name").fill(name);
@@ -128,7 +128,7 @@ test.describe("Test Cases", () => {
   });
 
   test("edits a test case name", async ({ page }) => {
-    const name = `Case Edit ${Date.now()}`;
+    const name = `E2E Case Edit ${Date.now()}`;
     const updated = `${name} Updated`;
 
     await page.getByRole("button", { name: "New Test Case" }).click();
@@ -172,7 +172,7 @@ test.describe("Test Cases", () => {
   });
 
   test("filters test cases by search", async ({ page }) => {
-    const name = `Case Search ${Date.now()}`;
+    const name = `E2E Case Search ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Test Case" }).click();
     await page.getByLabel("Name").fill(name);
@@ -204,7 +204,7 @@ test.describe("Test Cases", () => {
   });
 
   test("navigates to a test case on card click", async ({ page }) => {
-    const name = `Case Nav ${Date.now()}`;
+    const name = `E2E Case Nav ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Test Case" }).click();
     await page.getByLabel("Name").fill(name);

@@ -8,6 +8,10 @@ import { registry } from "@/infrastructure/metrics/metrics";
 
 const router: Router = Router();
 
+router.get("/ready", (_req, res) => {
+  res.json({ status: "ok" });
+});
+
 router.get("/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;

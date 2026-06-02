@@ -82,7 +82,7 @@ test.describe("Test Suites tab", () => {
   });
 
   test("creates and deletes a suite", async ({ page }) => {
-    const name = `Suite ${Date.now()}`;
+    const name = `E2E Suite ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Suite" }).click();
     await page.getByLabel("Name").fill(name);
@@ -105,7 +105,7 @@ test.describe("Test Suites tab", () => {
   });
 
   test("edits a suite name", async ({ page }) => {
-    const name = `Suite Edit ${Date.now()}`;
+    const name = `E2E Suite Edit ${Date.now()}`;
     const updated = `${name} Updated`;
 
     await page.getByRole("button", { name: "New Suite" }).click();
@@ -151,7 +151,7 @@ test.describe("Test Suites tab", () => {
   });
 
   test("navigates to a suite on card click", async ({ page }) => {
-    const name = `Suite Nav ${Date.now()}`;
+    const name = `E2E Suite Nav ${Date.now()}`;
 
     await page.getByRole("button", { name: "New Suite" }).click();
     await page.getByLabel("Name").fill(name);
