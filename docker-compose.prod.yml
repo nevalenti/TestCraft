@@ -1,11 +1,8 @@
-x-common: &common
-  restart: always
-  networks:
-    - backend
-
 services:
   redis:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: redis:${REDIS_VERSION:-7-alpine}
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -19,7 +16,9 @@ services:
           cpus: "0.25"
 
   postgres:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: postgres:${POSTGRES_VERSION:-16-alpine}
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -39,7 +38,9 @@ services:
           cpus: "1"
 
   loki:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: grafana/loki:${LOKI_VERSION:-3.4.3}
     volumes:
       - loki_data:/loki
@@ -51,7 +52,9 @@ services:
           cpus: "0.5"
 
   tempo:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: grafana/tempo:${TEMPO_VERSION:-2.7.1}
     command: ["-config.file=/etc/tempo.yaml"]
     volumes:
@@ -64,7 +67,9 @@ services:
           cpus: "0.5"
 
   prometheus:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: prom/prometheus:${PROMETHEUS_VERSION:-v3.4.0}
     volumes:
       - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -82,7 +87,9 @@ services:
           cpus: "0.5"
 
   grafana:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: grafana/grafana:${GRAFANA_VERSION:-11.6.0}
     ports:
       - "3001:3000"
@@ -104,7 +111,9 @@ services:
           cpus: "0.5"
 
   keycloak:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: quay.io/keycloak/keycloak:${KEYCLOAK_VERSION:-26.2}
     command: start-dev
     environment:
@@ -132,7 +141,9 @@ services:
           cpus: "1"
 
   api:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: testcraft-api:${IMAGE_TAG:-latest}
     environment:
       NODE_ENV: production
@@ -171,7 +182,9 @@ services:
           cpus: "1"
 
   web:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: testcraft-web:${IMAGE_TAG:-latest}
     depends_on:
       api:
@@ -183,7 +196,9 @@ services:
           cpus: "0.5"
 
   gateway:
-    <<: *common
+    restart: always
+    networks:
+      - backend
     image: nginx:${NGINX_VERSION:-1.27-alpine}
     ports:
       - "80:80"
