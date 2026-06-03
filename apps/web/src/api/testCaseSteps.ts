@@ -20,11 +20,11 @@ export const testCaseStepsApi = {
       .get<Paginated<TestCaseStep>>(BASE(projectId, suiteId, caseId), {
         params: { pageSize: PAGE_SIZE },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (projectId: string, suiteId: string, caseId: string, id: string) =>
     client
       .get<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`)
-      .then((r) => r.data),
+      .then((response) => response.data),
   create: (
     projectId: string,
     suiteId: string,
@@ -33,7 +33,7 @@ export const testCaseStepsApi = {
   ) =>
     client
       .post<TestCaseStep>(BASE(projectId, suiteId, caseId), input)
-      .then((r) => r.data),
+      .then((response) => response.data),
   update: (
     projectId: string,
     suiteId: string,
@@ -43,7 +43,7 @@ export const testCaseStepsApi = {
   ) =>
     client
       .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, input)
-      .then((r) => r.data),
+      .then((response) => response.data),
   bulkReorder: (
     projectId: string,
     suiteId: string,

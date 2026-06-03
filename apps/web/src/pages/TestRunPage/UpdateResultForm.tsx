@@ -54,9 +54,9 @@ export const UpdateResultForm = ({
           autoFocus
           {...register("status")}
         >
-          {statusOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

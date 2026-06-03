@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 export const BreadcrumbBar = () => {
-  const breadcrumbs = useBreadcrumbsStore((s) => s.items);
+  const breadcrumbs = useBreadcrumbsStore((store) => store.items);
 
   return (
     <div className="bg-base-100 border-b border-border px-4 sm:px-6 lg:px-8 h-9 flex items-center shrink-0">
@@ -31,7 +31,8 @@ export const BreadcrumbBar = () => {
                     <Link
                       // eslint-disable-next-line @typescript-eslint/no-explicit-any
                       to={item.href as any}
-                      className="flex items-center text-xs font-medium text-base-content/65 hover:text-base-content transition-colors"
+                      title={item.label}
+                      className="flex items-center text-xs font-medium text-base-content/65 hover:text-base-content transition-colors truncate max-w-48"
                     >
                       {item.label}
                     </Link>
@@ -39,7 +40,7 @@ export const BreadcrumbBar = () => {
                     <span
                       aria-current={isLast ? "page" : undefined}
                       title={item.label}
-                      className={`text-xs font-semibold truncate max-w-48 ${
+                      className={`text-xs font-semibold truncate max-w-64 ${
                         isLast ? "text-base-content" : "text-base-content/80"
                       }`}
                     >

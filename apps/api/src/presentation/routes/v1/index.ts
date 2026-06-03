@@ -3,6 +3,7 @@ import { Router } from "express";
 import { projectService } from "@/container";
 import { authenticate } from "@/presentation/middleware/auth.middleware";
 import { requireProjectOwner } from "@/presentation/middleware/require-project-owner.middleware";
+import importRouter from "@/presentation/routes/import.routes";
 import projectRoutes from "@/presentation/routes/project.routes";
 import testCaseRouter, {
   projectCasesRouter,
@@ -17,6 +18,8 @@ const router: Router = Router();
 const projectRouter: Router = Router({ mergeParams: true });
 
 projectRouter.use(authenticate, requireProjectOwner(projectService));
+
+projectRouter.use("/import", importRouter);
 
 projectRouter.use("/cases", projectCasesRouter);
 

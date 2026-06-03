@@ -1,9 +1,8 @@
-import { Paginated, PaginationParams } from "@testcraft/types";
+import { Paginated, PaginationParams, TestRunSummary } from "@testcraft/types";
 
-import { ITestRunRepository } from "@/application/test-runs/test-run.repository";
 import {
   CreateTestRun,
-  TestRunSummary,
+  ITestRunRepository,
   UpdateTestRun,
 } from "@/application/test-runs/test-run.repository";
 import { DomainError } from "@/domain/errors";

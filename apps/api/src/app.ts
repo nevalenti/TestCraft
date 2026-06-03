@@ -17,6 +17,7 @@ app.use(requestId);
 app.use(helmet);
 app.use(httpLogger);
 app.use(httpMetrics);
+app.use("/api/v1/projects/:projectId/import", json({ limit: "5mb" }));
 app.use(json({ limit: "100kb" }));
 app.use(cors);
 

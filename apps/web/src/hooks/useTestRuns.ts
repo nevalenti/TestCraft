@@ -1,6 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateTestRunInput, UpdateTestRunInput } from "@testcraft/types";
+import type {
+  AllureResultItem,
+  CreateTestRunInput,
+  TestRun,
+  UpdateTestRunInput,
+} from "@testcraft/types";
 
+import { importsApi } from "@/api/imports";
 import { queryKeys } from "@/api/queryKeys";
 import { testRunQueries, testRunsApi } from "@/api/testRuns";
 import { notify } from "@/lib/notify";
@@ -50,6 +56,44 @@ export const useUpdateTestRun = (projectId: string) => {
     },
   });
 };
+
+const useImportMutation = <T>(
+  projectId: string,
+  mutationFn: (input: T) => Promise<TestRun>,
+) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn,
+    onSuccess: () => {
+      notify("Test run imported");
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+      });
+    },
+    onError: () =>
+      notify("Import failed — check the file and try again", "error"),
+  });
+};
+
+export const useImportAllure = (projectId: string) =>
+  useImportMutation(
+    projectId,
+    (input: {
+      results: AllureResultItem[];
+      environment: string;
+      name?: string;
+    }) => importsApi.allure(projectId, input),
+  );
+
+export const useImportJunitXml = (projectId: string) =>
+  useImportMutation(
+    projectId,
+    (input: { xml: string; environment: string; name?: string }) =>
+      importsApi.junit(projectId, input),
+  );
 
 export const useDeleteTestRun = (projectId: string) => {
   const queryClient = useQueryClient();

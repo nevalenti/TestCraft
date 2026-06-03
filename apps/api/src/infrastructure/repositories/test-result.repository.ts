@@ -15,7 +15,7 @@ const resultInclude = {
   testCase: { select: { name: true, suiteId: true } },
 } as const;
 
-const toDto = (r: {
+const toDto = (result: {
   id: string;
   testRunId: string;
   testCaseId: string;
@@ -27,17 +27,17 @@ const toDto = (r: {
   updatedAt: Date;
   testCase: { name: string; suiteId: string };
 }): TestResult => ({
-  id: r.id,
-  testRunId: r.testRunId,
-  testCaseId: r.testCaseId,
-  suiteId: r.testCase.suiteId,
-  testCaseName: r.testCase.name,
-  status: r.status as TestResultStatus,
-  notes: r.notes,
-  executedAt: r.executedAt,
-  executedById: r.executedById,
-  createdAt: r.createdAt,
-  updatedAt: r.updatedAt,
+  id: result.id,
+  testRunId: result.testRunId,
+  testCaseId: result.testCaseId,
+  suiteId: result.testCase.suiteId,
+  testCaseName: result.testCase.name,
+  status: result.status as TestResultStatus,
+  notes: result.notes,
+  executedAt: result.executedAt,
+  executedById: result.executedById,
+  createdAt: result.createdAt,
+  updatedAt: result.updatedAt,
 });
 
 export class TestResultRepository implements ITestResultRepository {
@@ -121,9 +121,9 @@ export class TestResultRepository implements ITestResultRepository {
         include: resultInclude,
       });
       return toDto(result);
-    } catch (e) {
-      if (isNotFound(e)) return null;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
     }
   }
 
@@ -139,9 +139,9 @@ export class TestResultRepository implements ITestResultRepository {
         data: { isDeleted: true, deletedAt: new Date() },
       });
       return true;
-    } catch (e) {
-      if (isNotFound(e)) return false;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return false;
+      throw err;
     }
   }
 }

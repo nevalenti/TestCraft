@@ -81,9 +81,9 @@ export const RunForm = ({
           className="select select-bordered w-full"
           {...register("status")}
         >
-          {runStatusOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
+          {runStatusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

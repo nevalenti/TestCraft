@@ -18,13 +18,15 @@ export const projectsApi = {
       .get<Paginated<Project>>(BASE, {
         params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (id: string) =>
-    client.get<Project>(`${BASE}/${id}`).then((r) => r.data),
+    client.get<Project>(`${BASE}/${id}`).then((response) => response.data),
   create: (input: CreateProjectInput) =>
-    client.post<Project>(BASE, input).then((r) => r.data),
+    client.post<Project>(BASE, input).then((response) => response.data),
   update: (id: string, input: UpdateProjectInput) =>
-    client.put<Project>(`${BASE}/${id}`, input).then((r) => r.data),
+    client
+      .put<Project>(`${BASE}/${id}`, input)
+      .then((response) => response.data),
   delete: (id: string) => client.delete(`${BASE}/${id}`),
 };
 

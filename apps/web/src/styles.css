@@ -4,7 +4,7 @@
 @plugin "daisyui" {
   themes:
     emerald --default,
-    dim --prefersdark;
+    forest --prefersdark;
 }
 
 @theme {
@@ -59,7 +59,7 @@
     );
   }
 
-  [data-theme="dim"] .header-stripes {
+  [data-theme="forest"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -88,6 +88,7 @@
   }
 
   .page-content {
+    background-color: var(--color-base-200);
     padding-inline: 1rem;
     padding-top: 1.25rem;
     padding-bottom: 2rem;
@@ -114,7 +115,7 @@
         0 8px 16px -4px oklch(0 0 0 / 0.1);
     }
 
-    [data-theme="dim"] .app-shadow {
+    [data-theme="forest"] .app-shadow {
       box-shadow:
         0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
         0 8px 24px -4px oklch(0 0 0 / 0.5);
@@ -149,7 +150,7 @@
     );
   }
 
-  [data-theme="dim"] {
+  [data-theme="forest"] {
     --color-border: oklch(1 0 0 / 0.1);
     --card-bg-alpha: 0.12;
     background-image: repeating-linear-gradient(

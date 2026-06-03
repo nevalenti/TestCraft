@@ -44,8 +44,8 @@ export const TestSuitePage = () => {
     () =>
       !search
         ? testCases
-        : testCases?.filter((tc) =>
-            tc.name.toLowerCase().includes(search.toLowerCase()),
+        : testCases?.filter((testCase) =>
+            testCase.name.toLowerCase().includes(search.toLowerCase()),
           ),
     [testCases, search],
   );
@@ -98,7 +98,7 @@ export const TestSuitePage = () => {
             className="input input-bordered bg-base-200 w-full max-w-sm"
             placeholder="Search test cases…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
         <div className="min-h-80">
@@ -132,13 +132,13 @@ export const TestSuitePage = () => {
             />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCases?.map((tc) => (
+              {filteredCases?.map((testCase) => (
                 <ResourceCard
-                  key={tc.id}
+                  key={testCase.id}
                   testId="case-card"
-                  onEdit={() => openEdit(tc)}
-                  onDelete={() => openDelete(tc)}
-                  to={`/projects/${projectId}/suites/${suiteId}/cases/${tc.id}`}
+                  onEdit={() => openEdit(testCase)}
+                  onDelete={() => openDelete(testCase)}
+                  to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
                   label="test case"
                   cardBg="card-bg-info"
                   accentText="text-info"
@@ -146,10 +146,10 @@ export const TestSuitePage = () => {
                 >
                   <div className="flex flex-col gap-1.5">
                     <span className="text-base font-semibold leading-snug line-clamp-2">
-                      {tc.name}
+                      {testCase.name}
                     </span>
                     <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
-                      {tc.description ?? (
+                      {testCase.description ?? (
                         <span className="italic text-base-content/30">
                           No description
                         </span>
@@ -158,15 +158,16 @@ export const TestSuitePage = () => {
                   </div>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5">
-                      <PriorityBadge priority={tc.priority} />
-                      {tc.stepCount > 0 && (
+                      <PriorityBadge priority={testCase.priority} />
+                      {testCase.stepCount > 0 && (
                         <span className="text-[11px] text-base-content/50">
-                          {tc.stepCount} step{tc.stepCount !== 1 ? "s" : ""}
+                          {testCase.stepCount} step
+                          {testCase.stepCount !== 1 ? "s" : ""}
                         </span>
                       )}
                     </div>
                     <span className="text-[11px] tabular-nums text-base-content/40">
-                      {formatDate(tc.createdAt)}
+                      {formatDate(testCase.createdAt)}
                     </span>
                   </div>
                 </ResourceCard>

@@ -23,13 +23,15 @@ export const testResultsApi = {
           ...(status !== undefined ? { status } : {}),
         },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (projectId: string, runId: string, id: string) =>
     client
       .get<TestResult>(`${BASE(projectId, runId)}/${id}`)
-      .then((r) => r.data),
+      .then((response) => response.data),
   create: (projectId: string, runId: string, input: CreateTestResultInput) =>
-    client.post<TestResult>(BASE(projectId, runId), input).then((r) => r.data),
+    client
+      .post<TestResult>(BASE(projectId, runId), input)
+      .then((response) => response.data),
   update: (
     projectId: string,
     runId: string,
@@ -38,7 +40,7 @@ export const testResultsApi = {
   ) =>
     client
       .put<TestResult>(`${BASE(projectId, runId)}/${id}`, input)
-      .then((r) => r.data),
+      .then((response) => response.data),
   delete: (projectId: string, runId: string, id: string) =>
     client.delete(`${BASE(projectId, runId)}/${id}`),
 };

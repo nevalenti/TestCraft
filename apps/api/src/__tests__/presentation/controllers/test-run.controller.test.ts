@@ -1,9 +1,8 @@
-import { TestRunStatus } from "@testcraft/types";
+import { TestRunStatus, TestRunSummary } from "@testcraft/types";
 import express, { Router } from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TestRunSummary } from "@/application/test-runs/test-run.repository";
 import { ITestRunService } from "@/application/test-runs/test-run.service";
 import { AppError, DomainError } from "@/domain/errors";
 import { TestRun } from "@/domain/test-run";

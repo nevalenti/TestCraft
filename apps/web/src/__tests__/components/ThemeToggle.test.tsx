@@ -10,32 +10,35 @@ const renderWithTheme = (ui: React.ReactElement) =>
 
 describe("ThemeToggle", () => {
   describe("renders an accessible toggle", () => {
-    it("has a label with an accessible name", () => {
+    it("renders a button with an accessible label", () => {
       renderWithTheme(<ThemeToggle />);
-      expect(screen.getByLabelText("Toggle theme")).toBeInTheDocument();
-    });
-
-    it("renders a checkbox inside the label", () => {
-      renderWithTheme(<ThemeToggle />);
-      expect(screen.getByRole("checkbox")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: /switch to/i }),
+      ).toBeInTheDocument();
     });
   });
 
   describe("initial state — starts in light mode", () => {
-    it("checkbox is unchecked", () => {
+    it("label indicates switching to dark mode", () => {
       renderWithTheme(<ThemeToggle />);
-      expect(screen.getByRole("checkbox")).not.toBeChecked();
+      expect(
+        screen.getByRole("button", { name: "Switch to dark mode" }),
+      ).toBeInTheDocument();
     });
   });
 
   describe("when the toggle is clicked — switches to dark mode", () => {
-    it("checks the checkbox", async () => {
+    it("label changes to indicate switching back to light mode", async () => {
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(screen.getByRole("checkbox"));
-      expect(screen.getByRole("checkbox")).toBeChecked();
+      await userEvent.click(
+        screen.getByRole("button", { name: "Switch to dark mode" }),
+      );
+      expect(
+        screen.getByRole("button", { name: "Switch to light mode" }),
+      ).toBeInTheDocument();
     });
 
-    it("calls toggleTheme via onChange (toggling back unchecks)", async () => {
+    it("calls toggleTheme on click", async () => {
       const toggleTheme = vi.fn();
       vi.spyOn(
         await import("@/contexts/ThemeContext"),
@@ -43,7 +46,9 @@ describe("ThemeToggle", () => {
       ).mockReturnValue({ isDark: false, toggleTheme });
 
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(screen.getByRole("checkbox"));
+      await userEvent.click(
+        screen.getByRole("button", { name: "Switch to dark mode" }),
+      );
       expect(toggleTheme).toHaveBeenCalledOnce();
     });
   });

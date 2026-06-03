@@ -19,19 +19,21 @@ export const testCasesApi = {
       .get<Paginated<TestCase>>(`projects/${projectId}/cases`, {
         params: { pageSize: PAGE_SIZE },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getAll: (projectId: string, suiteId: string, search?: string) =>
     client
       .get<Paginated<TestCase>>(BASE(projectId, suiteId), {
         params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (projectId: string, suiteId: string, id: string) =>
     client
       .get<TestCase>(`${BASE(projectId, suiteId)}/${id}`)
-      .then((r) => r.data),
+      .then((response) => response.data),
   create: (projectId: string, suiteId: string, input: CreateTestCaseInput) =>
-    client.post<TestCase>(BASE(projectId, suiteId), input).then((r) => r.data),
+    client
+      .post<TestCase>(BASE(projectId, suiteId), input)
+      .then((response) => response.data),
   update: (
     projectId: string,
     suiteId: string,
@@ -40,7 +42,7 @@ export const testCasesApi = {
   ) =>
     client
       .put<TestCase>(`${BASE(projectId, suiteId)}/${id}`, input)
-      .then((r) => r.data),
+      .then((response) => response.data),
   delete: (projectId: string, suiteId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId)}/${id}`),
 };

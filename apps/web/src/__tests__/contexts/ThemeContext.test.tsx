@@ -12,7 +12,7 @@ const TestConsumer = () => {
   const { isDark, toggleTheme } = useTheme();
   return (
     <>
-      <span data-testid="state">{isDark ? "dark" : "light"}</span>
+      <span data-testid="state">{isDark ? "forest" : "emerald"}</span>
       <button onClick={toggleTheme}>toggle</button>
     </>
   );
@@ -29,7 +29,7 @@ describe("ThemeProvider", () => {
           <TestConsumer />
         </ThemeProvider>,
       );
-      expect(screen.getByTestId("state")).toHaveTextContent("light");
+      expect(screen.getByTestId("state")).toHaveTextContent("emerald");
     });
 
     it("sets data-theme to the light value on the document element", () => {
@@ -52,7 +52,7 @@ describe("ThemeProvider", () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(screen.getByTestId("state")).toHaveTextContent("dark");
+      expect(screen.getByTestId("state")).toHaveTextContent("forest");
     });
 
     it("updates the data-theme attribute to the dark value", async () => {
@@ -62,7 +62,9 @@ describe("ThemeProvider", () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(document.documentElement.getAttribute("data-theme")).toBe("dim");
+      expect(document.documentElement.getAttribute("data-theme")).toBe(
+        "forest",
+      );
     });
   });
 
@@ -75,7 +77,7 @@ describe("ThemeProvider", () => {
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(screen.getByTestId("state")).toHaveTextContent("light");
+      expect(screen.getByTestId("state")).toHaveTextContent("emerald");
     });
   });
 });

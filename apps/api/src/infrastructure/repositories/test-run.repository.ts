@@ -1,10 +1,13 @@
-import { TestRunStatus } from "@testcraft/types";
-import { Paginated, PaginationParams } from "@testcraft/types";
+import {
+  Paginated,
+  PaginationParams,
+  TestRunStatus,
+  TestRunSummary,
+} from "@testcraft/types";
 
-import { ITestRunRepository } from "@/application/test-runs/test-run.repository";
 import {
   CreateTestRun,
-  TestRunSummary,
+  ITestRunRepository,
   UpdateTestRun,
 } from "@/application/test-runs/test-run.repository";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
@@ -12,7 +15,7 @@ import { TestRun } from "@/domain/test-run";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
 
-const runSelect = {
+export const runSelect = {
   id: true,
   projectId: true,
   name: true,
@@ -23,7 +26,7 @@ const runSelect = {
   updatedAt: true,
 } as const;
 
-const toDto = (r: {
+export const toDto = (run: {
   id: string;
   projectId: string;
   name: string;
@@ -32,7 +35,7 @@ const toDto = (r: {
   executedById: string | null;
   createdAt: Date;
   updatedAt: Date;
-}): TestRun => ({ ...r, status: r.status as TestRunStatus });
+}): TestRun => ({ ...run, status: run.status as TestRunStatus });
 
 export class TestRunRepository implements ITestRunRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -108,11 +111,11 @@ export class TestRunRepository implements ITestRunRepository {
       Blocked: 0,
       Skipped: 0,
     };
-    for (const g of grouped) {
-      counts[g.status] = g._count.status;
+    for (const groupEntry of grouped) {
+      counts[groupEntry.status] = groupEntry._count.status;
     }
 
-    const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+    const total = Object.values(counts).reduce((sum, count) => sum + count, 0);
     const passRate =
       total > 0 ? Math.round((counts["Passed"] / total) * 100) : 0;
 
@@ -160,9 +163,9 @@ export class TestRunRepository implements ITestRunRepository {
         select: runSelect,
       });
       return toDto(run);
-    } catch (e) {
-      if (isNotFound(e)) return null;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
     }
   }
 
@@ -178,9 +181,9 @@ export class TestRunRepository implements ITestRunRepository {
         data: { isDeleted: true, deletedAt: new Date() },
       });
       return true;
-    } catch (e) {
-      if (isNotFound(e)) return false;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return false;
+      throw err;
     }
   }
 }

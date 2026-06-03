@@ -67,7 +67,7 @@ export const TestRunPage = () => {
 
   const filteredResults = useMemo(() => {
     if (!results || statusFilter === null) return results;
-    return results.filter((r) => r.status === statusFilter);
+    return results.filter((result) => result.status === statusFilter);
   }, [results, statusFilter]);
 
   useBreadcrumbs([

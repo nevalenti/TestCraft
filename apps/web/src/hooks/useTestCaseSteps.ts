@@ -91,7 +91,9 @@ export const useBulkReorderSteps = (
         queryKey,
         produce((draft) => {
           if (!draft) return;
-          const orderMap = new Map(input.steps.map((s) => [s.id, s.order]));
+          const orderMap = new Map(
+            input.steps.map((step) => [step.id, step.order]),
+          );
           for (const item of draft.items) {
             const next = orderMap.get(item.id);
             if (next !== undefined) item.order = next;
@@ -100,7 +102,7 @@ export const useBulkReorderSteps = (
       );
       return { previous };
     },
-    onError: (_err, _dto, context) => {
+    onError: (_error, _input, context) => {
       if (context?.previous) {
         queryClient.setQueryData(queryKey, context.previous);
       }

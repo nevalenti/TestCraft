@@ -19,28 +19,30 @@ export const DashboardPage = () => {
   const { data: projects, isPending: projectsPending } = useProjects();
 
   const projectMap = useMemo(
-    () => new Map((projects ?? []).map((p) => [p.id, p])),
+    () => new Map((projects ?? []).map((project) => [project.id, project])),
     [projects],
   );
 
   const { activeRuns, runsPending } = useQueries({
-    queries: (projects ?? []).map((p) => testRunQueries.all(p.id)),
+    queries: (projects ?? []).map((project) => testRunQueries.all(project.id)),
     combine: (results) => ({
       activeRuns: results
-        .flatMap((r) => r.data?.items ?? [])
-        .filter((r) => r.status === TestRunStatus.Active)
+        .flatMap((result) => result.data?.items ?? [])
+        .filter((run) => run.status === TestRunStatus.Active)
         .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          (itemA, itemB) =>
+            new Date(itemB.createdAt).getTime() -
+            new Date(itemA.createdAt).getTime(),
         ),
-      runsPending: results.length > 0 && results.some((r) => r.isPending),
+      runsPending:
+        results.length > 0 && results.some((result) => result.isPending),
     }),
   });
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
 
   const totalSuites = (projects ?? []).reduce(
-    (sum, p) => sum + (p.suiteCount ?? 0),
+    (sum, project) => sum + (project.suiteCount ?? 0),
     0,
   );
   const isLoadingStats = projectsPending;
@@ -113,7 +115,7 @@ export const DashboardPage = () => {
                       <Link
                         to="/projects/$projectId/runs/$runId"
                         params={{ projectId: run.projectId, runId: run.id }}
-                        className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-neutral/10 transition-colors group"
+                        className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-base-200/50 transition-colors group"
                       >
                         <div className="flex items-center gap-3 min-w-0">
                           <BoltIcon className="size-4 text-warning shrink-0" />
@@ -179,8 +181,8 @@ const StatCard = ({
 const ActiveRunsSkeleton = () => (
   <div className="rounded-lg border border-border bg-base-100 shadow-sm overflow-hidden">
     <ul className="divide-y divide-border">
-      {[...Array(3)].map((_, i) => (
-        <li key={i} className="flex items-center gap-4 px-5 py-3.5">
+      {[...Array(3)].map((_, index) => (
+        <li key={index} className="flex items-center gap-4 px-5 py-3.5">
           <div className="skeleton size-4 rounded-full shrink-0" />
           <div className="flex-1 space-y-1.5">
             <div className="skeleton h-3.5 w-48 rounded" />

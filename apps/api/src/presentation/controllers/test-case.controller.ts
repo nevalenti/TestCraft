@@ -26,36 +26,36 @@ export class TestCaseController {
   };
 
   getById = async (req: Request, res: Response): Promise<void> => {
-    const tc = await this.testCaseService.getById(
+    const testCase = await this.testCaseService.getById(
       req.params.suiteId as string,
       req.params.id as string,
     );
-    if (!tc) {
+    if (!testCase) {
       problem(res, problems.notFound());
       return;
     }
-    res.json(tc);
+    res.json(testCase);
   };
 
   create = async (req: Request, res: Response): Promise<void> => {
-    const tc = await this.testCaseService.create(
+    const testCase = await this.testCaseService.create(
       req.params.suiteId as string,
       req.body,
     );
-    res.status(201).json(tc);
+    res.status(201).json(testCase);
   };
 
   update = async (req: Request, res: Response): Promise<void> => {
-    const tc = await this.testCaseService.update(
+    const testCase = await this.testCaseService.update(
       req.params.suiteId as string,
       req.params.id as string,
       req.body,
     );
-    if (!tc) {
+    if (!testCase) {
       problem(res, problems.notFound());
       return;
     }
-    res.json(tc);
+    res.json(testCase);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {

@@ -12,7 +12,8 @@ export default defineConfig({
     tags: [{ name: "unit" }, { name: "integration" }, { name: "e2e" }],
     env: {
       NODE_ENV: "test",
-      DATABASE_URL: process.env.DATABASE_URL,
+      DATABASE_URL:
+        process.env.DATABASE_URL ?? "postgresql://localhost:5432/test",
       KEYCLOAK_AUTHORITY: "http://localhost:8080/realms/testcraft",
       CORS_ALLOWED_ORIGINS: "http://localhost:5173",
     },

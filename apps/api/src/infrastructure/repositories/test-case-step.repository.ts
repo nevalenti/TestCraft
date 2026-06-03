@@ -110,9 +110,9 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
         },
         select: stepSelect,
       });
-    } catch (e) {
-      if (isNotFound(e)) return null;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
     }
   }
 
@@ -136,9 +136,9 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
         data: { isDeleted: true, deletedAt: new Date() },
       });
       return true;
-    } catch (e) {
-      if (isNotFound(e)) return false;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return false;
+      throw err;
     }
   }
 }

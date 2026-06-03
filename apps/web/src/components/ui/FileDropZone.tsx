@@ -1,0 +1,164 @@
+import {
+  ArrowUpTrayIcon,
+  DocumentIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+import { useRef, useState } from "react";
+
+interface FileDropZoneProps {
+  id: string;
+  accept: string;
+  multiple?: boolean;
+  files: File[];
+  onFilesChange: (files: File[]) => void;
+  hint?: string;
+  hasError?: boolean;
+}
+
+const isAccepted = (file: File, accept: string): boolean =>
+  accept.split(",").some((token) => {
+    const trimmed = token.trim();
+    if (trimmed.startsWith("."))
+      return file.name.toLowerCase().endsWith(trimmed.toLowerCase());
+    if (trimmed.endsWith("/*"))
+      return file.type.startsWith(trimmed.slice(0, -1));
+    return file.type === trimmed;
+  });
+
+export const FileDropZone = ({
+  id,
+  accept,
+  multiple = false,
+  files,
+  onFilesChange,
+  hint,
+  hasError,
+}: FileDropZoneProps) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragCounter = useRef(0);
+
+  const openPicker = () => {
+    if (!inputRef.current) return;
+    inputRef.current.value = "";
+    inputRef.current.click();
+  };
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    onFilesChange(Array.from(event.target.files ?? []));
+  };
+
+  const handleDragEnter = (event: React.DragEvent) => {
+    event.preventDefault();
+    dragCounter.current++;
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    dragCounter.current--;
+    if (dragCounter.current === 0) setIsDragging(false);
+  };
+
+  const handleDrop = (event: React.DragEvent) => {
+    event.preventDefault();
+    dragCounter.current = 0;
+    setIsDragging(false);
+    const dropped = Array.from(event.dataTransfer.files).filter((droppedFile) =>
+      isAccepted(droppedFile, accept),
+    );
+    if (dropped.length > 0) onFilesChange(dropped);
+  };
+
+  const removeFile = (index: number) => {
+    onFilesChange(files.filter((_, fileIndex) => fileIndex !== index));
+  };
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-label="File upload area"
+      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+        isDragging
+          ? "border-primary bg-primary/5"
+          : hasError
+            ? "border-error/50 bg-error/5"
+            : "border-base-300 bg-base-200/40 hover:border-primary/40 hover:bg-base-200/70 transition-colors"
+      }`}
+      onClick={openPicker}
+      onKeyDown={(event) =>
+        (event.key === "Enter" || event.key === " ") && openPicker()
+      }
+      onDragEnter={handleDragEnter}
+      onDragOver={(event) => event.preventDefault()}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
+      <input
+        ref={inputRef}
+        id={id}
+        type="file"
+        accept={accept}
+        multiple={multiple}
+        className="sr-only"
+        onChange={handleInputChange}
+        onClick={(event) => event.stopPropagation()}
+        tabIndex={-1}
+      />
+
+      {files.length === 0 ? (
+        <div className="pointer-events-none flex select-none flex-col items-center gap-2.5 px-4 py-8 text-center">
+          <div className="rounded-full bg-base-300 p-2.5">
+            <ArrowUpTrayIcon className="size-5 text-base-content/50" />
+          </div>
+          <div>
+            <p className="text-sm text-base-content/70">
+              <span className="font-medium text-primary">Click to upload</span>{" "}
+              or drag & drop
+            </p>
+            {hint && (
+              <p className="mt-0.5 text-xs text-base-content/40">{hint}</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div
+          role="presentation"
+          className="flex flex-col gap-1 p-3"
+          onClick={(event) => event.stopPropagation()}
+        >
+          {files.map((file, fileIndex) => (
+            <div
+              key={fileIndex}
+              className="flex items-center gap-2 rounded-lg bg-base-100 px-3 py-2 shadow-sm"
+            >
+              <DocumentIcon className="size-4 shrink-0 text-base-content/40" />
+              <span className="flex-1 truncate text-sm font-medium text-base-content/80">
+                {file.name}
+              </span>
+              <span className="whitespace-nowrap text-xs tabular-nums text-base-content/40">
+                {(file.size / 1024).toFixed(1)} KB
+              </span>
+              <button
+                type="button"
+                aria-label={`Remove ${file.name}`}
+                className="ml-1 rounded p-0.5 text-base-content/30 transition-colors hover:bg-error/10 hover:text-error"
+                onClick={() => removeFile(fileIndex)}
+              >
+                <XMarkIcon className="size-3.5" />
+              </button>
+            </div>
+          ))}
+          <button
+            type="button"
+            className="mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs text-primary/70 transition-colors hover:text-primary"
+            onClick={openPicker}
+          >
+            <ArrowUpTrayIcon className="size-3" />
+            {multiple ? "Add or replace files" : "Replace file"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};

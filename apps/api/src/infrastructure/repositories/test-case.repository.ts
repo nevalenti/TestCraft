@@ -25,7 +25,7 @@ const caseSelect = {
   _count: { select: { steps: { where: { isDeleted: false } } } },
 } as const;
 
-const toDto = (tc: {
+const toDto = (testCase: {
   id: string;
   suiteId: string;
   name: string;
@@ -35,14 +35,14 @@ const toDto = (tc: {
   updatedAt: Date;
   _count: { steps: number };
 }): TestCase => ({
-  id: tc.id,
-  suiteId: tc.suiteId,
-  name: tc.name,
-  description: tc.description,
-  priority: tc.priority as TestCasePriority,
-  stepCount: tc._count.steps,
-  createdAt: tc.createdAt,
-  updatedAt: tc.updatedAt,
+  id: testCase.id,
+  suiteId: testCase.suiteId,
+  name: testCase.name,
+  description: testCase.description,
+  priority: testCase.priority as TestCasePriority,
+  stepCount: testCase._count.steps,
+  createdAt: testCase.createdAt,
+  updatedAt: testCase.updatedAt,
 });
 
 export class TestCaseRepository implements ITestCaseRepository {
@@ -110,15 +110,15 @@ export class TestCaseRepository implements ITestCaseRepository {
   }
 
   async getById(suiteId: string, id: string): Promise<TestCase | null> {
-    const tc = await this.prisma.testCase.findFirst({
+    const testCase = await this.prisma.testCase.findFirst({
       where: { id, suiteId, isDeleted: false, suite: { isDeleted: false } },
       select: caseSelect,
     });
-    return tc ? toDto(tc) : null;
+    return testCase ? toDto(testCase) : null;
   }
 
   async create(suiteId: string, input: CreateTestCase): Promise<TestCase> {
-    const tc = await this.prisma.testCase.create({
+    const testCase = await this.prisma.testCase.create({
       data: {
         suiteId,
         name: input.name,
@@ -127,7 +127,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       },
       select: caseSelect,
     });
-    return toDto(tc);
+    return toDto(testCase);
   }
 
   async update(
@@ -136,7 +136,7 @@ export class TestCaseRepository implements ITestCaseRepository {
     input: UpdateTestCase,
   ): Promise<TestCase | null> {
     try {
-      const tc = await this.prisma.testCase.update({
+      const testCase = await this.prisma.testCase.update({
         where: { id, suiteId, isDeleted: false, suite: { isDeleted: false } },
         data: {
           name: input.name,
@@ -145,10 +145,10 @@ export class TestCaseRepository implements ITestCaseRepository {
         },
         select: caseSelect,
       });
-      return toDto(tc);
-    } catch (e) {
-      if (isNotFound(e)) return null;
-      throw e;
+      return toDto(testCase);
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
     }
   }
 
@@ -159,9 +159,9 @@ export class TestCaseRepository implements ITestCaseRepository {
         data: { isDeleted: true, deletedAt: new Date() },
       });
       return true;
-    } catch (e) {
-      if (isNotFound(e)) return false;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return false;
+      throw err;
     }
   }
 }

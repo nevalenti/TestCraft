@@ -15,6 +15,10 @@ import {
 } from "@testcraft/types";
 
 import {
+  importAllureSchema,
+  importJunitSchema,
+} from "@/presentation/schemas/import.schemas";
+import {
   createProjectSchema,
   updateProjectSchema,
 } from "@/presentation/schemas/project.schemas";
@@ -588,6 +592,39 @@ registry.registerPath({
   security: auth,
   request: { params: projectAndIdParam },
   responses: { 204: r204, 401: r401, 404: r404 },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/projects/{projectId}/import/junit",
+  summary: "Import a JUnit XML report",
+  description:
+    "Parses a JUnit XML report and creates a completed test run with results. Suites and cases are created if they do not already exist.",
+  tags: ["Import"],
+  security: auth,
+  request: { params: projectIdParam, body: reqBody(importJunitSchema) },
+  responses: {
+    201: json(TestRunSchema, "Imported test run"),
+    400: r400,
+    401: r401,
+    422: r422,
+  },
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/projects/{projectId}/import/allure",
+  summary: "Import Allure JSON results",
+  description:
+    "Accepts an array of Allure result objects and creates a completed test run with results. Suites and cases are created if they do not already exist.",
+  tags: ["Import"],
+  security: auth,
+  request: { params: projectIdParam, body: reqBody(importAllureSchema) },
+  responses: {
+    201: json(TestRunSchema, "Imported test run"),
+    400: r400,
+    401: r401,
+  },
 });
 
 registry.registerPath({

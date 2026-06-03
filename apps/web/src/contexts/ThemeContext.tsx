@@ -23,7 +23,7 @@ export const useTheme = (): ThemeContextValue => {
 
 const THEME_KEY = "app-theme";
 const LIGHT = "emerald";
-const DARK = "dim";
+const DARK = "forest";
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);
@@ -38,7 +38,8 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     setCookie(THEME_KEY, theme);
   }, [theme]);
 
-  const toggleTheme = () => setTheme((t) => (t === LIGHT ? DARK : LIGHT));
+  const toggleTheme = () =>
+    setTheme((theme) => (theme === LIGHT ? DARK : LIGHT));
 
   return (
     <ThemeContext.Provider value={{ isDark: theme === DARK, toggleTheme }}>

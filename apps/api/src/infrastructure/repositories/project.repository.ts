@@ -25,7 +25,7 @@ const projectSelect = {
   },
 } as const;
 
-const toDto = (p: {
+const toDto = (project: {
   id: string;
   userId: string;
   name: string;
@@ -34,14 +34,14 @@ const toDto = (p: {
   updatedAt: Date;
   _count: { testSuites: number; testRuns: number };
 }): Project => ({
-  id: p.id,
-  userId: p.userId,
-  name: p.name,
-  description: p.description,
-  createdAt: p.createdAt,
-  updatedAt: p.updatedAt,
-  suiteCount: p._count.testSuites,
-  runCount: p._count.testRuns,
+  id: project.id,
+  userId: project.userId,
+  name: project.name,
+  description: project.description,
+  createdAt: project.createdAt,
+  updatedAt: project.updatedAt,
+  suiteCount: project._count.testSuites,
+  runCount: project._count.testRuns,
 });
 
 export class ProjectRepository implements IProjectRepository {
@@ -109,9 +109,9 @@ export class ProjectRepository implements IProjectRepository {
         select: projectSelect,
       });
       return toDto(project);
-    } catch (e) {
-      if (isNotFound(e)) return null;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return null;
+      throw err;
     }
   }
 
@@ -122,9 +122,9 @@ export class ProjectRepository implements IProjectRepository {
         data: { isDeleted: true, deletedAt: new Date() },
       });
       return true;
-    } catch (e) {
-      if (isNotFound(e)) return false;
-      throw e;
+    } catch (err) {
+      if (isNotFound(err)) return false;
+      throw err;
     }
   }
 }

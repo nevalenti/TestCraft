@@ -19,19 +19,25 @@ export const testRunsApi = {
       .get<Paginated<TestRun>>(BASE(projectId), {
         params: { pageSize: PAGE_SIZE },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (projectId: string, id: string) =>
-    client.get<TestRun>(`${BASE(projectId)}/${id}`).then((r) => r.data),
+    client
+      .get<TestRun>(`${BASE(projectId)}/${id}`)
+      .then((response) => response.data),
   create: (projectId: string, input: CreateTestRunInput) =>
-    client.post<TestRun>(BASE(projectId), input).then((r) => r.data),
+    client
+      .post<TestRun>(BASE(projectId), input)
+      .then((response) => response.data),
   update: (projectId: string, id: string, input: UpdateTestRunInput) =>
-    client.put<TestRun>(`${BASE(projectId)}/${id}`, input).then((r) => r.data),
+    client
+      .put<TestRun>(`${BASE(projectId)}/${id}`, input)
+      .then((response) => response.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
   getSummary: (projectId: string, id: string) =>
     client
       .get<TestRunSummary>(`${BASE(projectId)}/${id}/summary`)
-      .then((r) => r.data),
+      .then((response) => response.data),
 };
 
 export const testRunQueries = {

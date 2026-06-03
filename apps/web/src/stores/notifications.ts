@@ -37,7 +37,9 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
   const dismiss = (id: string) =>
     set(
       produce<NotificationsState>((draft) => {
-        const index = draft.notifications.findIndex((n) => n.id === id);
+        const index = draft.notifications.findIndex(
+          (notification) => notification.id === id,
+        );
         if (index !== -1) draft.notifications.splice(index, 1);
       }),
     );

@@ -75,16 +75,19 @@ export const TestCasePage = () => {
   );
 
   const { sortedSteps, nextOrder } = useMemo(() => {
-    const sorted = [...(steps ?? [])].sort((a, b) => a.order - b.order);
+    const sorted = [...(steps ?? [])].sort(
+      (itemA, itemB) => itemA.order - itemB.order,
+    );
     return {
       sortedSteps: sorted,
       nextOrder: sorted.length > 0 ? sorted[sorted.length - 1].order + 1 : 1,
     };
   }, [steps]);
 
-  const displaySteps = activeId ? localSteps : sortedSteps;
+  const displaySteps =
+    activeId || bulkReorder.isPending ? localSteps : sortedSteps;
   const activeStep = activeId
-    ? localSteps.find((s) => s.id === activeId)
+    ? localSteps.find((step) => step.id === activeId)
     : null;
 
   const handleCreate = (input: CreateTestCaseStepInput) =>
@@ -103,23 +106,23 @@ export const TestCasePage = () => {
   const handleDragOver = ({ active, over }: DragOverEvent) => {
     if (!over || active.id === over.id) return;
     const prev = localStepsRef.current;
-    const oldIndex = prev.findIndex((s) => s.id === active.id);
-    const newIndex = prev.findIndex((s) => s.id === over.id);
-    const next = arrayMove(prev, oldIndex, newIndex);
-    localStepsRef.current = next;
-    setLocalSteps(next);
+    const oldIndex = prev.findIndex((step) => step.id === active.id);
+    const newIndex = prev.findIndex((step) => step.id === over.id);
+    localStepsRef.current = arrayMove(prev, oldIndex, newIndex);
   };
 
   const handleDragEnd = ({ over }: DragEndEvent) => {
+    const finalSteps = localStepsRef.current;
+    setLocalSteps(finalSteps);
     setActiveId(null);
     if (!over) return;
 
-    const reordered = localStepsRef.current.map((step, index) => ({
+    const reordered = finalSteps.map((step, index) => ({
       id: step.id,
       order: index + 1,
     }));
     const hasChanges = reordered.some(({ id, order }) => {
-      const original = sortedSteps.find((s) => s.id === id);
+      const original = sortedSteps.find((step) => step.id === id);
       return original?.order !== order;
     });
 
@@ -167,8 +170,8 @@ export const TestCasePage = () => {
         <div className="min-h-80">
           {isPending ? (
             <div className="space-y-3">
-              {Array.from({ length: 3 }, (_, i) => (
-                <SkeletonCard key={i} />
+              {Array.from({ length: 3 }, (_, index) => (
+                <SkeletonCard key={index} />
               ))}
             </div>
           ) : isError ? (
@@ -206,7 +209,7 @@ export const TestCasePage = () => {
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={displaySteps.map((s) => s.id)}
+                items={displaySteps.map((step) => step.id)}
                 strategy={verticalListSortingStrategy}
               >
                 <div className="space-y-3">

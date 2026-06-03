@@ -18,15 +18,19 @@ export const testSuitesApi = {
       .get<Paginated<TestSuite>>(BASE(projectId), {
         params: { pageSize: PAGE_SIZE },
       })
-      .then((r) => r.data),
+      .then((response) => response.data),
   getById: (projectId: string, id: string) =>
-    client.get<TestSuite>(`${BASE(projectId)}/${id}`).then((r) => r.data),
+    client
+      .get<TestSuite>(`${BASE(projectId)}/${id}`)
+      .then((response) => response.data),
   create: (projectId: string, input: CreateTestSuiteInput) =>
-    client.post<TestSuite>(BASE(projectId), input).then((r) => r.data),
+    client
+      .post<TestSuite>(BASE(projectId), input)
+      .then((response) => response.data),
   update: (projectId: string, id: string, input: UpdateTestSuiteInput) =>
     client
       .put<TestSuite>(`${BASE(projectId)}/${id}`, input)
-      .then((r) => r.data),
+      .then((response) => response.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
 };

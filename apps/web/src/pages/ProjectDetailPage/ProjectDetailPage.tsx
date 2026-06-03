@@ -98,15 +98,15 @@ export const ProjectDetailPage = () => {
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full cursor-pointer transition-colors ${
+            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full cursor-pointer transition-colors border ${
               activeTab === key
-                ? "bg-primary/15 text-primary font-semibold"
-                : "text-base-content/70 hover:text-base-content hover:bg-base-200"
+                ? "bg-primary/15 text-primary font-semibold border-primary/25"
+                : "text-base-content border-base-content/12 hover:text-base-content hover:bg-base-content/8"
             }`}
           >
             {label}
             {!!count && (
-              <span className="badge badge-sm rounded-full badge-ghost">
+              <span className="badge badge-sm badge-ghost rounded-full">
                 {count}
               </span>
             )}

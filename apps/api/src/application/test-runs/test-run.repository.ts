@@ -1,4 +1,9 @@
-import { Paginated, PaginationParams, TestRunStatus } from "@testcraft/types";
+import {
+  Paginated,
+  PaginationParams,
+  TestRunStatus,
+  TestRunSummary,
+} from "@testcraft/types";
 
 import { TestRun } from "@/domain/test-run";
 
@@ -12,15 +17,6 @@ export interface UpdateTestRun {
   name: string;
   environment: string;
   status: TestRunStatus;
-}
-
-export interface TestRunSummary {
-  total: number;
-  passed: number;
-  failed: number;
-  blocked: number;
-  skipped: number;
-  passRate: number;
 }
 
 export interface ITestRunRepository {

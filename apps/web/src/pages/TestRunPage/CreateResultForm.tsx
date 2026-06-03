@@ -84,9 +84,9 @@ export const CreateResultForm = ({
                 ? "No test cases in project"
                 : "Select a test case"}
           </option>
-          {cases?.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
+          {cases?.map((testCase) => (
+            <option key={testCase.id} value={testCase.id}>
+              {testCase.name}
             </option>
           ))}
         </select>
@@ -101,9 +101,9 @@ export const CreateResultForm = ({
           className="select select-bordered w-full"
           {...register("status")}
         >
-          {statusOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
+          {statusOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

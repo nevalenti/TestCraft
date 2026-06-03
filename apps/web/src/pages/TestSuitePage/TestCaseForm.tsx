@@ -75,9 +75,9 @@ export const TestCaseForm = ({
           className="select select-bordered w-full"
           {...register("priority")}
         >
-          {priorityOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              {o.label}
+          {priorityOptions.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
             </option>
           ))}
         </select>

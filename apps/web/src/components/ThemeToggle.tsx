@@ -6,18 +6,16 @@ export const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <label
-      aria-label="Toggle theme"
-      className="swap swap-rotate btn-sm btn-ghost"
+    <button
+      onClick={toggleTheme}
+      className="btn btn-ghost btn-sm btn-circle"
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
-      <input
-        type="checkbox"
-        className="theme-controller"
-        checked={isDark}
-        onChange={toggleTheme}
-      />
-      <SunIcon className="swap-off size-5" aria-hidden="true" />
-      <MoonIcon className="swap-on size-5" aria-hidden="true" />
-    </label>
+      {isDark ? (
+        <MoonIcon className="size-4" aria-hidden="true" />
+      ) : (
+        <SunIcon className="size-4" aria-hidden="true" />
+      )}
+    </button>
   );
 };

@@ -7,7 +7,7 @@ export const setCookie = (name: string, value: string, days = 365): void => {
 export const getCookie = (name: string): string | null => {
   const match = document.cookie
     .split("; ")
-    .find((c) => c.startsWith(name + "="));
+    .find((cookie) => cookie.startsWith(name + "="));
   return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 };
 

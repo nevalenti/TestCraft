@@ -94,7 +94,7 @@ export const ProjectsPage = () => {
             className="input input-bordered bg-base-200 w-full max-w-sm"
             placeholder="Search projects…"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(event) => setSearch(event.target.value)}
           />
         </div>
         <div className="min-h-80">
