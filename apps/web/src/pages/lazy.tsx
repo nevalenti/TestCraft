@@ -1,10 +1,14 @@
 import React, { Suspense } from "react";
 
 import { PageSkeleton } from "@/layout/PageSkeleton";
+import { DashboardSkeleton } from "@/pages/DashboardPage/DashboardSkeleton";
 
-const suspend = (Component: React.ComponentType) => {
+const suspend = (
+  Component: React.ComponentType,
+  fallback: React.ReactNode = <PageSkeleton />,
+) => {
   const Suspended = () => (
-    <Suspense fallback={<PageSkeleton />}>
+    <Suspense fallback={fallback}>
       <Component />
     </Suspense>
   );
@@ -18,6 +22,7 @@ export const LazyDashboardPage = suspend(
       default: m.DashboardPage,
     })),
   ),
+  <DashboardSkeleton />,
 );
 
 export const LazyProjectsPage = suspend(

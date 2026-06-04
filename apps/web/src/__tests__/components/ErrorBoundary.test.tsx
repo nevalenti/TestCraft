@@ -54,7 +54,7 @@ describe("ErrorBoundary", () => {
       expect(screen.getByText("Something exploded")).toBeInTheDocument();
     });
 
-    it("shows the Try again and Reload page buttons", () => {
+    it("shows the Try again button", () => {
       shouldThrow = true;
       render(
         <ErrorBoundary>
@@ -63,9 +63,6 @@ describe("ErrorBoundary", () => {
       );
       expect(
         screen.getByRole("button", { name: /try again/i }),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole("button", { name: /reload page/i }),
       ).toBeInTheDocument();
     });
   });

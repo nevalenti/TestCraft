@@ -13,6 +13,8 @@ import v1Routes from "@/presentation/routes/v1";
 
 const app: Express = express();
 
+app.set("trust proxy", 1);
+
 app.use(requestId);
 app.use(helmet);
 app.use(httpLogger);

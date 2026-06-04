@@ -13,12 +13,10 @@ spec:
       labels:
         app: api
     spec:
-      imagePullSecrets:
-        - name: ghcr-pull-secret
       containers:
         - name: api
-          image: ghcr.io/nevalenti/testcraft-api:latest
-          imagePullPolicy: Always
+          image: testcraft-api:latest
+          imagePullPolicy: IfNotPresent
           env:
             - name: DATABASE_URL
               valueFrom:
@@ -67,6 +65,12 @@ spec:
               value: testcraft-api
             - name: LOKI_URL
               value: http://loki:3100
+            - name: METRICS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: METRICS_TOKEN
+                  optional: true
             - name: APPLY_MIGRATIONS
               value: "true"
             - name: SEED_DATA

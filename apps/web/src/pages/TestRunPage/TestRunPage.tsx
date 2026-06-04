@@ -7,6 +7,7 @@ import {
 } from "@testcraft/types";
 import { useMemo, useState } from "react";
 
+import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
@@ -163,22 +164,7 @@ export const TestRunPage = () => {
           {isPending ? (
             <SkeletonGrid />
           ) : isError ? (
-            <div className="flex items-center justify-center py-20">
-              <div className="text-center">
-                <p className="text-error font-semibold mb-2">
-                  Failed to load results
-                </p>
-                <p className="text-base-content/60 text-sm mb-4">
-                  Please check your connection and try again.
-                </p>
-                <button
-                  className="btn btn-outline btn-sm"
-                  onClick={() => window.location.reload()}
-                >
-                  Retry
-                </button>
-              </div>
-            </div>
+            <ErrorState message="Failed to load results. Please check your connection and try again." />
           ) : results?.length === 0 ? (
             <EmptyState
               title="No results recorded"

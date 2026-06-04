@@ -8,6 +8,8 @@ import {
 import { DomainError } from "@/domain/errors";
 import { canTransitionRunStatus } from "@/domain/rules";
 import { TestRun } from "@/domain/test-run";
+import { CacheService } from "@/infrastructure/cache/cache.service";
+import { cacheKeys } from "@/infrastructure/cache/cache-keys";
 
 export interface ITestRunService {
   getAll(
@@ -26,7 +28,10 @@ export interface ITestRunService {
 }
 
 export class TestRunService implements ITestRunService {
-  constructor(private readonly testRunRepository: ITestRunRepository) {}
+  constructor(
+    private readonly testRunRepository: ITestRunRepository,
+    private readonly cache: CacheService,
+  ) {}
 
   getAll(projectId: string, pagination?: PaginationParams) {
     return this.testRunRepository.getAll(projectId, pagination);
@@ -36,8 +41,17 @@ export class TestRunService implements ITestRunService {
     return this.testRunRepository.getById(projectId, id);
   }
 
-  getSummary(projectId: string, id: string) {
-    return this.testRunRepository.getSummary(projectId, id);
+  async getSummary(
+    projectId: string,
+    id: string,
+  ): Promise<TestRunSummary | null> {
+    const key = cacheKeys.testRunSummary(id);
+    const cached = await this.cache.get<TestRunSummary>(key);
+    if (cached) return cached;
+
+    const summary = await this.testRunRepository.getSummary(projectId, id);
+    if (summary) await this.cache.set(key, summary);
+    return summary;
   }
 
   create(projectId: string, input: CreateTestRun) {

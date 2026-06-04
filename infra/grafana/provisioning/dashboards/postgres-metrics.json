@@ -1,6 +1,6 @@
 {
-  "title": "Database Metrics",
-  "uid": "testcraft-db",
+  "title": "PostgreSQL Metrics",
+  "uid": "testcraft-postgres",
   "description": "PostgreSQL database metrics for testcraft",
   "tags": ["testcraft", "database", "postgres", "prometheus"],
   "schemaVersion": 38,

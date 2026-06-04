@@ -26,6 +26,8 @@ apps/e2e/tests/.auth/
 .idea/
 .vscode/
 
+infra/nginx/tls/
+
 **/.terraform/
 *.tfstate
 *.tfstate.backup

@@ -2,6 +2,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import type { CreateProject, Project, UpdateProject } from "@testcraft/types";
 import { useState } from "react";
 
+import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
@@ -43,22 +44,7 @@ export const ProjectsPage = () => {
 
   if (isError)
     return (
-      <div className="flex flex-1 items-center justify-center p-8">
-        <div className="text-center">
-          <p className="text-error font-semibold mb-2">
-            Failed to load projects
-          </p>
-          <p className="text-base-content/60 text-sm mb-4">
-            Please check your connection and try again.
-          </p>
-          <button
-            className="btn btn-outline btn-sm"
-            onClick={() => window.location.reload()}
-          >
-            Retry
-          </button>
-        </div>
-      </div>
+      <ErrorState message="Failed to load projects. Please check your connection and try again." />
     );
 
   const deleteItem = modal.type === "delete" ? modal.item : null;

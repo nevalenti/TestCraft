@@ -5,6 +5,7 @@ import { ITestRunRepository } from "@/application/test-runs/test-run.repository"
 import { TestRunService } from "@/application/test-runs/test-run.service";
 import { DomainError } from "@/domain/errors";
 import { TestRun } from "@/domain/test-run";
+import { CacheService } from "@/infrastructure/cache/cache.service";
 
 const makeRun = (status: TestRunStatus): TestRun => ({
   id: "run-1",
@@ -32,7 +33,7 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new TestRunService(mockRepo);
+    service = new TestRunService(mockRepo, new CacheService(null));
   });
 
   describe("update — status transition validation", () => {

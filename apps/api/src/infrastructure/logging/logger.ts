@@ -30,7 +30,7 @@ if (config.lokiUrl) {
       labels: { app: "testcraft-api", env: config.nodeEnv },
       interval: 5,
       replaceTimestamp: true,
-      silenceErrors: false,
+      silenceErrors: true,
     },
     level: "info",
   });

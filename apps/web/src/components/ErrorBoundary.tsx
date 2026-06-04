@@ -1,3 +1,4 @@
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface Props {
@@ -37,20 +38,13 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="text-base-content/65 text-sm mb-4 max-w-sm mx-auto">
                 {this.state.error.message}
               </p>
-              <div className="flex items-center justify-center gap-2">
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={() => this.setState({ error: null })}
-                >
-                  Try again
-                </button>
-                <button
-                  className="btn btn-ghost btn-sm"
-                  onClick={() => window.location.reload()}
-                >
-                  Reload page
-                </button>
-              </div>
+              <button
+                className="btn btn-primary btn-sm rounded-full"
+                onClick={() => this.setState({ error: null })}
+              >
+                <ArrowPathIcon className="w-4 h-4" />
+                Try again
+              </button>
             </div>
           </div>
         )

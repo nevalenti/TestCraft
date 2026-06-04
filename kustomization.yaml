@@ -1,0 +1,81 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: testcraft
+
+resources:
+  - infra/k8s/namespace.yaml
+  - infra/k8s/postgres.yaml
+  - infra/k8s/redis.yaml
+  - infra/k8s/keycloak.yaml
+  - infra/k8s/loki.yaml
+  - infra/k8s/tempo.yaml
+  - infra/k8s/prometheus.yaml
+  - infra/k8s/exporters.yaml
+  - infra/k8s/grafana.yaml
+  - infra/k8s/api.yaml
+  - infra/k8s/web.yaml
+  - infra/k8s/gateway.yaml
+
+configMapGenerator:
+  - name: nginx-gateway-config
+    files:
+      - nginx.conf=infra/nginx/production.conf
+    options:
+      disableNameSuffixHash: true
+
+  - name: prometheus-config
+    files:
+      - prometheus.yml=infra/prometheus/prometheus.k8s.yml
+    options:
+      disableNameSuffixHash: true
+
+  - name: keycloak-realm
+    files:
+      - testcraft-realm.json=apps/e2e/keycloak-realm.json
+    options:
+      disableNameSuffixHash: true
+
+  - name: tempo-config
+    files:
+      - tempo.yaml=infra/tempo/tempo.yaml
+    options:
+      disableNameSuffixHash: true
+
+  - name: grafana-provisioning-datasources
+    files:
+      - infra/grafana/provisioning/datasources/datasources.yaml
+    options:
+      disableNameSuffixHash: true
+
+  - name: grafana-provisioning-dashboards
+    files:
+      - infra/grafana/provisioning/dashboards/dashboards.yaml
+      - infra/grafana/provisioning/dashboards/api-logs.json
+      - infra/grafana/provisioning/dashboards/api-http.json
+      - infra/grafana/provisioning/dashboards/redis-metrics.json
+      - infra/grafana/provisioning/dashboards/postgres-metrics.json
+      - infra/grafana/provisioning/dashboards/api-traces.json
+    options:
+      disableNameSuffixHash: true
+
+  - name: postgres-init
+    files:
+      - init.sql=infra/postgres/init.sql
+    options:
+      disableNameSuffixHash: true
+
+secretGenerator:
+  - name: testcraft-secrets
+    envs:
+      - .env
+    options:
+      disableNameSuffixHash: true
+
+  - name: rpi5-tls
+    type: kubernetes.io/tls
+    files:
+      - tls.crt=infra/nginx/tls/tls.crt
+      - tls.key=infra/nginx/tls/tls.key
+    options:
+      disableNameSuffixHash: true

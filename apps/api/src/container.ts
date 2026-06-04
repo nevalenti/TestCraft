@@ -7,6 +7,8 @@ import { TestCaseService } from "@/application/test-cases/test-case.service";
 import { TestResultService } from "@/application/test-results/test-result.service";
 import { TestRunService } from "@/application/test-runs/test-run.service";
 import { TestSuiteService } from "@/application/test-suites/test-suite.service";
+import { CacheService } from "@/infrastructure/cache/cache.service";
+import redisClient from "@/infrastructure/cache/redis.client";
 import prismaClient from "@/infrastructure/database/prisma.client";
 import { ImportRepository } from "@/infrastructure/repositories/import.repository";
 import { ProjectRepository } from "@/infrastructure/repositories/project.repository";
@@ -25,6 +27,7 @@ import { TestSuiteController } from "@/presentation/controllers/test-suite.contr
 
 interface Cradle {
   prisma: typeof prismaClient;
+  cache: CacheService;
   projectRepository: ProjectRepository;
   testSuiteRepository: TestSuiteRepository;
   testCaseRepository: TestCaseRepository;
@@ -54,6 +57,7 @@ const container = createContainer<Cradle>({
 
 container.register({
   prisma: asValue(prismaClient),
+  cache: asValue(new CacheService(redisClient)),
 
   projectRepository: asClass(ProjectRepository).singleton(),
   testSuiteRepository: asClass(TestSuiteRepository).singleton(),

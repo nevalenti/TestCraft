@@ -123,7 +123,7 @@ describe("ProjectsPage", () => {
       );
 
       render(<ProjectsPage />);
-      expect(screen.getByText("Failed to load projects")).toBeInTheDocument();
+      expect(screen.getByText(/Failed to load projects/)).toBeInTheDocument();
     });
   });
 

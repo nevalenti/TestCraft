@@ -29,7 +29,7 @@ const buildApp = () => {
   router.post(
     "/junit",
     validateBody(importJunitSchema),
-    controller.importJunit,
+    controller.importJUnit,
   );
   router.post(
     "/allure",

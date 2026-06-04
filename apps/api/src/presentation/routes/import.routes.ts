@@ -12,7 +12,7 @@ const router: Router = Router({ mergeParams: true });
 router.post(
   "/junit",
   validateBody(importJunitSchema),
-  importController.importJunit,
+  importController.importJUnit,
 );
 
 router.post(

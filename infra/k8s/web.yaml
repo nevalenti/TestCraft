@@ -13,12 +13,10 @@ spec:
       labels:
         app: web
     spec:
-      imagePullSecrets:
-        - name: ghcr-pull-secret
       containers:
         - name: web
-          image: ghcr.io/nevalenti/testcraft-web:latest
-          imagePullPolicy: Always
+          image: testcraft-web:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           readinessProbe:

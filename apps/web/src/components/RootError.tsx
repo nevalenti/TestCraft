@@ -1,3 +1,5 @@
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
+
 export const RootError = ({ error }: { error: Error }) => (
   <div className="flex flex-1 items-center justify-center p-8">
     <div className="text-center">
@@ -6,9 +8,10 @@ export const RootError = ({ error }: { error: Error }) => (
         {error.message}
       </p>
       <button
-        className="btn btn-primary btn-sm"
+        className="btn btn-primary btn-sm rounded-full"
         onClick={() => window.location.reload()}
       >
+        <ArrowPathIcon className="w-4 h-4" />
         Reload page
       </button>
     </div>

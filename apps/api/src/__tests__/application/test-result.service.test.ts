@@ -8,6 +8,7 @@ import { ITestRunRepository } from "@/application/test-runs/test-run.repository"
 import { DomainError } from "@/domain/errors";
 import { TestResult } from "@/domain/test-result";
 import { TestRun } from "@/domain/test-run";
+import { CacheService } from "@/infrastructure/cache/cache.service";
 
 const makeRun = (status: TestRunStatus): TestRun => ({
   id: "run-1",
@@ -63,7 +64,11 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    service = new TestResultService(mockResultRepo, mockRunRepo);
+    service = new TestResultService(
+      mockResultRepo,
+      mockRunRepo,
+      new CacheService(null),
+    );
   });
 
   describe("create — run status validation", () => {
