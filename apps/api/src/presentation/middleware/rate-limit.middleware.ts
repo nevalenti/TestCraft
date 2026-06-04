@@ -9,13 +9,7 @@ const productionLimiter = rateLimit({
   limit: 200,
   standardHeaders: "draft-7",
   legacyHeaders: false,
-  handler: (_req, res) =>
-    problem(res, {
-      ...problems.internal(),
-      status: 429,
-      title: "Too Many Requests",
-      detail: "Rate limit exceeded, please try again later.",
-    }),
+  handler: (_req, res) => problem(res, problems.tooManyRequests()),
 });
 
 const noopLimiter = (_req: Request, _res: Response, next: NextFunction) =>

@@ -1,12 +1,10 @@
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
-import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
 import type {
   AllureResultItem,
   CreateTestRun,
   TestRun,
   UpdateTestRun,
 } from "@testcraft/types";
-import { TestRunStatus } from "@testcraft/types";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -25,64 +23,11 @@ import {
 } from "@/hooks/useTestRuns";
 import { formatDate } from "@/lib/format";
 import { AllureImportForm } from "@/pages/ProjectDetailPage/AllureImportForm";
+import { ImportDropdown } from "@/pages/ProjectDetailPage/ImportDropdown";
 import { JUnitImportForm } from "@/pages/ProjectDetailPage/JUnitImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
+import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
 import type { SectionHandle } from "@/pages/ProjectDetailPage/SuitesTab";
-
-const RUN_STATUS_STYLES: Record<string, string> = {
-  [TestRunStatus.Active]: "bg-warning/15 text-warning border-warning/30",
-  [TestRunStatus.Completed]: "bg-success/15 text-success border-success/30",
-  [TestRunStatus.Archived]:
-    "bg-base-content/8 text-base-content/50 border-base-content/15",
-};
-
-const RunStatusBadge = ({ status }: { status: string }) => (
-  <span
-    className={`inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded border ${RUN_STATUS_STYLES[status] ?? ""}`}
-  >
-    {status}
-  </span>
-);
-
-const ImportDropdown = ({
-  onJUnit,
-  onAllure,
-}: {
-  onJUnit: () => void;
-  onAllure: () => void;
-}) => (
-  <div className="dropdown dropdown-end">
-    <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-1.5">
-      <ArrowUpTrayIcon className="size-4" />
-      Import
-      <ChevronDownIcon className="size-3 opacity-60" />
-    </div>
-    <ul className="dropdown-content menu bg-base-100 border-base-200 rounded-box z-10 mt-1 w-44 border p-1.5 shadow-lg">
-      <li>
-        <button
-          type="button"
-          onClick={() => {
-            onJUnit();
-            (document.activeElement as HTMLElement)?.blur();
-          }}
-        >
-          JUnit XML
-        </button>
-      </li>
-      <li>
-        <button
-          type="button"
-          onClick={() => {
-            onAllure();
-            (document.activeElement as HTMLElement)?.blur();
-          }}
-        >
-          Allure JSON
-        </button>
-      </li>
-    </ul>
-  </div>
-);
 
 export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
   ({ projectId }, ref) => {

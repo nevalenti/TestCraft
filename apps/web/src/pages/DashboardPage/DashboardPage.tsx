@@ -13,6 +13,8 @@ import { testRunQueries } from "@/api/testRuns";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProjects } from "@/hooks/useProjects";
 import { formatDate } from "@/lib/format";
+import { ActiveRunsSkeleton } from "@/pages/DashboardPage/ActiveRunsSkeleton";
+import { StatCard } from "@/pages/DashboardPage/StatCard";
 
 export const DashboardPage = () => {
   const { data: projects, isPending: projectsPending } = useProjects();
@@ -151,47 +153,3 @@ export const DashboardPage = () => {
     </div>
   );
 };
-
-const StatCard = ({
-  label,
-  value,
-  icon,
-  isLoading,
-  accent,
-}: {
-  label: string;
-  value: number;
-  icon: React.ReactNode;
-  isLoading: boolean;
-  accent: string;
-}) => (
-  <div className="rounded-lg border border-base-content/20 bg-base-100 p-4 shadow-sm">
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/50">
-        {label}
-      </span>
-      <span className={accent}>{icon}</span>
-    </div>
-    {isLoading ? (
-      <div className="skeleton h-9 w-16 rounded" />
-    ) : (
-      <p className={`text-4xl font-bold font-display ${accent}`}>{value}</p>
-    )}
-  </div>
-);
-
-const ActiveRunsSkeleton = () => (
-  <div className="rounded-lg border border-border bg-base-100 shadow-sm overflow-hidden">
-    <ul className="divide-y divide-border">
-      {[...Array(3)].map((_, index) => (
-        <li key={index} className="flex items-center gap-4 px-5 py-3.5">
-          <div className="skeleton size-4 rounded-full shrink-0" />
-          <div className="flex-1 space-y-1.5">
-            <div className="skeleton h-3.5 w-48 rounded" />
-            <div className="skeleton h-3 w-32 rounded" />
-          </div>
-        </li>
-      ))}
-    </ul>
-  </div>
-);

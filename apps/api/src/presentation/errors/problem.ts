@@ -49,4 +49,11 @@ export const problems = {
     title: "An unexpected error occurred",
     status: 500,
   }),
+
+  tooManyRequests: (): ProblemDetail => ({
+    type: "https://testcraft.io/problems/too-many-requests",
+    title: "Too Many Requests",
+    status: 429,
+    detail: "Rate limit exceeded, please try again later.",
+  }),
 };
