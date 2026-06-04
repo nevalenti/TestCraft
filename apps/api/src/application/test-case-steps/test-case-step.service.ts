@@ -3,7 +3,7 @@ import { Paginated, PaginationParams } from "@testcraft/types";
 import {
   CreateTestCaseStep,
   ITestCaseStepRepository,
-  StepOrder,
+  ReorderStep,
   UpdateTestCaseStep,
 } from "@/application/test-case-steps/test-case-step.repository";
 import { DomainError } from "@/domain/errors";
@@ -21,7 +21,7 @@ export interface ITestCaseStepService {
     id: string,
     input: UpdateTestCaseStep,
   ): Promise<TestCaseStep | null>;
-  bulkReorder(caseId: string, steps: StepOrder[]): Promise<void>;
+  bulkReorder(caseId: string, steps: ReorderStep[]): Promise<void>;
   delete(caseId: string, id: string): Promise<boolean>;
 }
 
@@ -46,7 +46,7 @@ export class TestCaseStepService implements ITestCaseStepService {
     return this.testCaseStepRepository.update(caseId, id, input);
   }
 
-  async bulkReorder(caseId: string, steps: StepOrder[]): Promise<void> {
+  async bulkReorder(caseId: string, steps: ReorderStep[]): Promise<void> {
     const ids = steps.map((s) => s.id);
     const found = await this.testCaseStepRepository.findByIds(caseId, ids);
     if (found.length !== ids.length) {

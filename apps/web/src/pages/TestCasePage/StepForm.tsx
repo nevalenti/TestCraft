@@ -1,8 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  CreateTestCaseStepInput,
-  UpdateTestCaseStepInput,
-} from "@testcraft/types";
+import type { CreateTestCaseStep, UpdateTestCaseStep } from "@testcraft/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -19,7 +16,7 @@ type FormValues = z.infer<typeof schema>;
 interface StepFormProps {
   defaultValues?: { order: number; action: string; expectedResult: string };
   nextOrder: number;
-  onSubmit: (data: CreateTestCaseStepInput | UpdateTestCaseStepInput) => void;
+  onSubmit: (data: CreateTestCaseStep | UpdateTestCaseStep) => void;
   onCancel: () => void;
   isLoading: boolean;
 }

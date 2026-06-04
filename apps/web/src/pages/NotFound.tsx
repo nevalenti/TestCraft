@@ -17,15 +17,15 @@ export const NotFound = () => {
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link to="/" className="btn btn-ghost btn-sm gap-2">
-            <HomeIcon className="size-5" aria-hidden="true" />
+          <Link to="/" className="btn btn-primary btn-sm gap-1.5">
+            <HomeIcon className="size-4" aria-hidden="true" />
             Go Home
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="btn btn-ghost btn-sm gap-2"
+            className="btn btn-ghost btn-sm gap-1.5"
           >
-            <ArrowLeftIcon className="size-5" aria-hidden="true" />
+            <ArrowLeftIcon className="size-4" aria-hidden="true" />
             Go Back
           </button>
         </div>

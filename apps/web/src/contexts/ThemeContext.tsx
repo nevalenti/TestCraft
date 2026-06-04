@@ -22,7 +22,7 @@ export const useTheme = (): ThemeContextValue => {
 };
 
 const THEME_KEY = "app-theme";
-const LIGHT = "emerald";
+const LIGHT = "dracula";
 const DARK = "forest";
 
 const resolveTheme = (): string => {

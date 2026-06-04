@@ -18,9 +18,9 @@ import {
 } from "@dnd-kit/sortable";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import type {
-  CreateTestCaseStepInput,
+  CreateTestCaseStep,
   TestCaseStep,
-  UpdateTestCaseStepInput,
+  UpdateTestCaseStep,
 } from "@testcraft/types";
 import { useMemo, useRef, useState } from "react";
 
@@ -90,9 +90,9 @@ export const TestCasePage = () => {
     ? localSteps.find((step) => step.id === activeId)
     : null;
 
-  const handleCreate = (input: CreateTestCaseStepInput) =>
+  const handleCreate = (input: CreateTestCaseStep) =>
     createStep.mutate(input, { onSuccess: close });
-  const handleUpdate = (id: string) => (input: UpdateTestCaseStepInput) =>
+  const handleUpdate = (id: string) => (input: UpdateTestCaseStep) =>
     updateStep.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteStep.mutate(id, { onSuccess: close });
@@ -161,7 +161,9 @@ export const TestCasePage = () => {
           className="btn btn-primary btn-sm shrink-0"
           onClick={openCreate}
         >
-          <PlusIcon className="size-4" />
+          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+            <PlusIcon className="size-3" aria-hidden="true" />
+          </span>
           Add Step
         </button>
       </header>
@@ -182,7 +184,7 @@ export const TestCasePage = () => {
                   Please check your connection and try again.
                 </p>
                 <button
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-outline btn-sm"
                   onClick={() => window.location.reload()}
                 >
                   Retry
@@ -195,7 +197,9 @@ export const TestCasePage = () => {
               description="Break this test case down into clear, ordered steps."
               action={
                 <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <PlusIcon className="size-4" />
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+                    <PlusIcon className="size-3" aria-hidden="true" />
+                  </span>
                   Add First Step
                 </button>
               }

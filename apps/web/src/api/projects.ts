@@ -1,9 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
 import type {
-  CreateProjectInput,
+  CreateProject,
   Paginated,
   Project,
-  UpdateProjectInput,
+  UpdateProject,
 } from "@testcraft/types";
 
 import client from "@/api/client";
@@ -21,9 +21,9 @@ export const projectsApi = {
       .then((response) => response.data),
   getById: (id: string) =>
     client.get<Project>(`${BASE}/${id}`).then((response) => response.data),
-  create: (input: CreateProjectInput) =>
+  create: (input: CreateProject) =>
     client.post<Project>(BASE, input).then((response) => response.data),
-  update: (id: string, input: UpdateProjectInput) =>
+  update: (id: string, input: UpdateProject) =>
     client
       .put<Project>(`${BASE}/${id}`, input)
       .then((response) => response.data),

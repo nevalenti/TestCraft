@@ -11,13 +11,13 @@ export interface TestRun {
   updatedAt?: string;
 }
 
-export interface CreateTestRunInput {
+export interface CreateTestRun {
   name: string;
   environment: string;
   status?: TestRunStatus;
 }
 
-export interface UpdateTestRunInput {
+export interface UpdateTestRun {
   name: string;
   environment: string;
   status: TestRunStatus;

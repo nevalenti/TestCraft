@@ -2,7 +2,7 @@ import type { TestRunStatus } from "@testcraft/types";
 
 import type {
   IImportRepository,
-  ParsedCase,
+  ParsedTestCase,
 } from "@/application/import/import.repository";
 import type { TestRun } from "@/domain/test-run";
 import { Prisma, PrismaClient } from "@/generated/prisma/client";
@@ -15,7 +15,7 @@ const insertResults = async (
   transaction: Prisma.TransactionClient,
   projectId: string,
   runId: string,
-  cases: ParsedCase[],
+  cases: ParsedTestCase[],
   userId: string | undefined,
   now: Date,
 ) => {
@@ -73,9 +73,6 @@ const insertResults = async (
     }
   }
 
-  // Deduplicate on (suiteId, caseName) — keep last entry per pair so
-  // repeated testcase names in one suite (e.g. retry reports) don't produce
-  // multiple result rows for the same test case in the same run.
   const dedupedCases = [
     ...new Map(
       cases.map((parsedCase) => [
@@ -107,7 +104,7 @@ export class ImportRepository implements IImportRepository {
     name: string,
     environment: string,
     status: TestRunStatus,
-    cases: ParsedCase[],
+    cases: ParsedTestCase[],
     userId: string | undefined,
   ): Promise<TestRun> {
     const now = new Date();

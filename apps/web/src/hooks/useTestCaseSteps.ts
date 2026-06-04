@@ -1,10 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  BulkReorderStepsInput,
-  CreateTestCaseStepInput,
+  BulkReorderSteps,
+  CreateTestCaseStep,
   Paginated,
   TestCaseStep,
-  UpdateTestCaseStepInput,
+  UpdateTestCaseStep,
 } from "@testcraft/types";
 import { produce } from "immer";
 
@@ -36,7 +36,7 @@ export const useCreateTestCaseStep = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateTestCaseStepInput) =>
+    mutationFn: (input: CreateTestCaseStep) =>
       testCaseStepsApi.create(projectId, suiteId, caseId, input),
     onSuccess: () => {
       notify("Step added");
@@ -54,7 +54,7 @@ export const useUpdateTestCaseStep = (
 ) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateTestCaseStepInput) =>
+    mutationFn: ({ id, ...input }: { id: string } & UpdateTestCaseStep) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
     onSuccess: (_, { id }) => {
       notify("Step updated");
@@ -81,7 +81,7 @@ export const useBulkReorderSteps = (
   const queryClient = useQueryClient();
   const queryKey = queryKeys.testCaseSteps.all(projectId, suiteId, caseId);
   return useMutation({
-    mutationFn: (input: BulkReorderStepsInput) =>
+    mutationFn: (input: BulkReorderSteps) =>
       testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, input),
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey });

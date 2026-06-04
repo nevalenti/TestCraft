@@ -3,7 +3,7 @@ import { Paginated, PaginationParams } from "@testcraft/types";
 import {
   CreateTestCaseStep,
   ITestCaseStepRepository,
-  StepOrder,
+  ReorderStep,
   UpdateTestCaseStep,
 } from "@/application/test-case-steps/test-case-step.repository";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
@@ -116,7 +116,7 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
     }
   }
 
-  async bulkReorder(_caseId: string, steps: StepOrder[]): Promise<void> {
+  async bulkReorder(_caseId: string, steps: ReorderStep[]): Promise<void> {
     await this.prisma.$transaction(
       steps.map(({ id, order }) =>
         this.prisma.testCaseStep.update({ where: { id }, data: { order } }),

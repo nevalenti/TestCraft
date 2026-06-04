@@ -78,7 +78,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
           <button
             {...attributes}
             {...listeners}
-            className="btn btn-link btn-md touch-none cursor-grab active:cursor-grabbing text-base-content"
+            className="btn btn-ghost btn-sm touch-none cursor-grab active:cursor-grabbing"
             aria-label="Drag to reorder step"
           >
             <Bars3Icon className="size-5" aria-hidden="true" />

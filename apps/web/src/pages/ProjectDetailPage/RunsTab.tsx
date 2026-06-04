@@ -2,9 +2,9 @@ import { ChevronDownIcon } from "@heroicons/react/24/outline";
 import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
 import type {
   AllureResultItem,
-  CreateTestRunInput,
+  CreateTestRun,
   TestRun,
-  UpdateTestRunInput,
+  UpdateTestRun,
 } from "@testcraft/types";
 import { TestRunStatus } from "@testcraft/types";
 import { forwardRef, useImperativeHandle, useState } from "react";
@@ -52,7 +52,7 @@ const ImportDropdown = ({
   onAllure: () => void;
 }) => (
   <div className="dropdown dropdown-end">
-    <div tabIndex={0} role="button" className="btn btn-soft btn-sm gap-1.5">
+    <div tabIndex={0} role="button" className="btn btn-outline btn-sm gap-1.5">
       <ArrowUpTrayIcon className="size-4" />
       Import
       <ChevronDownIcon className="size-3 opacity-60" />
@@ -100,9 +100,9 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
 
     useImperativeHandle(ref, () => ({ open: openCreate }));
 
-    const handleCreate = (input: CreateTestRunInput) =>
+    const handleCreate = (input: CreateTestRun) =>
       createRun.mutate(input, { onSuccess: close });
-    const handleUpdate = (id: string) => (input: UpdateTestRunInput) =>
+    const handleUpdate = (id: string) => (input: UpdateTestRun) =>
       updateRun.mutate({ id, ...input }, { onSuccess: close });
     const handleDelete = (id: string) =>
       deleteRun.mutate(id, { onSuccess: close });
@@ -130,7 +130,9 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
             action={
               <div className="flex flex-wrap gap-2">
                 <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <PlusIcon className="size-4" />
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+                    <PlusIcon className="size-3" aria-hidden="true" />
+                  </span>
                   Create First Run
                 </button>
                 <ImportDropdown

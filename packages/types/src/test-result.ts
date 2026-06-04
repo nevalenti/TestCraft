@@ -14,14 +14,14 @@ export interface TestResult {
   updatedAt?: string;
 }
 
-export interface CreateTestResultInput {
+export interface CreateTestResult {
   testCaseId: string;
   status: TestResultStatus;
   notes?: string;
   executedAt: string;
 }
 
-export interface UpdateTestResultInput {
+export interface UpdateTestResult {
   status: TestResultStatus;
   notes?: string;
 }

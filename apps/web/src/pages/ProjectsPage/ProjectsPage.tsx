@@ -1,9 +1,5 @@
 import { PlusIcon } from "@heroicons/react/24/solid";
-import type {
-  CreateProjectInput,
-  Project,
-  UpdateProjectInput,
-} from "@testcraft/types";
+import type { CreateProject, Project, UpdateProject } from "@testcraft/types";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -38,9 +34,9 @@ export const ProjectsPage = () => {
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }, { label: "Projects" }]);
 
-  const handleCreate = (input: CreateProjectInput) =>
+  const handleCreate = (input: CreateProject) =>
     createProject.mutate(input, { onSuccess: close });
-  const handleUpdate = (id: string) => (input: UpdateProjectInput) =>
+  const handleUpdate = (id: string) => (input: UpdateProject) =>
     updateProject.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteProject.mutate(id, { onSuccess: close });
@@ -56,7 +52,7 @@ export const ProjectsPage = () => {
             Please check your connection and try again.
           </p>
           <button
-            className="btn btn-ghost btn-sm"
+            className="btn btn-outline btn-sm"
             onClick={() => window.location.reload()}
           >
             Retry
@@ -82,7 +78,9 @@ export const ProjectsPage = () => {
           className="btn btn-primary btn-sm shrink-0"
           onClick={openCreate}
         >
-          <PlusIcon className="size-4" />
+          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+            <PlusIcon className="size-3" aria-hidden="true" />
+          </span>
           New Project
         </button>
       </header>
@@ -103,10 +101,12 @@ export const ProjectsPage = () => {
           ) : projects?.length === 0 ? (
             <EmptyState
               title="No projects yet"
-              description="Projects group your test suites and runs. Create a project → add test suites → write test cases → start a test run."
+              description="Projects group your test suites and runs."
               action={
                 <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <PlusIcon className="size-4" />
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+                    <PlusIcon className="size-3" aria-hidden="true" />
+                  </span>
                   Create First Project
                 </button>
               }

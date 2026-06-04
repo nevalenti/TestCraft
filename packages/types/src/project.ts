@@ -8,12 +8,12 @@ export interface Project {
   runCount?: number;
 }
 
-export interface CreateProjectInput {
+export interface CreateProject {
   name: string;
   description?: string;
 }
 
-export interface UpdateProjectInput {
+export interface UpdateProject {
   name: string;
   description?: string;
 }

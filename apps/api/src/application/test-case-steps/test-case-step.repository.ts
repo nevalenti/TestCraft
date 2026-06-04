@@ -10,13 +10,13 @@ export interface CreateTestCaseStep {
 
 export type UpdateTestCaseStep = CreateTestCaseStep;
 
-export interface StepOrder {
+export interface ReorderStep {
   id: string;
   order: number;
 }
 
 export interface BulkReorderSteps {
-  steps: StepOrder[];
+  steps: ReorderStep[];
 }
 
 export interface ITestCaseStepRepository {
@@ -32,6 +32,6 @@ export interface ITestCaseStepRepository {
     id: string,
     input: UpdateTestCaseStep,
   ): Promise<TestCaseStep | null>;
-  bulkReorder(caseId: string, steps: StepOrder[]): Promise<void>;
+  bulkReorder(caseId: string, steps: ReorderStep[]): Promise<void>;
   delete(caseId: string, id: string): Promise<boolean>;
 }

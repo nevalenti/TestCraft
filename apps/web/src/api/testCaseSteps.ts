@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import type {
-  BulkReorderStepsInput,
-  CreateTestCaseStepInput,
+  BulkReorderSteps,
+  CreateTestCaseStep,
   Paginated,
   TestCaseStep,
-  UpdateTestCaseStepInput,
+  UpdateTestCaseStep,
 } from "@testcraft/types";
 
 import client from "@/api/client";
@@ -29,7 +29,7 @@ export const testCaseStepsApi = {
     projectId: string,
     suiteId: string,
     caseId: string,
-    input: CreateTestCaseStepInput,
+    input: CreateTestCaseStep,
   ) =>
     client
       .post<TestCaseStep>(BASE(projectId, suiteId, caseId), input)
@@ -39,7 +39,7 @@ export const testCaseStepsApi = {
     suiteId: string,
     caseId: string,
     id: string,
-    input: UpdateTestCaseStepInput,
+    input: UpdateTestCaseStep,
   ) =>
     client
       .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, input)
@@ -48,7 +48,7 @@ export const testCaseStepsApi = {
     projectId: string,
     suiteId: string,
     caseId: string,
-    input: BulkReorderStepsInput,
+    input: BulkReorderSteps,
   ) => client.put(`${BASE(projectId, suiteId, caseId)}/reorder`, input),
   delete: (projectId: string, suiteId: string, caseId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId, caseId)}/${id}`),

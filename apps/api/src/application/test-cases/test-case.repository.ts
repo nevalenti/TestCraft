@@ -12,11 +12,7 @@ export interface CreateTestCase {
   priority: TestCasePriority;
 }
 
-export interface UpdateTestCase {
-  name: string;
-  description?: string | null;
-  priority: TestCasePriority;
-}
+export type UpdateTestCase = CreateTestCase;
 
 export interface ITestCaseRepository {
   getAll(

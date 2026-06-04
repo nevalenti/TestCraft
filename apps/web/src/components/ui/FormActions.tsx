@@ -10,7 +10,7 @@ export const FormActions = ({
   label = "Save",
 }: FormActionsProps) => (
   <div className="flex justify-end gap-2 pt-2">
-    <button type="button" className="btn btn-ghost btn-sm" onClick={onCancel}>
+    <button type="button" className="btn btn-sm" onClick={onCancel}>
       Cancel
     </button>
     <button

@@ -3,7 +3,6 @@ import {
   BoltIcon,
   ClipboardDocumentListIcon,
   FolderIcon,
-  QueueListIcon,
 } from "@heroicons/react/24/solid";
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -59,9 +58,12 @@ export const DashboardPage = () => {
             Cross-project status at a glance
           </p>
         </div>
-        <Link to="/projects" className="btn btn-primary btn-sm shrink-0">
-          <QueueListIcon className="size-4" />
-          My Projects
+        <Link
+          to="/projects"
+          className="btn btn-primary btn-sm gap-1.5 rounded-full shrink-0"
+        >
+          Projects
+          <ArrowRightIcon className="size-3.5" />
         </Link>
       </header>
 

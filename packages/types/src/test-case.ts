@@ -11,13 +11,13 @@ export interface TestCase {
   updatedAt?: string;
 }
 
-export interface CreateTestCaseInput {
+export interface CreateTestCase {
   name: string;
   description?: string;
   priority?: TestCasePriority;
 }
 
-export interface UpdateTestCaseInput {
+export interface UpdateTestCase {
   name: string;
   description?: string;
   priority: TestCasePriority;
@@ -33,18 +33,18 @@ export interface TestCaseStep {
   updatedAt?: string;
 }
 
-export interface CreateTestCaseStepInput {
+export interface CreateTestCaseStep {
   order: number;
   action: string;
   expectedResult: string;
 }
 
-export interface UpdateTestCaseStepInput {
+export interface UpdateTestCaseStep {
   order: number;
   action: string;
   expectedResult: string;
 }
 
-export interface BulkReorderStepsInput {
+export interface BulkReorderSteps {
   steps: { id: string; order: number }[];
 }

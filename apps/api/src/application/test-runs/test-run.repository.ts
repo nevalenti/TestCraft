@@ -13,11 +13,7 @@ export interface CreateTestRun {
   status: TestRunStatus;
 }
 
-export interface UpdateTestRun {
-  name: string;
-  environment: string;
-  status: TestRunStatus;
-}
+export type UpdateTestRun = CreateTestRun;
 
 export interface ITestRunRepository {
   findById(id: string): Promise<TestRun | null>;

@@ -2,7 +2,7 @@ import type { TestResultStatus, TestRunStatus } from "@testcraft/types";
 
 import type { TestRun } from "@/domain/test-run";
 
-export interface ParsedCase {
+export interface ParsedTestCase {
   suiteName: string;
   caseName: string;
   status: TestResultStatus;
@@ -15,7 +15,7 @@ export interface IImportRepository {
     name: string,
     environment: string,
     status: TestRunStatus,
-    cases: ParsedCase[],
+    cases: ParsedTestCase[],
     userId: string | undefined,
   ): Promise<TestRun>;
 }

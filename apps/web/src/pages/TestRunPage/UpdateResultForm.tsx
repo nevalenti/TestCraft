@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { TestResultStatus, type UpdateTestResultInput } from "@testcraft/types";
+import { TestResultStatus, type UpdateTestResult } from "@testcraft/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -16,7 +16,7 @@ type FormValues = z.infer<typeof schema>;
 
 interface UpdateResultFormProps {
   defaultValues: { status: TestResultStatus; notes: string };
-  onSubmit: (data: UpdateTestResultInput) => void;
+  onSubmit: (data: UpdateTestResult) => void;
   onCancel: () => void;
   isLoading: boolean;
 }

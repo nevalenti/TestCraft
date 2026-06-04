@@ -46,7 +46,7 @@ export const ResultRow = ({
           onEdit={onEdit}
           onDelete={onDelete}
           label="result"
-          size="xs"
+          size="sm"
         />
       </div>
     </td>

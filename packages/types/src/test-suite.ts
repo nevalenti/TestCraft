@@ -7,12 +7,12 @@ export interface TestSuite {
   updatedAt?: string;
 }
 
-export interface CreateTestSuiteInput {
+export interface CreateTestSuite {
   name: string;
   description?: string;
 }
 
-export interface UpdateTestSuiteInput {
+export interface UpdateTestSuite {
   name: string;
   description?: string;
 }

@@ -88,7 +88,9 @@ export const ProjectDetailPage = () => {
           className="btn btn-primary btn-sm shrink-0"
           onClick={openCreate}
         >
-          <PlusIcon className="size-4" />
+          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+            <PlusIcon className="size-3" aria-hidden="true" />
+          </span>
           {activeTab === "suites" ? "New Suite" : "New Run"}
         </button>
       </header>

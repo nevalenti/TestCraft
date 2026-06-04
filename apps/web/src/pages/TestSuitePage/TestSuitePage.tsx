@@ -1,8 +1,8 @@
 import { ClipboardDocumentListIcon, PlusIcon } from "@heroicons/react/24/solid";
 import type {
-  CreateTestCaseInput,
+  CreateTestCase,
   TestCase,
-  UpdateTestCaseInput,
+  UpdateTestCase,
 } from "@testcraft/types";
 import { useMemo, useState } from "react";
 
@@ -53,9 +53,9 @@ export const TestSuitePage = () => {
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
 
-  const handleCreate = (input: CreateTestCaseInput) =>
+  const handleCreate = (input: CreateTestCase) =>
     createCase.mutate(input, { onSuccess: close });
-  const handleUpdate = (id: string) => (input: UpdateTestCaseInput) =>
+  const handleUpdate = (id: string) => (input: UpdateTestCase) =>
     updateCase.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteCase.mutate(id, { onSuccess: close });
@@ -86,7 +86,9 @@ export const TestSuitePage = () => {
           className="btn btn-primary btn-sm shrink-0"
           onClick={openCreate}
         >
-          <PlusIcon className="size-4" />
+          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+            <PlusIcon className="size-3" aria-hidden="true" />
+          </span>
           New Test Case
         </button>
       </header>
@@ -112,7 +114,7 @@ export const TestSuitePage = () => {
                   Please check your connection and try again.
                 </p>
                 <button
-                  className="btn btn-ghost btn-sm"
+                  className="btn btn-outline btn-sm"
                   onClick={() => window.location.reload()}
                 >
                   Retry
@@ -125,7 +127,9 @@ export const TestSuitePage = () => {
               description="Add test cases to document expected behaviour."
               action={
                 <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <PlusIcon className="size-4" />
+                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+                    <PlusIcon className="size-3" aria-hidden="true" />
+                  </span>
                   Create First Test Case
                 </button>
               }

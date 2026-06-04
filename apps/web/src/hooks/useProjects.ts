@@ -4,7 +4,7 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import type { CreateProjectInput, UpdateProjectInput } from "@testcraft/types";
+import type { CreateProject, UpdateProject } from "@testcraft/types";
 
 import { projectQueries, projectsApi } from "@/api/projects";
 import { queryKeys } from "@/api/queryKeys";
@@ -22,7 +22,7 @@ export const useProject = (id: string) => useQuery(projectQueries.detail(id));
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateProjectInput) => projectsApi.create(input),
+    mutationFn: (input: CreateProject) => projectsApi.create(input),
     onSuccess: () => {
       notify("Project created");
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
@@ -33,7 +33,7 @@ export const useCreateProject = () => {
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateProjectInput) =>
+    mutationFn: ({ id, ...input }: { id: string } & UpdateProject) =>
       projectsApi.update(id, input),
     onSuccess: (_, { id }) => {
       notify("Project updated");

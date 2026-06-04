@@ -1,8 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type {
-  CreateTestSuiteInput,
-  UpdateTestSuiteInput,
-} from "@testcraft/types";
+import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -18,7 +15,7 @@ type FormValues = z.infer<typeof schema>;
 
 interface SuiteFormProps {
   defaultValues?: { name: string; description: string };
-  onSubmit: (data: CreateTestSuiteInput | UpdateTestSuiteInput) => void;
+  onSubmit: (data: CreateTestSuite | UpdateTestSuite) => void;
   onCancel: () => void;
   isLoading: boolean;
 }

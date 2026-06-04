@@ -4,7 +4,7 @@ import { XMLParser } from "fast-xml-parser";
 
 import type {
   IImportRepository,
-  ParsedCase,
+  ParsedTestCase,
 } from "@/application/import/import.repository";
 import { DomainError } from "@/domain/errors";
 import type { TestRun } from "@/domain/test-run";
@@ -16,13 +16,13 @@ const junitParser = new XMLParser({
   isArray: (name) => ["testsuite", "testcase"].includes(name),
 });
 
-export interface ImportJUnitInput {
+export interface ImportJUnit {
   xml: string;
   environment: string;
   name?: string;
 }
 
-export interface ImportAllureInput {
+export interface ImportAllure {
   results: AllureResultItem[];
   environment: string;
   name?: string;
@@ -59,7 +59,9 @@ const resolveJUnitStatus = (
 const strVal = (value: unknown): string | null =>
   typeof value === "string" && value ? value : null;
 
-const parseJUnit = (xml: string): { runName: string; cases: ParsedCase[] } => {
+const parseJUnit = (
+  xml: string,
+): { runName: string; cases: ParsedTestCase[] } => {
   let doc: Record<string, unknown>;
   try {
     doc = junitParser.parse(xml) as Record<string, unknown>;
@@ -80,7 +82,7 @@ const parseJUnit = (xml: string): { runName: string; cases: ParsedCase[] } => {
     if (first) runName = strVal(first.name) ?? "Imported Run";
   }
 
-  const cases: ParsedCase[] = [];
+  const cases: ParsedTestCase[] = [];
   for (const suite of suites) {
     const suiteNameFromAttr = strVal(suite.name);
     const testcases = (suite.testcase as Record<string, unknown>[]) ?? [];
@@ -123,7 +125,7 @@ const labelValue = (
   return null;
 };
 
-const parseAllure = (results: AllureResultItem[]): ParsedCase[] =>
+const parseAllure = (results: AllureResultItem[]): ParsedTestCase[] =>
   results.map((result, index) => {
     const suiteName =
       labelValue(result.labels, "suite", "parentSuite", "testClass") ??
@@ -140,12 +142,12 @@ const parseAllure = (results: AllureResultItem[]): ParsedCase[] =>
 export interface IImportService {
   importJunit(
     projectId: string,
-    input: ImportJUnitInput,
+    input: ImportJUnit,
     userId?: string,
   ): Promise<TestRun>;
   importAllure(
     projectId: string,
-    input: ImportAllureInput,
+    input: ImportAllure,
     userId?: string,
   ): Promise<TestRun>;
 }
@@ -155,7 +157,7 @@ export class ImportService implements IImportService {
 
   async importJunit(
     projectId: string,
-    input: ImportJUnitInput,
+    input: ImportJUnit,
     userId?: string,
   ): Promise<TestRun> {
     const { runName, cases } = parseJUnit(input.xml);
@@ -171,7 +173,7 @@ export class ImportService implements IImportService {
 
   async importAllure(
     projectId: string,
-    input: ImportAllureInput,
+    input: ImportAllure,
     userId?: string,
   ): Promise<TestRun> {
     const cases = parseAllure(input.results);

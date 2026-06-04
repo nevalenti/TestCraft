@@ -19,7 +19,7 @@ test.describe("Dashboard", () => {
   });
 
   test("My Projects button navigates to /projects", async ({ page }) => {
-    await page.getByRole("link", { name: "My Projects" }).click();
+    await page.getByRole("link", { name: "Projects" }).click();
     await page.waitForURL("**/projects");
     await expect(page.getByRole("heading", { name: "Projects" })).toBeVisible();
   });

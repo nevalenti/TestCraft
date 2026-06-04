@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   AllureResultItem,
-  CreateTestRunInput,
+  CreateTestRun,
   TestRun,
-  UpdateTestRunInput,
+  UpdateTestRun,
 } from "@testcraft/types";
 
 import { importsApi } from "@/api/imports";
@@ -26,8 +26,7 @@ export const useTestRunSummary = (projectId: string, id: string) =>
 export const useCreateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateTestRunInput) =>
-      testRunsApi.create(projectId, input),
+    mutationFn: (input: CreateTestRun) => testRunsApi.create(projectId, input),
     onSuccess: () => {
       notify("Test run created");
       queryClient.invalidateQueries({
@@ -43,7 +42,7 @@ export const useCreateTestRun = (projectId: string) => {
 export const useUpdateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateTestRunInput) =>
+    mutationFn: ({ id, ...input }: { id: string } & UpdateTestRun) =>
       testRunsApi.update(projectId, id, input),
     onSuccess: (_, { id }) => {
       notify("Test run updated");

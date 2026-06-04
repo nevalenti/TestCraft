@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  CreateTestResultInput,
+  CreateTestResult,
   TestResultStatus,
-  UpdateTestResultInput,
+  UpdateTestResult,
 } from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
@@ -25,7 +25,7 @@ export const useTestResult = (projectId: string, runId: string, id: string) =>
 export const useCreateTestResult = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CreateTestResultInput) =>
+    mutationFn: (input: CreateTestResult) =>
       testResultsApi.create(projectId, runId, input),
     onSuccess: () => {
       notify("Result saved");
@@ -42,7 +42,7 @@ export const useCreateTestResult = (projectId: string, runId: string) => {
 export const useUpdateTestResult = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateTestResultInput) =>
+    mutationFn: ({ id, ...input }: { id: string } & UpdateTestResult) =>
       testResultsApi.update(projectId, runId, id, input),
     onSuccess: (_, { id }) => {
       notify("Result updated");

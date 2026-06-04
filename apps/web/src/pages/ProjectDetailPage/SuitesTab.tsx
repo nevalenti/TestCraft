@@ -1,8 +1,8 @@
 import { PlusIcon, RectangleGroupIcon } from "@heroicons/react/24/solid";
 import type {
-  CreateTestSuiteInput,
+  CreateTestSuite,
   TestSuite,
-  UpdateTestSuiteInput,
+  UpdateTestSuite,
 } from "@testcraft/types";
 import { forwardRef, useImperativeHandle } from "react";
 
@@ -36,9 +36,9 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
 
     useImperativeHandle(ref, () => ({ open: openCreate }));
 
-    const handleCreate = (input: CreateTestSuiteInput) =>
+    const handleCreate = (input: CreateTestSuite) =>
       createSuite.mutate(input, { onSuccess: close });
-    const handleUpdate = (id: string) => (input: UpdateTestSuiteInput) =>
+    const handleUpdate = (id: string) => (input: UpdateTestSuite) =>
       updateSuite.mutate({ id, ...input }, { onSuccess: close });
     const handleDelete = (id: string) =>
       deleteSuite.mutate(id, { onSuccess: close });
@@ -52,10 +52,12 @@ export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
         ) : suites?.length === 0 ? (
           <EmptyState
             title="No test suites yet"
-            description="Group related test cases together into suites."
+            description="Group related test cases into suites."
             action={
               <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                <PlusIcon className="size-4" />
+                <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+                  <PlusIcon className="size-3" aria-hidden="true" />
+                </span>
                 Create First Suite
               </button>
             }

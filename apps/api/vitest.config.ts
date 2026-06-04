@@ -8,6 +8,7 @@ export default defineConfig({
     globalSetup: ["./src/__tests__/setup/global-setup.ts"],
     exclude: ["dist/**", "**/node_modules/**"],
     globals: true,
+    fileParallelism: false,
     environment: "node",
     tags: [{ name: "unit" }, { name: "integration" }, { name: "e2e" }],
     env: {

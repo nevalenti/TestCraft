@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 import type {
-  CreateTestRunInput,
+  CreateTestRun,
   Paginated,
   TestRun,
   TestRunSummary,
-  UpdateTestRunInput,
+  UpdateTestRun,
 } from "@testcraft/types";
 
 import client from "@/api/client";
@@ -24,11 +24,11 @@ export const testRunsApi = {
     client
       .get<TestRun>(`${BASE(projectId)}/${id}`)
       .then((response) => response.data),
-  create: (projectId: string, input: CreateTestRunInput) =>
+  create: (projectId: string, input: CreateTestRun) =>
     client
       .post<TestRun>(BASE(projectId), input)
       .then((response) => response.data),
-  update: (projectId: string, id: string, input: UpdateTestRunInput) =>
+  update: (projectId: string, id: string, input: UpdateTestRun) =>
     client
       .put<TestRun>(`${BASE(projectId)}/${id}`, input)
       .then((response) => response.data),

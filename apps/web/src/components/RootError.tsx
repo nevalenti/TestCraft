@@ -6,7 +6,7 @@ export const RootError = ({ error }: { error: Error }) => (
         {error.message}
       </p>
       <button
-        className="btn btn-ghost btn-sm"
+        className="btn btn-primary btn-sm"
         onClick={() => window.location.reload()}
       >
         Reload page
