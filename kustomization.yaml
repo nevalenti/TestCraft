@@ -51,6 +51,17 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true
 
+  - name: keycloak-dracula-theme
+    files:
+      - theme.properties=infra/keycloak/themes/theme.properties
+      - template.ftl=infra/keycloak/themes/template.ftl
+      - login.ftl=infra/keycloak/themes/login.ftl
+      - register.ftl=infra/keycloak/themes/register.ftl
+      - error.ftl=infra/keycloak/themes/error.ftl
+      - login-verify-email.ftl=infra/keycloak/themes/login-verify-email.ftl
+    options:
+      disableNameSuffixHash: true
+
   - name: postgres-init
     files:
       - init.sql=infra/postgres/init.sql

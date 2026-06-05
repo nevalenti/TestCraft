@@ -36,6 +36,25 @@ spec:
               mountPath: /data
             - name: realm-source
               mountPath: /realm-source
+        - name: install-theme
+          image: quay.io/keycloak/keycloak:26.2
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp -r /opt/keycloak/themes/* /themes/ &&
+              mkdir -p /themes/dracula/login &&
+              cp /theme-source/theme.properties /themes/dracula/login/theme.properties &&
+              cp /theme-source/template.ftl /themes/dracula/login/template.ftl &&
+              cp /theme-source/login.ftl /themes/dracula/login/login.ftl &&
+              cp /theme-source/register.ftl /themes/dracula/login/register.ftl &&
+              cp /theme-source/error.ftl /themes/dracula/login/error.ftl &&
+              cp /theme-source/login-verify-email.ftl /themes/dracula/login/login-verify-email.ftl
+          volumeMounts:
+            - name: themes
+              mountPath: /themes
+            - name: theme-source
+              mountPath: /theme-source
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:26.2
@@ -53,6 +72,10 @@ spec:
                   key: KEYCLOAK_ADMIN_PASSWORD
             - name: KC_HEALTH_ENABLED
               value: "true"
+            - name: KC_HOSTNAME
+              value: "https://testcraft.dev:8443"
+            - name: KC_PROXY_HEADERS
+              value: "xforwarded"
             - name: JAVA_OPTS_APPEND
               value: "-Xms512m -Xmx1024m"
           ports:
@@ -75,6 +98,8 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /opt/keycloak/data
+            - name: themes
+              mountPath: /opt/keycloak/themes
       volumes:
         - name: data
           persistentVolumeClaim:
@@ -82,6 +107,11 @@ spec:
         - name: realm-source
           configMap:
             name: keycloak-realm
+        - name: themes
+          emptyDir: {}
+        - name: theme-source
+          configMap:
+            name: keycloak-dracula-theme
 ---
 apiVersion: v1
 kind: Service

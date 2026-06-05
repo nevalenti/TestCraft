@@ -1,7 +1,12 @@
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowRightStartOnRectangleIcon,
+  Bars3Icon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
 import { useRef } from "react";
 
+import keycloak from "@/auth/keycloak";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoMark } from "@/layout/LogoMark";
 
@@ -28,6 +33,18 @@ export const Header = () => {
 
         <div className="flex items-center gap-3 shrink-0">
           <ThemeToggle />
+          <button
+            onClick={() =>
+              keycloak.logout({ redirectUri: window.location.origin + "/" })
+            }
+            className="btn btn-ghost btn-sm btn-circle"
+            aria-label="Sign out"
+          >
+            <ArrowRightStartOnRectangleIcon
+              className="size-5"
+              aria-hidden="true"
+            />
+          </button>
           <label
             htmlFor="mobile-nav-drawer"
             className="btn btn-ghost btn-sm btn-square lg:hidden"

@@ -12,9 +12,9 @@ export const ThemeToggle = () => {
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
     >
       {isDark ? (
-        <MoonIcon className="size-4" aria-hidden="true" />
+        <MoonIcon className="size-5" aria-hidden="true" />
       ) : (
-        <SunIcon className="size-4" aria-hidden="true" />
+        <SunIcon className="size-5" aria-hidden="true" />
       )}
     </button>
   );

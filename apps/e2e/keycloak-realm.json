@@ -23,7 +23,7 @@
         "https://testcraft.dev"
       ],
       "attributes": {
-        "post.logout.redirect.uris": "http://localhost:3000 https://localhost https://testcraft.dev",
+        "post.logout.redirect.uris": "+",
         "pkce.code.challenge.method": "S256"
       },
       "protocolMappers": [
@@ -43,8 +43,8 @@
   ],
   "users": [
     {
-      "username": "e2e",
-      "email": "e2e@testcraft.local",
+      "username": "e2e@testcraft.dev",
+      "email": "e2e@testcraft.dev",
       "emailVerified": true,
       "enabled": true,
       "firstName": "E2E",
@@ -57,5 +57,6 @@
         }
       ]
     }
-  ]
+  ],
+  "loginTheme": "dracula"
 }

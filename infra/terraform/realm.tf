@@ -48,7 +48,7 @@ resource "keycloak_user" "dev" {
   username = "dev"
   enabled  = true
 
-  email          = "dev@testcraft.local"
+  email          = "dev@testcraft.dev"
   email_verified = true
   first_name     = "Dev"
   last_name      = "User"
