@@ -13,6 +13,7 @@ export interface ITestSuiteRepository {
   getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestSuite>>;
   getById(projectId: string, id: string): Promise<TestSuite | null>;
   create(projectId: string, input: CreateTestSuite): Promise<TestSuite>;

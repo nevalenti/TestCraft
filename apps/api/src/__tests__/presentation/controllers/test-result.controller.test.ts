@@ -94,6 +94,7 @@ describe("TestResultController #api", { tags: ["unit"] }, () => {
         "run-1",
         undefined,
         expect.any(Object),
+        undefined,
       );
     });
   });
@@ -109,6 +110,7 @@ describe("TestResultController #api", { tags: ["unit"] }, () => {
         "run-1",
         "Failed",
         expect.any(Object),
+        undefined,
       );
     });
   });

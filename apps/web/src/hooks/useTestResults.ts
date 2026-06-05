@@ -13,9 +13,10 @@ export const useTestResults = (
   projectId: string,
   runId: string,
   status?: TestResultStatus,
+  search?: string,
 ) =>
   useQuery({
-    ...testResultQueries.all(projectId, runId, status),
+    ...testResultQueries.all(projectId, runId, status, search),
     select: (data) => data.items,
   });
 

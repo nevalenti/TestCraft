@@ -89,6 +89,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
       expect(mockService.getAll).toHaveBeenCalledWith(
         "proj-1",
         expect.any(Object),
+        undefined,
       );
     });
   });

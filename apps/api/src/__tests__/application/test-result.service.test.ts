@@ -157,6 +157,7 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
         "run-1",
         TestResultStatus.Failed,
         { page: 1, pageSize: 50 },
+        undefined,
       );
     });
   });

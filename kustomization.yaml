@@ -51,7 +51,7 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true
 
-  - name: keycloak-dracula-theme
+  - name: keycloak-dim-theme
     files:
       - theme.properties=infra/keycloak/themes/theme.properties
       - template.ftl=infra/keycloak/themes/template.ftl

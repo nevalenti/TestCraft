@@ -14,10 +14,10 @@ import { PAGE_SIZE } from "@/lib/constants";
 const BASE = (projectId: string) => `projects/${projectId}/runs`;
 
 export const testRunsApi = {
-  getAll: (projectId: string) =>
+  getAll: (projectId: string, search?: string) =>
     client
       .get<Paginated<TestRun>>(BASE(projectId), {
-        params: { pageSize: PAGE_SIZE },
+        params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
       })
       .then((response) => response.data),
   getById: (projectId: string, id: string) =>
@@ -41,10 +41,10 @@ export const testRunsApi = {
 };
 
 export const testRunQueries = {
-  all: (projectId: string) =>
+  all: (projectId: string, search?: string) =>
     queryOptions({
-      queryKey: queryKeys.testRuns.all(projectId),
-      queryFn: () => testRunsApi.getAll(projectId),
+      queryKey: [...queryKeys.testRuns.all(projectId), search],
+      queryFn: () => testRunsApi.getAll(projectId, search),
       enabled: !!projectId,
     }),
   detail: (projectId: string, id: string) =>

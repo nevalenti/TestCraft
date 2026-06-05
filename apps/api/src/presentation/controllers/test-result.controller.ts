@@ -13,6 +13,7 @@ export class TestResultController {
       req.params.runId as string,
       req.query.status as TestResultStatus | undefined,
       extractPagination(req.query),
+      req.query.search as string | undefined,
     );
     res.json(result);
   };

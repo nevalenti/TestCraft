@@ -11,6 +11,7 @@ export interface ITestSuiteService {
   getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestSuite>>;
   getById(projectId: string, id: string): Promise<TestSuite | null>;
   create(projectId: string, input: CreateTestSuite): Promise<TestSuite>;
@@ -25,8 +26,8 @@ export interface ITestSuiteService {
 export class TestSuiteService implements ITestSuiteService {
   constructor(private readonly testSuiteRepository: ITestSuiteRepository) {}
 
-  getAll(projectId: string, pagination?: PaginationParams) {
-    return this.testSuiteRepository.getAll(projectId, pagination);
+  getAll(projectId: string, pagination?: PaginationParams, search?: string) {
+    return this.testSuiteRepository.getAll(projectId, pagination, search);
   }
 
   getById(projectId: string, id: string) {

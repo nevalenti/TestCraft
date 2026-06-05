@@ -15,12 +15,18 @@ const BASE = (projectId: string, runId: string) =>
   `projects/${projectId}/runs/${runId}/results`;
 
 export const testResultsApi = {
-  getAll: (projectId: string, runId: string, status?: TestResultStatus) =>
+  getAll: (
+    projectId: string,
+    runId: string,
+    status?: TestResultStatus,
+    search?: string,
+  ) =>
     client
       .get<Paginated<TestResult>>(BASE(projectId, runId), {
         params: {
           pageSize: PAGE_SIZE,
           ...(status !== undefined ? { status } : {}),
+          ...(search ? { search } : {}),
         },
       })
       .then((response) => response.data),
@@ -46,12 +52,19 @@ export const testResultsApi = {
 };
 
 export const testResultQueries = {
-  all: (projectId: string, runId: string, status?: TestResultStatus) =>
+  all: (
+    projectId: string,
+    runId: string,
+    status?: TestResultStatus,
+    search?: string,
+  ) =>
     queryOptions({
-      queryKey: status
-        ? queryKeys.testResults.filtered(projectId, runId, status)
-        : queryKeys.testResults.all(projectId, runId),
-      queryFn: () => testResultsApi.getAll(projectId, runId, status),
+      queryKey: [
+        ...queryKeys.testResults.all(projectId, runId),
+        status,
+        search,
+      ],
+      queryFn: () => testResultsApi.getAll(projectId, runId, status, search),
       enabled: !!projectId && !!runId,
       placeholderData: keepPreviousData,
     }),

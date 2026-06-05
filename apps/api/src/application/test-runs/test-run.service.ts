@@ -15,6 +15,7 @@ export interface ITestRunService {
   getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestRun>>;
   getById(projectId: string, id: string): Promise<TestRun | null>;
   getSummary(projectId: string, id: string): Promise<TestRunSummary | null>;
@@ -33,8 +34,8 @@ export class TestRunService implements ITestRunService {
     private readonly cache: CacheService,
   ) {}
 
-  getAll(projectId: string, pagination?: PaginationParams) {
-    return this.testRunRepository.getAll(projectId, pagination);
+  getAll(projectId: string, pagination?: PaginationParams, search?: string) {
+    return this.testRunRepository.getAll(projectId, pagination, search);
   }
 
   getById(projectId: string, id: string) {

@@ -1,14 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testSuiteQueries, testSuitesApi } from "@/api/testSuites";
 import { notify } from "@/lib/notify";
 
-export const useTestSuites = (projectId: string) =>
+export const useTestSuites = (projectId: string, search?: string) =>
   useQuery({
-    ...testSuiteQueries.all(projectId),
+    ...testSuiteQueries.all(projectId, search),
     select: (data) => data.items,
+    placeholderData: keepPreviousData,
   });
 
 export const useTestSuite = (projectId: string, id: string) =>

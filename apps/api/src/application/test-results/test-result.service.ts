@@ -17,6 +17,7 @@ export interface ITestResultService {
     runId: string,
     status?: TestResultStatus,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestResult>>;
   getById(runId: string, id: string): Promise<TestResult | null>;
   create(
@@ -43,8 +44,9 @@ export class TestResultService implements ITestResultService {
     runId: string,
     status?: TestResultStatus,
     pagination?: PaginationParams,
+    search?: string,
   ) {
-    return this.testResultRepository.getAll(runId, status, pagination);
+    return this.testResultRepository.getAll(runId, status, pagination, search);
   }
 
   getById(runId: string, id: string) {

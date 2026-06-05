@@ -11,6 +11,7 @@ export class TestSuiteController {
     const result = await this.testSuiteService.getAll(
       req.params.projectId as string,
       extractPagination(req.query),
+      req.query.search as string | undefined,
     );
     res.json(result);
   };

@@ -51,6 +51,7 @@ export class TestRunRepository implements ITestRunRepository {
   async getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestRun>> {
     const { page, pageSize } = pagination ?? {
       page: DEFAULT_PAGE,
@@ -61,6 +62,9 @@ export class TestRunRepository implements ITestRunRepository {
       projectId,
       isDeleted: false,
       project: { isDeleted: false },
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" as const } }
+        : {}),
     };
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.testRun.findMany({

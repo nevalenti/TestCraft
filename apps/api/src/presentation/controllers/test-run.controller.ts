@@ -11,6 +11,7 @@ export class TestRunController {
     const result = await this.testRunService.getAll(
       req.params.projectId as string,
       extractPagination(req.query),
+      req.query.search as string | undefined,
     );
     res.json(result);
   };

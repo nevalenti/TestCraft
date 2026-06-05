@@ -47,6 +47,7 @@ export class TestResultRepository implements ITestResultRepository {
     runId: string,
     status?: TestResultStatus,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestResult>> {
     const { page, pageSize } = pagination ?? {
       page: DEFAULT_PAGE,
@@ -58,6 +59,13 @@ export class TestResultRepository implements ITestResultRepository {
       isDeleted: false,
       testRun: { isDeleted: false },
       ...(status ? { status } : {}),
+      ...(search
+        ? {
+            testCase: {
+              name: { contains: search, mode: "insensitive" as const },
+            },
+          }
+        : {}),
     };
     const [rows, total] = await this.prisma.$transaction([
       this.prisma.testResult.findMany({

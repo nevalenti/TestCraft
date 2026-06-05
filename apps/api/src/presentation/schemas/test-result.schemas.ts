@@ -5,6 +5,7 @@ import { paginationSchema } from "@/presentation/schemas/pagination.schemas";
 
 export const testResultQuerySchema = paginationSchema.extend({
   status: z.nativeEnum(TestResultStatus).optional(),
+  search: z.string().max(255).optional(),
 });
 
 export const createTestResultSchema = z.object({

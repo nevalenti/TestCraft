@@ -3,8 +3,8 @@
 
 @plugin "daisyui" {
   themes:
-    dracula --default,
-    forest --prefersdark;
+    dim --default,
+    emerald --prefersdark;
 }
 
 @theme {
@@ -40,15 +40,11 @@
       from var(--color-primary) l c h / var(--card-bg-alpha, 0.2)
     );
   }
-}
 
-@layer utilities {
   .font-display {
     font-family: var(--font-display);
   }
-}
 
-@layer utilities {
   .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
@@ -59,14 +55,23 @@
     );
   }
 
-  [data-theme="forest"] .header-stripes,
-  [data-theme="dracula"] .header-stripes {
+  [data-theme="emerald"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
       transparent 8px,
-      oklch(1 0 0 / 0.04) 8px,
-      oklch(1 0 0 / 0.04) 10px
+      oklch(0 0 0 / 0.06) 8px,
+      oklch(0 0 0 / 0.06) 10px
+    );
+  }
+
+  [data-theme="dim"] .header-stripes {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent 0px,
+      transparent 8px,
+      oklch(1 0 0 / 0.06) 8px,
+      oklch(1 0 0 / 0.06) 10px
     );
   }
 
@@ -74,18 +79,6 @@
     border-bottom: 1px solid var(--color-border);
     padding-inline: 1rem;
     padding-block: 1.25rem;
-  }
-
-  @media (min-width: 640px) {
-    .page-header {
-      padding-inline: 1.5rem;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .page-header {
-      padding-inline: 2rem;
-    }
   }
 
   .page-content {
@@ -96,19 +89,19 @@
   }
 
   @media (min-width: 640px) {
+    .page-header,
     .page-content {
       padding-inline: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
+    .page-header,
     .page-content {
       padding-inline: 2rem;
     }
   }
-}
 
-@layer utilities {
   @media (min-width: 640px) {
     .app-shadow {
       box-shadow:
@@ -116,7 +109,7 @@
         0 8px 16px -4px oklch(0 0 0 / 0.1);
     }
 
-    [data-theme="forest"] .app-shadow {
+    [data-theme="emerald"] .app-shadow {
       box-shadow:
         0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
         0 8px 24px -4px oklch(0 0 0 / 0.5);
@@ -151,9 +144,14 @@
     );
   }
 
-  [data-theme="forest"] {
-    --color-border: oklch(1 0 0 / 0.1);
+  [data-theme="emerald"] {
+    --color-border: oklch(0 0 0 / 0.18);
     --card-bg-alpha: 0.12;
+  }
+
+  [data-theme="dim"] {
+    --color-border: oklch(1 0 0 / 0.15);
+    --card-bg-alpha: 0.2;
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -161,11 +159,6 @@
       oklch(1 0 0 / 0.015) 10px,
       oklch(1 0 0 / 0.015) 11px
     );
-  }
-
-  [data-theme="dracula"] {
-    --color-border: oklch(1 0 0 / 0.15);
-    --card-bg-alpha: 0.2;
   }
 
   @keyframes modal-enter {

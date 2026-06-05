@@ -19,6 +19,7 @@ export interface ITestResultRepository {
     runId: string,
     status?: TestResultStatus,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestResult>>;
   getById(runId: string, id: string): Promise<TestResult | null>;
   create(

@@ -25,6 +25,7 @@ export class TestSuiteRepository implements ITestSuiteRepository {
   async getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestSuite>> {
     const { page, pageSize } = pagination ?? {
       page: DEFAULT_PAGE,
@@ -35,6 +36,9 @@ export class TestSuiteRepository implements ITestSuiteRepository {
       projectId,
       isDeleted: false,
       project: { isDeleted: false },
+      ...(search
+        ? { name: { contains: search, mode: "insensitive" as const } }
+        : {}),
     };
     const [items, total] = await this.prisma.$transaction([
       this.prisma.testSuite.findMany({

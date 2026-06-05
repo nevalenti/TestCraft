@@ -3,8 +3,7 @@
   <div class="rounded-xl bg-base-100 shadow-md px-8 py-9" style="border: 1px solid var(--color-border);">
 
     <div class="mb-8 text-center">
-      <h1 class="text-3xl font-extrabold tracking-tight text-base-content" style="font-family: var(--font-display)">Welcome back</h1>
-      <p class="mt-1.5 text-sm text-base-content/55">Log in to your account</p>
+      <h1 class="text-3xl font-extrabold tracking-tight text-base-content" style="font-family: var(--font-display)">Sign in to TestCraft</h1>
     </div>
 
     <#if message??>
@@ -16,7 +15,7 @@
 
     <form id="kc-form-login" onsubmit="document.getElementById('kc-login').disabled=true; return true;" action="${url.loginAction}" method="post" class="space-y-5">
       <div>
-        <label for="username" class="block text-sm font-semibold mb-2 text-base-content">Email address</label>
+        <label for="username" class="block text-xs font-semibold mb-2 text-base-content">Email address</label>
         <input
           id="username" name="username" type="text"
           value="${(login.username!'')}"
@@ -28,7 +27,7 @@
 
       <div>
         <div class="flex justify-between items-baseline mb-2">
-          <label for="password" class="text-sm font-semibold text-base-content">Password</label>
+          <label for="password" class="text-xs font-semibold text-base-content">Password</label>
           <#if realm.resetPasswordAllowed>
             <a href="${url.loginResetCredentialsUrl}" class="text-xs text-primary hover:underline">Forgot password?</a>
           </#if>

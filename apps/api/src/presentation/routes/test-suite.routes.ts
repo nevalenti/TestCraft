@@ -5,15 +5,19 @@ import {
   validateBody,
   validateQuery,
 } from "@/presentation/middleware/validate-request.middleware";
-import { paginationSchema } from "@/presentation/schemas/pagination.schemas";
 import {
   createTestSuiteSchema,
+  testSuiteQuerySchema,
   updateTestSuiteSchema,
 } from "@/presentation/schemas/test-suite.schemas";
 
 const router: Router = Router({ mergeParams: true });
 
-router.get("/", validateQuery(paginationSchema), testSuiteController.getAll);
+router.get(
+  "/",
+  validateQuery(testSuiteQuerySchema),
+  testSuiteController.getAll,
+);
 
 router.get("/:id", testSuiteController.getById);
 

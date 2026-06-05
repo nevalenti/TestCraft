@@ -132,10 +132,11 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
       const result = await service.getAll("proj-1", { page: 1, pageSize: 50 });
 
       expect(result).toBe(paginated);
-      expect(mockRepo.getAll).toHaveBeenCalledWith("proj-1", {
-        page: 1,
-        pageSize: 50,
-      });
+      expect(mockRepo.getAll).toHaveBeenCalledWith(
+        "proj-1",
+        { page: 1, pageSize: 50 },
+        undefined,
+      );
     });
   });
 

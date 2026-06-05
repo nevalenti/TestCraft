@@ -14,6 +14,7 @@ import { Modal } from "@/components/ui/Modal";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -49,7 +50,9 @@ export const TestRunPage = () => {
   const [statusFilter, setStatusFilter] = useState<TestResultStatus | null>(
     null,
   );
+  const [search, setSearch] = useState("");
 
+  const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
   const { data: runSummary } = useTestRunSummary(projectId, runId);
@@ -57,7 +60,12 @@ export const TestRunPage = () => {
     data: results,
     isPending,
     isError,
-  } = useTestResults(projectId, runId, statusFilter ?? undefined);
+  } = useTestResults(
+    projectId,
+    runId,
+    statusFilter ?? undefined,
+    debouncedSearch || undefined,
+  );
   const createResult = useCreateTestResult(projectId, runId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
@@ -119,6 +127,18 @@ export const TestRunPage = () => {
         )}
 
         {runSummary && runSummary.total > 0 && (
+          <div className="mb-4">
+            <input
+              type="search"
+              className="input input-bordered bg-base-200 w-full max-w-sm"
+              placeholder="Search test cases…"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+            />
+          </div>
+        )}
+
+        {runSummary && runSummary.total > 0 && (
           <div className="mb-4 flex flex-wrap gap-2">
             {statusFilter !== null && (
               <button
@@ -157,7 +177,9 @@ export const TestRunPage = () => {
             <SkeletonGrid />
           ) : isError ? (
             <ErrorState message="Failed to load results. Please check your connection and try again." />
-          ) : results?.length === 0 && statusFilter === null ? (
+          ) : results?.length === 0 &&
+            statusFilter === null &&
+            !debouncedSearch ? (
             <EmptyState
               title="No results recorded"
               description="Add results to track the outcome of each test case in this run."
@@ -173,14 +195,26 @@ export const TestRunPage = () => {
           ) : results?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-sm font-semibold text-base-content/60 mb-2">
-                No results match this filter
+                No results match
               </p>
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => setStatusFilter(null)}
-              >
-                Clear filter
-              </button>
+              <div className="flex gap-2">
+                {debouncedSearch && (
+                  <button
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setSearch("")}
+                  >
+                    Clear search
+                  </button>
+                )}
+                {statusFilter !== null && (
+                  <button
+                    className="btn btn-outline btn-sm"
+                    onClick={() => setStatusFilter(null)}
+                  >
+                    Clear filter
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <div className="overflow-x-auto rounded-lg border border-border shadow-sm">

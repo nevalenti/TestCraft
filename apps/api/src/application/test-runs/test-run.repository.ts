@@ -20,6 +20,7 @@ export interface ITestRunRepository {
   getAll(
     projectId: string,
     pagination?: PaginationParams,
+    search?: string,
   ): Promise<Paginated<TestRun>>;
   getById(projectId: string, id: string): Promise<TestRun | null>;
   getSummary(projectId: string, id: string): Promise<TestRunSummary | null>;

@@ -18,8 +18,16 @@
         --color-border: oklch(1 0 0 / 0.15);
       }
 
-      [data-theme="forest"] {
-        --color-border: oklch(1 0 0 / 0.1);
+      [data-theme="emerald"] {
+        --color-border: oklch(0 0 0 / 0.18);
+      }
+
+      [data-theme="dim"] {
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent 0px, transparent 10px,
+          oklch(1 0 0 / 0.015) 10px, oklch(1 0 0 / 0.015) 11px
+        );
       }
 
       html {
@@ -33,22 +41,23 @@
         );
       }
 
-      [data-theme="forest"] html,
-      [data-theme="forest"] body {
-        background-image: repeating-linear-gradient(
-          45deg,
-          transparent 0px, transparent 10px,
-          oklch(1 0 0 / 0.015) 10px, oklch(1 0 0 / 0.015) 11px
-        );
-      }
+      #icon-moon { display: none; }
+      [data-theme="emerald"] #icon-moon { display: block; }
+      [data-theme="emerald"] #icon-sun { display: none; }
 
-      .border-border { border-color: var(--color-border); }
-
-      .header-stripes {
+      [data-theme="emerald"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
-          oklch(1 0 0 / 0.04) 8px, oklch(1 0 0 / 0.04) 10px
+          oklch(0 0 0 / 0.06) 8px, oklch(0 0 0 / 0.06) 10px
+        );
+      }
+
+      [data-theme="dim"] .header-stripes {
+        background-image: repeating-linear-gradient(
+          45deg,
+          transparent 0px, transparent 8px,
+          oklch(1 0 0 / 0.06) 8px, oklch(1 0 0 / 0.06) 10px
         );
       }
 
@@ -74,8 +83,8 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'dracula';
-      const DARK = 'forest';
+      const LIGHT = 'dim';
+      const DARK = 'emerald';
 
       function getCookie(name) {
         const eq = name + '=';
@@ -100,12 +109,9 @@
       document.documentElement.setAttribute('data-theme', theme);
 
       function toggleTheme() {
-        const current = document.documentElement.getAttribute('data-theme');
-        const next = current === DARK ? LIGHT : DARK;
+        const next = document.documentElement.getAttribute('data-theme') === DARK ? LIGHT : DARK;
         document.documentElement.setAttribute('data-theme', next);
         setCookie(THEME_KEY, next);
-        document.getElementById('icon-sun').style.display = next === DARK ? 'none' : 'block';
-        document.getElementById('icon-moon').style.display = next === DARK ? 'block' : 'none';
       }
     </script>
   </head>
@@ -126,7 +132,7 @@
             <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
               <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z"/>
             </svg>
-            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5" style="display:none;">
+            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
               <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd"/>
             </svg>
           </button>
@@ -145,11 +151,6 @@
       </footer>
     </div>
 
-    <script>
-      const t = resolveTheme();
-      document.getElementById('icon-sun').style.display = t === DARK ? 'none' : 'block';
-      document.getElementById('icon-moon').style.display = t === DARK ? 'block' : 'none';
-    </script>
   </body>
   </html>
 </#macro>

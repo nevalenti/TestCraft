@@ -56,6 +56,14 @@ export const ImportForm = ({
     if (files.length === 0) next.files = "Please drop a file to import";
     else if (detectedFormat === "mixed")
       next.files = "All files must be the same type (.xml or .json)";
+    else if (detectedFormat === "junit" && files.length > 1)
+      next.files = "JUnit import supports a single XML file";
+    else {
+      const MAX = 5 * 1024 * 1024;
+      const oversized = files.find((f) => f.size > MAX);
+      if (oversized)
+        next.files = `"${oversized.name}" exceeds the 5 MB size limit`;
+    }
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
@@ -72,7 +80,11 @@ export const ImportForm = ({
       const results: AllureResultItem[] = [];
       for (let i = 0; i < texts.length; i++) {
         try {
-          results.push(JSON.parse(texts[i]) as AllureResultItem);
+          const parsed = JSON.parse(texts[i]) as
+            | AllureResultItem
+            | AllureResultItem[];
+          if (Array.isArray(parsed)) results.push(...parsed);
+          else results.push(parsed);
         } catch {
           setErrors((prev) => ({
             ...prev,

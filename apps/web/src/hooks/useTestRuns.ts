@@ -1,20 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  AllureResultItem,
-  CreateTestRun,
-  TestRun,
-  UpdateTestRun,
-} from "@testcraft/types";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
 
 import { importsApi } from "@/api/imports";
 import { queryKeys } from "@/api/queryKeys";
 import { testRunQueries, testRunsApi } from "@/api/testRuns";
 import { notify } from "@/lib/notify";
 
-export const useTestRuns = (projectId: string) =>
+export const useTestRuns = (projectId: string, search?: string) =>
   useQuery({
-    ...testRunQueries.all(projectId),
+    ...testRunQueries.all(projectId, search),
     select: (data) => data.items,
+    placeholderData: keepPreviousData,
   });
 
 export const useTestRun = (projectId: string, id: string) =>
@@ -78,17 +79,14 @@ const useImportMutation = <T>(
 export const useImportAllure = (projectId: string) =>
   useImportMutation(
     projectId,
-    (input: {
-      results: AllureResultItem[];
-      environment: string;
-      name?: string;
-    }) => importsApi.allure(projectId, input),
+    (input: Parameters<typeof importsApi.allure>[1]) =>
+      importsApi.allure(projectId, input),
   );
 
 export const useImportJunitXml = (projectId: string) =>
   useImportMutation(
     projectId,
-    (input: { xml: string; environment: string; name?: string }) =>
+    (input: Parameters<typeof importsApi.junit>[1]) =>
       importsApi.junit(projectId, input),
   );
 

@@ -1,0 +1,2350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="TestCraft Full Suite" tests="1000" time="412.7">
+  <testsuite name="AuthTests" tests="100" time="20.98">
+    <testcase name="TC-0001 Auth scenario 1" classname="com.testcraft.auth.Tests" time="1.617">
+    </testcase>
+    <testcase name="TC-0002 Auth scenario 2" classname="com.testcraft.auth.Tests" time="2.497">
+    </testcase>
+    <testcase name="TC-0003 Auth scenario 3" classname="com.testcraft.auth.Tests" time="0.268">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0004 Auth scenario 4" classname="com.testcraft.auth.Tests" time="1.339">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0005 Auth scenario 5" classname="com.testcraft.auth.Tests" time="0.651">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0006 Auth scenario 6" classname="com.testcraft.auth.Tests" time="1.891">
+    </testcase>
+    <testcase name="TC-0007 Auth scenario 7" classname="com.testcraft.auth.Tests" time="1.275">
+    </testcase>
+    <testcase name="TC-0008 Auth scenario 8" classname="com.testcraft.auth.Tests" time="3.022">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0009 Auth scenario 9" classname="com.testcraft.auth.Tests" time="0.458">
+    </testcase>
+    <testcase name="TC-0010 Auth scenario 10" classname="com.testcraft.auth.Tests" time="2.573">
+    </testcase>
+    <testcase name="TC-0011 Auth scenario 11" classname="com.testcraft.auth.Tests" time="2.539">
+    </testcase>
+    <testcase name="TC-0012 Auth scenario 12" classname="com.testcraft.auth.Tests" time="1.377">
+    </testcase>
+    <testcase name="TC-0013 Auth scenario 13" classname="com.testcraft.auth.Tests" time="1.711">
+    </testcase>
+    <testcase name="TC-0014 Auth scenario 14" classname="com.testcraft.auth.Tests" time="2.994">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.auth.Tests.runTC14(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0015 Auth scenario 15" classname="com.testcraft.auth.Tests" time="2.379">
+    </testcase>
+    <testcase name="TC-0016 Auth scenario 16" classname="com.testcraft.auth.Tests" time="0.660">
+    </testcase>
+    <testcase name="TC-0017 Auth scenario 17" classname="com.testcraft.auth.Tests" time="1.973">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:21)</error>
+    </testcase>
+    <testcase name="TC-0018 Auth scenario 18" classname="com.testcraft.auth.Tests" time="2.935">
+    </testcase>
+    <testcase name="TC-0019 Auth scenario 19" classname="com.testcraft.auth.Tests" time="2.606">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.auth.Tests.runTC19(Tests.java:28)</failure>
+    </testcase>
+    <testcase name="TC-0020 Auth scenario 20" classname="com.testcraft.auth.Tests" time="1.484">
+    </testcase>
+    <testcase name="TC-0021 Auth scenario 21" classname="com.testcraft.auth.Tests" time="0.269">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.auth.Tests.runTC21(Tests.java:30)</failure>
+    </testcase>
+    <testcase name="TC-0022 Auth scenario 22" classname="com.testcraft.auth.Tests" time="1.275">
+    </testcase>
+    <testcase name="TC-0023 Auth scenario 23" classname="com.testcraft.auth.Tests" time="2.783">
+    </testcase>
+    <testcase name="TC-0024 Auth scenario 24" classname="com.testcraft.auth.Tests" time="2.032">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0025 Auth scenario 25" classname="com.testcraft.auth.Tests" time="1.348">
+    </testcase>
+    <testcase name="TC-0026 Auth scenario 26" classname="com.testcraft.auth.Tests" time="1.071">
+    </testcase>
+    <testcase name="TC-0027 Auth scenario 27" classname="com.testcraft.auth.Tests" time="2.976">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0028 Auth scenario 28" classname="com.testcraft.auth.Tests" time="0.432">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0029 Auth scenario 29" classname="com.testcraft.auth.Tests" time="2.401">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.auth.Tests.runTC29(Tests.java:38)</failure>
+    </testcase>
+    <testcase name="TC-0030 Auth scenario 30" classname="com.testcraft.auth.Tests" time="0.638">
+    </testcase>
+    <testcase name="TC-0031 Auth scenario 31" classname="com.testcraft.auth.Tests" time="2.984">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:15)</error>
+    </testcase>
+    <testcase name="TC-0032 Auth scenario 32" classname="com.testcraft.auth.Tests" time="0.840">
+    </testcase>
+    <testcase name="TC-0033 Auth scenario 33" classname="com.testcraft.auth.Tests" time="0.209">
+    </testcase>
+    <testcase name="TC-0034 Auth scenario 34" classname="com.testcraft.auth.Tests" time="1.771">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:18)</error>
+    </testcase>
+    <testcase name="TC-0035 Auth scenario 35" classname="com.testcraft.auth.Tests" time="0.053">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.auth.Tests.runTC35(Tests.java:44)</failure>
+    </testcase>
+    <testcase name="TC-0036 Auth scenario 36" classname="com.testcraft.auth.Tests" time="1.325">
+    </testcase>
+    <testcase name="TC-0037 Auth scenario 37" classname="com.testcraft.auth.Tests" time="0.992">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.auth.Tests.runTC37(Tests.java:46)</failure>
+    </testcase>
+    <testcase name="TC-0038 Auth scenario 38" classname="com.testcraft.auth.Tests" time="1.484">
+    </testcase>
+    <testcase name="TC-0039 Auth scenario 39" classname="com.testcraft.auth.Tests" time="0.070">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.auth.Tests.runTC39(Tests.java:48)</failure>
+    </testcase>
+    <testcase name="TC-0040 Auth scenario 40" classname="com.testcraft.auth.Tests" time="1.785">
+    </testcase>
+    <testcase name="TC-0041 Auth scenario 41" classname="com.testcraft.auth.Tests" time="2.367">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.auth.Tests.runTC41(Tests.java:50)</failure>
+    </testcase>
+    <testcase name="TC-0042 Auth scenario 42" classname="com.testcraft.auth.Tests" time="2.255">
+    </testcase>
+    <testcase name="TC-0043 Auth scenario 43" classname="com.testcraft.auth.Tests" time="2.398">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0044 Auth scenario 44" classname="com.testcraft.auth.Tests" time="2.976">
+    </testcase>
+    <testcase name="TC-0045 Auth scenario 45" classname="com.testcraft.auth.Tests" time="2.015">
+    </testcase>
+    <testcase name="TC-0046 Auth scenario 46" classname="com.testcraft.auth.Tests" time="2.173">
+    </testcase>
+    <testcase name="TC-0047 Auth scenario 47" classname="com.testcraft.auth.Tests" time="2.146">
+    </testcase>
+    <testcase name="TC-0048 Auth scenario 48" classname="com.testcraft.auth.Tests" time="0.358">
+    </testcase>
+    <testcase name="TC-0049 Auth scenario 49" classname="com.testcraft.auth.Tests" time="1.638">
+    </testcase>
+    <testcase name="TC-0050 Auth scenario 50" classname="com.testcraft.auth.Tests" time="2.873">
+    </testcase>
+    <testcase name="TC-0051 Auth scenario 51" classname="com.testcraft.auth.Tests" time="2.297">
+    </testcase>
+    <testcase name="TC-0052 Auth scenario 52" classname="com.testcraft.auth.Tests" time="1.322">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.auth.Tests.runTC52(Tests.java:11)</failure>
+    </testcase>
+    <testcase name="TC-0053 Auth scenario 53" classname="com.testcraft.auth.Tests" time="1.042">
+    </testcase>
+    <testcase name="TC-0054 Auth scenario 54" classname="com.testcraft.auth.Tests" time="1.826">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.auth.Tests.runTC54(Tests.java:13)</failure>
+    </testcase>
+    <testcase name="TC-0055 Auth scenario 55" classname="com.testcraft.auth.Tests" time="2.663">
+    </testcase>
+    <testcase name="TC-0056 Auth scenario 56" classname="com.testcraft.auth.Tests" time="0.831">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0057 Auth scenario 57" classname="com.testcraft.auth.Tests" time="3.029">
+    </testcase>
+    <testcase name="TC-0058 Auth scenario 58" classname="com.testcraft.auth.Tests" time="1.036">
+    </testcase>
+    <testcase name="TC-0059 Auth scenario 59" classname="com.testcraft.auth.Tests" time="0.521">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0060 Auth scenario 60" classname="com.testcraft.auth.Tests" time="1.849">
+    </testcase>
+    <testcase name="TC-0061 Auth scenario 61" classname="com.testcraft.auth.Tests" time="2.880">
+    </testcase>
+    <testcase name="TC-0062 Auth scenario 62" classname="com.testcraft.auth.Tests" time="2.222">
+    </testcase>
+    <testcase name="TC-0063 Auth scenario 63" classname="com.testcraft.auth.Tests" time="2.636">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0064 Auth scenario 64" classname="com.testcraft.auth.Tests" time="1.212">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.auth.Tests.runTC64(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0065 Auth scenario 65" classname="com.testcraft.auth.Tests" time="1.374">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.auth.Tests.runTC65(Tests.java:24)</failure>
+    </testcase>
+    <testcase name="TC-0066 Auth scenario 66" classname="com.testcraft.auth.Tests" time="2.651">
+    </testcase>
+    <testcase name="TC-0067 Auth scenario 67" classname="com.testcraft.auth.Tests" time="2.954">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0068 Auth scenario 68" classname="com.testcraft.auth.Tests" time="2.968">
+    </testcase>
+    <testcase name="TC-0069 Auth scenario 69" classname="com.testcraft.auth.Tests" time="0.350">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.auth.Tests.runTC69(Tests.java:28)</failure>
+    </testcase>
+    <testcase name="TC-0070 Auth scenario 70" classname="com.testcraft.auth.Tests" time="0.700">
+    </testcase>
+    <testcase name="TC-0071 Auth scenario 71" classname="com.testcraft.auth.Tests" time="1.261">
+    </testcase>
+    <testcase name="TC-0072 Auth scenario 72" classname="com.testcraft.auth.Tests" time="0.992">
+    </testcase>
+    <testcase name="TC-0073 Auth scenario 73" classname="com.testcraft.auth.Tests" time="0.755">
+    </testcase>
+    <testcase name="TC-0074 Auth scenario 74" classname="com.testcraft.auth.Tests" time="1.066">
+    </testcase>
+    <testcase name="TC-0075 Auth scenario 75" classname="com.testcraft.auth.Tests" time="0.543">
+    </testcase>
+    <testcase name="TC-0076 Auth scenario 76" classname="com.testcraft.auth.Tests" time="0.346">
+    </testcase>
+    <testcase name="TC-0077 Auth scenario 77" classname="com.testcraft.auth.Tests" time="0.333">
+    </testcase>
+    <testcase name="TC-0078 Auth scenario 78" classname="com.testcraft.auth.Tests" time="1.429">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.auth.Tests.runTC78(Tests.java:37)</failure>
+    </testcase>
+    <testcase name="TC-0079 Auth scenario 79" classname="com.testcraft.auth.Tests" time="1.039">
+    </testcase>
+    <testcase name="TC-0080 Auth scenario 80" classname="com.testcraft.auth.Tests" time="0.586">
+    </testcase>
+    <testcase name="TC-0081 Auth scenario 81" classname="com.testcraft.auth.Tests" time="1.239">
+    </testcase>
+    <testcase name="TC-0082 Auth scenario 82" classname="com.testcraft.auth.Tests" time="0.825">
+    </testcase>
+    <testcase name="TC-0083 Auth scenario 83" classname="com.testcraft.auth.Tests" time="0.346">
+    </testcase>
+    <testcase name="TC-0084 Auth scenario 84" classname="com.testcraft.auth.Tests" time="0.541">
+    </testcase>
+    <testcase name="TC-0085 Auth scenario 85" classname="com.testcraft.auth.Tests" time="2.041">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:9)</error>
+    </testcase>
+    <testcase name="TC-0086 Auth scenario 86" classname="com.testcraft.auth.Tests" time="1.591">
+    </testcase>
+    <testcase name="TC-0087 Auth scenario 87" classname="com.testcraft.auth.Tests" time="3.034">
+    </testcase>
+    <testcase name="TC-0088 Auth scenario 88" classname="com.testcraft.auth.Tests" time="0.122">
+    </testcase>
+    <testcase name="TC-0089 Auth scenario 89" classname="com.testcraft.auth.Tests" time="0.724">
+    </testcase>
+    <testcase name="TC-0090 Auth scenario 90" classname="com.testcraft.auth.Tests" time="1.943">
+    </testcase>
+    <testcase name="TC-0091 Auth scenario 91" classname="com.testcraft.auth.Tests" time="0.847">
+    </testcase>
+    <testcase name="TC-0092 Auth scenario 92" classname="com.testcraft.auth.Tests" time="0.488">
+    </testcase>
+    <testcase name="TC-0093 Auth scenario 93" classname="com.testcraft.auth.Tests" time="1.983">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:17)</error>
+    </testcase>
+    <testcase name="TC-0094 Auth scenario 94" classname="com.testcraft.auth.Tests" time="1.107">
+      <error message="NullPointerException in setup">at com.testcraft.auth.Tests.setUp(Tests.java:18)</error>
+    </testcase>
+    <testcase name="TC-0095 Auth scenario 95" classname="com.testcraft.auth.Tests" time="2.400">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.auth.Tests.runTC95(Tests.java:54)</failure>
+    </testcase>
+    <testcase name="TC-0096 Auth scenario 96" classname="com.testcraft.auth.Tests" time="2.934">
+    </testcase>
+    <testcase name="TC-0097 Auth scenario 97" classname="com.testcraft.auth.Tests" time="0.730">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.auth.Tests.runTC97(Tests.java:56)</failure>
+    </testcase>
+    <testcase name="TC-0098 Auth scenario 98" classname="com.testcraft.auth.Tests" time="0.250">
+    </testcase>
+    <testcase name="TC-0099 Auth scenario 99" classname="com.testcraft.auth.Tests" time="0.884">
+    </testcase>
+    <testcase name="TC-0100 Auth scenario 100" classname="com.testcraft.auth.Tests" time="2.596">
+    </testcase>
+  </testsuite>
+  <testsuite name="DashboardTests" tests="100" time="39.74">
+    <testcase name="TC-0101 Dashboard scenario 1" classname="com.testcraft.dashboard.Tests" time="0.189">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.dashboard.Tests.runTC101(Tests.java:10)</failure>
+    </testcase>
+    <testcase name="TC-0102 Dashboard scenario 2" classname="com.testcraft.dashboard.Tests" time="0.830">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.dashboard.Tests.runTC102(Tests.java:11)</failure>
+    </testcase>
+    <testcase name="TC-0103 Dashboard scenario 3" classname="com.testcraft.dashboard.Tests" time="2.528">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0104 Dashboard scenario 4" classname="com.testcraft.dashboard.Tests" time="1.356">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.dashboard.Tests.runTC104(Tests.java:13)</failure>
+    </testcase>
+    <testcase name="TC-0105 Dashboard scenario 5" classname="com.testcraft.dashboard.Tests" time="1.309">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.dashboard.Tests.runTC105(Tests.java:14)</failure>
+    </testcase>
+    <testcase name="TC-0106 Dashboard scenario 6" classname="com.testcraft.dashboard.Tests" time="2.488">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0107 Dashboard scenario 7" classname="com.testcraft.dashboard.Tests" time="1.259">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.dashboard.Tests.runTC107(Tests.java:16)</failure>
+    </testcase>
+    <testcase name="TC-0108 Dashboard scenario 8" classname="com.testcraft.dashboard.Tests" time="2.580">
+    </testcase>
+    <testcase name="TC-0109 Dashboard scenario 9" classname="com.testcraft.dashboard.Tests" time="0.770">
+    </testcase>
+    <testcase name="TC-0110 Dashboard scenario 10" classname="com.testcraft.dashboard.Tests" time="2.661">
+    </testcase>
+    <testcase name="TC-0111 Dashboard scenario 11" classname="com.testcraft.dashboard.Tests" time="1.870">
+    </testcase>
+    <testcase name="TC-0112 Dashboard scenario 12" classname="com.testcraft.dashboard.Tests" time="2.116">
+    </testcase>
+    <testcase name="TC-0113 Dashboard scenario 13" classname="com.testcraft.dashboard.Tests" time="2.894">
+    </testcase>
+    <testcase name="TC-0114 Dashboard scenario 14" classname="com.testcraft.dashboard.Tests" time="1.280">
+    </testcase>
+    <testcase name="TC-0115 Dashboard scenario 15" classname="com.testcraft.dashboard.Tests" time="1.737">
+    </testcase>
+    <testcase name="TC-0116 Dashboard scenario 16" classname="com.testcraft.dashboard.Tests" time="2.310">
+    </testcase>
+    <testcase name="TC-0117 Dashboard scenario 17" classname="com.testcraft.dashboard.Tests" time="2.660">
+    </testcase>
+    <testcase name="TC-0118 Dashboard scenario 18" classname="com.testcraft.dashboard.Tests" time="1.079">
+    </testcase>
+    <testcase name="TC-0119 Dashboard scenario 19" classname="com.testcraft.dashboard.Tests" time="2.678">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0120 Dashboard scenario 20" classname="com.testcraft.dashboard.Tests" time="0.204">
+    </testcase>
+    <testcase name="TC-0121 Dashboard scenario 21" classname="com.testcraft.dashboard.Tests" time="1.565">
+    </testcase>
+    <testcase name="TC-0122 Dashboard scenario 22" classname="com.testcraft.dashboard.Tests" time="0.796">
+    </testcase>
+    <testcase name="TC-0123 Dashboard scenario 23" classname="com.testcraft.dashboard.Tests" time="0.259">
+    </testcase>
+    <testcase name="TC-0124 Dashboard scenario 24" classname="com.testcraft.dashboard.Tests" time="2.301">
+    </testcase>
+    <testcase name="TC-0125 Dashboard scenario 25" classname="com.testcraft.dashboard.Tests" time="1.566">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:9)</error>
+    </testcase>
+    <testcase name="TC-0126 Dashboard scenario 26" classname="com.testcraft.dashboard.Tests" time="1.306">
+    </testcase>
+    <testcase name="TC-0127 Dashboard scenario 27" classname="com.testcraft.dashboard.Tests" time="1.860">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0128 Dashboard scenario 28" classname="com.testcraft.dashboard.Tests" time="0.587">
+    </testcase>
+    <testcase name="TC-0129 Dashboard scenario 29" classname="com.testcraft.dashboard.Tests" time="2.270">
+    </testcase>
+    <testcase name="TC-0130 Dashboard scenario 30" classname="com.testcraft.dashboard.Tests" time="2.676">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.dashboard.Tests.runTC130(Tests.java:39)</failure>
+    </testcase>
+    <testcase name="TC-0131 Dashboard scenario 31" classname="com.testcraft.dashboard.Tests" time="0.956">
+    </testcase>
+    <testcase name="TC-0132 Dashboard scenario 32" classname="com.testcraft.dashboard.Tests" time="0.420">
+    </testcase>
+    <testcase name="TC-0133 Dashboard scenario 33" classname="com.testcraft.dashboard.Tests" time="0.886">
+    </testcase>
+    <testcase name="TC-0134 Dashboard scenario 34" classname="com.testcraft.dashboard.Tests" time="1.050">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:18)</error>
+    </testcase>
+    <testcase name="TC-0135 Dashboard scenario 35" classname="com.testcraft.dashboard.Tests" time="0.267">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:19)</error>
+    </testcase>
+    <testcase name="TC-0136 Dashboard scenario 36" classname="com.testcraft.dashboard.Tests" time="1.750">
+    </testcase>
+    <testcase name="TC-0137 Dashboard scenario 37" classname="com.testcraft.dashboard.Tests" time="0.717">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.dashboard.Tests.runTC137(Tests.java:46)</failure>
+    </testcase>
+    <testcase name="TC-0138 Dashboard scenario 38" classname="com.testcraft.dashboard.Tests" time="2.249">
+    </testcase>
+    <testcase name="TC-0139 Dashboard scenario 39" classname="com.testcraft.dashboard.Tests" time="1.368">
+    </testcase>
+    <testcase name="TC-0140 Dashboard scenario 40" classname="com.testcraft.dashboard.Tests" time="0.863">
+    </testcase>
+    <testcase name="TC-0141 Dashboard scenario 41" classname="com.testcraft.dashboard.Tests" time="1.735">
+    </testcase>
+    <testcase name="TC-0142 Dashboard scenario 42" classname="com.testcraft.dashboard.Tests" time="0.248">
+    </testcase>
+    <testcase name="TC-0143 Dashboard scenario 43" classname="com.testcraft.dashboard.Tests" time="2.405">
+    </testcase>
+    <testcase name="TC-0144 Dashboard scenario 44" classname="com.testcraft.dashboard.Tests" time="0.310">
+    </testcase>
+    <testcase name="TC-0145 Dashboard scenario 45" classname="com.testcraft.dashboard.Tests" time="2.429">
+    </testcase>
+    <testcase name="TC-0146 Dashboard scenario 46" classname="com.testcraft.dashboard.Tests" time="2.873">
+    </testcase>
+    <testcase name="TC-0147 Dashboard scenario 47" classname="com.testcraft.dashboard.Tests" time="0.717">
+    </testcase>
+    <testcase name="TC-0148 Dashboard scenario 48" classname="com.testcraft.dashboard.Tests" time="0.887">
+    </testcase>
+    <testcase name="TC-0149 Dashboard scenario 49" classname="com.testcraft.dashboard.Tests" time="0.822">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.dashboard.Tests.runTC149(Tests.java:58)</failure>
+    </testcase>
+    <testcase name="TC-0150 Dashboard scenario 50" classname="com.testcraft.dashboard.Tests" time="0.227">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:14)</error>
+    </testcase>
+    <testcase name="TC-0151 Dashboard scenario 51" classname="com.testcraft.dashboard.Tests" time="2.124">
+    </testcase>
+    <testcase name="TC-0152 Dashboard scenario 52" classname="com.testcraft.dashboard.Tests" time="1.383">
+    </testcase>
+    <testcase name="TC-0153 Dashboard scenario 53" classname="com.testcraft.dashboard.Tests" time="2.233">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:17)</error>
+    </testcase>
+    <testcase name="TC-0154 Dashboard scenario 54" classname="com.testcraft.dashboard.Tests" time="0.177">
+    </testcase>
+    <testcase name="TC-0155 Dashboard scenario 55" classname="com.testcraft.dashboard.Tests" time="0.380">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:19)</error>
+    </testcase>
+    <testcase name="TC-0156 Dashboard scenario 56" classname="com.testcraft.dashboard.Tests" time="0.050">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0157 Dashboard scenario 57" classname="com.testcraft.dashboard.Tests" time="1.885">
+    </testcase>
+    <testcase name="TC-0158 Dashboard scenario 58" classname="com.testcraft.dashboard.Tests" time="2.113">
+    </testcase>
+    <testcase name="TC-0159 Dashboard scenario 59" classname="com.testcraft.dashboard.Tests" time="2.583">
+    </testcase>
+    <testcase name="TC-0160 Dashboard scenario 60" classname="com.testcraft.dashboard.Tests" time="1.223">
+    </testcase>
+    <testcase name="TC-0161 Dashboard scenario 61" classname="com.testcraft.dashboard.Tests" time="2.152">
+    </testcase>
+    <testcase name="TC-0162 Dashboard scenario 62" classname="com.testcraft.dashboard.Tests" time="2.385">
+    </testcase>
+    <testcase name="TC-0163 Dashboard scenario 63" classname="com.testcraft.dashboard.Tests" time="2.629">
+    </testcase>
+    <testcase name="TC-0164 Dashboard scenario 64" classname="com.testcraft.dashboard.Tests" time="2.194">
+    </testcase>
+    <testcase name="TC-0165 Dashboard scenario 65" classname="com.testcraft.dashboard.Tests" time="0.277">
+    </testcase>
+    <testcase name="TC-0166 Dashboard scenario 66" classname="com.testcraft.dashboard.Tests" time="0.945">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.dashboard.Tests.runTC166(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0167 Dashboard scenario 67" classname="com.testcraft.dashboard.Tests" time="2.537">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0168 Dashboard scenario 68" classname="com.testcraft.dashboard.Tests" time="1.158">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.dashboard.Tests.runTC168(Tests.java:27)</failure>
+    </testcase>
+    <testcase name="TC-0169 Dashboard scenario 69" classname="com.testcraft.dashboard.Tests" time="0.175">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.dashboard.Tests.runTC169(Tests.java:28)</failure>
+    </testcase>
+    <testcase name="TC-0170 Dashboard scenario 70" classname="com.testcraft.dashboard.Tests" time="0.753">
+    </testcase>
+    <testcase name="TC-0171 Dashboard scenario 71" classname="com.testcraft.dashboard.Tests" time="1.979">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0172 Dashboard scenario 72" classname="com.testcraft.dashboard.Tests" time="2.121">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:16)</error>
+    </testcase>
+    <testcase name="TC-0173 Dashboard scenario 73" classname="com.testcraft.dashboard.Tests" time="0.495">
+    </testcase>
+    <testcase name="TC-0174 Dashboard scenario 74" classname="com.testcraft.dashboard.Tests" time="2.749">
+    </testcase>
+    <testcase name="TC-0175 Dashboard scenario 75" classname="com.testcraft.dashboard.Tests" time="2.828">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.dashboard.Tests.runTC175(Tests.java:34)</failure>
+    </testcase>
+    <testcase name="TC-0176 Dashboard scenario 76" classname="com.testcraft.dashboard.Tests" time="2.497">
+    </testcase>
+    <testcase name="TC-0177 Dashboard scenario 77" classname="com.testcraft.dashboard.Tests" time="0.684">
+    </testcase>
+    <testcase name="TC-0178 Dashboard scenario 78" classname="com.testcraft.dashboard.Tests" time="1.186">
+    </testcase>
+    <testcase name="TC-0179 Dashboard scenario 79" classname="com.testcraft.dashboard.Tests" time="2.222">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0180 Dashboard scenario 80" classname="com.testcraft.dashboard.Tests" time="2.426">
+    </testcase>
+    <testcase name="TC-0181 Dashboard scenario 81" classname="com.testcraft.dashboard.Tests" time="1.363">
+    </testcase>
+    <testcase name="TC-0182 Dashboard scenario 82" classname="com.testcraft.dashboard.Tests" time="1.335">
+    </testcase>
+    <testcase name="TC-0183 Dashboard scenario 83" classname="com.testcraft.dashboard.Tests" time="2.321">
+    </testcase>
+    <testcase name="TC-0184 Dashboard scenario 84" classname="com.testcraft.dashboard.Tests" time="0.406">
+    </testcase>
+    <testcase name="TC-0185 Dashboard scenario 85" classname="com.testcraft.dashboard.Tests" time="1.159">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.dashboard.Tests.runTC185(Tests.java:44)</failure>
+    </testcase>
+    <testcase name="TC-0186 Dashboard scenario 86" classname="com.testcraft.dashboard.Tests" time="1.047">
+    </testcase>
+    <testcase name="TC-0187 Dashboard scenario 87" classname="com.testcraft.dashboard.Tests" time="2.219">
+    </testcase>
+    <testcase name="TC-0188 Dashboard scenario 88" classname="com.testcraft.dashboard.Tests" time="1.635">
+    </testcase>
+    <testcase name="TC-0189 Dashboard scenario 89" classname="com.testcraft.dashboard.Tests" time="0.155">
+    </testcase>
+    <testcase name="TC-0190 Dashboard scenario 90" classname="com.testcraft.dashboard.Tests" time="2.465">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.dashboard.Tests.runTC190(Tests.java:49)</failure>
+    </testcase>
+    <testcase name="TC-0191 Dashboard scenario 91" classname="com.testcraft.dashboard.Tests" time="2.985">
+    </testcase>
+    <testcase name="TC-0192 Dashboard scenario 92" classname="com.testcraft.dashboard.Tests" time="0.927">
+    </testcase>
+    <testcase name="TC-0193 Dashboard scenario 93" classname="com.testcraft.dashboard.Tests" time="1.124">
+    </testcase>
+    <testcase name="TC-0194 Dashboard scenario 94" classname="com.testcraft.dashboard.Tests" time="2.057">
+    </testcase>
+    <testcase name="TC-0195 Dashboard scenario 95" classname="com.testcraft.dashboard.Tests" time="2.654">
+    </testcase>
+    <testcase name="TC-0196 Dashboard scenario 96" classname="com.testcraft.dashboard.Tests" time="2.833">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0197 Dashboard scenario 97" classname="com.testcraft.dashboard.Tests" time="1.141">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.dashboard.Tests.runTC197(Tests.java:56)</failure>
+    </testcase>
+    <testcase name="TC-0198 Dashboard scenario 98" classname="com.testcraft.dashboard.Tests" time="0.557">
+      <error message="NullPointerException in setup">at com.testcraft.dashboard.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0199 Dashboard scenario 99" classname="com.testcraft.dashboard.Tests" time="1.899">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0200 Dashboard scenario 100" classname="com.testcraft.dashboard.Tests" time="0.824">
+    </testcase>
+  </testsuite>
+  <testsuite name="ProjectsTests" tests="100" time="43.76">
+    <testcase name="TC-0201 Projects scenario 1" classname="com.testcraft.projects.Tests" time="0.182">
+    </testcase>
+    <testcase name="TC-0202 Projects scenario 2" classname="com.testcraft.projects.Tests" time="0.626">
+    </testcase>
+    <testcase name="TC-0203 Projects scenario 3" classname="com.testcraft.projects.Tests" time="1.540">
+    </testcase>
+    <testcase name="TC-0204 Projects scenario 4" classname="com.testcraft.projects.Tests" time="0.762">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.projects.Tests.runTC204(Tests.java:13)</failure>
+    </testcase>
+    <testcase name="TC-0205 Projects scenario 5" classname="com.testcraft.projects.Tests" time="0.603">
+    </testcase>
+    <testcase name="TC-0206 Projects scenario 6" classname="com.testcraft.projects.Tests" time="1.668">
+    </testcase>
+    <testcase name="TC-0207 Projects scenario 7" classname="com.testcraft.projects.Tests" time="1.851">
+    </testcase>
+    <testcase name="TC-0208 Projects scenario 8" classname="com.testcraft.projects.Tests" time="0.790">
+    </testcase>
+    <testcase name="TC-0209 Projects scenario 9" classname="com.testcraft.projects.Tests" time="0.581">
+    </testcase>
+    <testcase name="TC-0210 Projects scenario 10" classname="com.testcraft.projects.Tests" time="1.102">
+    </testcase>
+    <testcase name="TC-0211 Projects scenario 11" classname="com.testcraft.projects.Tests" time="1.425">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:15)</error>
+    </testcase>
+    <testcase name="TC-0212 Projects scenario 12" classname="com.testcraft.projects.Tests" time="1.886">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.projects.Tests.runTC212(Tests.java:21)</failure>
+    </testcase>
+    <testcase name="TC-0213 Projects scenario 13" classname="com.testcraft.projects.Tests" time="0.271">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:17)</error>
+    </testcase>
+    <testcase name="TC-0214 Projects scenario 14" classname="com.testcraft.projects.Tests" time="2.458">
+    </testcase>
+    <testcase name="TC-0215 Projects scenario 15" classname="com.testcraft.projects.Tests" time="0.364">
+    </testcase>
+    <testcase name="TC-0216 Projects scenario 16" classname="com.testcraft.projects.Tests" time="2.775">
+    </testcase>
+    <testcase name="TC-0217 Projects scenario 17" classname="com.testcraft.projects.Tests" time="0.532">
+    </testcase>
+    <testcase name="TC-0218 Projects scenario 18" classname="com.testcraft.projects.Tests" time="0.623">
+    </testcase>
+    <testcase name="TC-0219 Projects scenario 19" classname="com.testcraft.projects.Tests" time="0.548">
+    </testcase>
+    <testcase name="TC-0220 Projects scenario 20" classname="com.testcraft.projects.Tests" time="0.516">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.projects.Tests.runTC220(Tests.java:29)</failure>
+    </testcase>
+    <testcase name="TC-0221 Projects scenario 21" classname="com.testcraft.projects.Tests" time="1.145">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0222 Projects scenario 22" classname="com.testcraft.projects.Tests" time="2.486">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0223 Projects scenario 23" classname="com.testcraft.projects.Tests" time="1.704">
+    </testcase>
+    <testcase name="TC-0224 Projects scenario 24" classname="com.testcraft.projects.Tests" time="1.735">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0225 Projects scenario 25" classname="com.testcraft.projects.Tests" time="1.585">
+    </testcase>
+    <testcase name="TC-0226 Projects scenario 26" classname="com.testcraft.projects.Tests" time="1.749">
+    </testcase>
+    <testcase name="TC-0227 Projects scenario 27" classname="com.testcraft.projects.Tests" time="2.725">
+    </testcase>
+    <testcase name="TC-0228 Projects scenario 28" classname="com.testcraft.projects.Tests" time="2.846">
+    </testcase>
+    <testcase name="TC-0229 Projects scenario 29" classname="com.testcraft.projects.Tests" time="2.677">
+    </testcase>
+    <testcase name="TC-0230 Projects scenario 30" classname="com.testcraft.projects.Tests" time="2.828">
+    </testcase>
+    <testcase name="TC-0231 Projects scenario 31" classname="com.testcraft.projects.Tests" time="1.792">
+    </testcase>
+    <testcase name="TC-0232 Projects scenario 32" classname="com.testcraft.projects.Tests" time="0.406">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0233 Projects scenario 33" classname="com.testcraft.projects.Tests" time="2.613">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.projects.Tests.runTC233(Tests.java:42)</failure>
+    </testcase>
+    <testcase name="TC-0234 Projects scenario 34" classname="com.testcraft.projects.Tests" time="0.325">
+    </testcase>
+    <testcase name="TC-0235 Projects scenario 35" classname="com.testcraft.projects.Tests" time="2.245">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0236 Projects scenario 36" classname="com.testcraft.projects.Tests" time="1.857">
+    </testcase>
+    <testcase name="TC-0237 Projects scenario 37" classname="com.testcraft.projects.Tests" time="0.932">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:21)</error>
+    </testcase>
+    <testcase name="TC-0238 Projects scenario 38" classname="com.testcraft.projects.Tests" time="2.085">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0239 Projects scenario 39" classname="com.testcraft.projects.Tests" time="0.734">
+    </testcase>
+    <testcase name="TC-0240 Projects scenario 40" classname="com.testcraft.projects.Tests" time="0.371">
+    </testcase>
+    <testcase name="TC-0241 Projects scenario 41" classname="com.testcraft.projects.Tests" time="1.307">
+    </testcase>
+    <testcase name="TC-0242 Projects scenario 42" classname="com.testcraft.projects.Tests" time="1.173">
+    </testcase>
+    <testcase name="TC-0243 Projects scenario 43" classname="com.testcraft.projects.Tests" time="2.669">
+    </testcase>
+    <testcase name="TC-0244 Projects scenario 44" classname="com.testcraft.projects.Tests" time="0.993">
+    </testcase>
+    <testcase name="TC-0245 Projects scenario 45" classname="com.testcraft.projects.Tests" time="1.201">
+    </testcase>
+    <testcase name="TC-0246 Projects scenario 46" classname="com.testcraft.projects.Tests" time="1.740">
+    </testcase>
+    <testcase name="TC-0247 Projects scenario 47" classname="com.testcraft.projects.Tests" time="2.684">
+    </testcase>
+    <testcase name="TC-0248 Projects scenario 48" classname="com.testcraft.projects.Tests" time="0.516">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.projects.Tests.runTC248(Tests.java:57)</failure>
+    </testcase>
+    <testcase name="TC-0249 Projects scenario 49" classname="com.testcraft.projects.Tests" time="2.240">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0250 Projects scenario 50" classname="com.testcraft.projects.Tests" time="0.782">
+    </testcase>
+    <testcase name="TC-0251 Projects scenario 51" classname="com.testcraft.projects.Tests" time="1.259">
+    </testcase>
+    <testcase name="TC-0252 Projects scenario 52" classname="com.testcraft.projects.Tests" time="2.929">
+    </testcase>
+    <testcase name="TC-0253 Projects scenario 53" classname="com.testcraft.projects.Tests" time="1.850">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.projects.Tests.runTC253(Tests.java:12)</failure>
+    </testcase>
+    <testcase name="TC-0254 Projects scenario 54" classname="com.testcraft.projects.Tests" time="2.857">
+    </testcase>
+    <testcase name="TC-0255 Projects scenario 55" classname="com.testcraft.projects.Tests" time="2.816">
+    </testcase>
+    <testcase name="TC-0256 Projects scenario 56" classname="com.testcraft.projects.Tests" time="2.928">
+    </testcase>
+    <testcase name="TC-0257 Projects scenario 57" classname="com.testcraft.projects.Tests" time="2.949">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:21)</error>
+    </testcase>
+    <testcase name="TC-0258 Projects scenario 58" classname="com.testcraft.projects.Tests" time="0.217">
+    </testcase>
+    <testcase name="TC-0259 Projects scenario 59" classname="com.testcraft.projects.Tests" time="0.529">
+    </testcase>
+    <testcase name="TC-0260 Projects scenario 60" classname="com.testcraft.projects.Tests" time="2.519">
+    </testcase>
+    <testcase name="TC-0261 Projects scenario 61" classname="com.testcraft.projects.Tests" time="1.447">
+    </testcase>
+    <testcase name="TC-0262 Projects scenario 62" classname="com.testcraft.projects.Tests" time="0.551">
+    </testcase>
+    <testcase name="TC-0263 Projects scenario 63" classname="com.testcraft.projects.Tests" time="0.590">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0264 Projects scenario 64" classname="com.testcraft.projects.Tests" time="1.916">
+    </testcase>
+    <testcase name="TC-0265 Projects scenario 65" classname="com.testcraft.projects.Tests" time="2.274">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0266 Projects scenario 66" classname="com.testcraft.projects.Tests" time="0.338">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.projects.Tests.runTC266(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0267 Projects scenario 67" classname="com.testcraft.projects.Tests" time="1.240">
+    </testcase>
+    <testcase name="TC-0268 Projects scenario 68" classname="com.testcraft.projects.Tests" time="2.726">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0269 Projects scenario 69" classname="com.testcraft.projects.Tests" time="0.555">
+    </testcase>
+    <testcase name="TC-0270 Projects scenario 70" classname="com.testcraft.projects.Tests" time="2.224">
+    </testcase>
+    <testcase name="TC-0271 Projects scenario 71" classname="com.testcraft.projects.Tests" time="0.319">
+    </testcase>
+    <testcase name="TC-0272 Projects scenario 72" classname="com.testcraft.projects.Tests" time="0.602">
+    </testcase>
+    <testcase name="TC-0273 Projects scenario 73" classname="com.testcraft.projects.Tests" time="0.655">
+    </testcase>
+    <testcase name="TC-0274 Projects scenario 74" classname="com.testcraft.projects.Tests" time="1.770">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:18)</error>
+    </testcase>
+    <testcase name="TC-0275 Projects scenario 75" classname="com.testcraft.projects.Tests" time="0.674">
+    </testcase>
+    <testcase name="TC-0276 Projects scenario 76" classname="com.testcraft.projects.Tests" time="1.350">
+    </testcase>
+    <testcase name="TC-0277 Projects scenario 77" classname="com.testcraft.projects.Tests" time="0.908">
+    </testcase>
+    <testcase name="TC-0278 Projects scenario 78" classname="com.testcraft.projects.Tests" time="1.994">
+    </testcase>
+    <testcase name="TC-0279 Projects scenario 79" classname="com.testcraft.projects.Tests" time="0.704">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0280 Projects scenario 80" classname="com.testcraft.projects.Tests" time="2.788">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:24)</error>
+    </testcase>
+    <testcase name="TC-0281 Projects scenario 81" classname="com.testcraft.projects.Tests" time="1.394">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.projects.Tests.runTC281(Tests.java:40)</failure>
+    </testcase>
+    <testcase name="TC-0282 Projects scenario 82" classname="com.testcraft.projects.Tests" time="2.178">
+    </testcase>
+    <testcase name="TC-0283 Projects scenario 83" classname="com.testcraft.projects.Tests" time="1.392">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.projects.Tests.runTC283(Tests.java:42)</failure>
+    </testcase>
+    <testcase name="TC-0284 Projects scenario 84" classname="com.testcraft.projects.Tests" time="2.703">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.projects.Tests.runTC284(Tests.java:43)</failure>
+    </testcase>
+    <testcase name="TC-0285 Projects scenario 85" classname="com.testcraft.projects.Tests" time="0.405">
+    </testcase>
+    <testcase name="TC-0286 Projects scenario 86" classname="com.testcraft.projects.Tests" time="0.549">
+    </testcase>
+    <testcase name="TC-0287 Projects scenario 87" classname="com.testcraft.projects.Tests" time="2.878">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0288 Projects scenario 88" classname="com.testcraft.projects.Tests" time="2.361">
+    </testcase>
+    <testcase name="TC-0289 Projects scenario 89" classname="com.testcraft.projects.Tests" time="2.998">
+    </testcase>
+    <testcase name="TC-0290 Projects scenario 90" classname="com.testcraft.projects.Tests" time="2.017">
+    </testcase>
+    <testcase name="TC-0291 Projects scenario 91" classname="com.testcraft.projects.Tests" time="0.492">
+      <error message="NullPointerException in setup">at com.testcraft.projects.Tests.setUp(Tests.java:15)</error>
+    </testcase>
+    <testcase name="TC-0292 Projects scenario 92" classname="com.testcraft.projects.Tests" time="2.588">
+    </testcase>
+    <testcase name="TC-0293 Projects scenario 93" classname="com.testcraft.projects.Tests" time="0.630">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.projects.Tests.runTC293(Tests.java:52)</failure>
+    </testcase>
+    <testcase name="TC-0294 Projects scenario 94" classname="com.testcraft.projects.Tests" time="1.086">
+    </testcase>
+    <testcase name="TC-0295 Projects scenario 95" classname="com.testcraft.projects.Tests" time="0.176">
+    </testcase>
+    <testcase name="TC-0296 Projects scenario 96" classname="com.testcraft.projects.Tests" time="0.204">
+    </testcase>
+    <testcase name="TC-0297 Projects scenario 97" classname="com.testcraft.projects.Tests" time="0.811">
+    </testcase>
+    <testcase name="TC-0298 Projects scenario 98" classname="com.testcraft.projects.Tests" time="0.683">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.projects.Tests.runTC298(Tests.java:57)</failure>
+    </testcase>
+    <testcase name="TC-0299 Projects scenario 99" classname="com.testcraft.projects.Tests" time="0.225">
+    </testcase>
+    <testcase name="TC-0300 Projects scenario 100" classname="com.testcraft.projects.Tests" time="0.194">
+    </testcase>
+  </testsuite>
+  <testsuite name="TestRunsTests" tests="100" time="12.05">
+    <testcase name="TC-0301 TestRuns scenario 1" classname="com.testcraft.testruns.Tests" time="0.688">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.testruns.Tests.runTC301(Tests.java:10)</failure>
+    </testcase>
+    <testcase name="TC-0302 TestRuns scenario 2" classname="com.testcraft.testruns.Tests" time="0.809">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0303 TestRuns scenario 3" classname="com.testcraft.testruns.Tests" time="1.199">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0304 TestRuns scenario 4" classname="com.testcraft.testruns.Tests" time="1.522">
+    </testcase>
+    <testcase name="TC-0305 TestRuns scenario 5" classname="com.testcraft.testruns.Tests" time="1.803">
+    </testcase>
+    <testcase name="TC-0306 TestRuns scenario 6" classname="com.testcraft.testruns.Tests" time="1.671">
+    </testcase>
+    <testcase name="TC-0307 TestRuns scenario 7" classname="com.testcraft.testruns.Tests" time="2.190">
+    </testcase>
+    <testcase name="TC-0308 TestRuns scenario 8" classname="com.testcraft.testruns.Tests" time="1.345">
+    </testcase>
+    <testcase name="TC-0309 TestRuns scenario 9" classname="com.testcraft.testruns.Tests" time="0.757">
+    </testcase>
+    <testcase name="TC-0310 TestRuns scenario 10" classname="com.testcraft.testruns.Tests" time="2.209">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0311 TestRuns scenario 11" classname="com.testcraft.testruns.Tests" time="0.195">
+    </testcase>
+    <testcase name="TC-0312 TestRuns scenario 12" classname="com.testcraft.testruns.Tests" time="0.908">
+    </testcase>
+    <testcase name="TC-0313 TestRuns scenario 13" classname="com.testcraft.testruns.Tests" time="2.532">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0314 TestRuns scenario 14" classname="com.testcraft.testruns.Tests" time="2.415">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.testruns.Tests.runTC314(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0315 TestRuns scenario 15" classname="com.testcraft.testruns.Tests" time="0.974">
+    </testcase>
+    <testcase name="TC-0316 TestRuns scenario 16" classname="com.testcraft.testruns.Tests" time="0.846">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0317 TestRuns scenario 17" classname="com.testcraft.testruns.Tests" time="1.119">
+    </testcase>
+    <testcase name="TC-0318 TestRuns scenario 18" classname="com.testcraft.testruns.Tests" time="0.596">
+    </testcase>
+    <testcase name="TC-0319 TestRuns scenario 19" classname="com.testcraft.testruns.Tests" time="2.648">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0320 TestRuns scenario 20" classname="com.testcraft.testruns.Tests" time="2.894">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0321 TestRuns scenario 21" classname="com.testcraft.testruns.Tests" time="1.350">
+    </testcase>
+    <testcase name="TC-0322 TestRuns scenario 22" classname="com.testcraft.testruns.Tests" time="0.682">
+    </testcase>
+    <testcase name="TC-0323 TestRuns scenario 23" classname="com.testcraft.testruns.Tests" time="0.821">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0324 TestRuns scenario 24" classname="com.testcraft.testruns.Tests" time="2.469">
+      <error message="NullPointerException in setup">at com.testcraft.testruns.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0325 TestRuns scenario 25" classname="com.testcraft.testruns.Tests" time="1.329">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0326 TestRuns scenario 26" classname="com.testcraft.testruns.Tests" time="0.372">
+    </testcase>
+    <testcase name="TC-0327 TestRuns scenario 27" classname="com.testcraft.testruns.Tests" time="1.613">
+    </testcase>
+    <testcase name="TC-0328 TestRuns scenario 28" classname="com.testcraft.testruns.Tests" time="0.895">
+    </testcase>
+    <testcase name="TC-0329 TestRuns scenario 29" classname="com.testcraft.testruns.Tests" time="1.389">
+    </testcase>
+    <testcase name="TC-0330 TestRuns scenario 30" classname="com.testcraft.testruns.Tests" time="2.347">
+    </testcase>
+    <testcase name="TC-0331 TestRuns scenario 31" classname="com.testcraft.testruns.Tests" time="2.714">
+    </testcase>
+    <testcase name="TC-0332 TestRuns scenario 32" classname="com.testcraft.testruns.Tests" time="1.118">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testruns.Tests.runTC332(Tests.java:41)</failure>
+    </testcase>
+    <testcase name="TC-0333 TestRuns scenario 33" classname="com.testcraft.testruns.Tests" time="1.962">
+    </testcase>
+    <testcase name="TC-0334 TestRuns scenario 34" classname="com.testcraft.testruns.Tests" time="2.590">
+    </testcase>
+    <testcase name="TC-0335 TestRuns scenario 35" classname="com.testcraft.testruns.Tests" time="0.986">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testruns.Tests.runTC335(Tests.java:44)</failure>
+    </testcase>
+    <testcase name="TC-0336 TestRuns scenario 36" classname="com.testcraft.testruns.Tests" time="0.144">
+    </testcase>
+    <testcase name="TC-0337 TestRuns scenario 37" classname="com.testcraft.testruns.Tests" time="0.761">
+    </testcase>
+    <testcase name="TC-0338 TestRuns scenario 38" classname="com.testcraft.testruns.Tests" time="2.322">
+    </testcase>
+    <testcase name="TC-0339 TestRuns scenario 39" classname="com.testcraft.testruns.Tests" time="0.220">
+    </testcase>
+    <testcase name="TC-0340 TestRuns scenario 40" classname="com.testcraft.testruns.Tests" time="0.108">
+    </testcase>
+    <testcase name="TC-0341 TestRuns scenario 41" classname="com.testcraft.testruns.Tests" time="1.428">
+    </testcase>
+    <testcase name="TC-0342 TestRuns scenario 42" classname="com.testcraft.testruns.Tests" time="0.627">
+    </testcase>
+    <testcase name="TC-0343 TestRuns scenario 43" classname="com.testcraft.testruns.Tests" time="1.428">
+    </testcase>
+    <testcase name="TC-0344 TestRuns scenario 44" classname="com.testcraft.testruns.Tests" time="2.157">
+    </testcase>
+    <testcase name="TC-0345 TestRuns scenario 45" classname="com.testcraft.testruns.Tests" time="1.125">
+    </testcase>
+    <testcase name="TC-0346 TestRuns scenario 46" classname="com.testcraft.testruns.Tests" time="0.763">
+    </testcase>
+    <testcase name="TC-0347 TestRuns scenario 47" classname="com.testcraft.testruns.Tests" time="2.120">
+    </testcase>
+    <testcase name="TC-0348 TestRuns scenario 48" classname="com.testcraft.testruns.Tests" time="1.041">
+    </testcase>
+    <testcase name="TC-0349 TestRuns scenario 49" classname="com.testcraft.testruns.Tests" time="2.240">
+    </testcase>
+    <testcase name="TC-0350 TestRuns scenario 50" classname="com.testcraft.testruns.Tests" time="2.718">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0351 TestRuns scenario 51" classname="com.testcraft.testruns.Tests" time="1.124">
+    </testcase>
+    <testcase name="TC-0352 TestRuns scenario 52" classname="com.testcraft.testruns.Tests" time="0.300">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testruns.Tests.runTC352(Tests.java:11)</failure>
+    </testcase>
+    <testcase name="TC-0353 TestRuns scenario 53" classname="com.testcraft.testruns.Tests" time="2.295">
+      <error message="NullPointerException in setup">at com.testcraft.testruns.Tests.setUp(Tests.java:17)</error>
+    </testcase>
+    <testcase name="TC-0354 TestRuns scenario 54" classname="com.testcraft.testruns.Tests" time="2.680">
+    </testcase>
+    <testcase name="TC-0355 TestRuns scenario 55" classname="com.testcraft.testruns.Tests" time="1.288">
+    </testcase>
+    <testcase name="TC-0356 TestRuns scenario 56" classname="com.testcraft.testruns.Tests" time="2.630">
+    </testcase>
+    <testcase name="TC-0357 TestRuns scenario 57" classname="com.testcraft.testruns.Tests" time="2.378">
+    </testcase>
+    <testcase name="TC-0358 TestRuns scenario 58" classname="com.testcraft.testruns.Tests" time="0.452">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0359 TestRuns scenario 59" classname="com.testcraft.testruns.Tests" time="0.439">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0360 TestRuns scenario 60" classname="com.testcraft.testruns.Tests" time="1.228">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0361 TestRuns scenario 61" classname="com.testcraft.testruns.Tests" time="0.262">
+    </testcase>
+    <testcase name="TC-0362 TestRuns scenario 62" classname="com.testcraft.testruns.Tests" time="2.003">
+    </testcase>
+    <testcase name="TC-0363 TestRuns scenario 63" classname="com.testcraft.testruns.Tests" time="1.857">
+    </testcase>
+    <testcase name="TC-0364 TestRuns scenario 64" classname="com.testcraft.testruns.Tests" time="1.281">
+    </testcase>
+    <testcase name="TC-0365 TestRuns scenario 65" classname="com.testcraft.testruns.Tests" time="2.790">
+    </testcase>
+    <testcase name="TC-0366 TestRuns scenario 66" classname="com.testcraft.testruns.Tests" time="1.514">
+    </testcase>
+    <testcase name="TC-0367 TestRuns scenario 67" classname="com.testcraft.testruns.Tests" time="1.590">
+    </testcase>
+    <testcase name="TC-0368 TestRuns scenario 68" classname="com.testcraft.testruns.Tests" time="1.421">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0369 TestRuns scenario 69" classname="com.testcraft.testruns.Tests" time="1.874">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0370 TestRuns scenario 70" classname="com.testcraft.testruns.Tests" time="1.002">
+    </testcase>
+    <testcase name="TC-0371 TestRuns scenario 71" classname="com.testcraft.testruns.Tests" time="1.034">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0372 TestRuns scenario 72" classname="com.testcraft.testruns.Tests" time="2.350">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0373 TestRuns scenario 73" classname="com.testcraft.testruns.Tests" time="1.806">
+    </testcase>
+    <testcase name="TC-0374 TestRuns scenario 74" classname="com.testcraft.testruns.Tests" time="1.039">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0375 TestRuns scenario 75" classname="com.testcraft.testruns.Tests" time="1.649">
+    </testcase>
+    <testcase name="TC-0376 TestRuns scenario 76" classname="com.testcraft.testruns.Tests" time="2.891">
+      <error message="NullPointerException in setup">at com.testcraft.testruns.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0377 TestRuns scenario 77" classname="com.testcraft.testruns.Tests" time="0.501">
+    </testcase>
+    <testcase name="TC-0378 TestRuns scenario 78" classname="com.testcraft.testruns.Tests" time="0.182">
+      <error message="NullPointerException in setup">at com.testcraft.testruns.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0379 TestRuns scenario 79" classname="com.testcraft.testruns.Tests" time="2.882">
+    </testcase>
+    <testcase name="TC-0380 TestRuns scenario 80" classname="com.testcraft.testruns.Tests" time="2.596">
+    </testcase>
+    <testcase name="TC-0381 TestRuns scenario 81" classname="com.testcraft.testruns.Tests" time="2.702">
+    </testcase>
+    <testcase name="TC-0382 TestRuns scenario 82" classname="com.testcraft.testruns.Tests" time="1.075">
+    </testcase>
+    <testcase name="TC-0383 TestRuns scenario 83" classname="com.testcraft.testruns.Tests" time="2.644">
+    </testcase>
+    <testcase name="TC-0384 TestRuns scenario 84" classname="com.testcraft.testruns.Tests" time="0.425">
+    </testcase>
+    <testcase name="TC-0385 TestRuns scenario 85" classname="com.testcraft.testruns.Tests" time="2.029">
+    </testcase>
+    <testcase name="TC-0386 TestRuns scenario 86" classname="com.testcraft.testruns.Tests" time="2.583">
+    </testcase>
+    <testcase name="TC-0387 TestRuns scenario 87" classname="com.testcraft.testruns.Tests" time="1.609">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.testruns.Tests.runTC387(Tests.java:46)</failure>
+    </testcase>
+    <testcase name="TC-0388 TestRuns scenario 88" classname="com.testcraft.testruns.Tests" time="1.055">
+    </testcase>
+    <testcase name="TC-0389 TestRuns scenario 89" classname="com.testcraft.testruns.Tests" time="1.408">
+    </testcase>
+    <testcase name="TC-0390 TestRuns scenario 90" classname="com.testcraft.testruns.Tests" time="2.178">
+      <error message="NullPointerException in setup">at com.testcraft.testruns.Tests.setUp(Tests.java:14)</error>
+    </testcase>
+    <testcase name="TC-0391 TestRuns scenario 91" classname="com.testcraft.testruns.Tests" time="0.126">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testruns.Tests.runTC391(Tests.java:50)</failure>
+    </testcase>
+    <testcase name="TC-0392 TestRuns scenario 92" classname="com.testcraft.testruns.Tests" time="2.992">
+    </testcase>
+    <testcase name="TC-0393 TestRuns scenario 93" classname="com.testcraft.testruns.Tests" time="1.345">
+    </testcase>
+    <testcase name="TC-0394 TestRuns scenario 94" classname="com.testcraft.testruns.Tests" time="0.331">
+    </testcase>
+    <testcase name="TC-0395 TestRuns scenario 95" classname="com.testcraft.testruns.Tests" time="0.319">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0396 TestRuns scenario 96" classname="com.testcraft.testruns.Tests" time="0.642">
+    </testcase>
+    <testcase name="TC-0397 TestRuns scenario 97" classname="com.testcraft.testruns.Tests" time="3.039">
+    </testcase>
+    <testcase name="TC-0398 TestRuns scenario 98" classname="com.testcraft.testruns.Tests" time="0.787">
+    </testcase>
+    <testcase name="TC-0399 TestRuns scenario 99" classname="com.testcraft.testruns.Tests" time="0.086">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testruns.Tests.runTC399(Tests.java:58)</failure>
+    </testcase>
+    <testcase name="TC-0400 TestRuns scenario 100" classname="com.testcraft.testruns.Tests" time="2.445">
+    </testcase>
+  </testsuite>
+  <testsuite name="TestSuitesTests" tests="100" time="19.36">
+    <testcase name="TC-0401 TestSuites scenario 1" classname="com.testcraft.testsuites.Tests" time="2.206">
+    </testcase>
+    <testcase name="TC-0402 TestSuites scenario 2" classname="com.testcraft.testsuites.Tests" time="0.905">
+    </testcase>
+    <testcase name="TC-0403 TestSuites scenario 3" classname="com.testcraft.testsuites.Tests" time="2.983">
+    </testcase>
+    <testcase name="TC-0404 TestSuites scenario 4" classname="com.testcraft.testsuites.Tests" time="1.314">
+    </testcase>
+    <testcase name="TC-0405 TestSuites scenario 5" classname="com.testcraft.testsuites.Tests" time="1.835">
+    </testcase>
+    <testcase name="TC-0406 TestSuites scenario 6" classname="com.testcraft.testsuites.Tests" time="0.958">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0407 TestSuites scenario 7" classname="com.testcraft.testsuites.Tests" time="0.525">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0408 TestSuites scenario 8" classname="com.testcraft.testsuites.Tests" time="2.490">
+    </testcase>
+    <testcase name="TC-0409 TestSuites scenario 9" classname="com.testcraft.testsuites.Tests" time="1.054">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:13)</error>
+    </testcase>
+    <testcase name="TC-0410 TestSuites scenario 10" classname="com.testcraft.testsuites.Tests" time="0.861">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.testsuites.Tests.runTC410(Tests.java:19)</failure>
+    </testcase>
+    <testcase name="TC-0411 TestSuites scenario 11" classname="com.testcraft.testsuites.Tests" time="0.950">
+    </testcase>
+    <testcase name="TC-0412 TestSuites scenario 12" classname="com.testcraft.testsuites.Tests" time="2.370">
+    </testcase>
+    <testcase name="TC-0413 TestSuites scenario 13" classname="com.testcraft.testsuites.Tests" time="1.462">
+    </testcase>
+    <testcase name="TC-0414 TestSuites scenario 14" classname="com.testcraft.testsuites.Tests" time="2.337">
+    </testcase>
+    <testcase name="TC-0415 TestSuites scenario 15" classname="com.testcraft.testsuites.Tests" time="2.095">
+    </testcase>
+    <testcase name="TC-0416 TestSuites scenario 16" classname="com.testcraft.testsuites.Tests" time="1.698">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0417 TestSuites scenario 17" classname="com.testcraft.testsuites.Tests" time="0.314">
+    </testcase>
+    <testcase name="TC-0418 TestSuites scenario 18" classname="com.testcraft.testsuites.Tests" time="2.165">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0419 TestSuites scenario 19" classname="com.testcraft.testsuites.Tests" time="2.759">
+    </testcase>
+    <testcase name="TC-0420 TestSuites scenario 20" classname="com.testcraft.testsuites.Tests" time="0.737">
+    </testcase>
+    <testcase name="TC-0421 TestSuites scenario 21" classname="com.testcraft.testsuites.Tests" time="1.921">
+    </testcase>
+    <testcase name="TC-0422 TestSuites scenario 22" classname="com.testcraft.testsuites.Tests" time="0.620">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0423 TestSuites scenario 23" classname="com.testcraft.testsuites.Tests" time="0.242">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0424 TestSuites scenario 24" classname="com.testcraft.testsuites.Tests" time="1.460">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testsuites.Tests.runTC424(Tests.java:33)</failure>
+    </testcase>
+    <testcase name="TC-0425 TestSuites scenario 25" classname="com.testcraft.testsuites.Tests" time="2.467">
+    </testcase>
+    <testcase name="TC-0426 TestSuites scenario 26" classname="com.testcraft.testsuites.Tests" time="2.670">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0427 TestSuites scenario 27" classname="com.testcraft.testsuites.Tests" time="0.774">
+    </testcase>
+    <testcase name="TC-0428 TestSuites scenario 28" classname="com.testcraft.testsuites.Tests" time="2.061">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testsuites.Tests.runTC428(Tests.java:37)</failure>
+    </testcase>
+    <testcase name="TC-0429 TestSuites scenario 29" classname="com.testcraft.testsuites.Tests" time="0.433">
+    </testcase>
+    <testcase name="TC-0430 TestSuites scenario 30" classname="com.testcraft.testsuites.Tests" time="0.322">
+    </testcase>
+    <testcase name="TC-0431 TestSuites scenario 31" classname="com.testcraft.testsuites.Tests" time="2.239">
+    </testcase>
+    <testcase name="TC-0432 TestSuites scenario 32" classname="com.testcraft.testsuites.Tests" time="1.067">
+    </testcase>
+    <testcase name="TC-0433 TestSuites scenario 33" classname="com.testcraft.testsuites.Tests" time="2.533">
+    </testcase>
+    <testcase name="TC-0434 TestSuites scenario 34" classname="com.testcraft.testsuites.Tests" time="0.823">
+    </testcase>
+    <testcase name="TC-0435 TestSuites scenario 35" classname="com.testcraft.testsuites.Tests" time="0.122">
+    </testcase>
+    <testcase name="TC-0436 TestSuites scenario 36" classname="com.testcraft.testsuites.Tests" time="2.717">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testsuites.Tests.runTC436(Tests.java:45)</failure>
+    </testcase>
+    <testcase name="TC-0437 TestSuites scenario 37" classname="com.testcraft.testsuites.Tests" time="1.512">
+    </testcase>
+    <testcase name="TC-0438 TestSuites scenario 38" classname="com.testcraft.testsuites.Tests" time="2.341">
+    </testcase>
+    <testcase name="TC-0439 TestSuites scenario 39" classname="com.testcraft.testsuites.Tests" time="2.427">
+    </testcase>
+    <testcase name="TC-0440 TestSuites scenario 40" classname="com.testcraft.testsuites.Tests" time="1.001">
+    </testcase>
+    <testcase name="TC-0441 TestSuites scenario 41" classname="com.testcraft.testsuites.Tests" time="0.498">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0442 TestSuites scenario 42" classname="com.testcraft.testsuites.Tests" time="1.815">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.testsuites.Tests.runTC442(Tests.java:51)</failure>
+    </testcase>
+    <testcase name="TC-0443 TestSuites scenario 43" classname="com.testcraft.testsuites.Tests" time="0.816">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0444 TestSuites scenario 44" classname="com.testcraft.testsuites.Tests" time="0.781">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testsuites.Tests.runTC444(Tests.java:53)</failure>
+    </testcase>
+    <testcase name="TC-0445 TestSuites scenario 45" classname="com.testcraft.testsuites.Tests" time="0.552">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:9)</error>
+    </testcase>
+    <testcase name="TC-0446 TestSuites scenario 46" classname="com.testcraft.testsuites.Tests" time="0.971">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0447 TestSuites scenario 47" classname="com.testcraft.testsuites.Tests" time="0.808">
+    </testcase>
+    <testcase name="TC-0448 TestSuites scenario 48" classname="com.testcraft.testsuites.Tests" time="3.039">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testsuites.Tests.runTC448(Tests.java:57)</failure>
+    </testcase>
+    <testcase name="TC-0449 TestSuites scenario 49" classname="com.testcraft.testsuites.Tests" time="2.908">
+    </testcase>
+    <testcase name="TC-0450 TestSuites scenario 50" classname="com.testcraft.testsuites.Tests" time="0.810">
+    </testcase>
+    <testcase name="TC-0451 TestSuites scenario 51" classname="com.testcraft.testsuites.Tests" time="2.976">
+    </testcase>
+    <testcase name="TC-0452 TestSuites scenario 52" classname="com.testcraft.testsuites.Tests" time="2.563">
+    </testcase>
+    <testcase name="TC-0453 TestSuites scenario 53" classname="com.testcraft.testsuites.Tests" time="1.797">
+    </testcase>
+    <testcase name="TC-0454 TestSuites scenario 54" classname="com.testcraft.testsuites.Tests" time="2.033">
+    </testcase>
+    <testcase name="TC-0455 TestSuites scenario 55" classname="com.testcraft.testsuites.Tests" time="0.218">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0456 TestSuites scenario 56" classname="com.testcraft.testsuites.Tests" time="2.979">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testsuites.Tests.runTC456(Tests.java:15)</failure>
+    </testcase>
+    <testcase name="TC-0457 TestSuites scenario 57" classname="com.testcraft.testsuites.Tests" time="2.365">
+    </testcase>
+    <testcase name="TC-0458 TestSuites scenario 58" classname="com.testcraft.testsuites.Tests" time="1.816">
+    </testcase>
+    <testcase name="TC-0459 TestSuites scenario 59" classname="com.testcraft.testsuites.Tests" time="0.955">
+    </testcase>
+    <testcase name="TC-0460 TestSuites scenario 60" classname="com.testcraft.testsuites.Tests" time="2.086">
+    </testcase>
+    <testcase name="TC-0461 TestSuites scenario 61" classname="com.testcraft.testsuites.Tests" time="0.805">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:5)</error>
+    </testcase>
+    <testcase name="TC-0462 TestSuites scenario 62" classname="com.testcraft.testsuites.Tests" time="2.980">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:6)</error>
+    </testcase>
+    <testcase name="TC-0463 TestSuites scenario 63" classname="com.testcraft.testsuites.Tests" time="0.595">
+    </testcase>
+    <testcase name="TC-0464 TestSuites scenario 64" classname="com.testcraft.testsuites.Tests" time="0.480">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0465 TestSuites scenario 65" classname="com.testcraft.testsuites.Tests" time="0.848">
+    </testcase>
+    <testcase name="TC-0466 TestSuites scenario 66" classname="com.testcraft.testsuites.Tests" time="1.999">
+    </testcase>
+    <testcase name="TC-0467 TestSuites scenario 67" classname="com.testcraft.testsuites.Tests" time="0.526">
+    </testcase>
+    <testcase name="TC-0468 TestSuites scenario 68" classname="com.testcraft.testsuites.Tests" time="1.575">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testsuites.Tests.runTC468(Tests.java:27)</failure>
+    </testcase>
+    <testcase name="TC-0469 TestSuites scenario 69" classname="com.testcraft.testsuites.Tests" time="0.565">
+    </testcase>
+    <testcase name="TC-0470 TestSuites scenario 70" classname="com.testcraft.testsuites.Tests" time="2.985">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:14)</error>
+    </testcase>
+    <testcase name="TC-0471 TestSuites scenario 71" classname="com.testcraft.testsuites.Tests" time="2.279">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0472 TestSuites scenario 72" classname="com.testcraft.testsuites.Tests" time="0.360">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testsuites.Tests.runTC472(Tests.java:31)</failure>
+    </testcase>
+    <testcase name="TC-0473 TestSuites scenario 73" classname="com.testcraft.testsuites.Tests" time="1.884">
+    </testcase>
+    <testcase name="TC-0474 TestSuites scenario 74" classname="com.testcraft.testsuites.Tests" time="2.081">
+    </testcase>
+    <testcase name="TC-0475 TestSuites scenario 75" classname="com.testcraft.testsuites.Tests" time="2.952">
+    </testcase>
+    <testcase name="TC-0476 TestSuites scenario 76" classname="com.testcraft.testsuites.Tests" time="1.367">
+    </testcase>
+    <testcase name="TC-0477 TestSuites scenario 77" classname="com.testcraft.testsuites.Tests" time="2.821">
+    </testcase>
+    <testcase name="TC-0478 TestSuites scenario 78" classname="com.testcraft.testsuites.Tests" time="1.409">
+    </testcase>
+    <testcase name="TC-0479 TestSuites scenario 79" classname="com.testcraft.testsuites.Tests" time="1.767">
+    </testcase>
+    <testcase name="TC-0480 TestSuites scenario 80" classname="com.testcraft.testsuites.Tests" time="2.427">
+    </testcase>
+    <testcase name="TC-0481 TestSuites scenario 81" classname="com.testcraft.testsuites.Tests" time="1.234">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:5)</error>
+    </testcase>
+    <testcase name="TC-0482 TestSuites scenario 82" classname="com.testcraft.testsuites.Tests" time="1.425">
+    </testcase>
+    <testcase name="TC-0483 TestSuites scenario 83" classname="com.testcraft.testsuites.Tests" time="0.547">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testsuites.Tests.runTC483(Tests.java:42)</failure>
+    </testcase>
+    <testcase name="TC-0484 TestSuites scenario 84" classname="com.testcraft.testsuites.Tests" time="2.961">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testsuites.Tests.runTC484(Tests.java:43)</failure>
+    </testcase>
+    <testcase name="TC-0485 TestSuites scenario 85" classname="com.testcraft.testsuites.Tests" time="1.051">
+      <error message="NullPointerException in setup">at com.testcraft.testsuites.Tests.setUp(Tests.java:9)</error>
+    </testcase>
+    <testcase name="TC-0486 TestSuites scenario 86" classname="com.testcraft.testsuites.Tests" time="0.894">
+    </testcase>
+    <testcase name="TC-0487 TestSuites scenario 87" classname="com.testcraft.testsuites.Tests" time="1.794">
+    </testcase>
+    <testcase name="TC-0488 TestSuites scenario 88" classname="com.testcraft.testsuites.Tests" time="2.542">
+    </testcase>
+    <testcase name="TC-0489 TestSuites scenario 89" classname="com.testcraft.testsuites.Tests" time="0.716">
+    </testcase>
+    <testcase name="TC-0490 TestSuites scenario 90" classname="com.testcraft.testsuites.Tests" time="1.798">
+    </testcase>
+    <testcase name="TC-0491 TestSuites scenario 91" classname="com.testcraft.testsuites.Tests" time="2.295">
+    </testcase>
+    <testcase name="TC-0492 TestSuites scenario 92" classname="com.testcraft.testsuites.Tests" time="0.238">
+    </testcase>
+    <testcase name="TC-0493 TestSuites scenario 93" classname="com.testcraft.testsuites.Tests" time="0.531">
+    </testcase>
+    <testcase name="TC-0494 TestSuites scenario 94" classname="com.testcraft.testsuites.Tests" time="0.404">
+    </testcase>
+    <testcase name="TC-0495 TestSuites scenario 95" classname="com.testcraft.testsuites.Tests" time="1.264">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0496 TestSuites scenario 96" classname="com.testcraft.testsuites.Tests" time="1.106">
+    </testcase>
+    <testcase name="TC-0497 TestSuites scenario 97" classname="com.testcraft.testsuites.Tests" time="1.998">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0498 TestSuites scenario 98" classname="com.testcraft.testsuites.Tests" time="2.009">
+    </testcase>
+    <testcase name="TC-0499 TestSuites scenario 99" classname="com.testcraft.testsuites.Tests" time="1.679">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testsuites.Tests.runTC499(Tests.java:58)</failure>
+    </testcase>
+    <testcase name="TC-0500 TestSuites scenario 100" classname="com.testcraft.testsuites.Tests" time="3.048">
+    </testcase>
+  </testsuite>
+  <testsuite name="TestCasesTests" tests="100" time="36.96">
+    <testcase name="TC-0501 TestCases scenario 1" classname="com.testcraft.testcases.Tests" time="1.698">
+    </testcase>
+    <testcase name="TC-0502 TestCases scenario 2" classname="com.testcraft.testcases.Tests" time="0.119">
+    </testcase>
+    <testcase name="TC-0503 TestCases scenario 3" classname="com.testcraft.testcases.Tests" time="1.871">
+    </testcase>
+    <testcase name="TC-0504 TestCases scenario 4" classname="com.testcraft.testcases.Tests" time="2.257">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0505 TestCases scenario 5" classname="com.testcraft.testcases.Tests" time="2.089">
+    </testcase>
+    <testcase name="TC-0506 TestCases scenario 6" classname="com.testcraft.testcases.Tests" time="0.843">
+    </testcase>
+    <testcase name="TC-0507 TestCases scenario 7" classname="com.testcraft.testcases.Tests" time="2.515">
+    </testcase>
+    <testcase name="TC-0508 TestCases scenario 8" classname="com.testcraft.testcases.Tests" time="1.305">
+    </testcase>
+    <testcase name="TC-0509 TestCases scenario 9" classname="com.testcraft.testcases.Tests" time="1.000">
+    </testcase>
+    <testcase name="TC-0510 TestCases scenario 10" classname="com.testcraft.testcases.Tests" time="1.009">
+    </testcase>
+    <testcase name="TC-0511 TestCases scenario 11" classname="com.testcraft.testcases.Tests" time="1.537">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0512 TestCases scenario 12" classname="com.testcraft.testcases.Tests" time="3.041">
+    </testcase>
+    <testcase name="TC-0513 TestCases scenario 13" classname="com.testcraft.testcases.Tests" time="1.762">
+    </testcase>
+    <testcase name="TC-0514 TestCases scenario 14" classname="com.testcraft.testcases.Tests" time="2.117">
+    </testcase>
+    <testcase name="TC-0515 TestCases scenario 15" classname="com.testcraft.testcases.Tests" time="0.545">
+    </testcase>
+    <testcase name="TC-0516 TestCases scenario 16" classname="com.testcraft.testcases.Tests" time="0.722">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testcases.Tests.runTC516(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0517 TestCases scenario 17" classname="com.testcraft.testcases.Tests" time="1.594">
+    </testcase>
+    <testcase name="TC-0518 TestCases scenario 18" classname="com.testcraft.testcases.Tests" time="2.221">
+    </testcase>
+    <testcase name="TC-0519 TestCases scenario 19" classname="com.testcraft.testcases.Tests" time="2.882">
+    </testcase>
+    <testcase name="TC-0520 TestCases scenario 20" classname="com.testcraft.testcases.Tests" time="1.646">
+    </testcase>
+    <testcase name="TC-0521 TestCases scenario 21" classname="com.testcraft.testcases.Tests" time="1.545">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.testcases.Tests.runTC521(Tests.java:30)</failure>
+    </testcase>
+    <testcase name="TC-0522 TestCases scenario 22" classname="com.testcraft.testcases.Tests" time="2.738">
+    </testcase>
+    <testcase name="TC-0523 TestCases scenario 23" classname="com.testcraft.testcases.Tests" time="1.927">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0524 TestCases scenario 24" classname="com.testcraft.testcases.Tests" time="1.866">
+    </testcase>
+    <testcase name="TC-0525 TestCases scenario 25" classname="com.testcraft.testcases.Tests" time="2.362">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.testcases.Tests.runTC525(Tests.java:34)</failure>
+    </testcase>
+    <testcase name="TC-0526 TestCases scenario 26" classname="com.testcraft.testcases.Tests" time="2.556">
+    </testcase>
+    <testcase name="TC-0527 TestCases scenario 27" classname="com.testcraft.testcases.Tests" time="2.333">
+    </testcase>
+    <testcase name="TC-0528 TestCases scenario 28" classname="com.testcraft.testcases.Tests" time="2.989">
+    </testcase>
+    <testcase name="TC-0529 TestCases scenario 29" classname="com.testcraft.testcases.Tests" time="0.901">
+    </testcase>
+    <testcase name="TC-0530 TestCases scenario 30" classname="com.testcraft.testcases.Tests" time="0.479">
+    </testcase>
+    <testcase name="TC-0531 TestCases scenario 31" classname="com.testcraft.testcases.Tests" time="2.807">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:15)</error>
+    </testcase>
+    <testcase name="TC-0532 TestCases scenario 32" classname="com.testcraft.testcases.Tests" time="2.050">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:16)</error>
+    </testcase>
+    <testcase name="TC-0533 TestCases scenario 33" classname="com.testcraft.testcases.Tests" time="2.437">
+    </testcase>
+    <testcase name="TC-0534 TestCases scenario 34" classname="com.testcraft.testcases.Tests" time="1.815">
+    </testcase>
+    <testcase name="TC-0535 TestCases scenario 35" classname="com.testcraft.testcases.Tests" time="1.272">
+    </testcase>
+    <testcase name="TC-0536 TestCases scenario 36" classname="com.testcraft.testcases.Tests" time="0.653">
+    </testcase>
+    <testcase name="TC-0537 TestCases scenario 37" classname="com.testcraft.testcases.Tests" time="0.931">
+    </testcase>
+    <testcase name="TC-0538 TestCases scenario 38" classname="com.testcraft.testcases.Tests" time="1.340">
+    </testcase>
+    <testcase name="TC-0539 TestCases scenario 39" classname="com.testcraft.testcases.Tests" time="1.746">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.testcases.Tests.runTC539(Tests.java:48)</failure>
+    </testcase>
+    <testcase name="TC-0540 TestCases scenario 40" classname="com.testcraft.testcases.Tests" time="0.189">
+    </testcase>
+    <testcase name="TC-0541 TestCases scenario 41" classname="com.testcraft.testcases.Tests" time="2.794">
+    </testcase>
+    <testcase name="TC-0542 TestCases scenario 42" classname="com.testcraft.testcases.Tests" time="1.966">
+    </testcase>
+    <testcase name="TC-0543 TestCases scenario 43" classname="com.testcraft.testcases.Tests" time="0.630">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0544 TestCases scenario 44" classname="com.testcraft.testcases.Tests" time="0.892">
+    </testcase>
+    <testcase name="TC-0545 TestCases scenario 45" classname="com.testcraft.testcases.Tests" time="0.139">
+    </testcase>
+    <testcase name="TC-0546 TestCases scenario 46" classname="com.testcraft.testcases.Tests" time="1.018">
+    </testcase>
+    <testcase name="TC-0547 TestCases scenario 47" classname="com.testcraft.testcases.Tests" time="2.918">
+    </testcase>
+    <testcase name="TC-0548 TestCases scenario 48" classname="com.testcraft.testcases.Tests" time="0.941">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:12)</error>
+    </testcase>
+    <testcase name="TC-0549 TestCases scenario 49" classname="com.testcraft.testcases.Tests" time="2.694">
+    </testcase>
+    <testcase name="TC-0550 TestCases scenario 50" classname="com.testcraft.testcases.Tests" time="0.968">
+    </testcase>
+    <testcase name="TC-0551 TestCases scenario 51" classname="com.testcraft.testcases.Tests" time="2.982">
+    </testcase>
+    <testcase name="TC-0552 TestCases scenario 52" classname="com.testcraft.testcases.Tests" time="1.221">
+    </testcase>
+    <testcase name="TC-0553 TestCases scenario 53" classname="com.testcraft.testcases.Tests" time="0.427">
+    </testcase>
+    <testcase name="TC-0554 TestCases scenario 54" classname="com.testcraft.testcases.Tests" time="1.780">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.testcases.Tests.runTC554(Tests.java:13)</failure>
+    </testcase>
+    <testcase name="TC-0555 TestCases scenario 55" classname="com.testcraft.testcases.Tests" time="0.991">
+    </testcase>
+    <testcase name="TC-0556 TestCases scenario 56" classname="com.testcraft.testcases.Tests" time="2.960">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0557 TestCases scenario 57" classname="com.testcraft.testcases.Tests" time="0.138">
+    </testcase>
+    <testcase name="TC-0558 TestCases scenario 58" classname="com.testcraft.testcases.Tests" time="0.951">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0559 TestCases scenario 59" classname="com.testcraft.testcases.Tests" time="0.484">
+    </testcase>
+    <testcase name="TC-0560 TestCases scenario 60" classname="com.testcraft.testcases.Tests" time="0.779">
+    </testcase>
+    <testcase name="TC-0561 TestCases scenario 61" classname="com.testcraft.testcases.Tests" time="2.739">
+    </testcase>
+    <testcase name="TC-0562 TestCases scenario 62" classname="com.testcraft.testcases.Tests" time="2.890">
+    </testcase>
+    <testcase name="TC-0563 TestCases scenario 63" classname="com.testcraft.testcases.Tests" time="2.847">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0564 TestCases scenario 64" classname="com.testcraft.testcases.Tests" time="0.167">
+    </testcase>
+    <testcase name="TC-0565 TestCases scenario 65" classname="com.testcraft.testcases.Tests" time="0.699">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.testcases.Tests.runTC565(Tests.java:24)</failure>
+    </testcase>
+    <testcase name="TC-0566 TestCases scenario 66" classname="com.testcraft.testcases.Tests" time="0.790">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0567 TestCases scenario 67" classname="com.testcraft.testcases.Tests" time="1.900">
+    </testcase>
+    <testcase name="TC-0568 TestCases scenario 68" classname="com.testcraft.testcases.Tests" time="1.381">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0569 TestCases scenario 69" classname="com.testcraft.testcases.Tests" time="2.361">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.testcases.Tests.runTC569(Tests.java:28)</failure>
+    </testcase>
+    <testcase name="TC-0570 TestCases scenario 70" classname="com.testcraft.testcases.Tests" time="2.279">
+    </testcase>
+    <testcase name="TC-0571 TestCases scenario 71" classname="com.testcraft.testcases.Tests" time="1.738">
+    </testcase>
+    <testcase name="TC-0572 TestCases scenario 72" classname="com.testcraft.testcases.Tests" time="0.419">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.testcases.Tests.runTC572(Tests.java:31)</failure>
+    </testcase>
+    <testcase name="TC-0573 TestCases scenario 73" classname="com.testcraft.testcases.Tests" time="1.670">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0574 TestCases scenario 74" classname="com.testcraft.testcases.Tests" time="0.251">
+    </testcase>
+    <testcase name="TC-0575 TestCases scenario 75" classname="com.testcraft.testcases.Tests" time="0.239">
+    </testcase>
+    <testcase name="TC-0576 TestCases scenario 76" classname="com.testcraft.testcases.Tests" time="2.265">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testcases.Tests.runTC576(Tests.java:35)</failure>
+    </testcase>
+    <testcase name="TC-0577 TestCases scenario 77" classname="com.testcraft.testcases.Tests" time="2.428">
+    </testcase>
+    <testcase name="TC-0578 TestCases scenario 78" classname="com.testcraft.testcases.Tests" time="1.319">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0579 TestCases scenario 79" classname="com.testcraft.testcases.Tests" time="0.463">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:23)</error>
+    </testcase>
+    <testcase name="TC-0580 TestCases scenario 80" classname="com.testcraft.testcases.Tests" time="0.745">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0581 TestCases scenario 81" classname="com.testcraft.testcases.Tests" time="2.679">
+    </testcase>
+    <testcase name="TC-0582 TestCases scenario 82" classname="com.testcraft.testcases.Tests" time="0.761">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:6)</error>
+    </testcase>
+    <testcase name="TC-0583 TestCases scenario 83" classname="com.testcraft.testcases.Tests" time="1.734">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.testcases.Tests.runTC583(Tests.java:42)</failure>
+    </testcase>
+    <testcase name="TC-0584 TestCases scenario 84" classname="com.testcraft.testcases.Tests" time="0.306">
+    </testcase>
+    <testcase name="TC-0585 TestCases scenario 85" classname="com.testcraft.testcases.Tests" time="2.480">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:9)</error>
+    </testcase>
+    <testcase name="TC-0586 TestCases scenario 86" classname="com.testcraft.testcases.Tests" time="1.501">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0587 TestCases scenario 87" classname="com.testcraft.testcases.Tests" time="0.801">
+    </testcase>
+    <testcase name="TC-0588 TestCases scenario 88" classname="com.testcraft.testcases.Tests" time="0.748">
+    </testcase>
+    <testcase name="TC-0589 TestCases scenario 89" classname="com.testcraft.testcases.Tests" time="1.564">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0590 TestCases scenario 90" classname="com.testcraft.testcases.Tests" time="0.983">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.testcases.Tests.runTC590(Tests.java:49)</failure>
+    </testcase>
+    <testcase name="TC-0591 TestCases scenario 91" classname="com.testcraft.testcases.Tests" time="0.680">
+    </testcase>
+    <testcase name="TC-0592 TestCases scenario 92" classname="com.testcraft.testcases.Tests" time="1.780">
+      <error message="NullPointerException in setup">at com.testcraft.testcases.Tests.setUp(Tests.java:16)</error>
+    </testcase>
+    <testcase name="TC-0593 TestCases scenario 93" classname="com.testcraft.testcases.Tests" time="0.562">
+    </testcase>
+    <testcase name="TC-0594 TestCases scenario 94" classname="com.testcraft.testcases.Tests" time="1.904">
+    </testcase>
+    <testcase name="TC-0595 TestCases scenario 95" classname="com.testcraft.testcases.Tests" time="0.286">
+    </testcase>
+    <testcase name="TC-0596 TestCases scenario 96" classname="com.testcraft.testcases.Tests" time="0.381">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0597 TestCases scenario 97" classname="com.testcraft.testcases.Tests" time="0.815">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0598 TestCases scenario 98" classname="com.testcraft.testcases.Tests" time="1.158">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.testcases.Tests.runTC598(Tests.java:57)</failure>
+    </testcase>
+    <testcase name="TC-0599 TestCases scenario 99" classname="com.testcraft.testcases.Tests" time="1.797">
+    </testcase>
+    <testcase name="TC-0600 TestCases scenario 100" classname="com.testcraft.testcases.Tests" time="1.317">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.testcases.Tests.runTC600(Tests.java:59)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="ReportsTests" tests="100" time="12.65">
+    <testcase name="TC-0601 Reports scenario 1" classname="com.testcraft.reports.Tests" time="0.702">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.reports.Tests.runTC601(Tests.java:10)</failure>
+    </testcase>
+    <testcase name="TC-0602 Reports scenario 2" classname="com.testcraft.reports.Tests" time="2.137">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0603 Reports scenario 3" classname="com.testcraft.reports.Tests" time="0.436">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0604 Reports scenario 4" classname="com.testcraft.reports.Tests" time="2.191">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0605 Reports scenario 5" classname="com.testcraft.reports.Tests" time="2.776">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.reports.Tests.runTC605(Tests.java:14)</failure>
+    </testcase>
+    <testcase name="TC-0606 Reports scenario 6" classname="com.testcraft.reports.Tests" time="1.755">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.reports.Tests.runTC606(Tests.java:15)</failure>
+    </testcase>
+    <testcase name="TC-0607 Reports scenario 7" classname="com.testcraft.reports.Tests" time="1.736">
+    </testcase>
+    <testcase name="TC-0608 Reports scenario 8" classname="com.testcraft.reports.Tests" time="2.617">
+    </testcase>
+    <testcase name="TC-0609 Reports scenario 9" classname="com.testcraft.reports.Tests" time="0.416">
+    </testcase>
+    <testcase name="TC-0610 Reports scenario 10" classname="com.testcraft.reports.Tests" time="1.875">
+    </testcase>
+    <testcase name="TC-0611 Reports scenario 11" classname="com.testcraft.reports.Tests" time="2.241">
+    </testcase>
+    <testcase name="TC-0612 Reports scenario 12" classname="com.testcraft.reports.Tests" time="1.358">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.reports.Tests.runTC612(Tests.java:21)</failure>
+    </testcase>
+    <testcase name="TC-0613 Reports scenario 13" classname="com.testcraft.reports.Tests" time="1.103">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.reports.Tests.runTC613(Tests.java:22)</failure>
+    </testcase>
+    <testcase name="TC-0614 Reports scenario 14" classname="com.testcraft.reports.Tests" time="2.981">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0615 Reports scenario 15" classname="com.testcraft.reports.Tests" time="2.726">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.reports.Tests.runTC615(Tests.java:24)</failure>
+    </testcase>
+    <testcase name="TC-0616 Reports scenario 16" classname="com.testcraft.reports.Tests" time="1.115">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.reports.Tests.runTC616(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0617 Reports scenario 17" classname="com.testcraft.reports.Tests" time="1.149">
+    </testcase>
+    <testcase name="TC-0618 Reports scenario 18" classname="com.testcraft.reports.Tests" time="1.070">
+    </testcase>
+    <testcase name="TC-0619 Reports scenario 19" classname="com.testcraft.reports.Tests" time="2.103">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.reports.Tests.runTC619(Tests.java:28)</failure>
+    </testcase>
+    <testcase name="TC-0620 Reports scenario 20" classname="com.testcraft.reports.Tests" time="1.909">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.reports.Tests.runTC620(Tests.java:29)</failure>
+    </testcase>
+    <testcase name="TC-0621 Reports scenario 21" classname="com.testcraft.reports.Tests" time="1.840">
+    </testcase>
+    <testcase name="TC-0622 Reports scenario 22" classname="com.testcraft.reports.Tests" time="0.729">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0623 Reports scenario 23" classname="com.testcraft.reports.Tests" time="0.447">
+    </testcase>
+    <testcase name="TC-0624 Reports scenario 24" classname="com.testcraft.reports.Tests" time="2.035">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.reports.Tests.runTC624(Tests.java:33)</failure>
+    </testcase>
+    <testcase name="TC-0625 Reports scenario 25" classname="com.testcraft.reports.Tests" time="2.136">
+    </testcase>
+    <testcase name="TC-0626 Reports scenario 26" classname="com.testcraft.reports.Tests" time="1.679">
+    </testcase>
+    <testcase name="TC-0627 Reports scenario 27" classname="com.testcraft.reports.Tests" time="1.289">
+    </testcase>
+    <testcase name="TC-0628 Reports scenario 28" classname="com.testcraft.reports.Tests" time="0.374">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0629 Reports scenario 29" classname="com.testcraft.reports.Tests" time="0.081">
+    </testcase>
+    <testcase name="TC-0630 Reports scenario 30" classname="com.testcraft.reports.Tests" time="2.381">
+    </testcase>
+    <testcase name="TC-0631 Reports scenario 31" classname="com.testcraft.reports.Tests" time="2.104">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0632 Reports scenario 32" classname="com.testcraft.reports.Tests" time="2.870">
+    </testcase>
+    <testcase name="TC-0633 Reports scenario 33" classname="com.testcraft.reports.Tests" time="2.808">
+    </testcase>
+    <testcase name="TC-0634 Reports scenario 34" classname="com.testcraft.reports.Tests" time="0.755">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.reports.Tests.runTC634(Tests.java:43)</failure>
+    </testcase>
+    <testcase name="TC-0635 Reports scenario 35" classname="com.testcraft.reports.Tests" time="2.272">
+    </testcase>
+    <testcase name="TC-0636 Reports scenario 36" classname="com.testcraft.reports.Tests" time="0.649">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0637 Reports scenario 37" classname="com.testcraft.reports.Tests" time="0.611">
+    </testcase>
+    <testcase name="TC-0638 Reports scenario 38" classname="com.testcraft.reports.Tests" time="1.421">
+    </testcase>
+    <testcase name="TC-0639 Reports scenario 39" classname="com.testcraft.reports.Tests" time="1.858">
+    </testcase>
+    <testcase name="TC-0640 Reports scenario 40" classname="com.testcraft.reports.Tests" time="2.660">
+    </testcase>
+    <testcase name="TC-0641 Reports scenario 41" classname="com.testcraft.reports.Tests" time="1.723">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:5)</error>
+    </testcase>
+    <testcase name="TC-0642 Reports scenario 42" classname="com.testcraft.reports.Tests" time="2.360">
+    </testcase>
+    <testcase name="TC-0643 Reports scenario 43" classname="com.testcraft.reports.Tests" time="0.314">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0644 Reports scenario 44" classname="com.testcraft.reports.Tests" time="0.967">
+    </testcase>
+    <testcase name="TC-0645 Reports scenario 45" classname="com.testcraft.reports.Tests" time="2.419">
+    </testcase>
+    <testcase name="TC-0646 Reports scenario 46" classname="com.testcraft.reports.Tests" time="2.605">
+    </testcase>
+    <testcase name="TC-0647 Reports scenario 47" classname="com.testcraft.reports.Tests" time="1.526">
+    </testcase>
+    <testcase name="TC-0648 Reports scenario 48" classname="com.testcraft.reports.Tests" time="1.947">
+    </testcase>
+    <testcase name="TC-0649 Reports scenario 49" classname="com.testcraft.reports.Tests" time="0.098">
+    </testcase>
+    <testcase name="TC-0650 Reports scenario 50" classname="com.testcraft.reports.Tests" time="0.337">
+    </testcase>
+    <testcase name="TC-0651 Reports scenario 51" classname="com.testcraft.reports.Tests" time="0.443">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0652 Reports scenario 52" classname="com.testcraft.reports.Tests" time="1.777">
+    </testcase>
+    <testcase name="TC-0653 Reports scenario 53" classname="com.testcraft.reports.Tests" time="2.819">
+    </testcase>
+    <testcase name="TC-0654 Reports scenario 54" classname="com.testcraft.reports.Tests" time="1.324">
+    </testcase>
+    <testcase name="TC-0655 Reports scenario 55" classname="com.testcraft.reports.Tests" time="0.701">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.reports.Tests.runTC655(Tests.java:14)</failure>
+    </testcase>
+    <testcase name="TC-0656 Reports scenario 56" classname="com.testcraft.reports.Tests" time="1.537">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0657 Reports scenario 57" classname="com.testcraft.reports.Tests" time="0.367">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:21)</error>
+    </testcase>
+    <testcase name="TC-0658 Reports scenario 58" classname="com.testcraft.reports.Tests" time="2.627">
+    </testcase>
+    <testcase name="TC-0659 Reports scenario 59" classname="com.testcraft.reports.Tests" time="1.767">
+    </testcase>
+    <testcase name="TC-0660 Reports scenario 60" classname="com.testcraft.reports.Tests" time="2.188">
+    </testcase>
+    <testcase name="TC-0661 Reports scenario 61" classname="com.testcraft.reports.Tests" time="2.370">
+    </testcase>
+    <testcase name="TC-0662 Reports scenario 62" classname="com.testcraft.reports.Tests" time="0.861">
+    </testcase>
+    <testcase name="TC-0663 Reports scenario 63" classname="com.testcraft.reports.Tests" time="2.056">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0664 Reports scenario 64" classname="com.testcraft.reports.Tests" time="1.123">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.reports.Tests.runTC664(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0665 Reports scenario 65" classname="com.testcraft.reports.Tests" time="0.630">
+    </testcase>
+    <testcase name="TC-0666 Reports scenario 66" classname="com.testcraft.reports.Tests" time="2.278">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.reports.Tests.runTC666(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0667 Reports scenario 67" classname="com.testcraft.reports.Tests" time="1.844">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0668 Reports scenario 68" classname="com.testcraft.reports.Tests" time="2.644">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0669 Reports scenario 69" classname="com.testcraft.reports.Tests" time="0.382">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:13)</error>
+    </testcase>
+    <testcase name="TC-0670 Reports scenario 70" classname="com.testcraft.reports.Tests" time="2.748">
+    </testcase>
+    <testcase name="TC-0671 Reports scenario 71" classname="com.testcraft.reports.Tests" time="2.454">
+    </testcase>
+    <testcase name="TC-0672 Reports scenario 72" classname="com.testcraft.reports.Tests" time="2.687">
+    </testcase>
+    <testcase name="TC-0673 Reports scenario 73" classname="com.testcraft.reports.Tests" time="1.029">
+    </testcase>
+    <testcase name="TC-0674 Reports scenario 74" classname="com.testcraft.reports.Tests" time="0.583">
+    </testcase>
+    <testcase name="TC-0675 Reports scenario 75" classname="com.testcraft.reports.Tests" time="1.960">
+    </testcase>
+    <testcase name="TC-0676 Reports scenario 76" classname="com.testcraft.reports.Tests" time="0.493">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0677 Reports scenario 77" classname="com.testcraft.reports.Tests" time="1.905">
+      <error message="NullPointerException in setup">at com.testcraft.reports.Tests.setUp(Tests.java:21)</error>
+    </testcase>
+    <testcase name="TC-0678 Reports scenario 78" classname="com.testcraft.reports.Tests" time="0.996">
+    </testcase>
+    <testcase name="TC-0679 Reports scenario 79" classname="com.testcraft.reports.Tests" time="2.621">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.reports.Tests.runTC679(Tests.java:38)</failure>
+    </testcase>
+    <testcase name="TC-0680 Reports scenario 80" classname="com.testcraft.reports.Tests" time="0.388">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0681 Reports scenario 81" classname="com.testcraft.reports.Tests" time="0.144">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0682 Reports scenario 82" classname="com.testcraft.reports.Tests" time="0.422">
+    </testcase>
+    <testcase name="TC-0683 Reports scenario 83" classname="com.testcraft.reports.Tests" time="0.655">
+    </testcase>
+    <testcase name="TC-0684 Reports scenario 84" classname="com.testcraft.reports.Tests" time="0.621">
+    </testcase>
+    <testcase name="TC-0685 Reports scenario 85" classname="com.testcraft.reports.Tests" time="2.198">
+    </testcase>
+    <testcase name="TC-0686 Reports scenario 86" classname="com.testcraft.reports.Tests" time="1.531">
+    </testcase>
+    <testcase name="TC-0687 Reports scenario 87" classname="com.testcraft.reports.Tests" time="1.151">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0688 Reports scenario 88" classname="com.testcraft.reports.Tests" time="1.698">
+    </testcase>
+    <testcase name="TC-0689 Reports scenario 89" classname="com.testcraft.reports.Tests" time="2.820">
+    </testcase>
+    <testcase name="TC-0690 Reports scenario 90" classname="com.testcraft.reports.Tests" time="2.142">
+    </testcase>
+    <testcase name="TC-0691 Reports scenario 91" classname="com.testcraft.reports.Tests" time="2.622">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.reports.Tests.runTC691(Tests.java:50)</failure>
+    </testcase>
+    <testcase name="TC-0692 Reports scenario 92" classname="com.testcraft.reports.Tests" time="1.908">
+    </testcase>
+    <testcase name="TC-0693 Reports scenario 93" classname="com.testcraft.reports.Tests" time="0.241">
+    </testcase>
+    <testcase name="TC-0694 Reports scenario 94" classname="com.testcraft.reports.Tests" time="0.927">
+    </testcase>
+    <testcase name="TC-0695 Reports scenario 95" classname="com.testcraft.reports.Tests" time="1.475">
+    </testcase>
+    <testcase name="TC-0696 Reports scenario 96" classname="com.testcraft.reports.Tests" time="0.949">
+    </testcase>
+    <testcase name="TC-0697 Reports scenario 97" classname="com.testcraft.reports.Tests" time="0.575">
+    </testcase>
+    <testcase name="TC-0698 Reports scenario 98" classname="com.testcraft.reports.Tests" time="1.218">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0699 Reports scenario 99" classname="com.testcraft.reports.Tests" time="2.897">
+    </testcase>
+    <testcase name="TC-0700 Reports scenario 100" classname="com.testcraft.reports.Tests" time="0.234">
+    </testcase>
+  </testsuite>
+  <testsuite name="SettingsTests" tests="100" time="39.33">
+    <testcase name="TC-0701 Settings scenario 1" classname="com.testcraft.settings.Tests" time="2.702">
+    </testcase>
+    <testcase name="TC-0702 Settings scenario 2" classname="com.testcraft.settings.Tests" time="2.373">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.settings.Tests.runTC702(Tests.java:11)</failure>
+    </testcase>
+    <testcase name="TC-0703 Settings scenario 3" classname="com.testcraft.settings.Tests" time="1.161">
+    </testcase>
+    <testcase name="TC-0704 Settings scenario 4" classname="com.testcraft.settings.Tests" time="2.176">
+    </testcase>
+    <testcase name="TC-0705 Settings scenario 5" classname="com.testcraft.settings.Tests" time="1.531">
+    </testcase>
+    <testcase name="TC-0706 Settings scenario 6" classname="com.testcraft.settings.Tests" time="1.658">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0707 Settings scenario 7" classname="com.testcraft.settings.Tests" time="0.750">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0708 Settings scenario 8" classname="com.testcraft.settings.Tests" time="0.510">
+    </testcase>
+    <testcase name="TC-0709 Settings scenario 9" classname="com.testcraft.settings.Tests" time="2.698">
+    </testcase>
+    <testcase name="TC-0710 Settings scenario 10" classname="com.testcraft.settings.Tests" time="2.464">
+    </testcase>
+    <testcase name="TC-0711 Settings scenario 11" classname="com.testcraft.settings.Tests" time="2.921">
+    </testcase>
+    <testcase name="TC-0712 Settings scenario 12" classname="com.testcraft.settings.Tests" time="2.241">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:16)</error>
+    </testcase>
+    <testcase name="TC-0713 Settings scenario 13" classname="com.testcraft.settings.Tests" time="0.522">
+    </testcase>
+    <testcase name="TC-0714 Settings scenario 14" classname="com.testcraft.settings.Tests" time="1.389">
+    </testcase>
+    <testcase name="TC-0715 Settings scenario 15" classname="com.testcraft.settings.Tests" time="1.273">
+    </testcase>
+    <testcase name="TC-0716 Settings scenario 16" classname="com.testcraft.settings.Tests" time="2.750">
+    </testcase>
+    <testcase name="TC-0717 Settings scenario 17" classname="com.testcraft.settings.Tests" time="0.616">
+    </testcase>
+    <testcase name="TC-0718 Settings scenario 18" classname="com.testcraft.settings.Tests" time="1.323">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0719 Settings scenario 19" classname="com.testcraft.settings.Tests" time="1.205">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:23)</error>
+    </testcase>
+    <testcase name="TC-0720 Settings scenario 20" classname="com.testcraft.settings.Tests" time="0.914">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.settings.Tests.runTC720(Tests.java:29)</failure>
+    </testcase>
+    <testcase name="TC-0721 Settings scenario 21" classname="com.testcraft.settings.Tests" time="2.051">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:5)</error>
+    </testcase>
+    <testcase name="TC-0722 Settings scenario 22" classname="com.testcraft.settings.Tests" time="2.301">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0723 Settings scenario 23" classname="com.testcraft.settings.Tests" time="2.520">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.settings.Tests.runTC723(Tests.java:32)</failure>
+    </testcase>
+    <testcase name="TC-0724 Settings scenario 24" classname="com.testcraft.settings.Tests" time="2.790">
+    </testcase>
+    <testcase name="TC-0725 Settings scenario 25" classname="com.testcraft.settings.Tests" time="0.772">
+    </testcase>
+    <testcase name="TC-0726 Settings scenario 26" classname="com.testcraft.settings.Tests" time="0.350">
+    </testcase>
+    <testcase name="TC-0727 Settings scenario 27" classname="com.testcraft.settings.Tests" time="0.660">
+    </testcase>
+    <testcase name="TC-0728 Settings scenario 28" classname="com.testcraft.settings.Tests" time="1.142">
+    </testcase>
+    <testcase name="TC-0729 Settings scenario 29" classname="com.testcraft.settings.Tests" time="0.984">
+    </testcase>
+    <testcase name="TC-0730 Settings scenario 30" classname="com.testcraft.settings.Tests" time="1.357">
+    </testcase>
+    <testcase name="TC-0731 Settings scenario 31" classname="com.testcraft.settings.Tests" time="0.304">
+    </testcase>
+    <testcase name="TC-0732 Settings scenario 32" classname="com.testcraft.settings.Tests" time="2.059">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.settings.Tests.runTC732(Tests.java:41)</failure>
+    </testcase>
+    <testcase name="TC-0733 Settings scenario 33" classname="com.testcraft.settings.Tests" time="1.306">
+    </testcase>
+    <testcase name="TC-0734 Settings scenario 34" classname="com.testcraft.settings.Tests" time="0.390">
+    </testcase>
+    <testcase name="TC-0735 Settings scenario 35" classname="com.testcraft.settings.Tests" time="0.136">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:19)</error>
+    </testcase>
+    <testcase name="TC-0736 Settings scenario 36" classname="com.testcraft.settings.Tests" time="2.112">
+    </testcase>
+    <testcase name="TC-0737 Settings scenario 37" classname="com.testcraft.settings.Tests" time="1.896">
+    </testcase>
+    <testcase name="TC-0738 Settings scenario 38" classname="com.testcraft.settings.Tests" time="1.446">
+    </testcase>
+    <testcase name="TC-0739 Settings scenario 39" classname="com.testcraft.settings.Tests" time="0.499">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0740 Settings scenario 40" classname="com.testcraft.settings.Tests" time="3.018">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:24)</error>
+    </testcase>
+    <testcase name="TC-0741 Settings scenario 41" classname="com.testcraft.settings.Tests" time="3.045">
+    </testcase>
+    <testcase name="TC-0742 Settings scenario 42" classname="com.testcraft.settings.Tests" time="2.562">
+    </testcase>
+    <testcase name="TC-0743 Settings scenario 43" classname="com.testcraft.settings.Tests" time="1.363">
+    </testcase>
+    <testcase name="TC-0744 Settings scenario 44" classname="com.testcraft.settings.Tests" time="1.303">
+    </testcase>
+    <testcase name="TC-0745 Settings scenario 45" classname="com.testcraft.settings.Tests" time="2.126">
+    </testcase>
+    <testcase name="TC-0746 Settings scenario 46" classname="com.testcraft.settings.Tests" time="2.607">
+    </testcase>
+    <testcase name="TC-0747 Settings scenario 47" classname="com.testcraft.settings.Tests" time="1.138">
+    </testcase>
+    <testcase name="TC-0748 Settings scenario 48" classname="com.testcraft.settings.Tests" time="2.284">
+    </testcase>
+    <testcase name="TC-0749 Settings scenario 49" classname="com.testcraft.settings.Tests" time="1.506">
+    </testcase>
+    <testcase name="TC-0750 Settings scenario 50" classname="com.testcraft.settings.Tests" time="2.793">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0751 Settings scenario 51" classname="com.testcraft.settings.Tests" time="2.513">
+    </testcase>
+    <testcase name="TC-0752 Settings scenario 52" classname="com.testcraft.settings.Tests" time="2.572">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0753 Settings scenario 53" classname="com.testcraft.settings.Tests" time="0.703">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0754 Settings scenario 54" classname="com.testcraft.settings.Tests" time="0.539">
+    </testcase>
+    <testcase name="TC-0755 Settings scenario 55" classname="com.testcraft.settings.Tests" time="0.275">
+    </testcase>
+    <testcase name="TC-0756 Settings scenario 56" classname="com.testcraft.settings.Tests" time="1.592">
+    </testcase>
+    <testcase name="TC-0757 Settings scenario 57" classname="com.testcraft.settings.Tests" time="1.923">
+    </testcase>
+    <testcase name="TC-0758 Settings scenario 58" classname="com.testcraft.settings.Tests" time="2.130">
+    </testcase>
+    <testcase name="TC-0759 Settings scenario 59" classname="com.testcraft.settings.Tests" time="2.007">
+    </testcase>
+    <testcase name="TC-0760 Settings scenario 60" classname="com.testcraft.settings.Tests" time="0.795">
+    </testcase>
+    <testcase name="TC-0761 Settings scenario 61" classname="com.testcraft.settings.Tests" time="2.566">
+    </testcase>
+    <testcase name="TC-0762 Settings scenario 62" classname="com.testcraft.settings.Tests" time="1.466">
+    </testcase>
+    <testcase name="TC-0763 Settings scenario 63" classname="com.testcraft.settings.Tests" time="2.760">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.settings.Tests.runTC763(Tests.java:22)</failure>
+    </testcase>
+    <testcase name="TC-0764 Settings scenario 64" classname="com.testcraft.settings.Tests" time="0.968">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0765 Settings scenario 65" classname="com.testcraft.settings.Tests" time="2.880">
+    </testcase>
+    <testcase name="TC-0766 Settings scenario 66" classname="com.testcraft.settings.Tests" time="2.835">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0767 Settings scenario 67" classname="com.testcraft.settings.Tests" time="0.870">
+    </testcase>
+    <testcase name="TC-0768 Settings scenario 68" classname="com.testcraft.settings.Tests" time="0.487">
+    </testcase>
+    <testcase name="TC-0769 Settings scenario 69" classname="com.testcraft.settings.Tests" time="0.669">
+    </testcase>
+    <testcase name="TC-0770 Settings scenario 70" classname="com.testcraft.settings.Tests" time="1.028">
+    </testcase>
+    <testcase name="TC-0771 Settings scenario 71" classname="com.testcraft.settings.Tests" time="0.204">
+    </testcase>
+    <testcase name="TC-0772 Settings scenario 72" classname="com.testcraft.settings.Tests" time="1.975">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.settings.Tests.runTC772(Tests.java:31)</failure>
+    </testcase>
+    <testcase name="TC-0773 Settings scenario 73" classname="com.testcraft.settings.Tests" time="3.048">
+    </testcase>
+    <testcase name="TC-0774 Settings scenario 74" classname="com.testcraft.settings.Tests" time="1.793">
+    </testcase>
+    <testcase name="TC-0775 Settings scenario 75" classname="com.testcraft.settings.Tests" time="0.812">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0776 Settings scenario 76" classname="com.testcraft.settings.Tests" time="1.241">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.settings.Tests.runTC776(Tests.java:35)</failure>
+    </testcase>
+    <testcase name="TC-0777 Settings scenario 77" classname="com.testcraft.settings.Tests" time="2.247">
+    </testcase>
+    <testcase name="TC-0778 Settings scenario 78" classname="com.testcraft.settings.Tests" time="0.088">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0779 Settings scenario 79" classname="com.testcraft.settings.Tests" time="1.440">
+    </testcase>
+    <testcase name="TC-0780 Settings scenario 80" classname="com.testcraft.settings.Tests" time="3.049">
+    </testcase>
+    <testcase name="TC-0781 Settings scenario 81" classname="com.testcraft.settings.Tests" time="1.527">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.settings.Tests.runTC781(Tests.java:40)</failure>
+    </testcase>
+    <testcase name="TC-0782 Settings scenario 82" classname="com.testcraft.settings.Tests" time="0.078">
+    </testcase>
+    <testcase name="TC-0783 Settings scenario 83" classname="com.testcraft.settings.Tests" time="2.717">
+    </testcase>
+    <testcase name="TC-0784 Settings scenario 84" classname="com.testcraft.settings.Tests" time="0.725">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.settings.Tests.runTC784(Tests.java:43)</failure>
+    </testcase>
+    <testcase name="TC-0785 Settings scenario 85" classname="com.testcraft.settings.Tests" time="0.528">
+    </testcase>
+    <testcase name="TC-0786 Settings scenario 86" classname="com.testcraft.settings.Tests" time="1.836">
+    </testcase>
+    <testcase name="TC-0787 Settings scenario 87" classname="com.testcraft.settings.Tests" time="2.743">
+    </testcase>
+    <testcase name="TC-0788 Settings scenario 88" classname="com.testcraft.settings.Tests" time="0.842">
+    </testcase>
+    <testcase name="TC-0789 Settings scenario 89" classname="com.testcraft.settings.Tests" time="0.999">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.settings.Tests.runTC789(Tests.java:48)</failure>
+    </testcase>
+    <testcase name="TC-0790 Settings scenario 90" classname="com.testcraft.settings.Tests" time="2.606">
+    </testcase>
+    <testcase name="TC-0791 Settings scenario 91" classname="com.testcraft.settings.Tests" time="0.345">
+    </testcase>
+    <testcase name="TC-0792 Settings scenario 92" classname="com.testcraft.settings.Tests" time="1.937">
+    </testcase>
+    <testcase name="TC-0793 Settings scenario 93" classname="com.testcraft.settings.Tests" time="1.646">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.settings.Tests.runTC793(Tests.java:52)</failure>
+    </testcase>
+    <testcase name="TC-0794 Settings scenario 94" classname="com.testcraft.settings.Tests" time="3.043">
+    </testcase>
+    <testcase name="TC-0795 Settings scenario 95" classname="com.testcraft.settings.Tests" time="0.855">
+    </testcase>
+    <testcase name="TC-0796 Settings scenario 96" classname="com.testcraft.settings.Tests" time="1.256">
+    </testcase>
+    <testcase name="TC-0797 Settings scenario 97" classname="com.testcraft.settings.Tests" time="0.894">
+    </testcase>
+    <testcase name="TC-0798 Settings scenario 98" classname="com.testcraft.settings.Tests" time="1.637">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.settings.Tests.runTC798(Tests.java:57)</failure>
+    </testcase>
+    <testcase name="TC-0799 Settings scenario 99" classname="com.testcraft.settings.Tests" time="0.965">
+    </testcase>
+    <testcase name="TC-0800 Settings scenario 100" classname="com.testcraft.settings.Tests" time="0.868">
+      <error message="NullPointerException in setup">at com.testcraft.settings.Tests.setUp(Tests.java:24)</error>
+    </testcase>
+  </testsuite>
+  <testsuite name="ImportTests" tests="100" time="31.54">
+    <testcase name="TC-0801 Import scenario 1" classname="com.testcraft.import.Tests" time="0.495">
+    </testcase>
+    <testcase name="TC-0802 Import scenario 2" classname="com.testcraft.import.Tests" time="0.129">
+    </testcase>
+    <testcase name="TC-0803 Import scenario 3" classname="com.testcraft.import.Tests" time="0.534">
+    </testcase>
+    <testcase name="TC-0804 Import scenario 4" classname="com.testcraft.import.Tests" time="2.070">
+    </testcase>
+    <testcase name="TC-0805 Import scenario 5" classname="com.testcraft.import.Tests" time="1.043">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0806 Import scenario 6" classname="com.testcraft.import.Tests" time="1.559">
+    </testcase>
+    <testcase name="TC-0807 Import scenario 7" classname="com.testcraft.import.Tests" time="2.392">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.import.Tests.runTC807(Tests.java:16)</failure>
+    </testcase>
+    <testcase name="TC-0808 Import scenario 8" classname="com.testcraft.import.Tests" time="1.345">
+    </testcase>
+    <testcase name="TC-0809 Import scenario 9" classname="com.testcraft.import.Tests" time="0.191">
+    </testcase>
+    <testcase name="TC-0810 Import scenario 10" classname="com.testcraft.import.Tests" time="2.262">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.import.Tests.runTC810(Tests.java:19)</failure>
+    </testcase>
+    <testcase name="TC-0811 Import scenario 11" classname="com.testcraft.import.Tests" time="2.863">
+    </testcase>
+    <testcase name="TC-0812 Import scenario 12" classname="com.testcraft.import.Tests" time="2.826">
+    </testcase>
+    <testcase name="TC-0813 Import scenario 13" classname="com.testcraft.import.Tests" time="2.914">
+    </testcase>
+    <testcase name="TC-0814 Import scenario 14" classname="com.testcraft.import.Tests" time="1.759">
+    </testcase>
+    <testcase name="TC-0815 Import scenario 15" classname="com.testcraft.import.Tests" time="2.746">
+    </testcase>
+    <testcase name="TC-0816 Import scenario 16" classname="com.testcraft.import.Tests" time="0.838">
+    </testcase>
+    <testcase name="TC-0817 Import scenario 17" classname="com.testcraft.import.Tests" time="1.819">
+    </testcase>
+    <testcase name="TC-0818 Import scenario 18" classname="com.testcraft.import.Tests" time="0.652">
+      <error message="NullPointerException in setup">at com.testcraft.import.Tests.setUp(Tests.java:22)</error>
+    </testcase>
+    <testcase name="TC-0819 Import scenario 19" classname="com.testcraft.import.Tests" time="0.753">
+    </testcase>
+    <testcase name="TC-0820 Import scenario 20" classname="com.testcraft.import.Tests" time="0.991">
+    </testcase>
+    <testcase name="TC-0821 Import scenario 21" classname="com.testcraft.import.Tests" time="1.782">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0822 Import scenario 22" classname="com.testcraft.import.Tests" time="2.630">
+    </testcase>
+    <testcase name="TC-0823 Import scenario 23" classname="com.testcraft.import.Tests" time="3.043">
+    </testcase>
+    <testcase name="TC-0824 Import scenario 24" classname="com.testcraft.import.Tests" time="0.257">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.import.Tests.runTC824(Tests.java:33)</failure>
+    </testcase>
+    <testcase name="TC-0825 Import scenario 25" classname="com.testcraft.import.Tests" time="0.134">
+    </testcase>
+    <testcase name="TC-0826 Import scenario 26" classname="com.testcraft.import.Tests" time="0.252">
+    </testcase>
+    <testcase name="TC-0827 Import scenario 27" classname="com.testcraft.import.Tests" time="1.186">
+    </testcase>
+    <testcase name="TC-0828 Import scenario 28" classname="com.testcraft.import.Tests" time="1.107">
+    </testcase>
+    <testcase name="TC-0829 Import scenario 29" classname="com.testcraft.import.Tests" time="1.776">
+    </testcase>
+    <testcase name="TC-0830 Import scenario 30" classname="com.testcraft.import.Tests" time="1.638">
+    </testcase>
+    <testcase name="TC-0831 Import scenario 31" classname="com.testcraft.import.Tests" time="0.618">
+    </testcase>
+    <testcase name="TC-0832 Import scenario 32" classname="com.testcraft.import.Tests" time="1.613">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0833 Import scenario 33" classname="com.testcraft.import.Tests" time="1.601">
+    </testcase>
+    <testcase name="TC-0834 Import scenario 34" classname="com.testcraft.import.Tests" time="1.785">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.import.Tests.runTC834(Tests.java:43)</failure>
+    </testcase>
+    <testcase name="TC-0835 Import scenario 35" classname="com.testcraft.import.Tests" time="2.644">
+    </testcase>
+    <testcase name="TC-0836 Import scenario 36" classname="com.testcraft.import.Tests" time="2.898">
+    </testcase>
+    <testcase name="TC-0837 Import scenario 37" classname="com.testcraft.import.Tests" time="0.275">
+    </testcase>
+    <testcase name="TC-0838 Import scenario 38" classname="com.testcraft.import.Tests" time="2.384">
+    </testcase>
+    <testcase name="TC-0839 Import scenario 39" classname="com.testcraft.import.Tests" time="2.102">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.import.Tests.runTC839(Tests.java:48)</failure>
+    </testcase>
+    <testcase name="TC-0840 Import scenario 40" classname="com.testcraft.import.Tests" time="0.103">
+    </testcase>
+    <testcase name="TC-0841 Import scenario 41" classname="com.testcraft.import.Tests" time="1.582">
+    </testcase>
+    <testcase name="TC-0842 Import scenario 42" classname="com.testcraft.import.Tests" time="1.332">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.import.Tests.runTC842(Tests.java:51)</failure>
+    </testcase>
+    <testcase name="TC-0843 Import scenario 43" classname="com.testcraft.import.Tests" time="0.333">
+    </testcase>
+    <testcase name="TC-0844 Import scenario 44" classname="com.testcraft.import.Tests" time="1.284">
+    </testcase>
+    <testcase name="TC-0845 Import scenario 45" classname="com.testcraft.import.Tests" time="1.904">
+    </testcase>
+    <testcase name="TC-0846 Import scenario 46" classname="com.testcraft.import.Tests" time="2.841">
+    </testcase>
+    <testcase name="TC-0847 Import scenario 47" classname="com.testcraft.import.Tests" time="2.821">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0848 Import scenario 48" classname="com.testcraft.import.Tests" time="1.201">
+    </testcase>
+    <testcase name="TC-0849 Import scenario 49" classname="com.testcraft.import.Tests" time="2.477">
+    </testcase>
+    <testcase name="TC-0850 Import scenario 50" classname="com.testcraft.import.Tests" time="2.773">
+    </testcase>
+    <testcase name="TC-0851 Import scenario 51" classname="com.testcraft.import.Tests" time="1.159">
+      <failure message="expected [true] but found [false] at assertion 3">at com.testcraft.import.Tests.runTC851(Tests.java:10)</failure>
+    </testcase>
+    <testcase name="TC-0852 Import scenario 52" classname="com.testcraft.import.Tests" time="1.659">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.import.Tests.runTC852(Tests.java:11)</failure>
+    </testcase>
+    <testcase name="TC-0853 Import scenario 53" classname="com.testcraft.import.Tests" time="2.077">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.import.Tests.runTC853(Tests.java:12)</failure>
+    </testcase>
+    <testcase name="TC-0854 Import scenario 54" classname="com.testcraft.import.Tests" time="2.563">
+    </testcase>
+    <testcase name="TC-0855 Import scenario 55" classname="com.testcraft.import.Tests" time="1.524">
+    </testcase>
+    <testcase name="TC-0856 Import scenario 56" classname="com.testcraft.import.Tests" time="2.345">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.import.Tests.runTC856(Tests.java:15)</failure>
+    </testcase>
+    <testcase name="TC-0857 Import scenario 57" classname="com.testcraft.import.Tests" time="0.670">
+    </testcase>
+    <testcase name="TC-0858 Import scenario 58" classname="com.testcraft.import.Tests" time="0.680">
+    </testcase>
+    <testcase name="TC-0859 Import scenario 59" classname="com.testcraft.import.Tests" time="1.819">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0860 Import scenario 60" classname="com.testcraft.import.Tests" time="2.890">
+      <error message="NullPointerException in setup">at com.testcraft.import.Tests.setUp(Tests.java:24)</error>
+    </testcase>
+    <testcase name="TC-0861 Import scenario 61" classname="com.testcraft.import.Tests" time="1.428">
+    </testcase>
+    <testcase name="TC-0862 Import scenario 62" classname="com.testcraft.import.Tests" time="2.208">
+    </testcase>
+    <testcase name="TC-0863 Import scenario 63" classname="com.testcraft.import.Tests" time="1.398">
+    </testcase>
+    <testcase name="TC-0864 Import scenario 64" classname="com.testcraft.import.Tests" time="1.396">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.import.Tests.runTC864(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0865 Import scenario 65" classname="com.testcraft.import.Tests" time="1.280">
+    </testcase>
+    <testcase name="TC-0866 Import scenario 66" classname="com.testcraft.import.Tests" time="1.114">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.import.Tests.runTC866(Tests.java:25)</failure>
+    </testcase>
+    <testcase name="TC-0867 Import scenario 67" classname="com.testcraft.import.Tests" time="0.657">
+    </testcase>
+    <testcase name="TC-0868 Import scenario 68" classname="com.testcraft.import.Tests" time="0.267">
+    </testcase>
+    <testcase name="TC-0869 Import scenario 69" classname="com.testcraft.import.Tests" time="1.694">
+    </testcase>
+    <testcase name="TC-0870 Import scenario 70" classname="com.testcraft.import.Tests" time="1.582">
+    </testcase>
+    <testcase name="TC-0871 Import scenario 71" classname="com.testcraft.import.Tests" time="2.650">
+    </testcase>
+    <testcase name="TC-0872 Import scenario 72" classname="com.testcraft.import.Tests" time="2.355">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.import.Tests.runTC872(Tests.java:31)</failure>
+    </testcase>
+    <testcase name="TC-0873 Import scenario 73" classname="com.testcraft.import.Tests" time="0.131">
+    </testcase>
+    <testcase name="TC-0874 Import scenario 74" classname="com.testcraft.import.Tests" time="2.246">
+    </testcase>
+    <testcase name="TC-0875 Import scenario 75" classname="com.testcraft.import.Tests" time="1.445">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0876 Import scenario 76" classname="com.testcraft.import.Tests" time="1.908">
+    </testcase>
+    <testcase name="TC-0877 Import scenario 77" classname="com.testcraft.import.Tests" time="1.124">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0878 Import scenario 78" classname="com.testcraft.import.Tests" time="2.359">
+    </testcase>
+    <testcase name="TC-0879 Import scenario 79" classname="com.testcraft.import.Tests" time="0.252">
+    </testcase>
+    <testcase name="TC-0880 Import scenario 80" classname="com.testcraft.import.Tests" time="0.738">
+    </testcase>
+    <testcase name="TC-0881 Import scenario 81" classname="com.testcraft.import.Tests" time="1.986">
+    </testcase>
+    <testcase name="TC-0882 Import scenario 82" classname="com.testcraft.import.Tests" time="1.125">
+    </testcase>
+    <testcase name="TC-0883 Import scenario 83" classname="com.testcraft.import.Tests" time="2.807">
+    </testcase>
+    <testcase name="TC-0884 Import scenario 84" classname="com.testcraft.import.Tests" time="1.509">
+    </testcase>
+    <testcase name="TC-0885 Import scenario 85" classname="com.testcraft.import.Tests" time="1.270">
+    </testcase>
+    <testcase name="TC-0886 Import scenario 86" classname="com.testcraft.import.Tests" time="0.292">
+    </testcase>
+    <testcase name="TC-0887 Import scenario 87" classname="com.testcraft.import.Tests" time="0.926">
+    </testcase>
+    <testcase name="TC-0888 Import scenario 88" classname="com.testcraft.import.Tests" time="2.119">
+      <error message="NullPointerException in setup">at com.testcraft.import.Tests.setUp(Tests.java:12)</error>
+    </testcase>
+    <testcase name="TC-0889 Import scenario 89" classname="com.testcraft.import.Tests" time="0.355">
+    </testcase>
+    <testcase name="TC-0890 Import scenario 90" classname="com.testcraft.import.Tests" time="2.343">
+    </testcase>
+    <testcase name="TC-0891 Import scenario 91" classname="com.testcraft.import.Tests" time="2.244">
+    </testcase>
+    <testcase name="TC-0892 Import scenario 92" classname="com.testcraft.import.Tests" time="1.798">
+    </testcase>
+    <testcase name="TC-0893 Import scenario 93" classname="com.testcraft.import.Tests" time="1.953">
+    </testcase>
+    <testcase name="TC-0894 Import scenario 94" classname="com.testcraft.import.Tests" time="0.887">
+    </testcase>
+    <testcase name="TC-0895 Import scenario 95" classname="com.testcraft.import.Tests" time="0.168">
+    </testcase>
+    <testcase name="TC-0896 Import scenario 96" classname="com.testcraft.import.Tests" time="1.939">
+    </testcase>
+    <testcase name="TC-0897 Import scenario 97" classname="com.testcraft.import.Tests" time="1.250">
+    </testcase>
+    <testcase name="TC-0898 Import scenario 98" classname="com.testcraft.import.Tests" time="0.885">
+    </testcase>
+    <testcase name="TC-0899 Import scenario 99" classname="com.testcraft.import.Tests" time="0.775">
+    </testcase>
+    <testcase name="TC-0900 Import scenario 100" classname="com.testcraft.import.Tests" time="2.231">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.import.Tests.runTC900(Tests.java:59)</failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="ExportTests" tests="100" time="22.32">
+    <testcase name="TC-0901 Export scenario 1" classname="com.testcraft.export.Tests" time="0.974">
+    </testcase>
+    <testcase name="TC-0902 Export scenario 2" classname="com.testcraft.export.Tests" time="0.483">
+    </testcase>
+    <testcase name="TC-0903 Export scenario 3" classname="com.testcraft.export.Tests" time="2.953">
+    </testcase>
+    <testcase name="TC-0904 Export scenario 4" classname="com.testcraft.export.Tests" time="1.170">
+    </testcase>
+    <testcase name="TC-0905 Export scenario 5" classname="com.testcraft.export.Tests" time="1.402">
+    </testcase>
+    <testcase name="TC-0906 Export scenario 6" classname="com.testcraft.export.Tests" time="3.039">
+    </testcase>
+    <testcase name="TC-0907 Export scenario 7" classname="com.testcraft.export.Tests" time="1.243">
+    </testcase>
+    <testcase name="TC-0908 Export scenario 8" classname="com.testcraft.export.Tests" time="1.477">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0909 Export scenario 9" classname="com.testcraft.export.Tests" time="1.719">
+    </testcase>
+    <testcase name="TC-0910 Export scenario 10" classname="com.testcraft.export.Tests" time="1.986">
+    </testcase>
+    <testcase name="TC-0911 Export scenario 11" classname="com.testcraft.export.Tests" time="0.123">
+    </testcase>
+    <testcase name="TC-0912 Export scenario 12" classname="com.testcraft.export.Tests" time="1.989">
+    </testcase>
+    <testcase name="TC-0913 Export scenario 13" classname="com.testcraft.export.Tests" time="1.388">
+    </testcase>
+    <testcase name="TC-0914 Export scenario 14" classname="com.testcraft.export.Tests" time="0.703">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.export.Tests.runTC914(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0915 Export scenario 15" classname="com.testcraft.export.Tests" time="0.256">
+    </testcase>
+    <testcase name="TC-0916 Export scenario 16" classname="com.testcraft.export.Tests" time="0.221">
+    </testcase>
+    <testcase name="TC-0917 Export scenario 17" classname="com.testcraft.export.Tests" time="1.019">
+    </testcase>
+    <testcase name="TC-0918 Export scenario 18" classname="com.testcraft.export.Tests" time="1.408">
+    </testcase>
+    <testcase name="TC-0919 Export scenario 19" classname="com.testcraft.export.Tests" time="0.828">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:23)</error>
+    </testcase>
+    <testcase name="TC-0920 Export scenario 20" classname="com.testcraft.export.Tests" time="1.958">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0921 Export scenario 21" classname="com.testcraft.export.Tests" time="2.729">
+    </testcase>
+    <testcase name="TC-0922 Export scenario 22" classname="com.testcraft.export.Tests" time="2.178">
+    </testcase>
+    <testcase name="TC-0923 Export scenario 23" classname="com.testcraft.export.Tests" time="2.973">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:7)</error>
+    </testcase>
+    <testcase name="TC-0924 Export scenario 24" classname="com.testcraft.export.Tests" time="2.030">
+    </testcase>
+    <testcase name="TC-0925 Export scenario 25" classname="com.testcraft.export.Tests" time="0.985">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.export.Tests.runTC925(Tests.java:34)</failure>
+    </testcase>
+    <testcase name="TC-0926 Export scenario 26" classname="com.testcraft.export.Tests" time="0.490">
+    </testcase>
+    <testcase name="TC-0927 Export scenario 27" classname="com.testcraft.export.Tests" time="1.051">
+    </testcase>
+    <testcase name="TC-0928 Export scenario 28" classname="com.testcraft.export.Tests" time="0.073">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.export.Tests.runTC928(Tests.java:37)</failure>
+    </testcase>
+    <testcase name="TC-0929 Export scenario 29" classname="com.testcraft.export.Tests" time="0.909">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0930 Export scenario 30" classname="com.testcraft.export.Tests" time="1.939">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:14)</error>
+    </testcase>
+    <testcase name="TC-0931 Export scenario 31" classname="com.testcraft.export.Tests" time="0.824">
+    </testcase>
+    <testcase name="TC-0932 Export scenario 32" classname="com.testcraft.export.Tests" time="1.048">
+    </testcase>
+    <testcase name="TC-0933 Export scenario 33" classname="com.testcraft.export.Tests" time="2.986">
+      <failure message="expected [true] but found [false] at assertion 1">at com.testcraft.export.Tests.runTC933(Tests.java:42)</failure>
+    </testcase>
+    <testcase name="TC-0934 Export scenario 34" classname="com.testcraft.export.Tests" time="0.626">
+    </testcase>
+    <testcase name="TC-0935 Export scenario 35" classname="com.testcraft.export.Tests" time="2.774">
+    </testcase>
+    <testcase name="TC-0936 Export scenario 36" classname="com.testcraft.export.Tests" time="2.605">
+    </testcase>
+    <testcase name="TC-0937 Export scenario 37" classname="com.testcraft.export.Tests" time="0.724">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0938 Export scenario 38" classname="com.testcraft.export.Tests" time="2.137">
+      <failure message="expected [true] but found [false] at assertion 6">at com.testcraft.export.Tests.runTC938(Tests.java:47)</failure>
+    </testcase>
+    <testcase name="TC-0939 Export scenario 39" classname="com.testcraft.export.Tests" time="0.549">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0940 Export scenario 40" classname="com.testcraft.export.Tests" time="2.601">
+    </testcase>
+    <testcase name="TC-0941 Export scenario 41" classname="com.testcraft.export.Tests" time="1.429">
+    </testcase>
+    <testcase name="TC-0942 Export scenario 42" classname="com.testcraft.export.Tests" time="2.139">
+    </testcase>
+    <testcase name="TC-0943 Export scenario 43" classname="com.testcraft.export.Tests" time="2.571">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0944 Export scenario 44" classname="com.testcraft.export.Tests" time="1.585">
+    </testcase>
+    <testcase name="TC-0945 Export scenario 45" classname="com.testcraft.export.Tests" time="0.845">
+    </testcase>
+    <testcase name="TC-0946 Export scenario 46" classname="com.testcraft.export.Tests" time="1.374">
+    </testcase>
+    <testcase name="TC-0947 Export scenario 47" classname="com.testcraft.export.Tests" time="1.409">
+    </testcase>
+    <testcase name="TC-0948 Export scenario 48" classname="com.testcraft.export.Tests" time="0.711">
+    </testcase>
+    <testcase name="TC-0949 Export scenario 49" classname="com.testcraft.export.Tests" time="0.995">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0950 Export scenario 50" classname="com.testcraft.export.Tests" time="2.626">
+    </testcase>
+    <testcase name="TC-0951 Export scenario 51" classname="com.testcraft.export.Tests" time="1.499">
+    </testcase>
+    <testcase name="TC-0952 Export scenario 52" classname="com.testcraft.export.Tests" time="2.908">
+    </testcase>
+    <testcase name="TC-0953 Export scenario 53" classname="com.testcraft.export.Tests" time="0.978">
+      <failure message="expected [true] but found [false] at assertion 5">at com.testcraft.export.Tests.runTC953(Tests.java:12)</failure>
+    </testcase>
+    <testcase name="TC-0954 Export scenario 54" classname="com.testcraft.export.Tests" time="0.729">
+    </testcase>
+    <testcase name="TC-0955 Export scenario 55" classname="com.testcraft.export.Tests" time="0.557">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:19)</error>
+    </testcase>
+    <testcase name="TC-0956 Export scenario 56" classname="com.testcraft.export.Tests" time="1.167">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0957 Export scenario 57" classname="com.testcraft.export.Tests" time="1.659">
+    </testcase>
+    <testcase name="TC-0958 Export scenario 58" classname="com.testcraft.export.Tests" time="2.082">
+    </testcase>
+    <testcase name="TC-0959 Export scenario 59" classname="com.testcraft.export.Tests" time="1.635">
+    </testcase>
+    <testcase name="TC-0960 Export scenario 60" classname="com.testcraft.export.Tests" time="2.132">
+    </testcase>
+    <testcase name="TC-0961 Export scenario 61" classname="com.testcraft.export.Tests" time="0.774">
+    </testcase>
+    <testcase name="TC-0962 Export scenario 62" classname="com.testcraft.export.Tests" time="1.112">
+    </testcase>
+    <testcase name="TC-0963 Export scenario 63" classname="com.testcraft.export.Tests" time="1.171">
+    </testcase>
+    <testcase name="TC-0964 Export scenario 64" classname="com.testcraft.export.Tests" time="1.574">
+      <failure message="expected [true] but found [false] at assertion 8">at com.testcraft.export.Tests.runTC964(Tests.java:23)</failure>
+    </testcase>
+    <testcase name="TC-0965 Export scenario 65" classname="com.testcraft.export.Tests" time="2.621">
+    </testcase>
+    <testcase name="TC-0966 Export scenario 66" classname="com.testcraft.export.Tests" time="1.773">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0967 Export scenario 67" classname="com.testcraft.export.Tests" time="2.386">
+    </testcase>
+    <testcase name="TC-0968 Export scenario 68" classname="com.testcraft.export.Tests" time="1.447">
+    </testcase>
+    <testcase name="TC-0969 Export scenario 69" classname="com.testcraft.export.Tests" time="0.823">
+    </testcase>
+    <testcase name="TC-0970 Export scenario 70" classname="com.testcraft.export.Tests" time="0.170">
+    </testcase>
+    <testcase name="TC-0971 Export scenario 71" classname="com.testcraft.export.Tests" time="2.737">
+    </testcase>
+    <testcase name="TC-0972 Export scenario 72" classname="com.testcraft.export.Tests" time="1.489">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:16)</error>
+    </testcase>
+    <testcase name="TC-0973 Export scenario 73" classname="com.testcraft.export.Tests" time="1.405">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0974 Export scenario 74" classname="com.testcraft.export.Tests" time="1.142">
+    </testcase>
+    <testcase name="TC-0975 Export scenario 75" classname="com.testcraft.export.Tests" time="2.967">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0976 Export scenario 76" classname="com.testcraft.export.Tests" time="0.569">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:20)</error>
+    </testcase>
+    <testcase name="TC-0977 Export scenario 77" classname="com.testcraft.export.Tests" time="0.426">
+    </testcase>
+    <testcase name="TC-0978 Export scenario 78" classname="com.testcraft.export.Tests" time="2.262">
+    </testcase>
+    <testcase name="TC-0979 Export scenario 79" classname="com.testcraft.export.Tests" time="0.867">
+    </testcase>
+    <testcase name="TC-0980 Export scenario 80" classname="com.testcraft.export.Tests" time="2.990">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:24)</error>
+    </testcase>
+    <testcase name="TC-0981 Export scenario 81" classname="com.testcraft.export.Tests" time="1.685">
+    </testcase>
+    <testcase name="TC-0982 Export scenario 82" classname="com.testcraft.export.Tests" time="0.066">
+    </testcase>
+    <testcase name="TC-0983 Export scenario 83" classname="com.testcraft.export.Tests" time="1.459">
+    </testcase>
+    <testcase name="TC-0984 Export scenario 84" classname="com.testcraft.export.Tests" time="0.641">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:8)</error>
+    </testcase>
+    <testcase name="TC-0985 Export scenario 85" classname="com.testcraft.export.Tests" time="0.436">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0986 Export scenario 86" classname="com.testcraft.export.Tests" time="1.155">
+    </testcase>
+    <testcase name="TC-0987 Export scenario 87" classname="com.testcraft.export.Tests" time="2.281">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:11)</error>
+    </testcase>
+    <testcase name="TC-0988 Export scenario 88" classname="com.testcraft.export.Tests" time="2.406">
+    </testcase>
+    <testcase name="TC-0989 Export scenario 89" classname="com.testcraft.export.Tests" time="0.716">
+      <skipped/>
+    </testcase>
+    <testcase name="TC-0990 Export scenario 90" classname="com.testcraft.export.Tests" time="1.430">
+      <failure message="expected [true] but found [false] at assertion 2">at com.testcraft.export.Tests.runTC990(Tests.java:49)</failure>
+    </testcase>
+    <testcase name="TC-0991 Export scenario 91" classname="com.testcraft.export.Tests" time="1.033">
+    </testcase>
+    <testcase name="TC-0992 Export scenario 92" classname="com.testcraft.export.Tests" time="1.270">
+      <failure message="expected [true] but found [false] at assertion 4">at com.testcraft.export.Tests.runTC992(Tests.java:51)</failure>
+    </testcase>
+    <testcase name="TC-0993 Export scenario 93" classname="com.testcraft.export.Tests" time="1.428">
+    </testcase>
+    <testcase name="TC-0994 Export scenario 94" classname="com.testcraft.export.Tests" time="2.638">
+    </testcase>
+    <testcase name="TC-0995 Export scenario 95" classname="com.testcraft.export.Tests" time="0.457">
+      <failure message="expected [true] but found [false] at assertion 7">at com.testcraft.export.Tests.runTC995(Tests.java:54)</failure>
+    </testcase>
+    <testcase name="TC-0996 Export scenario 96" classname="com.testcraft.export.Tests" time="2.389">
+    </testcase>
+    <testcase name="TC-0997 Export scenario 97" classname="com.testcraft.export.Tests" time="0.628">
+    </testcase>
+    <testcase name="TC-0998 Export scenario 98" classname="com.testcraft.export.Tests" time="2.338">
+    </testcase>
+    <testcase name="TC-0999 Export scenario 99" classname="com.testcraft.export.Tests" time="2.583">
+      <error message="NullPointerException in setup">at com.testcraft.export.Tests.setUp(Tests.java:23)</error>
+    </testcase>
+    <testcase name="TC-1000 Export scenario 100" classname="com.testcraft.export.Tests" time="0.575">
+    </testcase>
+  </testsuite>
+</testsuites>

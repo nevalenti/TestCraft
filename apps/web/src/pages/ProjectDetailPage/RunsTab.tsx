@@ -1,12 +1,13 @@
 import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
-import { forwardRef, useImperativeHandle } from "react";
+import { forwardRef, useImperativeHandle, useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import {
   useCreateTestRun,
@@ -24,9 +25,14 @@ import type { TabHandle } from "@/pages/ProjectDetailPage/TabHandle";
 
 export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
   ({ projectId }, ref) => {
+    const [search, setSearch] = useState("");
+    const debouncedSearch = useDebounce(search, 300);
     const { modal, close, openCreate, openImport, openEdit, openDelete } =
       useModal<TestRun>();
-    const { data: runs, isPending } = useTestRuns(projectId);
+    const { data: runs, isPending } = useTestRuns(
+      projectId,
+      debouncedSearch || undefined,
+    );
     const createRun = useCreateTestRun(projectId);
     const updateRun = useUpdateTestRun(projectId);
     const deleteRun = useDeleteTestRun(projectId);
@@ -91,9 +97,16 @@ export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
           />
         ) : (
           <>
-            <div className="mb-4 flex justify-end">
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <input
+                type="search"
+                className="input input-bordered bg-base-200 w-full max-w-sm"
+                placeholder="Search test runs…"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+              />
               <button
-                className="btn btn-outline btn-sm gap-1.5"
+                className="btn btn-outline btn-sm gap-1.5 shrink-0"
                 onClick={openImport}
               >
                 <ArrowUpTrayIcon className="size-4" />
