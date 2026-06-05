@@ -72,8 +72,6 @@ const useImportMutation = <T>(
         queryKey: queryKeys.projects.detail(projectId),
       });
     },
-    onError: () =>
-      notify("Import failed — check the file and try again", "error"),
   });
 };
 
@@ -105,6 +103,9 @@ export const useDeleteTestRun = (projectId: string) => {
       });
       queryClient.removeQueries({
         queryKey: queryKeys.testRuns.detail(projectId, id),
+      });
+      queryClient.removeQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, id),
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),

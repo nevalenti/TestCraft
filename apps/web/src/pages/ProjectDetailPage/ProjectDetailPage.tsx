@@ -6,18 +6,16 @@ import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 import { RunsSection } from "@/pages/ProjectDetailPage/RunsTab";
-import {
-  type SectionHandle,
-  SuitesSection,
-} from "@/pages/ProjectDetailPage/SuitesTab";
+import { SuitesSection } from "@/pages/ProjectDetailPage/SuitesTab";
+import type { TabHandle } from "@/pages/ProjectDetailPage/TabHandle";
 
 type Tab = "suites" | "runs";
 
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam("projectId");
   const [activeTab, setActiveTab] = useState<Tab>("suites");
-  const suitesRef = useRef<SectionHandle>(null);
-  const runsRef = useRef<SectionHandle>(null);
+  const suitesRef = useRef<TabHandle>(null);
+  const runsRef = useRef<TabHandle>(null);
   const { data: project, isPending } = useProject(projectId);
 
   useBreadcrumbs([

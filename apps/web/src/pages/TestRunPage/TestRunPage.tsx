@@ -5,7 +5,7 @@ import {
   TestResultStatus,
   type UpdateTestResult,
 } from "@testcraft/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -31,6 +31,9 @@ import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
 
 type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
 
+const passRateClass = (rate: number) =>
+  rate >= 80 ? "text-success" : rate >= 50 ? "text-warning" : "text-error";
+
 const SUMMARY_KEY: Record<string, SummaryCountKey> = {
   Passed: "passed",
   Failed: "failed",
@@ -54,7 +57,7 @@ export const TestRunPage = () => {
     data: results,
     isPending,
     isError,
-  } = useTestResults(projectId, runId);
+  } = useTestResults(projectId, runId, statusFilter ?? undefined);
   const createResult = useCreateTestResult(projectId, runId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
@@ -65,11 +68,6 @@ export const TestRunPage = () => {
     updateResult.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteResult.mutate(id, { onSuccess: close });
-
-  const filteredResults = useMemo(() => {
-    if (!results || statusFilter === null) return results;
-    return results.filter((result) => result.status === statusFilter);
-  }, [results, statusFilter]);
 
   useBreadcrumbs([
     { label: "Dashboard", href: "/" },
@@ -112,13 +110,7 @@ export const TestRunPage = () => {
             </span>{" "}
             result{runSummary.total !== 1 ? "s" : ""} ·{" "}
             <span
-              className={`font-semibold ${
-                runSummary.passRate >= 80
-                  ? "text-success"
-                  : runSummary.passRate >= 50
-                    ? "text-warning"
-                    : "text-error"
-              }`}
+              className={`font-semibold ${passRateClass(runSummary.passRate)}`}
             >
               {runSummary.passRate}%
             </span>{" "}
@@ -165,7 +157,7 @@ export const TestRunPage = () => {
             <SkeletonGrid />
           ) : isError ? (
             <ErrorState message="Failed to load results. Please check your connection and try again." />
-          ) : results?.length === 0 ? (
+          ) : results?.length === 0 && statusFilter === null ? (
             <EmptyState
               title="No results recorded"
               description="Add results to track the outcome of each test case in this run."
@@ -178,7 +170,7 @@ export const TestRunPage = () => {
                 </button>
               }
             />
-          ) : filteredResults?.length === 0 ? (
+          ) : results?.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-sm font-semibold text-base-content/60 mb-2">
                 No results match this filter
@@ -204,7 +196,7 @@ export const TestRunPage = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredResults?.map((result, index) => (
+                  {results?.map((result, index) => (
                     <ResultRow
                       key={result.id}
                       result={result}

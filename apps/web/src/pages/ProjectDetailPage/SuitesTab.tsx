@@ -20,12 +20,9 @@ import {
 } from "@/hooks/useTestSuites";
 import { formatDate } from "@/lib/format";
 import { SuiteForm } from "@/pages/ProjectDetailPage/SuiteForm";
+import type { TabHandle } from "@/pages/ProjectDetailPage/TabHandle";
 
-export interface SectionHandle {
-  open: () => void;
-}
-
-export const SuitesSection = forwardRef<SectionHandle, { projectId: string }>(
+export const SuitesSection = forwardRef<TabHandle, { projectId: string }>(
   ({ projectId }, ref) => {
     const { modal, close, openCreate, openEdit, openDelete } =
       useModal<TestSuite>();

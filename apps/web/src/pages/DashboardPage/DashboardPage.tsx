@@ -60,10 +60,7 @@ export const DashboardPage = () => {
             Cross-project status at a glance
           </p>
         </div>
-        <Link
-          to="/projects"
-          className="btn btn-primary btn-sm gap-1.5 rounded-full shrink-0"
-        >
+        <Link to="/projects" className="btn btn-primary btn-sm gap-1.5">
           Projects
           <ArrowRightIcon className="size-3.5" />
         </Link>

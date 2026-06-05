@@ -1,11 +1,6 @@
-import { BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
-import type {
-  AllureResultItem,
-  CreateTestRun,
-  TestRun,
-  UpdateTestRun,
-} from "@testcraft/types";
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
+import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
+import { forwardRef, useImperativeHandle } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -22,20 +17,15 @@ import {
   useUpdateTestRun,
 } from "@/hooks/useTestRuns";
 import { formatDate } from "@/lib/format";
-import { AllureImportForm } from "@/pages/ProjectDetailPage/AllureImportForm";
-import { ImportDropdown } from "@/pages/ProjectDetailPage/ImportDropdown";
-import { JUnitImportForm } from "@/pages/ProjectDetailPage/JUnitImportForm";
+import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
 import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
-import type { SectionHandle } from "@/pages/ProjectDetailPage/SuitesTab";
+import type { TabHandle } from "@/pages/ProjectDetailPage/TabHandle";
 
-export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
+export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
   ({ projectId }, ref) => {
-    const { modal, close, openCreate, openEdit, openDelete } =
+    const { modal, close, openCreate, openImport, openEdit, openDelete } =
       useModal<TestRun>();
-    const [importModal, setImportModal] = useState<"junit" | "allure" | null>(
-      null,
-    );
     const { data: runs, isPending } = useTestRuns(projectId);
     const createRun = useCreateTestRun(projectId);
     const updateRun = useUpdateTestRun(projectId);
@@ -51,16 +41,25 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
       updateRun.mutate({ id, ...input }, { onSuccess: close });
     const handleDelete = (id: string) =>
       deleteRun.mutate(id, { onSuccess: close });
-    const handleImport = (data: {
-      xml: string;
-      environment: string;
-      name?: string;
-    }) => importJunit.mutate(data, { onSuccess: () => setImportModal(null) });
-    const handleAllureImport = (data: {
-      results: AllureResultItem[];
-      environment: string;
-      name?: string;
-    }) => importAllure.mutate(data, { onSuccess: () => setImportModal(null) });
+    const handleImport: React.ComponentProps<typeof ImportForm>["onSubmit"] = (
+      data,
+    ) => {
+      if (data.type === "junit") {
+        importJunit.mutate(
+          { xml: data.xml, environment: data.environment, name: data.name },
+          { onSuccess: close },
+        );
+      } else {
+        importAllure.mutate(
+          {
+            results: data.results,
+            environment: data.environment,
+            name: data.name,
+          },
+          { onSuccess: close },
+        );
+      }
+    };
 
     const deleteItem = modal.type === "delete" ? modal.item : null;
 
@@ -80,20 +79,26 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
                   </span>
                   Create First Run
                 </button>
-                <ImportDropdown
-                  onJUnit={() => setImportModal("junit")}
-                  onAllure={() => setImportModal("allure")}
-                />
+                <button
+                  className="btn btn-outline btn-sm gap-1.5"
+                  onClick={openImport}
+                >
+                  <ArrowUpTrayIcon className="size-4" />
+                  Import
+                </button>
               </div>
             }
           />
         ) : (
           <>
             <div className="mb-4 flex justify-end">
-              <ImportDropdown
-                onJUnit={() => setImportModal("junit")}
-                onAllure={() => setImportModal("allure")}
-              />
+              <button
+                className="btn btn-outline btn-sm gap-1.5"
+                onClick={openImport}
+              >
+                <ArrowUpTrayIcon className="size-4" />
+                Import
+              </button>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {runs?.map((run) => (
@@ -169,28 +174,15 @@ export const RunsSection = forwardRef<SectionHandle, { projectId: string }>(
           isLoading={deleteRun.isPending}
         />
         <Modal
-          isOpen={importModal === "junit"}
-          onClose={() => setImportModal(null)}
-          title="Import JUnit XML"
+          isOpen={modal.type === "import"}
+          onClose={close}
+          title="Import Test Results"
         >
-          {importModal === "junit" && (
-            <JUnitImportForm
+          {modal.type === "import" && (
+            <ImportForm
               onSubmit={handleImport}
-              onCancel={() => setImportModal(null)}
-              isLoading={importJunit.isPending}
-            />
-          )}
-        </Modal>
-        <Modal
-          isOpen={importModal === "allure"}
-          onClose={() => setImportModal(null)}
-          title="Import Allure Results"
-        >
-          {importModal === "allure" && (
-            <AllureImportForm
-              onSubmit={handleAllureImport}
-              onCancel={() => setImportModal(null)}
-              isLoading={importAllure.isPending}
+              onCancel={close}
+              isLoading={importJunit.isPending || importAllure.isPending}
             />
           )}
         </Modal>

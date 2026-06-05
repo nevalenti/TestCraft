@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import type {
   CreateTestResult,
   Paginated,
@@ -49,10 +49,11 @@ export const testResultQueries = {
   all: (projectId: string, runId: string, status?: TestResultStatus) =>
     queryOptions({
       queryKey: status
-        ? ([...queryKeys.testResults.all(projectId, runId), status] as const)
+        ? queryKeys.testResults.filtered(projectId, runId, status)
         : queryKeys.testResults.all(projectId, runId),
       queryFn: () => testResultsApi.getAll(projectId, runId, status),
       enabled: !!projectId && !!runId,
+      placeholderData: keepPreviousData,
     }),
   detail: (projectId: string, runId: string, id: string) =>
     queryOptions({
