@@ -9,7 +9,6 @@ resources:
   - infra/k8s/redis.yaml
   - infra/k8s/keycloak.yaml
   - infra/k8s/loki.yaml
-  - infra/k8s/tempo.yaml
   - infra/k8s/prometheus.yaml
   - infra/k8s/exporters.yaml
   - infra/k8s/grafana.yaml
@@ -36,12 +35,6 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true
 
-  - name: tempo-config
-    files:
-      - tempo.yaml=infra/tempo/tempo.yaml
-    options:
-      disableNameSuffixHash: true
-
   - name: grafana-provisioning-datasources
     files:
       - infra/grafana/provisioning/datasources/datasources.yaml
@@ -55,7 +48,6 @@ configMapGenerator:
       - infra/grafana/provisioning/dashboards/api-http.json
       - infra/grafana/provisioning/dashboards/redis-metrics.json
       - infra/grafana/provisioning/dashboards/postgres-metrics.json
-      - infra/grafana/provisioning/dashboards/api-traces.json
     options:
       disableNameSuffixHash: true
 

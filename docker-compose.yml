@@ -59,17 +59,6 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
-  tempo:
-    image: grafana/tempo:2.7.1
-    container_name: testcraft-tempo
-    command: ["-config.file=/etc/tempo.yaml"]
-    volumes:
-      - ./infra/tempo/tempo.yaml:/etc/tempo.yaml
-      - tempo_data:/var/tempo
-    ports:
-      - "4318:4318"
-      - "3200:3200"
-
   prometheus:
     image: prom/prometheus:v3.4.0
     container_name: testcraft-prometheus
@@ -97,7 +86,6 @@ services:
       - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - loki
-      - tempo
       - prometheus
 
   postgres-exporter:
@@ -122,6 +110,5 @@ volumes:
   postgres_data:
   keycloak_data:
   loki_data:
-  tempo_data:
   prometheus_data:
   grafana_data:
