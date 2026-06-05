@@ -22,7 +22,6 @@ const env = createEnv({
     LOKI_URL: z.string().url().optional(),
     METRICS_TOKEN: z.string().optional(),
     REDIS_URL: z.string().url().optional(),
-    RABBITMQ_URL: z.string().url().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
@@ -47,5 +46,4 @@ export const config = {
   metricsToken: env.METRICS_TOKEN,
   lokiUrl: env.LOKI_URL,
   redisUrl: env.REDIS_URL,
-  rabbitmqUrl: env.RABBITMQ_URL,
 };

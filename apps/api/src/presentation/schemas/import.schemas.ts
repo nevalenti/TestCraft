@@ -13,7 +13,10 @@ const allureResultSchema = z.object({
     .enum(["passed", "failed", "broken", "skipped", "unknown"])
     .optional(),
   statusDetails: z
-    .object({ message: z.string().optional(), trace: z.string().optional() })
+    .object({
+      message: z.string().max(5000).optional(),
+      trace: z.string().max(5000).optional(),
+    })
     .optional(),
   labels: z.array(z.object({ name: z.string(), value: z.string() })).optional(),
 });

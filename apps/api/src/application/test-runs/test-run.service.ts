@@ -72,10 +72,14 @@ export class TestRunService implements ITestRunService {
       );
     }
 
-    return this.testRunRepository.update(projectId, id, input);
+    const updated = await this.testRunRepository.update(projectId, id, input);
+    if (updated) await this.cache.del(cacheKeys.testRunSummary(id));
+    return updated;
   }
 
-  delete(projectId: string, id: string) {
-    return this.testRunRepository.delete(projectId, id);
+  async delete(projectId: string, id: string) {
+    const deleted = await this.testRunRepository.delete(projectId, id);
+    if (deleted) await this.cache.del(cacheKeys.testRunSummary(id));
+    return deleted;
   }
 }

@@ -20,5 +20,8 @@ export const bulkReorderStepsSchema = z.object({
         order: z.number().int().min(1),
       }),
     )
-    .min(1),
+    .min(1)
+    .refine((steps) => new Set(steps.map((s) => s.id)).size === steps.length, {
+      message: "Duplicate step IDs are not allowed",
+    }),
 });

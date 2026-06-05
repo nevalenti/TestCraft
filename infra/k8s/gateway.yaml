@@ -46,7 +46,7 @@ spec:
             name: nginx-gateway-config
         - name: tls
           secret:
-            secretName: rpi5-tls
+            secretName: testcraft-tls
 ---
 apiVersion: v1
 kind: Service

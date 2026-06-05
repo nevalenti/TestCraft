@@ -1,17 +1,16 @@
-import { TestResultStatus } from '@testcraft/types';
-import { Paginated, PaginationParams } from '@testcraft/types';
+import { Paginated, PaginationParams, TestResultStatus } from "@testcraft/types";
 
-import { ITestResultRepository } from '@/application/test-results/test-result.repository';
 import {
   CreateTestResult,
+  ITestResultRepository,
   UpdateTestResult,
-} from '@/application/test-results/test-result.repository';
-import { ITestRunRepository } from '@/application/test-runs/test-run.repository';
-import { DomainError } from '@/domain/errors';
-import { canAddResultToRun } from '@/domain/rules';
-import { TestResult } from '@/domain/test-result';
-import { CacheService } from '@/infrastructure/cache/cache.service';
-import { cacheKeys } from '@/infrastructure/cache/cache-keys';
+} from "@/application/test-results/test-result.repository";
+import { ITestRunRepository } from "@/application/test-runs/test-run.repository";
+import { DomainError } from "@/domain/errors";
+import { canAddResultToRun } from "@/domain/rules";
+import { TestResult } from "@/domain/test-result";
+import { CacheService } from "@/infrastructure/cache/cache.service";
+import { cacheKeys } from "@/infrastructure/cache/cache-keys";
 
 export interface ITestResultService {
   getAll(
@@ -73,6 +72,12 @@ export class TestResultService implements ITestResultService {
     id: string,
     input: UpdateTestResult,
   ): Promise<TestResult | null> {
+    const run = await this.testRunRepository.findById(runId);
+    if (!run) throw new DomainError('Test run not found');
+    if (!canAddResultToRun(run.status)) {
+      throw new DomainError(`Cannot update results in a ${run.status} test run`);
+    }
+
     const result = await this.testResultRepository.update(runId, id, input);
     if (result) await this.cache.del(cacheKeys.testRunSummary(runId));
     return result;

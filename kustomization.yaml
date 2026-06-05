@@ -72,7 +72,7 @@ secretGenerator:
     options:
       disableNameSuffixHash: true
 
-  - name: rpi5-tls
+  - name: testcraft-tls
     type: kubernetes.io/tls
     files:
       - tls.crt=infra/nginx/tls/tls.crt
