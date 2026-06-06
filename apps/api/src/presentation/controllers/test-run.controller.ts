@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import { ITestRunService } from "@/application/test-runs/test-run.service";
-import { problem, problems } from "@/presentation/errors/problem";
 import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class TestRunController {
@@ -21,10 +20,6 @@ export class TestRunController {
       req.params.projectId as string,
       req.params.id as string,
     );
-    if (!run) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(run);
   };
 
@@ -33,10 +28,6 @@ export class TestRunController {
       req.params.projectId as string,
       req.params.id as string,
     );
-    if (!summary) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(summary);
   };
 
@@ -54,22 +45,14 @@ export class TestRunController {
       req.params.id as string,
       req.body,
     );
-    if (!run) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(run);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    const deleted = await this.testRunService.delete(
+    await this.testRunService.delete(
       req.params.projectId as string,
       req.params.id as string,
     );
-    if (!deleted) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.status(204).send();
   };
 }

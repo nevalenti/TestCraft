@@ -9,7 +9,7 @@ import {
   ITestCaseRepository,
   UpdateTestCase,
 } from "@/application/test-cases/test-case.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { TestCase } from "@/domain/test-case";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -53,11 +53,7 @@ export class TestCaseRepository implements ITestCaseRepository {
     search?: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<TestCase>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       suiteId,
       isDeleted: false,
@@ -72,7 +68,7 @@ export class TestCaseRepository implements ITestCaseRepository {
         select: caseSelect,
         orderBy: { createdAt: "asc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testCase.count({ where }),
     ]);
@@ -84,11 +80,7 @@ export class TestCaseRepository implements ITestCaseRepository {
     search?: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<TestCase>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       isDeleted: false,
       suite: { projectId, isDeleted: false, project: { isDeleted: false } },
@@ -102,7 +94,7 @@ export class TestCaseRepository implements ITestCaseRepository {
         select: caseSelect,
         orderBy: { createdAt: "asc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testCase.count({ where }),
     ]);

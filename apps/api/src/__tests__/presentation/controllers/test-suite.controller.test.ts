@@ -3,7 +3,7 @@ import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ITestSuiteService } from "@/application/test-suites/test-suite.service";
-import { AppError } from "@/domain/errors";
+import { NotFoundError } from "@/domain/errors";
 import { TestSuite } from "@/domain/test-suite";
 import { TestSuiteController } from "@/presentation/controllers/test-suite.controller";
 import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
@@ -105,7 +105,7 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
 
   describe("GET /:id — when the suite does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.getById).mockResolvedValue(null);
+      vi.mocked(mockService.getById).mockRejectedValue(new NotFoundError());
 
       const res = await request.get("/projects/proj-1/suites/missing");
 
@@ -169,7 +169,7 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
 
   describe("PUT /:id — when the suite does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.update).mockResolvedValue(null);
+      vi.mocked(mockService.update).mockRejectedValue(new NotFoundError());
 
       const res = await request
         .put("/projects/proj-1/suites/missing")
@@ -194,7 +194,7 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the suite exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(true);
+      vi.mocked(mockService.delete).mockResolvedValue(undefined);
 
       const res = await request.delete("/projects/proj-1/suites/suite-1");
 
@@ -205,7 +205,7 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the suite does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(false);
+      vi.mocked(mockService.delete).mockRejectedValue(new NotFoundError());
 
       const res = await request.delete("/projects/proj-1/suites/missing");
 
@@ -213,11 +213,9 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
     });
   });
 
-  describe("DELETE /:id — when the service throws a non-operational error — returns 500", () => {
+  describe("DELETE /:id — when the service throws an unexpected error — returns 500", () => {
     it("responds 500 without leaking internal details", async () => {
-      vi.mocked(mockService.delete).mockRejectedValue(
-        new AppError("unexpected", false),
-      );
+      vi.mocked(mockService.delete).mockRejectedValue(new Error("unexpected"));
 
       const res = await request.delete("/projects/proj-1/suites/suite-1");
 

@@ -6,7 +6,7 @@ import {
   ReorderStep,
   UpdateTestCaseStep,
 } from "@/application/test-case-steps/test-case-step.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { TestCaseStep } from "@/domain/test-case-step";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -28,11 +28,7 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
     caseId: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<TestCaseStep>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       testCaseId: caseId,
       isDeleted: false,
@@ -44,7 +40,7 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
         select: stepSelect,
         orderBy: { order: "asc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testCaseStep.count({ where }),
     ]);

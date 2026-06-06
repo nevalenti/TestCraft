@@ -113,14 +113,6 @@ export const TestSuitePage = () => {
             <EmptyState
               title="No test cases yet"
               description="Add test cases to document expected behaviour."
-              action={
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-                    <PlusIcon className="size-3" aria-hidden="true" />
-                  </span>
-                  Create First Test Case
-                </button>
-              }
             />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

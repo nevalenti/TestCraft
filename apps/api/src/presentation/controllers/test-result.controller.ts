@@ -2,7 +2,6 @@ import { TestResultStatus } from "@testcraft/types";
 import { Request, Response } from "express";
 
 import { ITestResultService } from "@/application/test-results/test-result.service";
-import { problem, problems } from "@/presentation/errors/problem";
 import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class TestResultController {
@@ -23,10 +22,6 @@ export class TestResultController {
       req.params.runId as string,
       req.params.id as string,
     );
-    if (!result) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(result);
   };
 
@@ -45,22 +40,14 @@ export class TestResultController {
       req.params.id as string,
       req.body,
     );
-    if (!result) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(result);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    const deleted = await this.testResultService.delete(
+    await this.testResultService.delete(
       req.params.runId as string,
       req.params.id as string,
     );
-    if (!deleted) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.status(204).send();
   };
 }

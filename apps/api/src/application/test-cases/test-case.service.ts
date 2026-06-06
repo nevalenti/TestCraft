@@ -5,6 +5,7 @@ import {
   ITestCaseRepository,
   UpdateTestCase,
 } from "@/application/test-cases/test-case.repository";
+import { NotFoundError } from "@/domain/errors";
 import { TestCase } from "@/domain/test-case";
 
 export interface ITestCaseService {
@@ -18,14 +19,10 @@ export interface ITestCaseService {
     search?: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<TestCase>>;
-  getById(suiteId: string, id: string): Promise<TestCase | null>;
+  getById(suiteId: string, id: string): Promise<TestCase>;
   create(suiteId: string, input: CreateTestCase): Promise<TestCase>;
-  update(
-    suiteId: string,
-    id: string,
-    input: UpdateTestCase,
-  ): Promise<TestCase | null>;
-  delete(suiteId: string, id: string): Promise<boolean>;
+  update(suiteId: string, id: string, input: UpdateTestCase): Promise<TestCase>;
+  delete(suiteId: string, id: string): Promise<void>;
 }
 
 export class TestCaseService implements ITestCaseService {
@@ -47,19 +44,28 @@ export class TestCaseService implements ITestCaseService {
     );
   }
 
-  getById(suiteId: string, id: string) {
-    return this.testCaseRepository.getById(suiteId, id);
+  async getById(suiteId: string, id: string): Promise<TestCase> {
+    const testCase = await this.testCaseRepository.getById(suiteId, id);
+    if (!testCase) throw new NotFoundError();
+    return testCase;
   }
 
   create(suiteId: string, input: CreateTestCase) {
     return this.testCaseRepository.create(suiteId, input);
   }
 
-  update(suiteId: string, id: string, input: UpdateTestCase) {
-    return this.testCaseRepository.update(suiteId, id, input);
+  async update(
+    suiteId: string,
+    id: string,
+    input: UpdateTestCase,
+  ): Promise<TestCase> {
+    const testCase = await this.testCaseRepository.update(suiteId, id, input);
+    if (!testCase) throw new NotFoundError();
+    return testCase;
   }
 
-  delete(suiteId: string, id: string) {
-    return this.testCaseRepository.delete(suiteId, id);
+  async delete(suiteId: string, id: string): Promise<void> {
+    const deleted = await this.testCaseRepository.delete(suiteId, id);
+    if (!deleted) throw new NotFoundError();
   }
 }

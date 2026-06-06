@@ -6,7 +6,7 @@ import {
   CreateTestResult,
   UpdateTestResult,
 } from "@/application/test-results/test-result.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { TestResult } from "@/domain/test-result";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -49,11 +49,7 @@ export class TestResultRepository implements ITestResultRepository {
     pagination?: PaginationParams,
     search?: string,
   ): Promise<Paginated<TestResult>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       testRunId: runId,
       isDeleted: false,
@@ -73,7 +69,7 @@ export class TestResultRepository implements ITestResultRepository {
         include: resultInclude,
         orderBy: { createdAt: "asc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testResult.count({ where }),
     ]);

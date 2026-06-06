@@ -5,6 +5,7 @@ import {
   ITestSuiteRepository,
   UpdateTestSuite,
 } from "@/application/test-suites/test-suite.repository";
+import { NotFoundError } from "@/domain/errors";
 import { TestSuite } from "@/domain/test-suite";
 
 export interface ITestSuiteService {
@@ -13,14 +14,14 @@ export interface ITestSuiteService {
     pagination?: PaginationParams,
     search?: string,
   ): Promise<Paginated<TestSuite>>;
-  getById(projectId: string, id: string): Promise<TestSuite | null>;
+  getById(projectId: string, id: string): Promise<TestSuite>;
   create(projectId: string, input: CreateTestSuite): Promise<TestSuite>;
   update(
     projectId: string,
     id: string,
     input: UpdateTestSuite,
-  ): Promise<TestSuite | null>;
-  delete(projectId: string, id: string): Promise<boolean>;
+  ): Promise<TestSuite>;
+  delete(projectId: string, id: string): Promise<void>;
 }
 
 export class TestSuiteService implements ITestSuiteService {
@@ -30,19 +31,28 @@ export class TestSuiteService implements ITestSuiteService {
     return this.testSuiteRepository.getAll(projectId, pagination, search);
   }
 
-  getById(projectId: string, id: string) {
-    return this.testSuiteRepository.getById(projectId, id);
+  async getById(projectId: string, id: string): Promise<TestSuite> {
+    const suite = await this.testSuiteRepository.getById(projectId, id);
+    if (!suite) throw new NotFoundError();
+    return suite;
   }
 
   create(projectId: string, input: CreateTestSuite) {
     return this.testSuiteRepository.create(projectId, input);
   }
 
-  update(projectId: string, id: string, input: UpdateTestSuite) {
-    return this.testSuiteRepository.update(projectId, id, input);
+  async update(
+    projectId: string,
+    id: string,
+    input: UpdateTestSuite,
+  ): Promise<TestSuite> {
+    const suite = await this.testSuiteRepository.update(projectId, id, input);
+    if (!suite) throw new NotFoundError();
+    return suite;
   }
 
-  delete(projectId: string, id: string) {
-    return this.testSuiteRepository.delete(projectId, id);
+  async delete(projectId: string, id: string): Promise<void> {
+    const deleted = await this.testSuiteRepository.delete(projectId, id);
+    if (!deleted) throw new NotFoundError();
   }
 }

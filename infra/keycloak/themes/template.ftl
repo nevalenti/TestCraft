@@ -22,23 +22,10 @@
         --color-border: oklch(0 0 0 / 0.18);
       }
 
-      [data-theme="dim"] {
-        background-image: repeating-linear-gradient(
-          45deg,
-          transparent 0px, transparent 10px,
-          oklch(1 0 0 / 0.015) 10px, oklch(1 0 0 / 0.015) 11px
-        );
-      }
-
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        background-color: var(--color-base-200);
-        background-image: repeating-linear-gradient(
-          45deg,
-          transparent 0px, transparent 10px,
-          oklch(0 0 0 / 0.018) 10px, oklch(0 0 0 / 0.018) 11px
-        );
+        background-color: var(--color-base-100);
       }
 
       #icon-moon { display: none; }
@@ -115,7 +102,7 @@
       }
     </script>
   </head>
-  <body class="bg-base-200 text-base-content min-h-screen">
+  <body class="text-base-content min-h-screen">
     <div class="mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100" style="border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border);">
 
       <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="border-bottom: 1px solid var(--color-border);">
@@ -139,7 +126,7 @@
         </div>
       </nav>
 
-      <main class="flex flex-1 flex-col items-center justify-start pt-[10vh] bg-base-200 px-4 pb-8" style="background-image: inherit;">
+      <main class="flex flex-1 flex-col items-center justify-start pt-[10vh] px-4 pb-8" style="background-image: inherit;">
         <div class="w-full max-w-sm card-enter">
           <#nested "header">
         </div>

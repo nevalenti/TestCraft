@@ -1,5 +1,7 @@
+import compression from "compression";
 import express, { type Express, json } from "express";
 
+import { NotFoundError } from "@/domain/errors";
 import docsRoutes from "@/presentation/docs/docs.routes";
 import { cors } from "@/presentation/middleware/cors.middleware";
 import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
@@ -16,10 +18,11 @@ const app: Express = express();
 app.set("trust proxy", 1);
 
 app.use(requestId);
+app.use(cors);
+app.use(compression());
 app.use(helmet);
 app.use(httpLogger);
 app.use(httpMetrics);
-app.use(cors);
 app.use("/api/v1/projects/:projectId/import", json({ limit: "5mb" }));
 app.use(json({ limit: "100kb" }));
 
@@ -36,6 +39,7 @@ app.use(
   v1Routes,
 );
 
+app.use((_req, _res, next) => next(new NotFoundError()));
 app.use(errorHandler);
 
 export default app;

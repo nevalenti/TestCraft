@@ -5,7 +5,7 @@ import {
   IProjectRepository,
   UpdateProject,
 } from "@/application/projects/project.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { Project } from "@/domain/project";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -52,11 +52,7 @@ export class ProjectRepository implements IProjectRepository {
     search?: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<Project>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       userId,
       isDeleted: false,
@@ -70,7 +66,7 @@ export class ProjectRepository implements IProjectRepository {
         select: projectSelect,
         orderBy: { createdAt: "desc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.project.count({ where }),
     ]);

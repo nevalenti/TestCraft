@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import { ITestCaseStepService } from "@/application/test-case-steps/test-case-step.service";
-import { problem, problems } from "@/presentation/errors/problem";
 import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class TestCaseStepController {
@@ -20,10 +19,6 @@ export class TestCaseStepController {
       req.params.caseId as string,
       req.params.id as string,
     );
-    if (!step) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(step);
   };
 
@@ -41,10 +36,6 @@ export class TestCaseStepController {
       req.params.id as string,
       req.body,
     );
-    if (!step) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(step);
   };
 
@@ -57,14 +48,10 @@ export class TestCaseStepController {
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    const deleted = await this.testCaseStepService.delete(
+    await this.testCaseStepService.delete(
       req.params.caseId as string,
       req.params.id as string,
     );
-    if (!deleted) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.status(204).send();
   };
 }

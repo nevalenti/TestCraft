@@ -1,4 +1,5 @@
 import { Response } from "express";
+import { ZodIssue } from "zod";
 
 const PROBLEM_CONTENT_TYPE = "application/problem+json";
 
@@ -15,43 +16,56 @@ export interface FieldError {
   message: string;
 }
 
+export const zodToFieldErrors = (
+  issues: ZodIssue[],
+  rootField = "body",
+): FieldError[] =>
+  issues.map((issue) => ({
+    field: issue.path.join(".") || rootField,
+    message: issue.message,
+  }));
+
 export interface ValidationProblem extends ProblemDetail {
   errors: FieldError[];
 }
 
 export const problem = (res: Response, body: ProblemDetail): void => {
-  res.status(body.status).contentType(PROBLEM_CONTENT_TYPE).json(body);
+  const instance = res.req?.headers["x-request-id"] as string | undefined;
+  res
+    .status(body.status)
+    .contentType(PROBLEM_CONTENT_TYPE)
+    .json(instance ? { ...body, instance } : body);
 };
 
 export const problems = {
   notFound: (): ProblemDetail => ({
-    type: "https://testcraft.io/problems/not-found",
+    type: "about:blank",
     title: "Not Found",
     status: 404,
   }),
 
   unprocessable: (detail: string): ProblemDetail => ({
-    type: "https://testcraft.io/problems/unprocessable",
+    type: "about:blank",
     title: "Unprocessable Content",
     status: 422,
     detail,
   }),
 
   validation: (errors: FieldError[]): ValidationProblem => ({
-    type: "https://testcraft.io/problems/validation-failed",
+    type: "about:blank",
     title: "Validation Failed",
     status: 400,
     errors,
   }),
 
   internal: (): ProblemDetail => ({
-    type: "https://testcraft.io/problems/internal-error",
+    type: "about:blank",
     title: "An unexpected error occurred",
     status: 500,
   }),
 
   tooManyRequests: (): ProblemDetail => ({
-    type: "https://testcraft.io/problems/too-many-requests",
+    type: "about:blank",
     title: "Too Many Requests",
     status: 429,
     detail: "Rate limit exceeded, please try again later.",

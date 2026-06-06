@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ITestRunRepository } from "@/application/test-runs/test-run.repository";
 import { TestRunService } from "@/application/test-runs/test-run.service";
-import { DomainError } from "@/domain/errors";
+import { DomainError, NotFoundError } from "@/domain/errors";
 import { TestRun } from "@/domain/test-run";
 import { CacheService } from "@/infrastructure/cache/cache.service";
 
@@ -109,16 +109,17 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
     });
 
     describe("given the run does not exist", () => {
-      it("returns null without calling repository.update", async () => {
+      it("throws NotFoundError without calling repository.update", async () => {
         vi.mocked(mockRepo.getById).mockResolvedValue(null);
 
-        const result = await service.update("proj-1", "missing", {
-          name: "Regression",
-          environment: "staging",
-          status: TestRunStatus.Completed,
-        });
+        await expect(
+          service.update("proj-1", "missing", {
+            name: "Regression",
+            environment: "staging",
+            status: TestRunStatus.Completed,
+          }),
+        ).rejects.toThrow(NotFoundError);
 
-        expect(result).toBeNull();
         expect(mockRepo.update).not.toHaveBeenCalled();
       });
     });
@@ -170,12 +171,10 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
   });
 
   describe("delete — delegates to the repository", () => {
-    it("returns true when the run is deleted", async () => {
+    it("resolves when the run is deleted", async () => {
       vi.mocked(mockRepo.delete).mockResolvedValue(true);
 
-      const result = await service.delete("proj-1", "run-1");
-
-      expect(result).toBe(true);
+      await expect(service.delete("proj-1", "run-1")).resolves.toBeUndefined();
     });
   });
 });

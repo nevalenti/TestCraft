@@ -2,18 +2,18 @@ import { Request, RequestHandler } from "express";
 import { ZodSchema } from "zod";
 
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
-import { problem, problems } from "@/presentation/errors/problem";
+import {
+  problem,
+  problems,
+  zodToFieldErrors,
+} from "@/presentation/errors/problem";
 
 export const validateBody =
   <T>(schema: ZodSchema<T>): RequestHandler =>
   (req, res, next) => {
     const result = schema.safeParse(req.body);
     if (!result.success) {
-      const errors = result.error.issues.map((issue) => ({
-        field: issue.path.join(".") || "body",
-        message: issue.message,
-      }));
-      problem(res, problems.validation(errors));
+      problem(res, problems.validation(zodToFieldErrors(result.error.issues)));
       return;
     }
     req.body = result.data;
@@ -25,11 +25,10 @@ export const validateQuery =
   (req, res, next) => {
     const result = schema.safeParse(req.query);
     if (!result.success) {
-      const errors = result.error.issues.map((issue) => ({
-        field: issue.path.join(".") || "query",
-        message: issue.message,
-      }));
-      problem(res, problems.validation(errors));
+      problem(
+        res,
+        problems.validation(zodToFieldErrors(result.error.issues, "query")),
+      );
       return;
     }
     Object.defineProperty(req, "query", {

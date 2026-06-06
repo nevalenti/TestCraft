@@ -34,6 +34,7 @@
     "@t3-oss/env-core": "^0.13.11",
     "@testcraft/types": "workspace:*",
     "awilix": "^13.0.3",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
@@ -54,6 +55,7 @@
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^12.0.1",
+    "@types/compression": "^1.8.1",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.2",
     "@types/jsonwebtoken": "^9.0.9",

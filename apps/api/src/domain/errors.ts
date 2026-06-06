@@ -1,17 +1,15 @@
-export class AppError extends Error {
-  readonly isOperational: boolean;
-
-  constructor(message: string, isOperational: boolean) {
+export class DomainError extends Error {
+  constructor(message: string) {
     super(message);
-    this.name = "AppError";
-    this.isOperational = isOperational;
+    this.name = "DomainError";
     Error.captureStackTrace(this, this.constructor);
   }
 }
 
-export class DomainError extends AppError {
-  constructor(message: string) {
-    super(message, true);
-    this.name = "DomainError";
+export class NotFoundError extends Error {
+  constructor() {
+    super("Not Found");
+    this.name = "NotFoundError";
+    Error.captureStackTrace(this, this.constructor);
   }
 }

@@ -5,7 +5,7 @@ import {
   ITestRunRepository,
   UpdateTestRun,
 } from "@/application/test-runs/test-run.repository";
-import { DomainError } from "@/domain/errors";
+import { DomainError, NotFoundError } from "@/domain/errors";
 import { canTransitionRunStatus } from "@/domain/rules";
 import { TestRun } from "@/domain/test-run";
 import { CacheService } from "@/infrastructure/cache/cache.service";
@@ -17,15 +17,11 @@ export interface ITestRunService {
     pagination?: PaginationParams,
     search?: string,
   ): Promise<Paginated<TestRun>>;
-  getById(projectId: string, id: string): Promise<TestRun | null>;
-  getSummary(projectId: string, id: string): Promise<TestRunSummary | null>;
+  getById(projectId: string, id: string): Promise<TestRun>;
+  getSummary(projectId: string, id: string): Promise<TestRunSummary>;
   create(projectId: string, input: CreateTestRun): Promise<TestRun>;
-  update(
-    projectId: string,
-    id: string,
-    input: UpdateTestRun,
-  ): Promise<TestRun | null>;
-  delete(projectId: string, id: string): Promise<boolean>;
+  update(projectId: string, id: string, input: UpdateTestRun): Promise<TestRun>;
+  delete(projectId: string, id: string): Promise<void>;
 }
 
 export class TestRunService implements ITestRunService {
@@ -38,20 +34,20 @@ export class TestRunService implements ITestRunService {
     return this.testRunRepository.getAll(projectId, pagination, search);
   }
 
-  getById(projectId: string, id: string) {
-    return this.testRunRepository.getById(projectId, id);
+  async getById(projectId: string, id: string): Promise<TestRun> {
+    const run = await this.testRunRepository.getById(projectId, id);
+    if (!run) throw new NotFoundError();
+    return run;
   }
 
-  async getSummary(
-    projectId: string,
-    id: string,
-  ): Promise<TestRunSummary | null> {
+  async getSummary(projectId: string, id: string): Promise<TestRunSummary> {
     const key = cacheKeys.testRunSummary(id);
     const cached = await this.cache.get<TestRunSummary>(key);
     if (cached) return cached;
 
     const summary = await this.testRunRepository.getSummary(projectId, id);
-    if (summary) await this.cache.set(key, summary);
+    if (!summary) throw new NotFoundError();
+    await this.cache.set(key, summary);
     return summary;
   }
 
@@ -63,9 +59,9 @@ export class TestRunService implements ITestRunService {
     projectId: string,
     id: string,
     input: UpdateTestRun,
-  ): Promise<TestRun | null> {
+  ): Promise<TestRun> {
     const current = await this.testRunRepository.getById(projectId, id);
-    if (!current) return null;
+    if (!current) throw new NotFoundError();
 
     if (!canTransitionRunStatus(current.status, input.status)) {
       throw new DomainError(
@@ -75,12 +71,12 @@ export class TestRunService implements ITestRunService {
 
     const updated = await this.testRunRepository.update(projectId, id, input);
     if (updated) await this.cache.del(cacheKeys.testRunSummary(id));
-    return updated;
+    return updated!;
   }
 
-  async delete(projectId: string, id: string) {
+  async delete(projectId: string, id: string): Promise<void> {
     const deleted = await this.testRunRepository.delete(projectId, id);
-    if (deleted) await this.cache.del(cacheKeys.testRunSummary(id));
-    return deleted;
+    if (!deleted) throw new NotFoundError();
+    await this.cache.del(cacheKeys.testRunSummary(id));
   }
 }

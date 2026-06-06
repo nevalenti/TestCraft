@@ -5,7 +5,7 @@ import { ITestResultRepository } from "@/application/test-results/test-result.re
 import { CreateTestResult } from "@/application/test-results/test-result.repository";
 import { TestResultService } from "@/application/test-results/test-result.service";
 import { ITestRunRepository } from "@/application/test-runs/test-run.repository";
-import { DomainError } from "@/domain/errors";
+import { DomainError, NotFoundError } from "@/domain/errors";
 import { TestResult } from "@/domain/test-result";
 import { TestRun } from "@/domain/test-run";
 import { CacheService } from "@/infrastructure/cache/cache.service";
@@ -115,11 +115,11 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
     });
 
     describe("given a non-existent run", () => {
-      it("throws a DomainError", async () => {
+      it("throws NotFoundError", async () => {
         vi.mocked(mockRunRepo.findById).mockResolvedValue(null);
 
         await expect(service.create("missing", createDto)).rejects.toThrow(
-          DomainError,
+          NotFoundError,
         );
       });
     });
@@ -174,12 +174,12 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
   });
 
   describe("delete — delegates to the repository", () => {
-    it("returns true when deleted", async () => {
+    it("resolves when deleted", async () => {
       vi.mocked(mockResultRepo.delete).mockResolvedValue(true);
 
-      const deleted = await service.delete("run-1", "result-1");
-
-      expect(deleted).toBe(true);
+      await expect(
+        service.delete("run-1", "result-1"),
+      ).resolves.toBeUndefined();
     });
   });
 });

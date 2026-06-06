@@ -5,6 +5,7 @@ import {
   IProjectRepository,
   UpdateProject,
 } from "@/application/projects/project.repository";
+import { NotFoundError } from "@/domain/errors";
 import { Project } from "@/domain/project";
 
 export interface IProjectService {
@@ -13,14 +14,10 @@ export interface IProjectService {
     search?: string,
     pagination?: PaginationParams,
   ): Promise<Paginated<Project>>;
-  getById(userId: string, id: string): Promise<Project | null>;
+  getById(userId: string, id: string): Promise<Project>;
   create(userId: string, input: CreateProject): Promise<Project>;
-  update(
-    userId: string,
-    id: string,
-    input: UpdateProject,
-  ): Promise<Project | null>;
-  delete(userId: string, id: string): Promise<boolean>;
+  update(userId: string, id: string, input: UpdateProject): Promise<Project>;
+  delete(userId: string, id: string): Promise<void>;
 }
 
 export class ProjectService implements IProjectService {
@@ -30,19 +27,28 @@ export class ProjectService implements IProjectService {
     return this.projectRepository.getAll(userId, search, pagination);
   }
 
-  getById(userId: string, id: string) {
-    return this.projectRepository.getById(userId, id);
+  async getById(userId: string, id: string): Promise<Project> {
+    const project = await this.projectRepository.getById(userId, id);
+    if (!project) throw new NotFoundError();
+    return project;
   }
 
   create(userId: string, input: CreateProject) {
     return this.projectRepository.create(userId, input);
   }
 
-  update(userId: string, id: string, input: UpdateProject) {
-    return this.projectRepository.update(userId, id, input);
+  async update(
+    userId: string,
+    id: string,
+    input: UpdateProject,
+  ): Promise<Project> {
+    const project = await this.projectRepository.update(userId, id, input);
+    if (!project) throw new NotFoundError();
+    return project;
   }
 
-  delete(userId: string, id: string) {
-    return this.projectRepository.delete(userId, id);
+  async delete(userId: string, id: string): Promise<void> {
+    const deleted = await this.projectRepository.delete(userId, id);
+    if (!deleted) throw new NotFoundError();
   }
 }

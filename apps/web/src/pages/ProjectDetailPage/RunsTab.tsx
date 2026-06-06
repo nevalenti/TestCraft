@@ -1,4 +1,4 @@
-import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { BoltIcon } from "@heroicons/react/24/solid";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
 import { forwardRef, useImperativeHandle, useState } from "react";
 
@@ -39,7 +39,7 @@ export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
     const importJunit = useImportJunitXml(projectId);
     const importAllure = useImportAllure(projectId);
 
-    useImperativeHandle(ref, () => ({ open: openCreate }));
+    useImperativeHandle(ref, () => ({ open: openCreate, openImport }));
 
     const handleCreate = (input: CreateTestRun) =>
       createRun.mutate(input, { onSuccess: close });
@@ -77,27 +77,10 @@ export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
           <EmptyState
             title="No test runs yet"
             description="Start a test run to record and track results."
-            action={
-              <div className="flex flex-wrap gap-2">
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-                    <PlusIcon className="size-3" aria-hidden="true" />
-                  </span>
-                  Create First Run
-                </button>
-                <button
-                  className="btn btn-outline btn-sm gap-1.5"
-                  onClick={openImport}
-                >
-                  <ArrowUpTrayIcon className="size-4" />
-                  Import
-                </button>
-              </div>
-            }
           />
         ) : (
           <>
-            <div className="mb-4 flex items-center justify-between gap-3">
+            <div className="mb-4 flex items-center gap-3">
               <input
                 type="search"
                 className="input input-bordered bg-base-200 w-full max-w-sm"
@@ -105,13 +88,6 @@ export const RunsSection = forwardRef<TabHandle, { projectId: string }>(
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
               />
-              <button
-                className="btn btn-outline btn-sm gap-1.5 shrink-0"
-                onClick={openImport}
-              >
-                <ArrowUpTrayIcon className="size-4" />
-                Import
-              </button>
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {runs?.map((run) => (

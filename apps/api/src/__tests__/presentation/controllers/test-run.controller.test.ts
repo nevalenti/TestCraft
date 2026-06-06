@@ -4,7 +4,7 @@ import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ITestRunService } from "@/application/test-runs/test-run.service";
-import { AppError, DomainError } from "@/domain/errors";
+import { DomainError, NotFoundError } from "@/domain/errors";
 import { TestRun } from "@/domain/test-run";
 import { TestRunController } from "@/presentation/controllers/test-run.controller";
 import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
@@ -117,7 +117,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
 
   describe("GET /:id — when the run does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.getById).mockResolvedValue(null);
+      vi.mocked(mockService.getById).mockRejectedValue(new NotFoundError());
 
       const res = await request.get("/projects/proj-1/runs/missing");
 
@@ -139,7 +139,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
 
   describe("GET /:id/summary — when the run does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.getSummary).mockResolvedValue(null);
+      vi.mocked(mockService.getSummary).mockRejectedValue(new NotFoundError());
 
       const res = await request.get("/projects/proj-1/runs/missing/summary");
 
@@ -195,7 +195,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
 
   describe("PUT /:id — when the run does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.update).mockResolvedValue(null);
+      vi.mocked(mockService.update).mockRejectedValue(new NotFoundError());
 
       const res = await request.put("/projects/proj-1/runs/missing").send({
         name: "v2.5 Regression",
@@ -238,7 +238,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the run exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(true);
+      vi.mocked(mockService.delete).mockResolvedValue(undefined);
 
       const res = await request.delete("/projects/proj-1/runs/run-1");
 
@@ -248,7 +248,7 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the run does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(false);
+      vi.mocked(mockService.delete).mockRejectedValue(new NotFoundError());
 
       const res = await request.delete("/projects/proj-1/runs/missing");
 
@@ -256,11 +256,9 @@ describe("TestRunController #api", { tags: ["unit"] }, () => {
     });
   });
 
-  describe("DELETE /:id — when the service throws a non-operational error — returns 500", () => {
+  describe("DELETE /:id — when the service throws an unexpected error — returns 500", () => {
     it("responds 500 without leaking internal details", async () => {
-      vi.mocked(mockService.delete).mockRejectedValue(
-        new AppError("unexpected", false),
-      );
+      vi.mocked(mockService.delete).mockRejectedValue(new Error("unexpected"));
 
       const res = await request.delete("/projects/proj-1/runs/run-1");
 

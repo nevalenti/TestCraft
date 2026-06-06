@@ -2,12 +2,14 @@ interface FormActionsProps {
   onCancel: () => void;
   isLoading: boolean;
   label?: string;
+  variant?: "primary" | "secondary";
 }
 
 export const FormActions = ({
   onCancel,
   isLoading,
   label = "Save",
+  variant = "primary",
 }: FormActionsProps) => (
   <div className="flex justify-end gap-2 pt-2">
     <button type="button" className="btn btn-sm" onClick={onCancel}>
@@ -15,7 +17,7 @@ export const FormActions = ({
     </button>
     <button
       type="submit"
-      className="btn btn-primary btn-sm"
+      className={`btn btn-sm ${variant === "secondary" ? "btn-secondary" : "btn-primary"}`}
       disabled={isLoading}
     >
       {isLoading ? (

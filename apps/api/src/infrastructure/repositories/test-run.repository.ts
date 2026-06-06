@@ -10,7 +10,7 @@ import {
   ITestRunRepository,
   UpdateTestRun,
 } from "@/application/test-runs/test-run.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { TestRun } from "@/domain/test-run";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -53,11 +53,7 @@ export class TestRunRepository implements ITestRunRepository {
     pagination?: PaginationParams,
     search?: string,
   ): Promise<Paginated<TestRun>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       projectId,
       isDeleted: false,
@@ -72,7 +68,7 @@ export class TestRunRepository implements ITestRunRepository {
         select: runSelect,
         orderBy: { createdAt: "desc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testRun.count({ where }),
     ]);

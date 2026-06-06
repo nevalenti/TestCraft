@@ -5,7 +5,7 @@ import {
   ITestSuiteRepository,
   UpdateTestSuite,
 } from "@/application/test-suites/test-suite.repository";
-import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
+import { resolvePagination } from "@/domain/pagination";
 import { TestSuite } from "@/domain/test-suite";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
@@ -27,11 +27,7 @@ export class TestSuiteRepository implements ITestSuiteRepository {
     pagination?: PaginationParams,
     search?: string,
   ): Promise<Paginated<TestSuite>> {
-    const { page, pageSize } = pagination ?? {
-      page: DEFAULT_PAGE,
-      pageSize: DEFAULT_PAGE_SIZE,
-    };
-    const skip = (page - 1) * pageSize;
+    const { page, pageSize, skip, take } = resolvePagination(pagination);
     const where = {
       projectId,
       isDeleted: false,
@@ -46,7 +42,7 @@ export class TestSuiteRepository implements ITestSuiteRepository {
         select: suiteSelect,
         orderBy: { createdAt: "asc" },
         skip,
-        take: pageSize,
+        take,
       }),
       this.prisma.testSuite.count({ where }),
     ]);

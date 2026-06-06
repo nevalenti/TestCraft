@@ -1,4 +1,4 @@
-import { PlusIcon, RectangleGroupIcon } from "@heroicons/react/24/solid";
+import { RectangleGroupIcon } from "@heroicons/react/24/solid";
 import type {
   CreateTestSuite,
   TestSuite,
@@ -56,14 +56,6 @@ export const SuitesSection = forwardRef<TabHandle, { projectId: string }>(
           <EmptyState
             title="No test suites yet"
             description="Group related test cases into suites."
-            action={
-              <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-                  <PlusIcon className="size-3" aria-hidden="true" />
-                </span>
-                Create First Suite
-              </button>
-            }
           />
         ) : (
           <>

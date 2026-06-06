@@ -75,7 +75,7 @@
       </div>
     </#if>
 
-    <#if realm.password && realm.registrationAllowed && !usernameEditDisabled??>
+    <#if realm.registrationAllowed>
       <p class="mt-6 text-center text-sm text-base-content/55">
         Don't have an account?
         <a href="${url.registrationUrl}" class="text-primary font-semibold hover:underline">Create one</a>

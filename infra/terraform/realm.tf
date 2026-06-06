@@ -5,6 +5,9 @@ resource "keycloak_realm" "testcraft" {
 
   ssl_required = "none"
 
+  registration_allowed            = true
+  registration_email_as_username  = true
+
   access_token_lifespan    = "15m"
   sso_session_idle_timeout = "30m"
   sso_session_max_lifespan = "10h"

@@ -13,6 +13,7 @@ interface FileDropZoneProps {
   onFilesChange: (files: File[]) => void;
   hint?: string;
   hasError?: boolean;
+  color?: "primary" | "secondary";
 }
 
 const isAccepted = (file: File, accept: string): boolean =>
@@ -25,6 +26,23 @@ const isAccepted = (file: File, accept: string): boolean =>
     return file.type === trimmed;
   });
 
+const colorClasses = {
+  primary: {
+    ring: "focus-visible:ring-primary",
+    drag: "border-primary bg-primary/5",
+    hover: "hover:border-primary/40 hover:bg-base-200/70",
+    text: "text-primary",
+    textMuted: "text-primary/70 hover:text-primary",
+  },
+  secondary: {
+    ring: "focus-visible:ring-secondary",
+    drag: "border-secondary bg-secondary/5",
+    hover: "hover:border-secondary/40 hover:bg-base-200/70",
+    text: "text-secondary",
+    textMuted: "text-secondary/70 hover:text-secondary",
+  },
+};
+
 export const FileDropZone = ({
   id,
   accept,
@@ -33,7 +51,9 @@ export const FileDropZone = ({
   onFilesChange,
   hint,
   hasError,
+  color = "primary",
 }: FileDropZoneProps) => {
+  const c = colorClasses[color];
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = useRef(0);
@@ -78,12 +98,12 @@ export const FileDropZone = ({
       role="button"
       tabIndex={0}
       aria-label="File upload area"
-      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${c.ring} ${
         isDragging
-          ? "border-primary bg-primary/5"
+          ? c.drag
           : hasError
             ? "border-error/50 bg-error/5"
-            : "border-base-300 bg-base-200/40 hover:border-primary/40 hover:bg-base-200/70 transition-colors"
+            : `border-base-300 bg-base-200/40 ${c.hover} transition-colors`
       }`}
       onClick={openPicker}
       onKeyDown={(event) =>
@@ -113,7 +133,7 @@ export const FileDropZone = ({
           </div>
           <div>
             <p className="text-sm text-base-content/70">
-              <span className="font-medium text-primary">Click to upload</span>{" "}
+              <span className={`font-medium ${c.text}`}>Click to upload</span>{" "}
               or drag & drop
             </p>
             {hint && (
@@ -151,7 +171,7 @@ export const FileDropZone = ({
           ))}
           <button
             type="button"
-            className="mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs text-primary/70 transition-colors hover:text-primary"
+            className={`mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors ${c.textMuted}`}
             onClick={openPicker}
           >
             <ArrowUpTrayIcon className="size-3" />

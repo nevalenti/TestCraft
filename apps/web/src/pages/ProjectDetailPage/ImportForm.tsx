@@ -113,6 +113,7 @@ export const ImportForm = ({
           onFilesChange={handleFilesChange}
           hint="Drop a .xml (JUnit) or .json (Allure) file"
           hasError={!!errors.files}
+          color="secondary"
         />
         {detectedFormat && detectedFormat !== "mixed" && (
           <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-success">
@@ -148,7 +149,12 @@ export const ImportForm = ({
         />
       </FormField>
 
-      <FormActions onCancel={onCancel} isLoading={isLoading} label="Import" />
+      <FormActions
+        onCancel={onCancel}
+        isLoading={isLoading}
+        label="Import"
+        variant="secondary"
+      />
     </form>
   );
 };

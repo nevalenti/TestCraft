@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
@@ -82,15 +82,23 @@ export const ProjectDetailPage = () => {
               "Manage test suites and runs for this project"}
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-sm shrink-0"
-          onClick={openCreate}
-        >
-          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-            <PlusIcon className="size-3" aria-hidden="true" />
-          </span>
-          {activeTab === "suites" ? "New Suite" : "New Run"}
-        </button>
+        <div className="flex items-center gap-2 shrink-0">
+          {activeTab === "runs" && (
+            <button
+              className="btn btn-secondary btn-sm gap-1.5"
+              onClick={() => runsRef.current?.openImport?.()}
+            >
+              <ArrowUpTrayIcon className="size-4" />
+              Import
+            </button>
+          )}
+          <button className="btn btn-primary btn-sm" onClick={openCreate}>
+            <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
+              <PlusIcon className="size-3" aria-hidden="true" />
+            </span>
+            {activeTab === "suites" ? "New Suite" : "New Run"}
+          </button>
+        </div>
       </header>
 
       <div className="flex gap-1.5 px-4 sm:px-6 lg:px-8 py-3 border-b border-border shrink-0">
@@ -100,7 +108,7 @@ export const ProjectDetailPage = () => {
             onClick={() => setActiveTab(key)}
             className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full cursor-pointer transition-colors border ${
               activeTab === key
-                ? "bg-primary/15 text-primary font-semibold border-primary/25"
+                ? "bg-accent/15 text-accent font-semibold border-accent/25"
                 : "text-base-content border-base-content/12 hover:text-base-content hover:bg-base-content/8"
             }`}
           >

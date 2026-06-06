@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import { IProjectService } from "@/application/projects/project.service";
-import { problem, problems } from "@/presentation/errors/problem";
 import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class ProjectController {
@@ -21,10 +20,6 @@ export class ProjectController {
       req.user!.id,
       req.params.id as string,
     );
-    if (!project) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(project);
   };
 
@@ -39,22 +34,11 @@ export class ProjectController {
       req.params.id as string,
       req.body,
     );
-    if (!project) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(project);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    const deleted = await this.projectService.delete(
-      req.user!.id,
-      req.params.id as string,
-    );
-    if (!deleted) {
-      problem(res, problems.notFound());
-      return;
-    }
+    await this.projectService.delete(req.user!.id, req.params.id as string);
     res.status(204).send();
   };
 }

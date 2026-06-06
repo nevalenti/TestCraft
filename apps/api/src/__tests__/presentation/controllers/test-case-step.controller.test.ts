@@ -3,7 +3,7 @@ import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ITestCaseStepService } from "@/application/test-case-steps/test-case-step.service";
-import { AppError } from "@/domain/errors";
+import { NotFoundError } from "@/domain/errors";
 import { TestCaseStep } from "@/domain/test-case-step";
 import { TestCaseStepController } from "@/presentation/controllers/test-case-step.controller";
 import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
@@ -111,7 +111,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("GET /:id — when the step does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.getById).mockResolvedValue(null);
+      vi.mocked(mockService.getById).mockRejectedValue(new NotFoundError());
 
       const res = await request.get(`${BASE}/missing`);
 
@@ -187,7 +187,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("PUT /:id — when the step does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.update).mockResolvedValue(null);
+      vi.mocked(mockService.update).mockRejectedValue(new NotFoundError());
 
       const res = await request.put(`${BASE}/missing`).send({
         order: 1,
@@ -238,7 +238,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the step exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(true);
+      vi.mocked(mockService.delete).mockResolvedValue(undefined);
 
       const res = await request.delete(`${BASE}/step-1`);
 
@@ -248,7 +248,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the step does not exist — returns not found", () => {
     it("responds 404", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(false);
+      vi.mocked(mockService.delete).mockRejectedValue(new NotFoundError());
 
       const res = await request.delete(`${BASE}/missing`);
 
@@ -256,11 +256,9 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
     });
   });
 
-  describe("DELETE /:id — when the service throws a non-operational error — returns 500", () => {
+  describe("DELETE /:id — when the service throws an unexpected error — returns 500", () => {
     it("responds 500 without leaking internal details", async () => {
-      vi.mocked(mockService.delete).mockRejectedValue(
-        new AppError("unexpected", false),
-      );
+      vi.mocked(mockService.delete).mockRejectedValue(new Error("unexpected"));
 
       const res = await request.delete(`${BASE}/step-1`);
 

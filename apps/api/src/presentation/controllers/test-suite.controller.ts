@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 
 import { ITestSuiteService } from "@/application/test-suites/test-suite.service";
-import { problem, problems } from "@/presentation/errors/problem";
 import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class TestSuiteController {
@@ -21,10 +20,6 @@ export class TestSuiteController {
       req.params.projectId as string,
       req.params.id as string,
     );
-    if (!suite) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(suite);
   };
 
@@ -42,22 +37,14 @@ export class TestSuiteController {
       req.params.id as string,
       req.body,
     );
-    if (!suite) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.json(suite);
   };
 
   remove = async (req: Request, res: Response): Promise<void> => {
-    const deleted = await this.testSuiteService.delete(
+    await this.testSuiteService.delete(
       req.params.projectId as string,
       req.params.id as string,
     );
-    if (!deleted) {
-      problem(res, problems.notFound());
-      return;
-    }
     res.status(204).send();
   };
 }
