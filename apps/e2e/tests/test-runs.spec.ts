@@ -25,7 +25,7 @@ test.describe("Test Runs tab", () => {
       .filter({ hasText: projectName });
     await expect(card).toBeVisible({ timeout: 15_000 });
     await card.getByRole("link", { name: "Open project" }).click();
-    await page.waitForURL(/\/projects\/[^/]+$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
     await ctx.close();
@@ -57,7 +57,7 @@ test.describe("Test Runs tab", () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(projectPath);
-    await page.getByRole("button", { name: "Test Runs" }).click();
+    await page.getByRole("link", { name: /Test Runs/i }).click();
     await expect(page.getByRole("button", { name: "New Run" })).toBeVisible();
   });
 

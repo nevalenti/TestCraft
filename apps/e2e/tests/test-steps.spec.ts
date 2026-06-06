@@ -25,7 +25,7 @@ test.describe("Test Case Steps", () => {
       .filter({ hasText: projectName });
     await expect(projectCard).toBeVisible({ timeout: 15_000 });
     await projectCard.getByRole("link", { name: "Open project" }).click();
-    await page.waitForURL(/\/projects\/[^/]+$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
 
     await page.getByRole("button", { name: "New Suite" }).click();
     await page.getByLabel("Name").fill("E2E Steps Suite");

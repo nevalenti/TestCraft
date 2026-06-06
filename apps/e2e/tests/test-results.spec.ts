@@ -27,7 +27,7 @@ test.describe("Test Results", () => {
       .filter({ hasText: projectName });
     await expect(projectCard).toBeVisible({ timeout: 15_000 });
     await projectCard.getByRole("link", { name: "Open project" }).click();
-    await page.waitForURL(/\/projects\/[^/]+$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
     await page.getByRole("button", { name: "New Suite" }).click();
@@ -53,7 +53,7 @@ test.describe("Test Results", () => {
     ).toBeVisible({ timeout: 15_000 });
 
     await page.goto(projectPath);
-    await page.getByRole("button", { name: "Test Runs" }).click();
+    await page.getByRole("link", { name: /Test Runs/i }).click();
     await page.getByRole("button", { name: "New Run" }).click();
     await page.getByLabel("Name").fill("E2E Results Run");
     await page.getByLabel("Environment").fill("staging");

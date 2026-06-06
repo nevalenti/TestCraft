@@ -25,7 +25,7 @@ test.describe("Test Suites tab", () => {
       .filter({ hasText: projectName });
     await expect(card).toBeVisible({ timeout: 15_000 });
     await card.getByRole("link", { name: "Open project" }).click();
-    await page.waitForURL(/\/projects\/[^/]+$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
     await ctx.close();
@@ -58,16 +58,16 @@ test.describe("Test Suites tab", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(projectPath);
     await expect(
-      page.getByRole("button", { name: "Test Suites" }),
+      page.getByRole("link", { name: /Test Suites/i }),
     ).toBeVisible();
   });
 
   test("renders suites tab by default", async ({ page }) => {
     await expect(page.getByRole("button", { name: "New Suite" })).toBeVisible();
     await expect(
-      page.getByRole("button", { name: "Test Suites" }),
+      page.getByRole("link", { name: /Test Suites/i }),
     ).toBeVisible();
-    await expect(page.getByRole("button", { name: "Test Runs" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Test Runs/i })).toBeVisible();
   });
 
   test("opens and closes the create suite dialog", async ({ page }) => {

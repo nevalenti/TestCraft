@@ -292,6 +292,15 @@ export const TestRunPage = () => {
             <EmptyState
               title="No results recorded"
               description="Add results to track the outcome of each test case in this run."
+              action={
+                <button
+                  className="btn btn-primary btn-sm gap-1.5"
+                  onClick={openCreate}
+                >
+                  <PlusIcon className="size-4" aria-hidden="true" />
+                  Add Result
+                </button>
+              }
             />
           ) : resultsPage?.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">

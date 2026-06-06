@@ -1,5 +1,4 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
 beforeAll(() => {
@@ -100,7 +99,9 @@ describe("ProjectDetailPage", () => {
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
       render(<ProjectDetailPage />);
-      expect(screen.getByRole("link", { name: /test suites/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /test suites/i }),
+      ).toBeInTheDocument();
     });
 
     it("renders the Test Runs tab link", () => {
@@ -110,7 +111,9 @@ describe("ProjectDetailPage", () => {
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
       render(<ProjectDetailPage />);
-      expect(screen.getByRole("link", { name: /test runs/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /test runs/i }),
+      ).toBeInTheDocument();
     });
   });
 });
