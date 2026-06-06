@@ -93,25 +93,24 @@ describe("ProjectDetailPage", () => {
       ).toBeInTheDocument();
     });
 
-    it("renders the Test Suites tab by default", () => {
+    it("renders the Test Suites tab link", () => {
       vi.mocked(useProject).mockReturnValue({
         data: makeProject(),
         isPending: false,
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
       render(<ProjectDetailPage />);
-      expect(screen.getByTestId("suites-section")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /test suites/i })).toBeInTheDocument();
     });
 
-    it("switches to Test Runs tab when clicked", async () => {
+    it("renders the Test Runs tab link", () => {
       vi.mocked(useProject).mockReturnValue({
         data: makeProject(),
         isPending: false,
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
       render(<ProjectDetailPage />);
-      await userEvent.click(screen.getByRole("button", { name: /test runs/i }));
-      expect(screen.getByTestId("runs-section")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /test runs/i })).toBeInTheDocument();
     });
   });
 });
