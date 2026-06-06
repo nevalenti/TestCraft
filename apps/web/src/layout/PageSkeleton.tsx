@@ -11,7 +11,6 @@ export const PageSkeleton = () => (
           <span className="skeleton inline-block w-64 h-[0.7em] rounded" />
         </p>
       </div>
-      <div className="btn btn-sm skeleton pointer-events-none w-24 shrink-0" />
     </div>
     <div className="page-content overflow-y-auto min-h-0 flex-1">
       <SkeletonGrid />

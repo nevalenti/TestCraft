@@ -40,7 +40,7 @@
         );
       }
 
-      [data-theme="dim"] .header-stripes {
+      [data-theme="dracula"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
@@ -70,7 +70,7 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'dim';
+      const LIGHT = 'dracula';
       const DARK = 'emerald';
 
       function getCookie(name) {

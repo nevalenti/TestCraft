@@ -3,10 +3,10 @@ import { XMarkIcon } from "@heroicons/react/24/solid";
 import { useNotificationsStore } from "@/stores/notifications";
 
 const typeClass: Record<string, string> = {
-  success: "alert alert-soft alert-success",
-  error: "alert alert-soft alert-error",
-  info: "alert alert-soft alert-info",
-  warning: "alert alert-soft alert-warning",
+  success: "alert alert-success",
+  error: "alert alert-error",
+  info: "alert alert-info",
+  warning: "alert alert-warning",
 };
 
 export const Notifications = () => {
@@ -23,13 +23,13 @@ export const Notifications = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`flex items-center gap-2.5 rounded-full py-2 pl-3.5 pr-2 shadow-sm max-w-xs ${typeClass[notification.type] ?? "bg-base-200 text-base-content"}`}
+          className={`flex items-center gap-2.5 rounded-2xl py-2 pl-3.5 pr-2 shadow-sm max-w-sm ${typeClass[notification.type] ?? "bg-base-200 text-base-content"}`}
         >
           <span
             className="size-2.5 rounded-full shrink-0 bg-current opacity-60"
             aria-hidden="true"
           />
-          <span className="text-sm font-medium flex-1 whitespace-nowrap">
+          <span className="text-sm font-medium flex-1 text-center">
             {notification.message}
           </span>
           <button

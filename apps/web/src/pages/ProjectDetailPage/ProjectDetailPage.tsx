@@ -1,21 +1,17 @@
-import { ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/24/solid";
-import { useRef, useState } from "react";
+import { Link, Outlet } from "@tanstack/react-router";
 
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { RunsSection } from "@/pages/ProjectDetailPage/RunsTab";
-import { SuitesSection } from "@/pages/ProjectDetailPage/SuitesTab";
-import type { TabHandle } from "@/pages/ProjectDetailPage/TabHandle";
 
-type Tab = "suites" | "runs";
+const tabBase =
+  "flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full transition-colors border";
+const tabActive = `${tabBase} bg-primary/15 text-primary font-semibold border-primary/25`;
+const tabInactive = `${tabBase} text-base-content border-base-content/12 hover:text-base-content hover:bg-base-content/8 cursor-pointer`;
 
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam("projectId");
-  const [activeTab, setActiveTab] = useState<Tab>("suites");
-  const suitesRef = useRef<TabHandle>(null);
-  const runsRef = useRef<TabHandle>(null);
   const { data: project, isPending } = useProject(projectId);
 
   useBreadcrumbs([
@@ -36,7 +32,6 @@ export const ProjectDetailPage = () => {
               <span className="skeleton inline-block w-80 h-[0.7em] rounded" />
             </p>
           </div>
-          <div className="btn btn-sm skeleton pointer-events-none w-24 shrink-0" />
         </div>
         <div className="flex gap-1.5 px-4 sm:px-6 lg:px-8 py-3 border-b border-border shrink-0">
           <div className="px-3 py-1.5 text-sm font-medium rounded-full skeleton w-28" />
@@ -60,74 +55,49 @@ export const ProjectDetailPage = () => {
       </div>
     );
 
-  const tabs: { key: Tab; label: string; count?: number }[] = [
-    { key: "suites", label: "Test Suites", count: project.suiteCount },
-    { key: "runs", label: "Test Runs", count: project.runCount },
-  ];
-
-  const openCreate = () =>
-    activeTab === "suites"
-      ? suitesRef.current?.open()
-      : runsRef.current?.open();
-
   return (
     <div className="w-full flex flex-col min-h-0">
-      <header className="page-header flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
-            {project.name}
-          </h1>
-          <p className="mt-0.5 text-sm text-base-content/60">
-            {project.description ??
-              "Manage test suites and runs for this project"}
-          </p>
-        </div>
-        <div className="flex items-center gap-2 shrink-0">
-          {activeTab === "runs" && (
-            <button
-              className="btn btn-secondary btn-sm gap-1.5"
-              onClick={() => runsRef.current?.openImport?.()}
-            >
-              <ArrowUpTrayIcon className="size-4" />
-              Import
-            </button>
-          )}
-          <button className="btn btn-primary btn-sm" onClick={openCreate}>
-            <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-              <PlusIcon className="size-3" aria-hidden="true" />
-            </span>
-            {activeTab === "suites" ? "New Suite" : "New Run"}
-          </button>
-        </div>
+      <header className="page-header">
+        <h1 className="text-2xl font-bold tracking-tight font-display">
+          {project.name}
+        </h1>
+        <p className="mt-0.5 text-sm text-base-content/60">
+          {project.description ??
+            "Manage test suites and runs for this project"}
+        </p>
       </header>
 
       <div className="flex gap-1.5 px-4 sm:px-6 lg:px-8 py-3 border-b border-border shrink-0">
-        {tabs.map(({ key, label, count }) => (
-          <button
-            key={key}
-            onClick={() => setActiveTab(key)}
-            className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-full cursor-pointer transition-colors border ${
-              activeTab === key
-                ? "bg-accent/15 text-accent font-semibold border-accent/25"
-                : "text-base-content border-base-content/12 hover:text-base-content hover:bg-base-content/8"
-            }`}
-          >
-            {label}
-            {!!count && (
-              <span className="badge badge-sm badge-ghost rounded-full">
-                {count}
-              </span>
-            )}
-          </button>
-        ))}
+        <Link
+          to="/projects/$projectId/suites"
+          params={{ projectId }}
+          className={tabInactive}
+          activeProps={{ className: tabActive }}
+        >
+          Test Suites
+          {!!project.suiteCount && (
+            <span className="badge badge-sm badge-ghost rounded-full">
+              {project.suiteCount}
+            </span>
+          )}
+        </Link>
+        <Link
+          to="/projects/$projectId/runs"
+          params={{ projectId }}
+          className={tabInactive}
+          activeProps={{ className: tabActive }}
+        >
+          Test Runs
+          {!!project.runCount && (
+            <span className="badge badge-sm badge-ghost rounded-full">
+              {project.runCount}
+            </span>
+          )}
+        </Link>
       </div>
 
       <section className="page-content flex-1 overflow-y-auto min-h-0">
-        {activeTab === "suites" ? (
-          <SuitesSection ref={suitesRef} projectId={projectId} />
-        ) : (
-          <RunsSection ref={runsRef} projectId={projectId} />
-        )}
+        <Outlet />
       </section>
     </div>
   );

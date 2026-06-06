@@ -9,7 +9,7 @@ import type {
 
 import client from "@/api/client";
 import { queryKeys } from "@/api/queryKeys";
-import { PAGE_SIZE } from "@/lib/constants";
+import { RESULTS_PAGE_SIZE } from "@/lib/constants";
 
 const BASE = (projectId: string, runId: string) =>
   `projects/${projectId}/runs/${runId}/results`;
@@ -20,11 +20,13 @@ export const testResultsApi = {
     runId: string,
     status?: TestResultStatus,
     search?: string,
+    page = 1,
   ) =>
     client
       .get<Paginated<TestResult>>(BASE(projectId, runId), {
         params: {
-          pageSize: PAGE_SIZE,
+          page,
+          pageSize: RESULTS_PAGE_SIZE,
           ...(status !== undefined ? { status } : {}),
           ...(search ? { search } : {}),
         },
@@ -57,14 +59,17 @@ export const testResultQueries = {
     runId: string,
     status?: TestResultStatus,
     search?: string,
+    page = 1,
   ) =>
     queryOptions({
       queryKey: [
         ...queryKeys.testResults.all(projectId, runId),
         status,
         search,
+        page,
       ],
-      queryFn: () => testResultsApi.getAll(projectId, runId, status, search),
+      queryFn: () =>
+        testResultsApi.getAll(projectId, runId, status, search, page),
       enabled: !!projectId && !!runId,
       placeholderData: keepPreviousData,
     }),

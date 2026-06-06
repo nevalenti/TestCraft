@@ -60,9 +60,12 @@ export const DashboardPage = () => {
             Cross-project status at a glance
           </p>
         </div>
-        <Link to="/projects" className="btn btn-primary btn-sm gap-1.5">
-          Projects
-          <ArrowRightIcon className="size-3.5" />
+        <Link
+          to="/projects"
+          className="btn btn-soft btn-square btn-lg rounded-xl shadow-md"
+          aria-label="Projects"
+        >
+          <FolderIcon className="size-6 text-primary" />
         </Link>
       </header>
 
@@ -98,7 +101,7 @@ export const DashboardPage = () => {
           {isLoadingRuns ? (
             <ActiveRunsSkeleton />
           ) : activeRuns.length === 0 ? (
-            <div className="rounded-lg border border-border bg-base-100 px-6 py-10 text-center">
+            <div className="rounded-lg border border-border bg-base-100 px-6 py-14 text-center">
               <p className="text-sm font-semibold text-base-content/60 mb-1">
                 No active runs
               </p>

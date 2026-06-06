@@ -11,7 +11,7 @@ export const DashboardSkeleton = () => (
           <span className="skeleton inline-block w-52 h-[0.7em] rounded" />
         </p>
       </div>
-      <div className="btn btn-sm skeleton pointer-events-none w-24 shrink-0" />
+      <div className="btn btn-lg btn-square rounded-xl skeleton pointer-events-none shrink-0" />
     </div>
     <div className="page-content flex flex-col gap-6">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">

@@ -83,19 +83,10 @@ export const TestSuitePage = () => {
             {suite?.description ?? "Test cases in this suite"}
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-sm shrink-0"
-          onClick={openCreate}
-        >
-          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-            <PlusIcon className="size-3" aria-hidden="true" />
-          </span>
-          New Test Case
-        </button>
       </header>
 
       <section className="page-content flex-1 overflow-y-auto min-h-0">
-        <div className="mb-4">
+        <div className="mb-4 flex items-center gap-3">
           <input
             type="search"
             className="input input-bordered bg-base-200 w-full max-w-sm"
@@ -103,6 +94,13 @@ export const TestSuitePage = () => {
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
+          <button
+            className="btn btn-primary btn-sm ml-auto shrink-0"
+            onClick={openCreate}
+          >
+            <PlusIcon className="size-4" aria-hidden="true" />
+            New Test Case
+          </button>
         </div>
         <div className="min-h-80">
           {isPending ? (

@@ -14,11 +14,8 @@ export const useTestResults = (
   runId: string,
   status?: TestResultStatus,
   search?: string,
-) =>
-  useQuery({
-    ...testResultQueries.all(projectId, runId, status, search),
-    select: (data) => data.items,
-  });
+  page = 1,
+) => useQuery(testResultQueries.all(projectId, runId, status, search, page));
 
 export const useTestResult = (projectId: string, runId: string, id: string) =>
   useQuery(testResultQueries.detail(projectId, runId, id));

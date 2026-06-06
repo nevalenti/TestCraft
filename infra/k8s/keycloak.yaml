@@ -43,13 +43,13 @@ spec:
             - -c
             - |
               cp -r /opt/keycloak/themes/* /themes/ &&
-              mkdir -p /themes/dim/login &&
-              cp /theme-source/theme.properties /themes/dim/login/theme.properties &&
-              cp /theme-source/template.ftl /themes/dim/login/template.ftl &&
-              cp /theme-source/login.ftl /themes/dim/login/login.ftl &&
-              cp /theme-source/register.ftl /themes/dim/login/register.ftl &&
-              cp /theme-source/error.ftl /themes/dim/login/error.ftl &&
-              cp /theme-source/login-verify-email.ftl /themes/dim/login/login-verify-email.ftl
+              mkdir -p /themes/dracula/login &&
+              cp /theme-source/theme.properties /themes/dracula/login/theme.properties &&
+              cp /theme-source/template.ftl /themes/dracula/login/template.ftl &&
+              cp /theme-source/login.ftl /themes/dracula/login/login.ftl &&
+              cp /theme-source/register.ftl /themes/dracula/login/register.ftl &&
+              cp /theme-source/error.ftl /themes/dracula/login/error.ftl &&
+              cp /theme-source/login-verify-email.ftl /themes/dracula/login/login-verify-email.ftl
           volumeMounts:
             - name: themes
               mountPath: /themes
@@ -111,7 +111,7 @@ spec:
           emptyDir: {}
         - name: theme-source
           configMap:
-            name: keycloak-dim-theme
+            name: keycloak-dracula-theme
 ---
 apiVersion: v1
 kind: Service

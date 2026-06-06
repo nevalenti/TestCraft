@@ -2,6 +2,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  redirect,
 } from "@tanstack/react-router";
 
 import { RootError } from "@/components/RootError";
@@ -9,7 +10,9 @@ import AppLayout from "@/layout/AppLayout";
 import {
   LazyDashboardPage,
   LazyProjectDetailPage,
+  LazyProjectRunsPage,
   LazyProjectsPage,
+  LazyProjectSuitesPage,
   LazyTestCasePage,
   LazyTestRunPage,
   LazyTestSuitePage,
@@ -40,6 +43,30 @@ const projectDetailRoute = createRoute({
   component: LazyProjectDetailPage,
 });
 
+const projectDetailIndexRoute = createRoute({
+  getParentRoute: () => projectDetailRoute,
+  path: "/",
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: "/projects/$projectId/suites",
+      params,
+      replace: true,
+    });
+  },
+});
+
+const projectSuitesRoute = createRoute({
+  getParentRoute: () => projectDetailRoute,
+  path: "suites",
+  component: LazyProjectSuitesPage,
+});
+
+const projectRunsRoute = createRoute({
+  getParentRoute: () => projectDetailRoute,
+  path: "runs",
+  component: LazyProjectRunsPage,
+});
+
 const testSuiteRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/projects/$projectId/suites/$suiteId",
@@ -61,7 +88,11 @@ const testRunRoute = createRoute({
 const routeTree = rootRoute.addChildren([
   indexRoute,
   projectsRoute,
-  projectDetailRoute,
+  projectDetailRoute.addChildren([
+    projectDetailIndexRoute,
+    projectSuitesRoute,
+    projectRunsRoute,
+  ]),
   testSuiteRoute,
   testCaseRoute,
   testRunRoute,

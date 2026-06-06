@@ -1,16 +1,30 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  type PaginationState,
+  type SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 import {
   type CreateTestResult,
   type TestResult,
   TestResultStatus,
   type UpdateTestResult,
 } from "@testcraft/types";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
+import { ResourceActions } from "@/components/ui/ResourceActions";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
@@ -25,9 +39,9 @@ import {
   useUpdateTestResult,
 } from "@/hooks/useTestResults";
 import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
-import { statusOptions } from "@/lib/constants";
+import { RESULTS_PAGE_SIZE, statusOptions } from "@/lib/constants";
+import { formatDateTime } from "@/lib/format";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
-import { ResultRow } from "@/pages/TestRunPage/ResultRow";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
 
 type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
@@ -42,6 +56,8 @@ const SUMMARY_KEY: Record<string, SummaryCountKey> = {
   Skipped: "skipped",
 };
 
+const columnHelper = createColumnHelper<TestResult>();
+
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
   const runId = useRequiredParam("runId");
@@ -51,13 +67,18 @@ export const TestRunPage = () => {
     null,
   );
   const [search, setSearch] = useState("");
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: RESULTS_PAGE_SIZE,
+  });
 
   const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
   const { data: runSummary } = useTestRunSummary(projectId, runId);
   const {
-    data: results,
+    data: resultsPage,
     isPending,
     isError,
   } = useTestResults(
@@ -65,10 +86,15 @@ export const TestRunPage = () => {
     runId,
     statusFilter ?? undefined,
     debouncedSearch || undefined,
+    pagination.pageIndex + 1,
   );
   const createResult = useCreateTestResult(projectId, runId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
+
+  useEffect(() => {
+    setPagination((p) => ({ ...p, pageIndex: 0 }));
+  }, [statusFilter, debouncedSearch]);
 
   const handleCreate = (input: CreateTestResult) =>
     createResult.mutate(input, { onSuccess: close });
@@ -83,6 +109,91 @@ export const TestRunPage = () => {
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: run?.name ?? "…" },
   ]);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.display({
+        id: "index",
+        header: "#",
+        cell: ({ row, table }) => {
+          const { pageIndex, pageSize } = table.getState().pagination;
+          return (
+            <span className="text-base-content/40 tabular-nums text-xs">
+              {pageIndex * pageSize + row.index + 1}
+            </span>
+          );
+        },
+      }),
+      columnHelper.accessor("testCaseName", {
+        header: "Test Case",
+        cell: (info) => (
+          <span className="font-medium text-sm line-clamp-1">
+            {info.getValue()}
+          </span>
+        ),
+      }),
+      columnHelper.accessor("status", {
+        header: "Status",
+        cell: (info) => <StatusBadge status={info.getValue()} />,
+      }),
+      columnHelper.accessor("notes", {
+        header: "Notes",
+        enableSorting: false,
+        cell: (info) => {
+          const value = info.getValue();
+          return value ? (
+            <div
+              className="max-w-[200px] truncate text-sm text-base-content/60 cursor-default"
+              title={value}
+            >
+              {value}
+            </div>
+          ) : (
+            <span className="text-base-content/30 italic text-sm">—</span>
+          );
+        },
+      }),
+      columnHelper.accessor("executedAt", {
+        header: "Executed",
+        cell: (info) => (
+          <span className="text-xs tabular-nums text-base-content/50 whitespace-nowrap">
+            {formatDateTime(info.getValue())}
+          </span>
+        ),
+      }),
+      columnHelper.display({
+        id: "actions",
+        header: "",
+        cell: ({ row }) => (
+          <div className="flex justify-end gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+            <ResourceActions
+              onEdit={() => openEdit(row.original)}
+              onDelete={() => openDelete(row.original)}
+              label="result"
+              size="sm"
+            />
+          </div>
+        ),
+      }),
+    ],
+    [openEdit, openDelete],
+  );
+
+  const pageCount = resultsPage
+    ? Math.ceil(resultsPage.total / RESULTS_PAGE_SIZE)
+    : -1;
+
+  const table = useReactTable({
+    data: resultsPage?.items ?? [],
+    columns,
+    state: { pagination, sorting },
+    onPaginationChange: setPagination,
+    onSortingChange: setSorting,
+    pageCount,
+    manualPagination: true,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+  });
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
@@ -99,15 +210,6 @@ export const TestRunPage = () => {
             {run?.environment ?? "Track test results for this run"}
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-sm shrink-0"
-          onClick={openCreate}
-        >
-          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-            <PlusIcon className="size-3" aria-hidden="true" />
-          </span>
-          Add Result
-        </button>
       </header>
 
       <section className="page-content flex-1 overflow-y-auto min-h-0">
@@ -127,7 +229,7 @@ export const TestRunPage = () => {
         )}
 
         {runSummary && runSummary.total > 0 && (
-          <div className="mb-4">
+          <div className="mb-4 flex items-center gap-3">
             <input
               type="search"
               className="input input-bordered bg-base-200 w-full max-w-sm"
@@ -135,6 +237,13 @@ export const TestRunPage = () => {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
+            <button
+              className="btn btn-primary btn-sm ml-auto shrink-0"
+              onClick={openCreate}
+            >
+              <PlusIcon className="size-4" aria-hidden="true" />
+              Add Result
+            </button>
           </div>
         )}
 
@@ -177,22 +286,14 @@ export const TestRunPage = () => {
             <SkeletonGrid />
           ) : isError ? (
             <ErrorState message="Failed to load results. Please check your connection and try again." />
-          ) : results?.length === 0 &&
+          ) : resultsPage?.items.length === 0 &&
             statusFilter === null &&
             !debouncedSearch ? (
             <EmptyState
               title="No results recorded"
               description="Add results to track the outcome of each test case in this run."
-              action={
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-                    <PlusIcon className="size-3" aria-hidden="true" />
-                  </span>
-                  Add First Result
-                </button>
-              }
             />
-          ) : results?.length === 0 ? (
+          ) : resultsPage?.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
               <p className="text-sm font-semibold text-base-content/60 mb-2">
                 No results match
@@ -217,31 +318,96 @@ export const TestRunPage = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
-              <table className="table table-sm">
-                <thead>
-                  <tr className="text-xs text-base-content/60">
-                    <th className="w-8">#</th>
-                    <th>Test Case</th>
-                    <th>Status</th>
-                    <th>Notes</th>
-                    <th>Executed</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {results?.map((result, index) => (
-                    <ResultRow
-                      key={result.id}
-                      result={result}
-                      index={index + 1}
-                      onEdit={() => openEdit(result)}
-                      onDelete={() => openDelete(result)}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
+                <table className="table table-sm">
+                  <thead>
+                    {table.getHeaderGroups().map((headerGroup) => (
+                      <tr
+                        key={headerGroup.id}
+                        className="text-xs text-base-content/60"
+                      >
+                        {headerGroup.headers.map((header) => (
+                          <th
+                            key={header.id}
+                            onClick={header.column.getToggleSortingHandler()}
+                            className={
+                              header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : ""
+                            }
+                          >
+                            <span className="inline-flex items-center gap-1">
+                              {flexRender(
+                                header.column.columnDef.header,
+                                header.getContext(),
+                              )}
+                              {header.column.getCanSort() && (
+                                <span className="text-base-content/30">
+                                  {header.column.getIsSorted() === "asc"
+                                    ? "▲"
+                                    : header.column.getIsSorted() === "desc"
+                                      ? "▼"
+                                      : "⬍"}
+                                </span>
+                              )}
+                            </span>
+                          </th>
+                        ))}
+                      </tr>
+                    ))}
+                  </thead>
+                  <tbody>
+                    {table.getRowModel().rows.map((row) => (
+                      <tr
+                        key={row.id}
+                        data-testid="result-row"
+                        className="group hover:bg-base-200/50 transition-colors"
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <td key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext(),
+                            )}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {pageCount > 1 && (
+                <div className="mt-4 flex items-center justify-between gap-4">
+                  <span className="text-sm text-base-content/60">
+                    Page{" "}
+                    <span className="font-semibold text-base-content">
+                      {pagination.pageIndex + 1}
+                    </span>{" "}
+                    of {pageCount}
+                  </span>
+                  <div className="flex gap-2">
+                    <button
+                      className="btn btn-sm btn-neutral btn-square"
+                      onClick={() => table.previousPage()}
+                      disabled={!table.getCanPreviousPage()}
+                      aria-label="Previous page"
+                    >
+                      <ChevronLeftIcon className="size-4" />
+                    </button>
+                    <button
+                      className="btn btn-sm btn-neutral btn-square"
+                      onClick={() => table.nextPage()}
+                      disabled={!table.getCanNextPage()}
+                      aria-label="Next page"
+                    >
+                      <ChevronRightIcon className="size-4" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>

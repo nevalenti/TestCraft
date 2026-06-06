@@ -3,7 +3,7 @@
 
 @plugin "daisyui" {
   themes:
-    dim --default,
+    dracula --default,
     emerald --prefersdark;
 }
 
@@ -65,7 +65,7 @@
     );
   }
 
-  [data-theme="dim"] .header-stripes {
+  [data-theme="dracula"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,
@@ -141,7 +141,7 @@
     --card-bg-alpha: 0.12;
   }
 
-  [data-theme="dim"] {
+  [data-theme="dracula"] {
     --color-border: oklch(1 0 0 / 0.15);
     --card-bg-alpha: 0.2;
   }

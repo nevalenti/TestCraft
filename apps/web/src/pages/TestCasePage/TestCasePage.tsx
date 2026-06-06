@@ -158,18 +158,18 @@ export const TestCasePage = () => {
             {testCase?.description ?? "Steps for this test case"}
           </p>
         </div>
-        <button
-          className="btn btn-primary btn-sm shrink-0"
-          onClick={openCreate}
-        >
-          <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-            <PlusIcon className="size-3" aria-hidden="true" />
-          </span>
-          Add Step
-        </button>
       </header>
 
       <section className="page-content flex-1 overflow-y-auto min-h-0">
+        <div className="mb-4 flex justify-end">
+          <button
+            className="btn btn-primary btn-sm shrink-0"
+            onClick={openCreate}
+          >
+            <PlusIcon className="size-4" aria-hidden="true" />
+            Add Step
+          </button>
+        </div>
         <div className="min-h-80">
           {isPending ? (
             <div className="space-y-3">
@@ -183,14 +183,6 @@ export const TestCasePage = () => {
             <EmptyState
               title="No steps defined"
               description="Break this test case down into clear, ordered steps."
-              action={
-                <button className="btn btn-primary btn-sm" onClick={openCreate}>
-                  <span className="inline-flex size-4 items-center justify-center rounded-full bg-white/35 text-black">
-                    <PlusIcon className="size-3" aria-hidden="true" />
-                  </span>
-                  Add First Step
-                </button>
-              }
             />
           ) : (
             <DndContext

@@ -88,11 +88,7 @@ export const Header = () => {
               aria-label="Mobile navigation"
             ></nav>
 
-            <div className="border-t border-border p-4 text-center">
-              <p className="text-[10px] text-base-content/40">
-                &copy; 2026 TestCraft
-              </p>
-            </div>
+            <div className="border-t border-border p-4 text-center"></div>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 export const PAGE_SIZE = 500;
+export const RESULTS_PAGE_SIZE = 15;
 
 export const statusOptions = [
   { value: "Passed", label: "Passed" },
