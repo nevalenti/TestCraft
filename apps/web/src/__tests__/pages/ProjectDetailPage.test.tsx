@@ -17,6 +17,7 @@ vi.mock("@tanstack/react-router", () => ({
   Link: ({ children, to }: { children?: React.ReactNode; to: string }) => (
     <a href={to}>{children}</a>
   ),
+  Outlet: () => null,
 }));
 
 vi.mock("@/hooks/useRequiredParam", () => ({
