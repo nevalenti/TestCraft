@@ -1,4 +1,4 @@
-FROM node:24-alpine AS builder
+FROM node:26-alpine AS builder
 WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
@@ -22,7 +22,7 @@ RUN cp -r /app/apps/api/dist /standalone/dist && \
     cp -r /app/apps/api/prisma /standalone/prisma && \
     cp /app/apps/api/prisma.config.ts /standalone/prisma.config.ts
 
-FROM node:24-alpine AS runner
+FROM node:26-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
