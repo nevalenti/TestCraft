@@ -60,7 +60,10 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
       const { items, total } = await repo.getAll(USER_A);
 
       expect(total).toBe(2);
-      expect(items.map((p) => p.name).sort()).toEqual(["A-1", "A-2"]);
+      expect(items.map((project) => project.name).toSorted()).toEqual([
+        "A-1",
+        "A-2",
+      ]);
     });
 
     it("does not return soft-deleted projects", async () => {
@@ -78,9 +81,9 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
 
       const { items, total } = await repo.getAll(USER_A, "tests");
       expect(total).toBe(2);
-      expect(items.every((p) => p.name.toLowerCase().includes("tests"))).toBe(
-        true,
-      );
+      expect(
+        items.every((project) => project.name.toLowerCase().includes("tests")),
+      ).toBe(true);
     });
 
     it("paginates correctly", async () => {
@@ -107,7 +110,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
       expect(page3.items).toHaveLength(1);
 
       const allIds = [...page1.items, ...page2.items, ...page3.items].map(
-        (p) => p.id,
+        (project) => project.id,
       );
       expect(new Set(allIds).size).toBe(5);
     });

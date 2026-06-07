@@ -27,7 +27,7 @@ export const testResultsApi = {
         params: {
           page,
           pageSize: RESULTS_PAGE_SIZE,
-          ...(status !== undefined ? { status } : {}),
+          ...(status === undefined ? {} : { status }),
           ...(search ? { search } : {}),
         },
       })

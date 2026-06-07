@@ -47,6 +47,11 @@ export const CreateResultForm = ({
     },
   });
 
+  let defaultOptionText: string;
+  if (loadingCases) defaultOptionText = "Loading…";
+  else if (cases?.length === 0) defaultOptionText = "No test cases in project";
+  else defaultOptionText = "Select a test case";
+
   return (
     <form
       onSubmit={handleSubmit((data) =>
@@ -71,13 +76,7 @@ export const CreateResultForm = ({
           autoFocus
           {...register("testCaseId")}
         >
-          <option value="">
-            {loadingCases
-              ? "Loading…"
-              : cases?.length === 0
-                ? "No test cases in project"
-                : "Select a test case"}
-          </option>
+          <option value="">{defaultOptionText}</option>
           {cases?.map((testCase) => (
             <option key={testCase.id} value={testCase.id}>
               {testCase.name}

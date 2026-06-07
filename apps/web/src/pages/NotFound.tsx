@@ -22,7 +22,7 @@ export const NotFound = () => {
             Go Home
           </Link>
           <button
-            onClick={() => window.history.back()}
+            onClick={() => globalThis.history.back()}
             className="btn gap-1.5 btn-ghost btn-sm"
           >
             <ArrowLeftIcon className="size-4" aria-hidden="true" />

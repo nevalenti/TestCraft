@@ -201,7 +201,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("PATCH /reorder — given a valid steps array — reorders and responds 204", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.bulkReorder).mockResolvedValue(undefined);
+      vi.mocked(mockService.bulkReorder).mockResolvedValue();
 
       const res = await request.patch(`${BASE}/reorder`).send({
         steps: [
@@ -238,7 +238,7 @@ describe("TestCaseStepController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the step exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(undefined);
+      vi.mocked(mockService.delete).mockResolvedValue();
 
       const res = await request.delete(`${BASE}/step-1`);
 

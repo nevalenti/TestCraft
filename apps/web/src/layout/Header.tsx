@@ -35,7 +35,7 @@ export const Header = () => {
           <ThemeToggle />
           <button
             onClick={() =>
-              keycloak.logout({ redirectUri: window.location.origin + "/" })
+              keycloak.logout({ redirectUri: globalThis.location.origin + "/" })
             }
             className="btn btn-circle btn-ghost btn-sm"
             aria-label="Sign out"

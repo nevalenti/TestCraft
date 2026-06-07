@@ -32,11 +32,10 @@ export const DashboardPage = () => {
       activeRuns: results
         .flatMap((result) => result.data?.items ?? [])
         .filter((run) => run.status === TestRunStatus.Active)
-        .sort((itemA, itemB) =>
+        .toSorted((itemA, itemB) =>
           compareDesc(new Date(itemA.createdAt), new Date(itemB.createdAt)),
         ),
-      runsPending:
-        results.length > 0 && results.some((result) => result.isPending),
+      runsPending: results.some((result) => result.isPending),
     }),
   });
 
@@ -50,6 +49,60 @@ export const DashboardPage = () => {
   );
   const isLoadingStats = projectsPending;
   const isLoadingRuns = projectsPending || runsPending;
+
+  const renderActiveRuns = () => {
+    if (isLoadingRuns) return <ActiveRunsSkeleton />;
+    if (activeRuns.length === 0)
+      return (
+        <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
+          <p className="mb-1 text-sm font-semibold text-base-content/60">
+            No active runs
+          </p>
+          <p className="text-xs text-base-content/40">
+            Start a test run from any project to track results here.
+          </p>
+        </div>
+      );
+    return (
+      <div className="rounded-lg border border-border bg-base-100 shadow-sm">
+        <ul className="divide-y divide-border">
+          {activeRuns.map((run) => {
+            const project = projectMap.get(run.projectId);
+            return (
+              <li key={run.id}>
+                <Link
+                  to="/projects/$projectId/runs/$runId"
+                  params={{ projectId: run.projectId, runId: run.id }}
+                  className="group flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-base-200/50"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <BoltIcon className="size-4 shrink-0 text-warning" />
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {run.name}
+                      </p>
+                      <p className="truncate text-xs text-base-content/50">
+                        {project && (
+                          <span className="font-medium text-base-content/65">
+                            {project.name}
+                          </span>
+                        )}
+                        {" · "}
+                        {run.environment}
+                        {" · "}
+                        {formatDate(run.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRightIcon className="size-4 shrink-0 text-base-content/30 transition-transform motion-safe:group-hover:translate-x-0.5" />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
 
   return (
     <div className="flex min-h-0 w-full flex-col">
@@ -100,56 +153,7 @@ export const DashboardPage = () => {
           <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
             Active Runs
           </h2>
-          {isLoadingRuns ? (
-            <ActiveRunsSkeleton />
-          ) : activeRuns.length === 0 ? (
-            <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
-              <p className="mb-1 text-sm font-semibold text-base-content/60">
-                No active runs
-              </p>
-              <p className="text-xs text-base-content/40">
-                Start a test run from any project to track results here.
-              </p>
-            </div>
-          ) : (
-            <div className="rounded-lg border border-border bg-base-100 shadow-sm">
-              <ul className="divide-y divide-border">
-                {activeRuns.map((run) => {
-                  const project = projectMap.get(run.projectId);
-                  return (
-                    <li key={run.id}>
-                      <Link
-                        to="/projects/$projectId/runs/$runId"
-                        params={{ projectId: run.projectId, runId: run.id }}
-                        className="group flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-base-200/50"
-                      >
-                        <div className="flex min-w-0 items-center gap-3">
-                          <BoltIcon className="size-4 shrink-0 text-warning" />
-                          <div className="min-w-0">
-                            <p className="truncate text-sm font-semibold">
-                              {run.name}
-                            </p>
-                            <p className="truncate text-xs text-base-content/50">
-                              {project && (
-                                <span className="font-medium text-base-content/65">
-                                  {project.name}
-                                </span>
-                              )}
-                              {" · "}
-                              {run.environment}
-                              {" · "}
-                              {formatDate(run.createdAt)}
-                            </p>
-                          </div>
-                        </div>
-                        <ArrowRightIcon className="size-4 shrink-0 text-base-content/30 transition-transform motion-safe:group-hover:translate-x-0.5" />
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          )}
+          {renderActiveRuns()}
         </div>
       </section>
     </div>

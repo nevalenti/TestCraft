@@ -78,8 +78,8 @@ describe("ConfirmDialog", () => {
         <ConfirmDialog {...defaultProps} isLoading={true} />,
       );
       const buttons = container.querySelectorAll('button[type="button"]');
-      const confirmBtn = Array.from(buttons).find((b) =>
-        b.classList.contains("btn-error"),
+      const confirmBtn = [...buttons].find((button) =>
+        button.classList.contains("btn-error"),
       );
       expect(confirmBtn).toBeDisabled();
     });

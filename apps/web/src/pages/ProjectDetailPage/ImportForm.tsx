@@ -21,12 +21,54 @@ interface ImportFormProps {
   isLoading: boolean;
 }
 
-const detectFormat = (files: File[]) => {
+type DetectedFormat = "junit" | "allure" | "mixed" | null;
+type FormErrors = { files?: string; environment?: string };
+
+const detectFormat = (files: File[]): DetectedFormat => {
   if (files.length === 0) return null;
-  if (files.every((f) => f.name.toLowerCase().endsWith(".xml"))) return "junit";
-  if (files.every((f) => f.name.toLowerCase().endsWith(".json")))
+  if (files.every((file) => file.name.toLowerCase().endsWith(".xml")))
+    return "junit";
+  if (files.every((file) => file.name.toLowerCase().endsWith(".json")))
     return "allure";
   return "mixed";
+};
+
+const validateImport = (
+  files: File[],
+  environment: string,
+  detectedFormat: DetectedFormat,
+): FormErrors => {
+  const next: FormErrors = {};
+  if (!environment.trim()) next.environment = "Environment is required";
+  if (files.length === 0) next.files = "Please drop a file to import";
+  else if (detectedFormat === "mixed")
+    next.files = "All files must be the same type (.xml or .json)";
+  else if (detectedFormat === "junit" && files.length > 1)
+    next.files = "JUnit import supports a single XML file";
+  else {
+    const MAX = 5 * 1024 * 1024;
+    const oversized = files.find((file) => file.size > MAX);
+    if (oversized)
+      next.files = `"${oversized.name}" exceeds the 5 MB size limit`;
+  }
+  return next;
+};
+
+const parseAllureFiles = async (
+  files: File[],
+): Promise<{ results: AllureResultItem[] } | { fileError: string }> => {
+  const texts = await Promise.all(files.map((file) => file.text()));
+  const results: AllureResultItem[] = [];
+  for (const [i, text] of texts.entries()) {
+    try {
+      const parsed = JSON.parse(text) as AllureResultItem | AllureResultItem[];
+      if (Array.isArray(parsed)) results.push(...parsed);
+      else results.push(parsed);
+    } catch {
+      return { fileError: `"${files[i].name}" is not valid JSON` };
+    }
+  }
+  return { results };
 };
 
 export const ImportForm = ({
@@ -37,10 +79,7 @@ export const ImportForm = ({
   const [files, setFiles] = useState<File[]>([]);
   const [environment, setEnvironment] = useState("");
   const [name, setName] = useState("");
-  const [errors, setErrors] = useState<{
-    files?: string;
-    environment?: string;
-  }>({});
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const detectedFormat = detectFormat(files);
 
@@ -51,19 +90,7 @@ export const ImportForm = ({
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const next: typeof errors = {};
-    if (!environment.trim()) next.environment = "Environment is required";
-    if (files.length === 0) next.files = "Please drop a file to import";
-    else if (detectedFormat === "mixed")
-      next.files = "All files must be the same type (.xml or .json)";
-    else if (detectedFormat === "junit" && files.length > 1)
-      next.files = "JUnit import supports a single XML file";
-    else {
-      const MAX = 5 * 1024 * 1024;
-      const oversized = files.find((f) => f.size > MAX);
-      if (oversized)
-        next.files = `"${oversized.name}" exceeds the 5 MB size limit`;
-    }
+    const next = validateImport(files, environment, detectedFormat);
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
@@ -76,26 +103,14 @@ export const ImportForm = ({
         name: name.trim() || undefined,
       });
     } else if (detectedFormat === "allure") {
-      const texts = await Promise.all(files.map((f) => f.text()));
-      const results: AllureResultItem[] = [];
-      for (let i = 0; i < texts.length; i++) {
-        try {
-          const parsed = JSON.parse(texts[i]) as
-            | AllureResultItem
-            | AllureResultItem[];
-          if (Array.isArray(parsed)) results.push(...parsed);
-          else results.push(parsed);
-        } catch {
-          setErrors((prev) => ({
-            ...prev,
-            files: `"${files[i].name}" is not valid JSON`,
-          }));
-          return;
-        }
+      const allureData = await parseAllureFiles(files);
+      if ("fileError" in allureData) {
+        setErrors((prev) => ({ ...prev, files: allureData.fileError }));
+        return;
       }
       onSubmit({
         type: "allure",
-        results,
+        results: allureData.results,
         environment: environment.trim(),
         name: name.trim() || undefined,
       });

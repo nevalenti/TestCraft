@@ -198,7 +198,7 @@ describe("TestCaseController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the test case exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(undefined);
+      vi.mocked(mockService.delete).mockResolvedValue();
 
       const res = await request.delete(`${BASE}/case-1`);
 

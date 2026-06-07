@@ -9,12 +9,14 @@ export const importsApi = {
     projectId: string,
     input: { xml: string; environment: string; name?: string },
   ) =>
-    client.post<TestRun>(`${BASE(projectId)}/junit`, input).then((r) => r.data),
+    client
+      .post<TestRun>(`${BASE(projectId)}/junit`, input)
+      .then((response) => response.data),
   allure: (
     projectId: string,
     input: { results: AllureResultItem[]; environment: string; name?: string },
   ) =>
     client
       .post<TestRun>(`${BASE(projectId)}/allure`, input)
-      .then((r) => r.data),
+      .then((response) => response.data),
 };

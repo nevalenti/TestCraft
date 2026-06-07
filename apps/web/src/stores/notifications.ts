@@ -68,7 +68,7 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
     },
 
     clearAll: () => {
-      timers.forEach((timer) => clearTimeout(timer));
+      for (const timer of timers.values()) clearTimeout(timer);
       timers.clear();
       set(
         produce<NotificationsState>((draft) => {

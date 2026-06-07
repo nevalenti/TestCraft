@@ -14,7 +14,7 @@ setup("authenticate via Keycloak", async ({ page }) => {
   await page.locator("#password").fill(process.env.E2E_PASSWORD);
   await page.locator("#kc-login").click();
 
-  await page.waitForURL(/localhost:3000/);
+  await page.waitForURL(process.env.E2E_BASE_URL);
   await expect(page.locator("nav.navbar")).toBeVisible({ timeout: 15_000 });
 
   await mkdir(path.dirname(AUTH_FILE), { recursive: true });

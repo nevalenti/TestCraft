@@ -65,7 +65,7 @@ export const FileDropZone = ({
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFilesChange(Array.from(event.target.files ?? []));
+    onFilesChange([...(event.target.files ?? [])]);
   };
 
   const handleDragEnter = (event: React.DragEvent) => {
@@ -83,7 +83,7 @@ export const FileDropZone = ({
     event.preventDefault();
     dragCounter.current = 0;
     setIsDragging(false);
-    const dropped = Array.from(event.dataTransfer.files).filter((droppedFile) =>
+    const dropped = [...event.dataTransfer.files].filter((droppedFile) =>
       isAccepted(droppedFile, accept),
     );
     if (dropped.length > 0) onFilesChange(dropped);
@@ -93,18 +93,18 @@ export const FileDropZone = ({
     onFilesChange(files.filter((_, fileIndex) => fileIndex !== index));
   };
 
+  let borderClass: string;
+  if (isDragging) borderClass = c.drag;
+  else if (hasError) borderClass = "border-error/50 bg-error/5";
+  else
+    borderClass = `border-base-300 bg-base-200/40 ${c.hover} transition-colors`;
+
   return (
     <div
       role="button"
       tabIndex={0}
       aria-label="File upload area"
-      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${c.ring} ${
-        isDragging
-          ? c.drag
-          : hasError
-            ? "border-error/50 bg-error/5"
-            : `border-base-300 bg-base-200/40 ${c.hover} transition-colors`
-      }`}
+      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${c.ring} ${borderClass}`}
       onClick={openPicker}
       onKeyDown={(event) =>
         (event.key === "Enter" || event.key === " ") && openPicker()

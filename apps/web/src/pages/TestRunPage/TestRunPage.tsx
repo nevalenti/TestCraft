@@ -46,8 +46,11 @@ import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
 
 type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
 
-const passRateClass = (rate: number) =>
-  rate >= 80 ? "text-success" : rate >= 50 ? "text-warning" : "text-error";
+const passRateClass = (rate: number) => {
+  if (rate >= 80) return "text-success";
+  if (rate >= 50) return "text-warning";
+  return "text-error";
+};
 
 const SUMMARY_KEY: Record<string, SummaryCountKey> = {
   Passed: "passed",
@@ -57,6 +60,12 @@ const SUMMARY_KEY: Record<string, SummaryCountKey> = {
 };
 
 const columnHelper = createColumnHelper<TestResult>();
+
+const getSortIcon = (sorted: false | "asc" | "desc"): string => {
+  if (sorted === "asc") return "▲";
+  if (sorted === "desc") return "▼";
+  return "⬍";
+};
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
@@ -93,7 +102,7 @@ export const TestRunPage = () => {
   const deleteResult = useDeleteTestResult(projectId, runId);
 
   useEffect(() => {
-    setPagination((p) => ({ ...p, pageIndex: 0 }));
+    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
   }, [statusFilter, debouncedSearch]);
 
   const handleCreate = (input: CreateTestResult) =>
@@ -197,6 +206,148 @@ export const TestRunPage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderResults = () => {
+    if (isPending) return <SkeletonGrid />;
+    if (isError)
+      return (
+        <ErrorState message="Failed to load results. Please check your connection and try again." />
+      );
+    if (
+      resultsPage?.items.length === 0 &&
+      statusFilter === null &&
+      !debouncedSearch
+    )
+      return (
+        <EmptyState
+          title="No results recorded"
+          description="Add results to track the outcome of each test case in this run."
+          action={
+            <button
+              className="btn gap-1.5 btn-sm btn-primary"
+              onClick={openCreate}
+            >
+              <PlusIcon className="size-4" aria-hidden="true" />
+              Add Result
+            </button>
+          }
+        />
+      );
+    if (resultsPage?.items.length === 0)
+      return (
+        <div className="flex flex-col items-center justify-center py-16 text-center">
+          <p className="mb-2 text-sm font-semibold text-base-content/60">
+            No results match
+          </p>
+          <div className="flex gap-2">
+            {debouncedSearch && (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setSearch("")}
+              >
+                Clear search
+              </button>
+            )}
+            {statusFilter !== null && (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={() => setStatusFilter(null)}
+              >
+                Clear filter
+              </button>
+            )}
+          </div>
+        </div>
+      );
+    return (
+      <>
+        <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
+          <table className="table table-sm">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr
+                  key={headerGroup.id}
+                  className="text-xs text-base-content/60"
+                >
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                      className={
+                        header.column.getCanSort()
+                          ? "cursor-pointer select-none"
+                          : ""
+                      }
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
+                        {header.column.getCanSort() && (
+                          <span className="text-base-content/30">
+                            {getSortIcon(header.column.getIsSorted())}
+                          </span>
+                        )}
+                      </span>
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {table.getRowModel().rows.map((row) => (
+                <tr
+                  key={row.id}
+                  data-testid="result-row"
+                  className="group transition-colors hover:bg-base-200/50"
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {pageCount > 1 && (
+          <div className="mt-4 flex items-center justify-between gap-4">
+            <span className="text-sm text-base-content/60">
+              Page{" "}
+              <span className="font-semibold text-base-content">
+                {pagination.pageIndex + 1}
+              </span>{" "}
+              of {pageCount}
+            </span>
+            <div className="flex gap-2">
+              <button
+                className="btn btn-square btn-sm btn-neutral"
+                onClick={() => table.previousPage()}
+                disabled={!table.getCanPreviousPage()}
+                aria-label="Previous page"
+              >
+                <ChevronLeftIcon className="size-4" />
+              </button>
+              <button
+                className="btn btn-square btn-sm btn-neutral"
+                onClick={() => table.nextPage()}
+                disabled={!table.getCanNextPage()}
+                aria-label="Next page"
+              >
+                <ChevronRightIcon className="size-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      </>
+    );
+  };
+
   return (
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
@@ -218,7 +369,7 @@ export const TestRunPage = () => {
             <span className="font-semibold text-base-content">
               {runSummary.total}
             </span>{" "}
-            result{runSummary.total !== 1 ? "s" : ""} ·{" "}
+            result{runSummary.total === 1 ? "" : "s"} ·{" "}
             <span
               className={`font-semibold ${passRateClass(runSummary.passRate)}`}
             >
@@ -281,144 +432,7 @@ export const TestRunPage = () => {
           </div>
         )}
 
-        <div className="min-h-80">
-          {isPending ? (
-            <SkeletonGrid />
-          ) : isError ? (
-            <ErrorState message="Failed to load results. Please check your connection and try again." />
-          ) : resultsPage?.items.length === 0 &&
-            statusFilter === null &&
-            !debouncedSearch ? (
-            <EmptyState
-              title="No results recorded"
-              description="Add results to track the outcome of each test case in this run."
-              action={
-                <button
-                  className="btn gap-1.5 btn-sm btn-primary"
-                  onClick={openCreate}
-                >
-                  <PlusIcon className="size-4" aria-hidden="true" />
-                  Add Result
-                </button>
-              }
-            />
-          ) : resultsPage?.items.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="mb-2 text-sm font-semibold text-base-content/60">
-                No results match
-              </p>
-              <div className="flex gap-2">
-                {debouncedSearch && (
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => setSearch("")}
-                  >
-                    Clear search
-                  </button>
-                )}
-                {statusFilter !== null && (
-                  <button
-                    className="btn btn-outline btn-sm"
-                    onClick={() => setStatusFilter(null)}
-                  >
-                    Clear filter
-                  </button>
-                )}
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
-                <table className="table table-sm">
-                  <thead>
-                    {table.getHeaderGroups().map((headerGroup) => (
-                      <tr
-                        key={headerGroup.id}
-                        className="text-xs text-base-content/60"
-                      >
-                        {headerGroup.headers.map((header) => (
-                          <th
-                            key={header.id}
-                            onClick={header.column.getToggleSortingHandler()}
-                            className={
-                              header.column.getCanSort()
-                                ? "cursor-pointer select-none"
-                                : ""
-                            }
-                          >
-                            <span className="inline-flex items-center gap-1">
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext(),
-                              )}
-                              {header.column.getCanSort() && (
-                                <span className="text-base-content/30">
-                                  {header.column.getIsSorted() === "asc"
-                                    ? "▲"
-                                    : header.column.getIsSorted() === "desc"
-                                      ? "▼"
-                                      : "⬍"}
-                                </span>
-                              )}
-                            </span>
-                          </th>
-                        ))}
-                      </tr>
-                    ))}
-                  </thead>
-                  <tbody>
-                    {table.getRowModel().rows.map((row) => (
-                      <tr
-                        key={row.id}
-                        data-testid="result-row"
-                        className="group transition-colors hover:bg-base-200/50"
-                      >
-                        {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext(),
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              {pageCount > 1 && (
-                <div className="mt-4 flex items-center justify-between gap-4">
-                  <span className="text-sm text-base-content/60">
-                    Page{" "}
-                    <span className="font-semibold text-base-content">
-                      {pagination.pageIndex + 1}
-                    </span>{" "}
-                    of {pageCount}
-                  </span>
-                  <div className="flex gap-2">
-                    <button
-                      className="btn btn-square btn-sm btn-neutral"
-                      onClick={() => table.previousPage()}
-                      disabled={!table.getCanPreviousPage()}
-                      aria-label="Previous page"
-                    >
-                      <ChevronLeftIcon className="size-4" />
-                    </button>
-                    <button
-                      className="btn btn-square btn-sm btn-neutral"
-                      onClick={() => table.nextPage()}
-                      disabled={!table.getCanNextPage()}
-                      aria-label="Next page"
-                    >
-                      <ChevronRightIcon className="size-4" />
-                    </button>
-                  </div>
-                </div>
-              )}
-            </>
-          )}
-        </div>
+        <div className="min-h-80">{renderResults()}</div>
       </section>
 
       <Modal

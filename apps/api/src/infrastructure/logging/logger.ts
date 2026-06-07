@@ -36,10 +36,9 @@ if (config.lokiUrl) {
   });
 }
 
+const transportTarget = targets.length === 1 ? targets[0] : { targets };
 const transport =
-  targets.length > 0
-    ? pino.transport(targets.length === 1 ? targets[0] : { targets })
-    : undefined;
+  targets.length > 0 ? pino.transport(transportTarget) : undefined;
 
 transport?.on("error", (err: Error) => {
   process.stderr.write(`[pino transport error] ${err.message}\n`);

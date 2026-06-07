@@ -33,7 +33,7 @@ describe("useNotificationsStore", () => {
       useNotificationsStore.getState().add({ type: "info", message: "B" });
       const ids = useNotificationsStore
         .getState()
-        .notifications.map((n) => n.id);
+        .notifications.map((notification) => notification.id);
       expect(new Set(ids).size).toBe(2);
     });
   });
@@ -78,7 +78,9 @@ describe("useNotificationsStore", () => {
         .getState()
         .add({ type: "info", message: "Remove me" });
       const { notifications } = useNotificationsStore.getState();
-      const removeId = notifications.find((n) => n.message === "Remove me")!.id;
+      const removeId = notifications.find(
+        (notification) => notification.message === "Remove me",
+      )!.id;
 
       useNotificationsStore.getState().remove(removeId);
 

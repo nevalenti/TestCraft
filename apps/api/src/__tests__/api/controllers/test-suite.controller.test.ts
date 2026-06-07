@@ -194,7 +194,7 @@ describe("TestSuiteController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the suite exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(undefined);
+      vi.mocked(mockService.delete).mockResolvedValue();
 
       const res = await request.delete("/projects/proj-1/suites/suite-1");
 

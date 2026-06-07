@@ -94,7 +94,10 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
 
       const { items, total } = await repo.getAll(projectId);
       expect(total).toBe(2);
-      expect(items.map((r) => r.name).sort()).toEqual(["Run A", "Run B"]);
+      expect(items.map((run) => run.name).toSorted()).toEqual([
+        "Run A",
+        "Run B",
+      ]);
     });
 
     it("excludes soft-deleted runs", async () => {

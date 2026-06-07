@@ -15,14 +15,14 @@ export const ResourceActions = ({
 }: ResourceActionsProps) => (
   <>
     <button
-      className={`btn- btn btn-ghost${size}`}
+      className={`btn btn-ghost btn-${size}`}
       onClick={onEdit}
       aria-label={`Edit ${label}`}
     >
       <PencilIcon className={size === "xs" ? "size-3.5" : "size-4"} />
     </button>
     <button
-      className={`btn- btn btn-ghost${size} text-error`}
+      className={`btn btn-ghost btn-${size} text-error`}
       onClick={onDelete}
       aria-label={`Delete ${label}`}
     >

@@ -80,7 +80,7 @@ describe(
         });
 
         const { items } = await repo.getAll(caseId);
-        expect(items.map((s) => s.order)).toEqual([1, 2, 3]);
+        expect(items.map((step) => step.order)).toEqual([1, 2, 3]);
       });
 
       it("excludes soft-deleted steps", async () => {
@@ -129,20 +129,16 @@ describe(
         const found = await repo.findByIds(caseId, [s1.id]);
         expect(found).toHaveLength(1);
         expect(found[0].id).toBe(s1.id);
-        expect(found.map((s) => s.id)).not.toContain(s2.id);
+        expect(found.map((step) => step.id)).not.toContain(s2.id);
       });
 
       it("does not return steps from a different case", async () => {
+        const parentCase = await prisma.testCase.findUniqueOrThrow({
+          where: { id: caseId },
+          select: { suiteId: true },
+        });
         const otherCase = await prisma.testCase.create({
-          data: {
-            name: "Other TC",
-            suiteId: (
-              await prisma.testCase.findUniqueOrThrow({
-                where: { id: caseId },
-                select: { suiteId: true },
-              })
-            ).suiteId,
-          },
+          data: { name: "Other TC", suiteId: parentCase.suiteId },
           select: { id: true },
         });
         const step = await repo.create(otherCase.id, {
@@ -242,7 +238,9 @@ describe(
         ]);
 
         const { items } = await repo.getAll(caseId);
-        const orderMap = Object.fromEntries(items.map((s) => [s.id, s.order]));
+        const orderMap = Object.fromEntries(
+          items.map((step) => [step.id, step.order]),
+        );
         expect(orderMap[s1.id]).toBe(3);
         expect(orderMap[s2.id]).toBe(1);
         expect(orderMap[s3.id]).toBe(2);

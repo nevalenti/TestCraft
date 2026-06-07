@@ -67,6 +67,49 @@ export const RunsTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderRuns = () => {
+    if (isPending) return <SkeletonGrid />;
+    if (runs?.length === 0)
+      return (
+        <EmptyState
+          title="No test runs yet"
+          description="Start a test run to record and track results."
+        />
+      );
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {runs?.map((run) => (
+          <ResourceCard
+            key={run.id}
+            testId="run-card"
+            onEdit={() => openEdit(run)}
+            onDelete={() => openDelete(run)}
+            to={`/projects/${projectId}/runs/${run.id}`}
+            label="test run"
+            cardBg="card-bg-warning"
+            accentText="text-warning"
+            typeIcon={<BoltIcon className="size-3.5" />}
+          >
+            <div className="flex flex-col gap-1.5">
+              <span className="line-clamp-2 text-base leading-snug font-semibold">
+                {run.name}
+              </span>
+              <p className="text-sm font-medium text-base-content/60">
+                {run.environment}
+              </p>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <RunStatusBadge status={run.status} />
+              <p className="text-xs text-base-content/50 tabular-nums">
+                {formatDate(run.createdAt)}
+              </p>
+            </div>
+          </ResourceCard>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="mb-4 flex items-center gap-3">
@@ -92,45 +135,7 @@ export const RunsTab = () => {
         </div>
       </div>
 
-      {isPending ? (
-        <SkeletonGrid />
-      ) : runs?.length === 0 ? (
-        <EmptyState
-          title="No test runs yet"
-          description="Start a test run to record and track results."
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {runs?.map((run) => (
-            <ResourceCard
-              key={run.id}
-              testId="run-card"
-              onEdit={() => openEdit(run)}
-              onDelete={() => openDelete(run)}
-              to={`/projects/${projectId}/runs/${run.id}`}
-              label="test run"
-              cardBg="card-bg-warning"
-              accentText="text-warning"
-              typeIcon={<BoltIcon className="size-3.5" />}
-            >
-              <div className="flex flex-col gap-1.5">
-                <span className="line-clamp-2 text-base leading-snug font-semibold">
-                  {run.name}
-                </span>
-                <p className="text-sm font-medium text-base-content/60">
-                  {run.environment}
-                </p>
-              </div>
-              <div className="mt-3 flex items-center justify-between gap-2">
-                <RunStatusBadge status={run.status} />
-                <p className="text-xs text-base-content/50 tabular-nums">
-                  {formatDate(run.createdAt)}
-                </p>
-              </div>
-            </ResourceCard>
-          ))}
-        </div>
-      )}
+      {renderRuns()}
 
       <Modal
         isOpen={modal.type === "create"}

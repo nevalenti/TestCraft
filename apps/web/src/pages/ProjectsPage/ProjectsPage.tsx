@@ -49,6 +49,29 @@ export const ProjectsPage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderProjects = () => {
+    if (isPending) return <SkeletonGrid />;
+    if (projects?.length === 0)
+      return (
+        <EmptyState
+          title="No projects yet"
+          description="Projects group your test suites and runs."
+        />
+      );
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {projects?.map((project) => (
+          <ProjectCard
+            key={project.id}
+            project={project}
+            onEdit={() => openEdit(project)}
+            onDelete={() => openDelete(project)}
+          />
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
@@ -79,27 +102,7 @@ export const ProjectsPage = () => {
             New Project
           </button>
         </div>
-        <div className="min-h-80">
-          {isPending ? (
-            <SkeletonGrid />
-          ) : projects?.length === 0 ? (
-            <EmptyState
-              title="No projects yet"
-              description="Projects group your test suites and runs."
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {projects?.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  onEdit={() => openEdit(project)}
-                  onDelete={() => openDelete(project)}
-                />
-              ))}
-            </div>
-          )}
-        </div>
+        <div className="min-h-80">{renderProjects()}</div>
       </section>
 
       <Modal

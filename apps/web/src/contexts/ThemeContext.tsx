@@ -34,7 +34,7 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   const [theme, setTheme] = useState<string>(resolveTheme);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
+    document.documentElement.dataset.theme = theme;
     setCookie(THEME_KEY, theme);
   }, [theme]);
 

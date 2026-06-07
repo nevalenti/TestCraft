@@ -167,7 +167,7 @@ describe("ProjectController #api", { tags: ["unit"] }, () => {
 
   describe("DELETE /:id — when the project exists — deletes it", () => {
     it("responds 204 with no body", async () => {
-      vi.mocked(mockService.delete).mockResolvedValue(undefined);
+      vi.mocked(mockService.delete).mockResolvedValue();
 
       const res = await request.delete("/proj-1");
 

@@ -3,7 +3,6 @@
 
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
-KEYCLOAK_URL ?= https://testcraft.dev:8443
 KUBECTL = sudo k3s kubectl
 
 -include .env
@@ -37,7 +36,7 @@ web:
 
 build:
 	docker build -t $(API_IMAGE) -f apps/api/Dockerfile .
-	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile . --build-arg VITE_KEYCLOAK_URL=$(KEYCLOAK_URL)
+	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
 
 load:
 	docker save $(API_IMAGE):latest | sudo k3s ctr images import -
