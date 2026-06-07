@@ -1,5 +1,12 @@
 import { asClass, asValue, createContainer, InjectionMode } from "awilix";
 
+import { ImportController } from "@/api/controllers/import.controller";
+import { ProjectController } from "@/api/controllers/project.controller";
+import { TestCaseController } from "@/api/controllers/test-case.controller";
+import { TestCaseStepController } from "@/api/controllers/test-case-step.controller";
+import { TestResultController } from "@/api/controllers/test-result.controller";
+import { TestRunController } from "@/api/controllers/test-run.controller";
+import { TestSuiteController } from "@/api/controllers/test-suite.controller";
 import { ImportService } from "@/application/import/import.service";
 import { ProjectService } from "@/application/projects/project.service";
 import { TestCaseStepService } from "@/application/test-case-steps/test-case-step.service";
@@ -17,13 +24,6 @@ import { TestCaseStepRepository } from "@/infrastructure/repositories/test-case-
 import { TestResultRepository } from "@/infrastructure/repositories/test-result.repository";
 import { TestRunRepository } from "@/infrastructure/repositories/test-run.repository";
 import { TestSuiteRepository } from "@/infrastructure/repositories/test-suite.repository";
-import { ImportController } from "@/presentation/controllers/import.controller";
-import { ProjectController } from "@/presentation/controllers/project.controller";
-import { TestCaseController } from "@/presentation/controllers/test-case.controller";
-import { TestCaseStepController } from "@/presentation/controllers/test-case-step.controller";
-import { TestResultController } from "@/presentation/controllers/test-result.controller";
-import { TestRunController } from "@/presentation/controllers/test-run.controller";
-import { TestSuiteController } from "@/presentation/controllers/test-suite.controller";
 
 interface Cradle {
   prisma: typeof prismaClient;

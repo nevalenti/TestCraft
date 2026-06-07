@@ -1,14 +1,10 @@
 import { ErrorRequestHandler } from "express";
 import { ZodError } from "zod";
 
+import { problem, problems, zodToFieldErrors } from "@/api/errors/problem";
 import { DomainError, NotFoundError } from "@/domain/errors";
 import { isConstraintViolation } from "@/infrastructure/database/prisma.errors";
 import { logger } from "@/infrastructure/logging/logger";
-import {
-  problem,
-  problems,
-  zodToFieldErrors,
-} from "@/presentation/errors/problem";
 
 export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   if (err instanceof NotFoundError) {

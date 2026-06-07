@@ -17,32 +17,32 @@ import {
 import {
   importAllureSchema,
   importJunitSchema,
-} from "@/presentation/schemas/import.schemas";
+} from "@/api/schemas/import.schemas";
 import {
   createProjectSchema,
   updateProjectSchema,
-} from "@/presentation/schemas/project.schemas";
+} from "@/api/schemas/project.schemas";
 import {
   createTestCaseSchema,
   updateTestCaseSchema,
-} from "@/presentation/schemas/test-case.schemas";
+} from "@/api/schemas/test-case.schemas";
 import {
   bulkReorderStepsSchema,
   createTestCaseStepSchema,
   updateTestCaseStepSchema,
-} from "@/presentation/schemas/test-case-step.schemas";
+} from "@/api/schemas/test-case-step.schemas";
 import {
   createTestResultSchema,
   updateTestResultSchema,
-} from "@/presentation/schemas/test-result.schemas";
+} from "@/api/schemas/test-result.schemas";
 import {
   createTestRunSchema,
   updateTestRunSchema,
-} from "@/presentation/schemas/test-run.schemas";
+} from "@/api/schemas/test-run.schemas";
 import {
   createTestSuiteSchema,
   updateTestSuiteSchema,
-} from "@/presentation/schemas/test-suite.schemas";
+} from "@/api/schemas/test-suite.schemas";
 
 const registry = new OpenAPIRegistry();
 

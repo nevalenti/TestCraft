@@ -2,16 +2,16 @@ import express, { Router } from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ITestSuiteService } from "@/application/test-suites/test-suite.service";
-import { NotFoundError } from "@/domain/errors";
-import { TestSuite } from "@/domain/test-suite";
-import { TestSuiteController } from "@/presentation/controllers/test-suite.controller";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
-import { validateBody } from "@/presentation/middleware/validate-request.middleware";
+import { TestSuiteController } from "@/api/controllers/test-suite.controller";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
+import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   createTestSuiteSchema,
   updateTestSuiteSchema,
-} from "@/presentation/schemas/test-suite.schemas";
+} from "@/api/schemas/test-suite.schemas";
+import { ITestSuiteService } from "@/application/test-suites/test-suite.service";
+import { NotFoundError } from "@/domain/errors";
+import { TestSuite } from "@/domain/test-suite";
 
 vi.mock("@/infrastructure/logging/logger", () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), fatal: vi.fn() },

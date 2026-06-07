@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
+import { extractPagination } from "@/api/middleware/validate-request.middleware";
 import { ITestCaseService } from "@/application/test-cases/test-case.service";
-import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class TestCaseController {
   constructor(private readonly testCaseService: ITestCaseService) {}

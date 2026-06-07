@@ -1,17 +1,17 @@
 import { Router } from "express";
 
-import { projectService } from "@/container";
-import { authenticate } from "@/presentation/middleware/auth.middleware";
-import { requireProjectOwner } from "@/presentation/middleware/require-project-owner.middleware";
-import importRouter from "@/presentation/routes/import.routes";
-import projectRoutes from "@/presentation/routes/project.routes";
+import { authenticate } from "@/api/middleware/auth.middleware";
+import { requireProjectOwner } from "@/api/middleware/require-project-owner.middleware";
+import importRouter from "@/api/routes/import.routes";
+import projectRoutes from "@/api/routes/project.routes";
 import testCaseRouter, {
   projectCasesRouter,
-} from "@/presentation/routes/test-case.routes";
-import testCaseStepRouter from "@/presentation/routes/test-case-step.routes";
-import testResultRouter from "@/presentation/routes/test-result.routes";
-import testRunRouter from "@/presentation/routes/test-run.routes";
-import testSuiteRouter from "@/presentation/routes/test-suite.routes";
+} from "@/api/routes/test-case.routes";
+import testCaseStepRouter from "@/api/routes/test-case-step.routes";
+import testResultRouter from "@/api/routes/test-result.routes";
+import testRunRouter from "@/api/routes/test-run.routes";
+import testSuiteRouter from "@/api/routes/test-suite.routes";
+import { projectService } from "@/container";
 
 const router: Router = Router();
 

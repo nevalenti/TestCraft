@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { paginationSchema } from "@/presentation/schemas/pagination.schemas";
+import { paginationSchema } from "@/api/schemas/pagination.schemas";
 
 export const testSuiteQuerySchema = paginationSchema.extend({
   search: z.string().max(255).optional(),

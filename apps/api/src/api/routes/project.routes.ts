@@ -1,16 +1,16 @@
 import { Router } from "express";
 
-import { projectController } from "@/container";
-import { authenticate } from "@/presentation/middleware/auth.middleware";
+import { authenticate } from "@/api/middleware/auth.middleware";
 import {
   validateBody,
   validateQuery,
-} from "@/presentation/middleware/validate-request.middleware";
+} from "@/api/middleware/validate-request.middleware";
 import {
   createProjectSchema,
   projectQuerySchema,
   updateProjectSchema,
-} from "@/presentation/schemas/project.schemas";
+} from "@/api/schemas/project.schemas";
+import { projectController } from "@/container";
 
 const router: Router = Router();
 

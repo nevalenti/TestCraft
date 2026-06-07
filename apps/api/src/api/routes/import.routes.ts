@@ -1,11 +1,11 @@
 import { Router } from "express";
 
-import { importController } from "@/container";
-import { validateBody } from "@/presentation/middleware/validate-request.middleware";
+import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   importAllureSchema,
   importJunitSchema,
-} from "@/presentation/schemas/import.schemas";
+} from "@/api/schemas/import.schemas";
+import { importController } from "@/container";
 
 const router: Router = Router({ mergeParams: true });
 

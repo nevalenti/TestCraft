@@ -1,15 +1,15 @@
 import { Router } from "express";
 
-import { testSuiteController } from "@/container";
 import {
   validateBody,
   validateQuery,
-} from "@/presentation/middleware/validate-request.middleware";
+} from "@/api/middleware/validate-request.middleware";
 import {
   createTestSuiteSchema,
   testSuiteQuerySchema,
   updateTestSuiteSchema,
-} from "@/presentation/schemas/test-suite.schemas";
+} from "@/api/schemas/test-suite.schemas";
+import { testSuiteController } from "@/container";
 
 const router: Router = Router({ mergeParams: true });
 

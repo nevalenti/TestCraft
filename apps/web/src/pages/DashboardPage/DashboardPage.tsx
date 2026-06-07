@@ -101,7 +101,7 @@ export const DashboardPage = () => {
           {isLoadingRuns ? (
             <ActiveRunsSkeleton />
           ) : activeRuns.length === 0 ? (
-            <div className="rounded-lg border border-border bg-base-100 px-6 py-14 text-center">
+            <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
               <p className="text-sm font-semibold text-base-content/60 mb-1">
                 No active runs
               </p>

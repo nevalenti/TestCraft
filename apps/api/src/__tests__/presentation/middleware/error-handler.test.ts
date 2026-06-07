@@ -2,8 +2,8 @@ import express, { RequestHandler } from "express";
 import supertest from "supertest";
 import { describe, expect, it, vi } from "vitest";
 
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
 import { DomainError, NotFoundError } from "@/domain/errors";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
 
 const makeApp = (thrower: RequestHandler) => {
   const app = express();

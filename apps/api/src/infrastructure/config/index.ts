@@ -20,8 +20,8 @@ const env = createEnv({
     OTEL_SERVICE_NAME: z.string().default("testcraft-api"),
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
     LOKI_URL: z.string().url().optional(),
-    METRICS_TOKEN: z.string().optional(),
     REDIS_URL: z.string().url().optional(),
+    METRICS_TOKEN: z.string().optional(),
   },
   runtimeEnv: process.env,
   emptyStringAsUndefined: true,
@@ -43,7 +43,7 @@ export const config = {
     serviceName: env.OTEL_SERVICE_NAME,
     otlpEndpoint: env.OTEL_EXPORTER_OTLP_ENDPOINT,
   },
-  metricsToken: env.METRICS_TOKEN,
   lokiUrl: env.LOKI_URL,
   redisUrl: env.REDIS_URL,
+  metricsToken: env.METRICS_TOKEN,
 };

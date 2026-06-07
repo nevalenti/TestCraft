@@ -6,7 +6,7 @@ import { z } from "zod";
 import {
   validateBody,
   validateQuery,
-} from "@/presentation/middleware/validate-request.middleware";
+} from "@/api/middleware/validate-request.middleware";
 
 const schema = z.object({
   name: z.string().min(1),

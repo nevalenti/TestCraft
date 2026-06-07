@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-import { paginationSchema } from "@/presentation/schemas/pagination.schemas";
+import { paginationSchema } from "@/api/schemas/pagination.schemas";
 
 export const projectQuerySchema = paginationSchema.extend({
   search: z.string().optional(),

@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
+import { extractPagination } from "@/api/middleware/validate-request.middleware";
 import { IProjectService } from "@/application/projects/project.service";
-import { extractPagination } from "@/presentation/middleware/validate-request.middleware";
 
 export class ProjectController {
   constructor(private readonly projectService: IProjectService) {}

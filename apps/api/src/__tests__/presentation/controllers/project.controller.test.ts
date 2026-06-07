@@ -2,15 +2,15 @@ import express, { Router } from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { IProjectService } from "@/application/projects/project.service";
-import { NotFoundError } from "@/domain/errors";
-import { ProjectController } from "@/presentation/controllers/project.controller";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
-import { validateBody } from "@/presentation/middleware/validate-request.middleware";
+import { ProjectController } from "@/api/controllers/project.controller";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
+import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   createProjectSchema,
   updateProjectSchema,
-} from "@/presentation/schemas/project.schemas";
+} from "@/api/schemas/project.schemas";
+import { IProjectService } from "@/application/projects/project.service";
+import { NotFoundError } from "@/domain/errors";
 
 vi.mock("@/infrastructure/logging/logger", () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), fatal: vi.fn() },

@@ -3,8 +3,8 @@ import jwtPkg from "jsonwebtoken";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { authenticate } from "@/presentation/middleware/auth.middleware";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
+import { authenticate } from "@/api/middleware/auth.middleware";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
 
 vi.mock("jsonwebtoken", () => ({
   default: { verify: vi.fn() },

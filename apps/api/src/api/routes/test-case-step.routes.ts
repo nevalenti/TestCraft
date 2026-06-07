@@ -1,16 +1,16 @@
 import { Router } from "express";
 
-import { testCaseStepController } from "@/container";
 import {
   validateBody,
   validateQuery,
-} from "@/presentation/middleware/validate-request.middleware";
-import { paginationSchema } from "@/presentation/schemas/pagination.schemas";
+} from "@/api/middleware/validate-request.middleware";
+import { paginationSchema } from "@/api/schemas/pagination.schemas";
 import {
   bulkReorderStepsSchema,
   createTestCaseStepSchema,
   updateTestCaseStepSchema,
-} from "@/presentation/schemas/test-case-step.schemas";
+} from "@/api/schemas/test-case-step.schemas";
+import { testCaseStepController } from "@/container";
 
 const router: Router = Router({ mergeParams: true });
 

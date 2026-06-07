@@ -1,8 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
 import rateLimit from "express-rate-limit";
 
+import { problem, problems } from "@/api/errors/problem";
 import { config } from "@/infrastructure/config";
-import { problem, problems } from "@/presentation/errors/problem";
 
 const productionLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

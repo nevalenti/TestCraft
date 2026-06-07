@@ -3,20 +3,20 @@ import express, { Router } from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ITestResultService } from "@/application/test-results/test-result.service";
-import { DomainError, NotFoundError } from "@/domain/errors";
-import { TestResult } from "@/domain/test-result";
-import { TestResultController } from "@/presentation/controllers/test-result.controller";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
+import { TestResultController } from "@/api/controllers/test-result.controller";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
 import {
   validateBody,
   validateQuery,
-} from "@/presentation/middleware/validate-request.middleware";
+} from "@/api/middleware/validate-request.middleware";
 import {
   createTestResultSchema,
   testResultQuerySchema,
   updateTestResultSchema,
-} from "@/presentation/schemas/test-result.schemas";
+} from "@/api/schemas/test-result.schemas";
+import { ITestResultService } from "@/application/test-results/test-result.service";
+import { DomainError, NotFoundError } from "@/domain/errors";
+import { TestResult } from "@/domain/test-result";
 
 vi.mock("@/infrastructure/logging/logger", () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), fatal: vi.fn() },

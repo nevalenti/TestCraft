@@ -1,17 +1,17 @@
 import compression from "compression";
 import express, { type Express, json } from "express";
 
+import docsRoutes from "@/api/docs/docs.routes";
+import { cors } from "@/api/middleware/cors.middleware";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
+import { helmet } from "@/api/middleware/helmet.middleware";
+import { httpLogger } from "@/api/middleware/http-logger.middleware";
+import { httpMetrics } from "@/api/middleware/http-metrics.middleware";
+import { rateLimiter } from "@/api/middleware/rate-limit.middleware";
+import { requestId } from "@/api/middleware/request-id.middleware";
+import systemRoutes from "@/api/routes/system.routes";
+import v1Routes from "@/api/routes/v1";
 import { NotFoundError } from "@/domain/errors";
-import docsRoutes from "@/presentation/docs/docs.routes";
-import { cors } from "@/presentation/middleware/cors.middleware";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
-import { helmet } from "@/presentation/middleware/helmet.middleware";
-import { httpLogger } from "@/presentation/middleware/http-logger.middleware";
-import { httpMetrics } from "@/presentation/middleware/http-metrics.middleware";
-import { rateLimiter } from "@/presentation/middleware/rate-limit.middleware";
-import { requestId } from "@/presentation/middleware/request-id.middleware";
-import systemRoutes from "@/presentation/routes/system.routes";
-import v1Routes from "@/presentation/routes/v1";
 
 const app: Express = express();
 

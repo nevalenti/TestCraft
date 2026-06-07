@@ -2,17 +2,17 @@ import express, { Router } from "express";
 import supertest from "supertest";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { ITestCaseStepService } from "@/application/test-case-steps/test-case-step.service";
-import { NotFoundError } from "@/domain/errors";
-import { TestCaseStep } from "@/domain/test-case-step";
-import { TestCaseStepController } from "@/presentation/controllers/test-case-step.controller";
-import { errorHandler } from "@/presentation/middleware/error-handler.middleware";
-import { validateBody } from "@/presentation/middleware/validate-request.middleware";
+import { TestCaseStepController } from "@/api/controllers/test-case-step.controller";
+import { errorHandler } from "@/api/middleware/error-handler.middleware";
+import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   bulkReorderStepsSchema,
   createTestCaseStepSchema,
   updateTestCaseStepSchema,
-} from "@/presentation/schemas/test-case-step.schemas";
+} from "@/api/schemas/test-case-step.schemas";
+import { ITestCaseStepService } from "@/application/test-case-steps/test-case-step.service";
+import { NotFoundError } from "@/domain/errors";
+import { TestCaseStep } from "@/domain/test-case-step";
 
 vi.mock("@/infrastructure/logging/logger", () => ({
   logger: { error: vi.fn(), warn: vi.fn(), info: vi.fn(), fatal: vi.fn() },

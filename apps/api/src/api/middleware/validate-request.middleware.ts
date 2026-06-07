@@ -1,12 +1,8 @@
 import { Request, RequestHandler } from "express";
 import { ZodSchema } from "zod";
 
+import { problem, problems, zodToFieldErrors } from "@/api/errors/problem";
 import { DEFAULT_PAGE, DEFAULT_PAGE_SIZE } from "@/domain/pagination";
-import {
-  problem,
-  problems,
-  zodToFieldErrors,
-} from "@/presentation/errors/problem";
 
 export const validateBody =
   <T>(schema: ZodSchema<T>): RequestHandler =>
