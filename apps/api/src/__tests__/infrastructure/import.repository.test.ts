@@ -66,7 +66,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { projectId },
         select: { name: true },
       });
-      expect(suites.map((s) => s.name).sort()).toEqual([
+      expect(suites.map((suite) => suite.name).toSorted()).toEqual([
         "Auth Suite",
         "Checkout",
       ]);
@@ -89,7 +89,6 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         "staging",
         TestRunStatus.Completed,
         [parsed("Auth Suite", "Login test")],
-        undefined,
       );
 
       const suites = await prisma.testSuite.findMany({
@@ -114,7 +113,6 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         "staging",
         TestRunStatus.Completed,
         [parsed("Auth Suite", "Login test")],
-        undefined,
       );
 
       const cases = await prisma.testCase.findMany({
@@ -146,7 +144,6 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         "staging",
         TestRunStatus.Completed,
         cases,
-        undefined,
       );
 
       const results = await prisma.testResult.findMany({
@@ -174,7 +171,6 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         "prod",
         TestRunStatus.Completed,
         cases,
-        undefined,
       );
 
       const result = await prisma.testResult.findFirstOrThrow({
@@ -213,7 +209,6 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         "staging",
         TestRunStatus.Completed,
         cases,
-        undefined,
       );
 
       const results = await prisma.testResult.findMany({

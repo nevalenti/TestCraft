@@ -1,5 +1,5 @@
 import { execSync } from "node:child_process";
-import { resolve } from "node:path";
+import path from "node:path";
 
 import type { StartedPostgreSqlContainer } from "@testcontainers/postgresql";
 import { PostgreSqlContainer } from "@testcontainers/postgresql";
@@ -14,8 +14,9 @@ export async function setup({
   container = await new PostgreSqlContainer("postgres:16-alpine").start();
   const databaseUrl = container.getConnectionUri();
 
+  // eslint-disable-next-line sonarjs/no-os-command-from-path
   execSync("pnpm prisma migrate deploy", {
-    cwd: resolve(import.meta.dirname, "../../.."),
+    cwd: path.resolve(import.meta.dirname, "../../.."),
     env: { ...process.env, DATABASE_URL: databaseUrl },
     stdio: "pipe",
   });

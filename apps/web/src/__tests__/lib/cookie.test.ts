@@ -3,12 +3,12 @@ import { afterEach, describe, expect, it } from "vitest";
 import { getCookie, removeCookie, setCookie } from "@/lib/cookie";
 
 const clearAll = () => {
-  document.cookie.split(";").forEach((c) => {
-    const name = c.trim().split("=")[0];
+  for (const cookie of document.cookie.split(";")) {
+    const name = cookie.trim().split("=")[0];
     if (name) {
       document.cookie = `${name}=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/`;
     }
-  });
+  }
 };
 
 afterEach(clearAll);

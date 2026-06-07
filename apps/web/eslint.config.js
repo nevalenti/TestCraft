@@ -13,6 +13,8 @@ import {
   tseslint,
   sharedPlugins,
   sharedRules,
+  sharedExtends,
+  sharedUnicornRules,
 } from "../../eslint.config.base.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -30,12 +32,14 @@ export default defineConfig([
       jsxA11y.flatConfigs.recommended,
       reactRefresh.configs.vite,
       tailwind.configs.recommended,
+      ...sharedExtends,
     ],
     plugins: {
       ...sharedPlugins,
     },
     rules: {
       ...sharedRules,
+      ...sharedUnicornRules,
       "jsx-a11y/no-autofocus": "off",
       "react-hooks/incompatible-library": "off",
       "tailwindcss/no-custom-classname": [
@@ -74,6 +78,12 @@ export default defineConfig([
     files: ["**/contexts/**"],
     rules: {
       "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    files: ["**/*.test.{ts,tsx}"],
+    rules: {
+      "unicorn/no-document-cookie": "off",
     },
   },
 ]);

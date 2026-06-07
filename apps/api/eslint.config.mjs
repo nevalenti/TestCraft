@@ -7,10 +7,12 @@ import {
   tseslint,
   sharedPlugins,
   sharedRules,
+  sharedExtends,
+  sharedUnicornRules,
 } from "../../eslint.config.base.mjs";
 
 export default defineConfig([
-  globalIgnores(["dist", "node_modules"]),
+  globalIgnores(["dist", "node_modules", "src/generated/"]),
   {
     files: ["**/*.ts"],
     extends: [
@@ -18,10 +20,12 @@ export default defineConfig([
       ...tseslint.configs.recommended,
       n.configs["flat/recommended"],
       security.configs.recommended,
+      ...sharedExtends,
     ],
     plugins: { ...sharedPlugins },
     rules: {
       ...sharedRules,
+      ...sharedUnicornRules,
       "@typescript-eslint/no-unused-vars": [
         "error",
         { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
@@ -30,6 +34,9 @@ export default defineConfig([
       "n/no-unpublished-import": "off",
       "n/no-process-exit": "off",
       "n/prefer-node-protocol": "error",
+      "unicorn/catch-error-name": "off",
+      "unicorn/no-process-exit": "off",
+      "unicorn/prefer-top-level-await": "off",
     },
     languageOptions: {
       globals: globals.node,
@@ -42,6 +49,12 @@ export default defineConfig([
     files: ["**/*.test.ts"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
+    },
+  },
+  {
+    files: ["**/*.d.ts"],
+    rules: {
+      "unicorn/require-module-specifiers": "off",
     },
   },
 ]);

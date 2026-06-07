@@ -61,7 +61,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
       const { items, total } = await repo.getAll(projectId);
 
       expect(total).toBe(2);
-      expect(items.map((s) => s.name).sort()).toEqual(["A", "B"]);
+      expect(items.map((suite) => suite.name).toSorted()).toEqual(["A", "B"]);
     });
 
     it("excludes soft-deleted suites", async () => {
@@ -95,7 +95,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
       expect(page1.total).toBe(4);
       expect(page1.items).toHaveLength(2);
       expect(page2.items).toHaveLength(2);
-      const allIds = [...page1.items, ...page2.items].map((s) => s.id);
+      const allIds = [...page1.items, ...page2.items].map((suite) => suite.id);
       expect(new Set(allIds).size).toBe(4);
     });
 

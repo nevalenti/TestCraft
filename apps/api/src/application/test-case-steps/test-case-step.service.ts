@@ -55,7 +55,7 @@ export class TestCaseStepService implements ITestCaseStepService {
   }
 
   async bulkReorder(caseId: string, steps: ReorderStep[]): Promise<void> {
-    const ids = steps.map((s) => s.id);
+    const ids = steps.map((step) => step.id);
     const found = await this.testCaseStepRepository.findByIds(caseId, ids);
     if (found.length !== ids.length) {
       throw new DomainError("One or more steps not found");

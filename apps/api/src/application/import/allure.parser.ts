@@ -7,15 +7,19 @@ const resolveStatus = (
   status: AllureResultItem["status"],
 ): TestResultStatus => {
   switch (status) {
-    case "passed":
+    case "passed": {
       return TestResultStatus.Passed;
+    }
     case "failed":
-    case "broken":
+    case "broken": {
       return TestResultStatus.Failed;
-    case "skipped":
+    }
+    case "skipped": {
       return TestResultStatus.Skipped;
-    default:
+    }
+    default: {
       return TestResultStatus.Blocked;
+    }
   }
 };
 

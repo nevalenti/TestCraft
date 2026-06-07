@@ -18,8 +18,8 @@ const suspend = (
 
 export const LazyDashboardPage = suspend(
   React.lazy(() =>
-    import("./DashboardPage/DashboardPage").then((m) => ({
-      default: m.DashboardPage,
+    import("./DashboardPage/DashboardPage").then((module) => ({
+      default: module.DashboardPage,
     })),
   ),
   <DashboardSkeleton />,
@@ -27,56 +27,56 @@ export const LazyDashboardPage = suspend(
 
 export const LazyProjectsPage = suspend(
   React.lazy(() =>
-    import("./ProjectsPage/ProjectsPage").then((m) => ({
-      default: m.ProjectsPage,
+    import("./ProjectsPage/ProjectsPage").then((module) => ({
+      default: module.ProjectsPage,
     })),
   ),
 );
 
 export const LazyProjectDetailPage = suspend(
   React.lazy(() =>
-    import("./ProjectDetailPage/ProjectDetailPage").then((m) => ({
-      default: m.ProjectDetailPage,
+    import("./ProjectDetailPage/ProjectDetailPage").then((module) => ({
+      default: module.ProjectDetailPage,
     })),
   ),
 );
 
 export const LazyTestSuitePage = suspend(
   React.lazy(() =>
-    import("./TestSuitePage/TestSuitePage").then((m) => ({
-      default: m.TestSuitePage,
+    import("./TestSuitePage/TestSuitePage").then((module) => ({
+      default: module.TestSuitePage,
     })),
   ),
 );
 
 export const LazyTestCasePage = suspend(
   React.lazy(() =>
-    import("./TestCasePage/TestCasePage").then((m) => ({
-      default: m.TestCasePage,
+    import("./TestCasePage/TestCasePage").then((module) => ({
+      default: module.TestCasePage,
     })),
   ),
 );
 
 export const LazyTestRunPage = suspend(
   React.lazy(() =>
-    import("./TestRunPage/TestRunPage").then((m) => ({
-      default: m.TestRunPage,
+    import("./TestRunPage/TestRunPage").then((module) => ({
+      default: module.TestRunPage,
     })),
   ),
 );
 
 export const LazyProjectSuitesPage = suspend(
   React.lazy(() =>
-    import("./ProjectDetailPage/SuitesTab").then((m) => ({
-      default: m.SuitesTab,
+    import("./ProjectDetailPage/SuitesTab").then((module) => ({
+      default: module.SuitesTab,
     })),
   ),
 );
 
 export const LazyProjectRunsPage = suspend(
   React.lazy(() =>
-    import("./ProjectDetailPage/RunsTab").then((m) => ({
-      default: m.RunsTab,
+    import("./ProjectDetailPage/RunsTab").then((module) => ({
+      default: module.RunsTab,
     })),
   ),
 );

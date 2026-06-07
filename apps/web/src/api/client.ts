@@ -35,7 +35,7 @@ client.interceptors.response.use(
 
       useNotificationsStore
         .getState()
-        .add({ type: "error", message, timeout: 10000 });
+        .add({ type: "error", message, timeout: 10_000 });
     }
 
     return Promise.reject(error);

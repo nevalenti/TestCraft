@@ -7,7 +7,7 @@ interface Props {
 
 export const ErrorState = ({
   message = "Please check your connection and try again.",
-  onRetry = () => window.location.reload(),
+  onRetry = () => globalThis.location.reload(),
 }: Props) => (
   <div className="flex flex-1 items-center justify-center p-8">
     <div className="text-center">

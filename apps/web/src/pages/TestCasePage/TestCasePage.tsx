@@ -76,12 +76,12 @@ export const TestCasePage = () => {
   );
 
   const { sortedSteps, nextOrder } = useMemo(() => {
-    const sorted = [...(steps ?? [])].sort(
+    const sorted = [...(steps ?? [])].toSorted(
       (itemA, itemB) => itemA.order - itemB.order,
     );
     return {
       sortedSteps: sorted,
-      nextOrder: sorted.length > 0 ? sorted[sorted.length - 1].order + 1 : 1,
+      nextOrder: sorted.length > 0 ? sorted.at(-1).order + 1 : 1,
     };
   }, [steps]);
 
@@ -145,6 +145,82 @@ export const TestCasePage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderSteps = () => {
+    if (isPending)
+      return (
+        <div className="space-y-3">
+          {Array.from({ length: 3 }, (_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      );
+    if (isError) return <ErrorState />;
+    if (sortedSteps.length === 0)
+      return (
+        <EmptyState
+          title="No steps defined"
+          description="Break this test case down into clear, ordered steps."
+        />
+      );
+    return (
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <SortableContext
+          items={displaySteps.map((step) => step.id)}
+          strategy={verticalListSortingStrategy}
+        >
+          <div className="space-y-3">
+            {displaySteps.map((step) => (
+              <StepRow
+                key={step.id}
+                step={step}
+                onEdit={() => openEdit(step)}
+                onDelete={() => openDelete(step)}
+              />
+            ))}
+          </div>
+        </SortableContext>
+        <DragOverlay dropAnimation={null}>
+          {activeStep && (
+            <div className="card-bg-info rotate-[0.5deg] cursor-grabbing rounded-lg border border-border p-4 shadow-2xl ring-1 ring-primary/20">
+              <div className="mb-4 flex items-center gap-2.5">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded bg-base-content/10 text-[11px] font-bold text-base-content/70 tabular-nums">
+                  {activeStep.order}
+                </span>
+                <span className="text-xs font-semibold text-base-content/60">
+                  Step
+                </span>
+              </div>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
+                    Action
+                  </p>
+                  <p className="text-sm leading-relaxed text-base-content/90">
+                    {activeStep.action}
+                  </p>
+                </div>
+                <div>
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
+                    Expected Result
+                  </p>
+                  <p className="text-sm leading-relaxed text-base-content/90">
+                    {activeStep.expectedResult}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </DragOverlay>
+      </DndContext>
+    );
+  };
+
   return (
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
@@ -170,78 +246,7 @@ export const TestCasePage = () => {
             Add Step
           </button>
         </div>
-        <div className="min-h-80">
-          {isPending ? (
-            <div className="space-y-3">
-              {Array.from({ length: 3 }, (_, index) => (
-                <SkeletonCard key={index} />
-              ))}
-            </div>
-          ) : isError ? (
-            <ErrorState />
-          ) : sortedSteps.length === 0 ? (
-            <EmptyState
-              title="No steps defined"
-              description="Break this test case down into clear, ordered steps."
-            />
-          ) : (
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragOver={handleDragOver}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext
-                items={displaySteps.map((step) => step.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-3">
-                  {displaySteps.map((step) => (
-                    <StepRow
-                      key={step.id}
-                      step={step}
-                      onEdit={() => openEdit(step)}
-                      onDelete={() => openDelete(step)}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-              <DragOverlay dropAnimation={null}>
-                {activeStep && (
-                  <div className="card-bg-info rotate-[0.5deg] cursor-grabbing rounded-lg border border-border p-4 shadow-2xl ring-1 ring-primary/20">
-                    <div className="mb-4 flex items-center gap-2.5">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded bg-base-content/10 text-[11px] font-bold text-base-content/70 tabular-nums">
-                        {activeStep.order}
-                      </span>
-                      <span className="text-xs font-semibold text-base-content/60">
-                        Step
-                      </span>
-                    </div>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                      <div>
-                        <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
-                          Action
-                        </p>
-                        <p className="text-sm leading-relaxed text-base-content/90">
-                          {activeStep.action}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
-                          Expected Result
-                        </p>
-                        <p className="text-sm leading-relaxed text-base-content/90">
-                          {activeStep.expectedResult}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </DragOverlay>
-            </DndContext>
-          )}
-        </div>
+        <div className="min-h-80">{renderSteps()}</div>
       </section>
 
       <Modal isOpen={modal.type === "create"} onClose={close} title="Add Step">

@@ -46,6 +46,50 @@ export const SuitesTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderSuites = () => {
+    if (isPending) return <SkeletonGrid />;
+    if (suites?.length === 0)
+      return (
+        <EmptyState
+          title="No test suites yet"
+          description="Group related test cases into suites."
+        />
+      );
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {suites?.map((suite) => (
+          <ResourceCard
+            key={suite.id}
+            testId="suite-card"
+            onEdit={() => openEdit(suite)}
+            onDelete={() => openDelete(suite)}
+            to={`/projects/${projectId}/suites/${suite.id}`}
+            label="test suite"
+            cardBg="card-bg-success"
+            accentText="text-success"
+            typeIcon={<RectangleGroupIcon className="size-3.5" />}
+          >
+            <div className="flex flex-col gap-1.5">
+              <span className="line-clamp-2 text-base leading-snug font-semibold">
+                {suite.name}
+              </span>
+              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
+                {suite.description ?? (
+                  <span className="text-base-content/30 italic">
+                    No description
+                  </span>
+                )}
+              </p>
+            </div>
+            <p className="mt-3 text-xs text-base-content/50 tabular-nums">
+              {formatDate(suite.createdAt)}
+            </p>
+          </ResourceCard>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <>
       <div className="mb-4 flex items-center gap-3">
@@ -65,46 +109,7 @@ export const SuitesTab = () => {
         </button>
       </div>
 
-      {isPending ? (
-        <SkeletonGrid />
-      ) : suites?.length === 0 ? (
-        <EmptyState
-          title="No test suites yet"
-          description="Group related test cases into suites."
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {suites?.map((suite) => (
-            <ResourceCard
-              key={suite.id}
-              testId="suite-card"
-              onEdit={() => openEdit(suite)}
-              onDelete={() => openDelete(suite)}
-              to={`/projects/${projectId}/suites/${suite.id}`}
-              label="test suite"
-              cardBg="card-bg-success"
-              accentText="text-success"
-              typeIcon={<RectangleGroupIcon className="size-3.5" />}
-            >
-              <div className="flex flex-col gap-1.5">
-                <span className="line-clamp-2 text-base leading-snug font-semibold">
-                  {suite.name}
-                </span>
-                <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-                  {suite.description ?? (
-                    <span className="text-base-content/30 italic">
-                      No description
-                    </span>
-                  )}
-                </p>
-              </div>
-              <p className="mt-3 text-xs text-base-content/50 tabular-nums">
-                {formatDate(suite.createdAt)}
-              </p>
-            </ResourceCard>
-          ))}
-        </div>
-      )}
+      {renderSuites()}
 
       <Modal
         isOpen={modal.type === "create"}

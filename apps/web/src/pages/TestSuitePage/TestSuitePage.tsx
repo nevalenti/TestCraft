@@ -63,6 +63,62 @@ export const TestSuitePage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const renderTestCases = () => {
+    if (isPending) return <SkeletonGrid />;
+    if (isError) return <ErrorState />;
+    if (testCases?.length === 0)
+      return (
+        <EmptyState
+          title="No test cases yet"
+          description="Add test cases to document expected behaviour."
+        />
+      );
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {testCases?.map((testCase) => (
+          <ResourceCard
+            key={testCase.id}
+            testId="case-card"
+            onEdit={() => openEdit(testCase)}
+            onDelete={() => openDelete(testCase)}
+            to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
+            label="test case"
+            cardBg="card-bg-info"
+            accentText="text-info"
+            typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
+          >
+            <div className="flex flex-col gap-1.5">
+              <span className="line-clamp-2 text-base leading-snug font-semibold">
+                {testCase.name}
+              </span>
+              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
+                {testCase.description ?? (
+                  <span className="text-base-content/30 italic">
+                    No description
+                  </span>
+                )}
+              </p>
+            </div>
+            <div className="mt-3 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
+                <PriorityBadge priority={testCase.priority} />
+                {testCase.stepCount > 0 && (
+                  <span className="text-[11px] text-base-content/50">
+                    {testCase.stepCount} step
+                    {testCase.stepCount === 1 ? "" : "s"}
+                  </span>
+                )}
+              </div>
+              <span className="text-[11px] text-base-content/40 tabular-nums">
+                {formatDate(testCase.createdAt)}
+              </span>
+            </div>
+          </ResourceCard>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
@@ -95,61 +151,7 @@ export const TestSuitePage = () => {
             New Test Case
           </button>
         </div>
-        <div className="min-h-80">
-          {isPending ? (
-            <SkeletonGrid />
-          ) : isError ? (
-            <ErrorState />
-          ) : testCases?.length === 0 ? (
-            <EmptyState
-              title="No test cases yet"
-              description="Add test cases to document expected behaviour."
-            />
-          ) : (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {testCases?.map((testCase) => (
-                <ResourceCard
-                  key={testCase.id}
-                  testId="case-card"
-                  onEdit={() => openEdit(testCase)}
-                  onDelete={() => openDelete(testCase)}
-                  to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
-                  label="test case"
-                  cardBg="card-bg-info"
-                  accentText="text-info"
-                  typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
-                >
-                  <div className="flex flex-col gap-1.5">
-                    <span className="line-clamp-2 text-base leading-snug font-semibold">
-                      {testCase.name}
-                    </span>
-                    <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-                      {testCase.description ?? (
-                        <span className="text-base-content/30 italic">
-                          No description
-                        </span>
-                      )}
-                    </p>
-                  </div>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    <div className="flex items-center gap-1.5">
-                      <PriorityBadge priority={testCase.priority} />
-                      {testCase.stepCount > 0 && (
-                        <span className="text-[11px] text-base-content/50">
-                          {testCase.stepCount} step
-                          {testCase.stepCount !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                    </div>
-                    <span className="text-[11px] text-base-content/40 tabular-nums">
-                      {formatDate(testCase.createdAt)}
-                    </span>
-                  </div>
-                </ResourceCard>
-              ))}
-            </div>
-          )}
-        </div>
+        <div className="min-h-80">{renderTestCases()}</div>
       </section>
 
       <Modal

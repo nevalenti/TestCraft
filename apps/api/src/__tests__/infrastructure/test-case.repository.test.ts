@@ -70,7 +70,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
       const { items, total } = await repo.getAll(suiteId);
 
       expect(total).toBe(2);
-      expect(items.map((tc) => tc.name).sort()).toEqual(["TC-1", "TC-2"]);
+      expect(items.map((tc) => tc.name).toSorted()).toEqual(["TC-1", "TC-2"]);
     });
 
     it("excludes soft-deleted cases", async () => {

@@ -8,6 +8,11 @@ const clearThemeCookie = () => {
   document.cookie = "app-theme=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
 };
 
+const BareConsumer = () => {
+  useTheme();
+  return null;
+};
+
 const TestConsumer = () => {
   const { isDark, toggleTheme } = useTheme();
   return (
@@ -38,9 +43,7 @@ describe("ThemeProvider", () => {
           <TestConsumer />
         </ThemeProvider>,
       );
-      expect(document.documentElement.getAttribute("data-theme")).toBe(
-        "dracula",
-      );
+      expect(document.documentElement.dataset.theme).toBe("dracula");
     });
   });
 
@@ -62,9 +65,7 @@ describe("ThemeProvider", () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(document.documentElement.getAttribute("data-theme")).toBe(
-        "emerald",
-      );
+      expect(document.documentElement.dataset.theme).toBe("emerald");
     });
   });
 
@@ -85,10 +86,6 @@ describe("ThemeProvider", () => {
 describe("useTheme", () => {
   describe("useTheme — when used outside ThemeProvider — throws a descriptive error", () => {
     it("throws with the expected message", () => {
-      const BareConsumer = () => {
-        useTheme();
-        return null;
-      };
       expect(() => render(<BareConsumer />)).toThrow(
         "useTheme must be used inside ThemeProvider",
       );

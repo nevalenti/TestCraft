@@ -22,9 +22,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         checkLoginIframe: false,
       })
       .then(() => setReady(true))
-      .catch((err) => {
-        console.error("Keycloak init failed:", err);
-        setError(String(err));
+      .catch((error_) => {
+        console.error("Keycloak init failed:", error_);
+        setError(String(error_));
       });
   }, []);
 

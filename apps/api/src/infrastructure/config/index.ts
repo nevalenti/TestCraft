@@ -15,8 +15,8 @@ const env = createEnv({
     KEYCLOAK_REQUIRE_HTTPS_METADATA: z
       .string()
       .default("true")
-      .transform((v) => v !== "false"),
-    CORS_ALLOWED_ORIGINS: z.string().transform((s) => s.split(",")),
+      .transform((value) => value !== "false"),
+    CORS_ALLOWED_ORIGINS: z.string().transform((origins) => origins.split(",")),
     OTEL_SERVICE_NAME: z.string().default("testcraft-api"),
     OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().optional(),
     LOKI_URL: z.string().url().optional(),

@@ -9,7 +9,7 @@ export const RootError = ({ error }: { error: Error }) => (
       </p>
       <button
         className="btn rounded-full btn-sm btn-primary"
-        onClick={() => window.location.reload()}
+        onClick={() => globalThis.location.reload()}
       >
         <ArrowPathIcon className="size-4" />
         Reload page
