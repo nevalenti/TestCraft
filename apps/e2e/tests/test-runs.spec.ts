@@ -1,6 +1,7 @@
 import path from "node:path";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures";
+import { ProjectsPage } from "../pages/projects.page";
 
 const AUTH_FILE = path.join(import.meta.dirname, ".auth/user.json");
 
@@ -15,16 +16,10 @@ test.describe("Test Runs tab", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    await page.getByRole("button", { name: /new project/i }).click();
-    await page.getByLabel("Name").fill(projectName);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    await expect(card).toBeVisible({ timeout: 15_000 });
-    await card.getByRole("link", { name: "Open project" }).click();
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    await projects.create(projectName);
+    await projects.open(projectName);
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
@@ -36,132 +31,57 @@ test.describe("Test Runs tab", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    if ((await card.count()) === 0) {
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    if ((await projects.getCard(projectName).count()) === 0) {
       await ctx.close();
       return;
     }
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete project" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await projects.delete(projectName);
 
     await ctx.close();
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(projectPath);
-    await page.getByRole("link", { name: /Test Runs/i }).click();
-    await expect(page.getByRole("button", { name: "New Run" })).toBeVisible();
+  test.beforeEach(async ({ testRunsPage }) => {
+    await testRunsPage.goto(projectPath);
   });
 
   test("renders runs tab", async ({ page }) => {
     await expect(page.getByRole("button", { name: "New Run" })).toBeVisible();
   });
 
-  test("opens and closes the create run dialog", async ({ page }) => {
-    await page.getByRole("button", { name: "New Run" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
+  test("opens and closes the create run dialog", async ({
+    testRunsPage,
+    page,
+  }) => {
+    await testRunsPage.createButton.click();
+    await expect(testRunsPage.dialog).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "New Test Run" }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "Cancel" }).click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
+    await testRunsPage.confirmDialog.cancel();
+    await expect(testRunsPage.dialog).not.toBeVisible();
   });
 
-  test("creates and deletes a run", async ({ page }) => {
+  test("creates and deletes a run", async ({ testRunsPage }) => {
     const name = `E2E Run ${Date.now()}`;
-
-    await page.getByRole("button", { name: "New Run" }).click();
-    await page.getByLabel("Name").fill(name);
-    await page.getByLabel("Environment").fill("staging");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="run-card"]')
-      .filter({ hasText: name });
-    await expect(card).toBeVisible({ timeout: 10_000 });
-    await expect(card.getByText("staging")).toBeVisible();
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete test run" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
-    await expect(
-      page.locator('[data-testid="run-card"]').filter({ hasText: name }),
-    ).toHaveCount(0);
+    await testRunsPage.create(name, "staging");
+    await expect(testRunsPage.getCard(name).getByText("staging")).toBeVisible();
+    await testRunsPage.delete(name);
   });
 
-  test("edits a run", async ({ page }) => {
+  test("edits a run", async ({ testRunsPage }) => {
     const name = `E2E Run Edit ${Date.now()}`;
-    const updated = `${name} Updated`;
-
-    await page.getByRole("button", { name: "New Run" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.locator("dialog[open]").getByLabel("Name").fill(name);
-    await page
-      .locator("dialog[open]")
-      .getByLabel("Environment")
-      .fill("staging");
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-    await expect(
-      page.locator('[data-testid="run-card"]').filter({ hasText: name }),
-    ).toBeVisible({ timeout: 10_000 });
-
-    const card = page
-      .locator('[data-testid="run-card"]')
-      .filter({ hasText: name });
-    await card.hover();
-    await card.getByRole("button", { name: "Edit test run" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.locator("dialog[open] #run-name").fill(updated);
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-
-    await expect(
-      page.locator('[data-testid="run-card"]').filter({ hasText: updated }),
-    ).toBeVisible({ timeout: 10_000 });
-
-    const updatedCard = page
-      .locator('[data-testid="run-card"]')
-      .filter({ hasText: updated });
-    await updatedCard.hover();
-    await updatedCard.getByRole("button", { name: "Delete test run" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await testRunsPage.create(name, "staging");
+    await testRunsPage.edit(name, `${name} Updated`);
+    await testRunsPage.delete(`${name} Updated`);
   });
 
-  test("navigates into a run on card click", async ({ page }) => {
+  test("navigates into a run on card click", async ({ testRunsPage, page }) => {
     const name = `E2E Run Nav ${Date.now()}`;
-
-    await page.getByRole("button", { name: "New Run" }).click();
-    await page.getByLabel("Name").fill(name);
-    await page.getByLabel("Environment").fill("production");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="run-card"]')
-      .filter({ hasText: name });
-    await expect(card).toBeVisible({ timeout: 10_000 });
-    await card.getByRole("link", { name: "Open test run" }).click();
+    await testRunsPage.create(name, "production");
+    await testRunsPage.open(name);
     await page.waitForURL(/\/projects\/[^/]+\/runs\/[^/]+$/);
     await expect(page.getByRole("heading", { name })).toBeVisible();
     await expect(

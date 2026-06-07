@@ -1,6 +1,7 @@
 import path from "node:path";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures";
+import { ProjectsPage } from "../pages/projects.page";
 
 const AUTH_FILE = path.join(import.meta.dirname, ".auth/user.json");
 
@@ -15,16 +16,10 @@ test.describe("Test Suites tab", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    await page.getByRole("button", { name: /new project/i }).click();
-    await page.getByLabel("Name").fill(projectName);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    await expect(card).toBeVisible({ timeout: 15_000 });
-    await card.getByRole("link", { name: "Open project" }).click();
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    await projects.create(projectName);
+    await projects.open(projectName);
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
@@ -36,30 +31,19 @@ test.describe("Test Suites tab", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    if ((await card.count()) === 0) {
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    if ((await projects.getCard(projectName).count()) === 0) {
       await ctx.close();
       return;
     }
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete project" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await projects.delete(projectName);
 
     await ctx.close();
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(projectPath);
-    await expect(
-      page.getByRole("link", { name: /Test Suites/i }),
-    ).toBeVisible();
+  test.beforeEach(async ({ suitesPage }) => {
+    await suitesPage.goto(projectPath);
   });
 
   test("renders suites tab by default", async ({ page }) => {
@@ -70,98 +54,37 @@ test.describe("Test Suites tab", () => {
     await expect(page.getByRole("link", { name: /Test Runs/i })).toBeVisible();
   });
 
-  test("opens and closes the create suite dialog", async ({ page }) => {
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
+  test("opens and closes the create suite dialog", async ({
+    suitesPage,
+    page,
+  }) => {
+    await suitesPage.openCreateDialog();
+    await expect(suitesPage.dialog).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "New Test Suite" }),
     ).toBeVisible();
 
-    await page.getByRole("button", { name: "Cancel" }).click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
+    await suitesPage.confirmDialog.cancel();
+    await expect(suitesPage.dialog).not.toBeVisible();
   });
 
-  test("creates and deletes a suite", async ({ page }) => {
+  test("creates and deletes a suite", async ({ suitesPage }) => {
     const name = `E2E Suite ${Date.now()}`;
-
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await page.getByLabel("Name").fill(name);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: name });
-    await expect(card).toBeVisible({ timeout: 10_000 });
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete test suite" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
-    await expect(
-      page.locator('[data-testid="suite-card"]').filter({ hasText: name }),
-    ).toHaveCount(0);
+    await suitesPage.create(name);
+    await suitesPage.delete(name);
   });
 
-  test("edits a suite name", async ({ page }) => {
+  test("edits a suite name", async ({ suitesPage }) => {
     const name = `E2E Suite Edit ${Date.now()}`;
-    const updated = `${name} Updated`;
-
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.locator("dialog[open]").getByLabel("Name").fill(name);
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-    await expect(
-      page.locator('[data-testid="suite-card"]').filter({ hasText: name }),
-    ).toBeVisible({ timeout: 10_000 });
-
-    const card = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: name });
-    await card.hover();
-    await card.getByRole("button", { name: "Edit test suite" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.locator("dialog[open] #suite-name").fill(updated);
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-
-    await expect(
-      page.locator('[data-testid="suite-card"]').filter({ hasText: updated }),
-    ).toBeVisible({ timeout: 10_000 });
-
-    const updatedCard = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: updated });
-    await updatedCard.hover();
-    await updatedCard
-      .getByRole("button", { name: "Delete test suite" })
-      .click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await suitesPage.create(name);
+    await suitesPage.edit(name, `${name} Updated`);
+    await suitesPage.delete(`${name} Updated`);
   });
 
-  test("navigates to a suite on card click", async ({ page }) => {
+  test("navigates to a suite on card click", async ({ suitesPage, page }) => {
     const name = `E2E Suite Nav ${Date.now()}`;
-
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await page.getByLabel("Name").fill(name);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const card = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: name });
-    await expect(card).toBeVisible({ timeout: 10_000 });
-    await card.getByRole("link", { name: "Open test suite" }).click();
+    await suitesPage.create(name);
+    await suitesPage.open(name);
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+$/);
     await expect(page.getByRole("heading", { name })).toBeVisible();
   });

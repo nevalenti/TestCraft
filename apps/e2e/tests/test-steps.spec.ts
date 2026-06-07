@@ -1,6 +1,9 @@
 import path from "node:path";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures";
+import { ProjectsPage } from "../pages/projects.page";
+import { SuitesPage } from "../pages/suites.page";
+import { TestCasesPage } from "../pages/test-cases.page";
 
 const AUTH_FILE = path.join(import.meta.dirname, ".auth/user.json");
 
@@ -15,40 +18,22 @@ test.describe("Test Case Steps", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    await page.getByRole("button", { name: /new project/i }).click();
-    await page.getByLabel("Name").fill(projectName);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const projectCard = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    await expect(projectCard).toBeVisible({ timeout: 15_000 });
-    await projectCard.getByRole("link", { name: "Open project" }).click();
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    await projects.create(projectName);
+    await projects.open(projectName);
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
 
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await page.getByLabel("Name").fill("E2E Steps Suite");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const suiteCard = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: "E2E Steps Suite" });
-    await expect(suiteCard).toBeVisible({ timeout: 15_000 });
-    await suiteCard.getByRole("link", { name: "Open test suite" }).click();
+    const suites = new SuitesPage(page);
+    await suites.create("E2E Steps Suite");
+    await suites.open("E2E Steps Suite");
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+$/, {
       timeout: 15_000,
     });
 
-    await page.getByRole("button", { name: "New Test Case" }).click();
-    await page.getByLabel("Name").fill("E2E Steps Case");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const caseCard = page
-      .locator('[data-testid="case-card"]')
-      .filter({ hasText: "E2E Steps Case" });
-    await expect(caseCard).toBeVisible({ timeout: 15_000 });
-    await caseCard.getByRole("link", { name: "Open test case" }).click();
+    const cases = new TestCasesPage(page);
+    await cases.create("E2E Steps Case");
+    await cases.open("E2E Steps Case");
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+\/cases\/[^/]+$/, {
       timeout: 15_000,
     });
@@ -62,28 +47,19 @@ test.describe("Test Case Steps", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    if ((await card.count()) === 0) {
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    if ((await projects.getCard(projectName).count()) === 0) {
       await ctx.close();
       return;
     }
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete project" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await projects.delete(projectName);
 
     await ctx.close();
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(casePath);
-    await expect(page.getByRole("button", { name: "Add Step" })).toBeVisible();
+  test.beforeEach(async ({ testStepsPage }) => {
+    await testStepsPage.goto(casePath);
   });
 
   test("renders empty state when no steps exist", async ({ page }) => {
@@ -91,110 +67,67 @@ test.describe("Test Case Steps", () => {
     await expect(page.getByRole("button", { name: "Add Step" })).toBeVisible();
   });
 
-  test("opens and closes the add step dialog", async ({ page }) => {
-    await page.getByRole("button", { name: "Add Step" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
+  test("opens and closes the add step dialog", async ({
+    testStepsPage,
+    page,
+  }) => {
+    await testStepsPage.addButton.click();
+    await expect(testStepsPage.dialog).toBeVisible();
     await expect(page.getByRole("heading", { name: "Add Step" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Cancel" }).click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
+    await testStepsPage.confirmDialog.cancel();
+    await expect(testStepsPage.dialog).not.toBeVisible();
   });
 
-  test("adds and deletes a step", async ({ page }) => {
-    await page.getByRole("button", { name: "Add Step" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.getByLabel("Action").fill("Navigate to the login page");
-    await page.getByLabel("Expected Result").fill("Login page is displayed");
-    await page.getByRole("button", { name: "Save" }).click();
+  test("adds and deletes a step", async ({ testStepsPage }) => {
+    await testStepsPage.addStep(
+      "Navigate to the login page",
+      "Login page is displayed",
+    );
 
-    const row = page.locator('[data-testid="step-row"]').first();
+    const row = testStepsPage.rows.first();
     await expect(row).toBeVisible({ timeout: 10_000 });
     await expect(row.getByText("Navigate to the login page")).toBeVisible();
     await expect(row.getByText("Login page is displayed")).toBeVisible();
 
-    await row.getByRole("button", { name: "Delete step" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
-    await expect(page.locator('[data-testid="step-row"]')).toHaveCount(0);
+    await testStepsPage.deleteStep(0);
+    await expect(testStepsPage.rows).toHaveCount(0);
   });
 
-  test("edits a step", async ({ page }) => {
-    await page.getByRole("button", { name: "Add Step" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page
-      .locator("dialog[open]")
-      .getByLabel("Action")
-      .fill("Click the submit button");
-    await page
-      .locator("dialog[open]")
-      .getByLabel("Expected Result")
-      .fill("Form is submitted");
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
+  test("edits a step", async ({ testStepsPage }) => {
+    await testStepsPage.addStep("Click the submit button", "Form is submitted");
+    await expect(testStepsPage.rows.first()).toBeVisible({ timeout: 10_000 });
 
-    const row = page.locator('[data-testid="step-row"]').first();
-    await expect(row).toBeVisible({ timeout: 10_000 });
-
-    await row.getByRole("button", { name: "Edit step" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page
-      .locator("dialog[open] #step-action")
-      .fill("Double-click the submit button");
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-
+    await testStepsPage.editStep(0, "Double-click the submit button");
     await expect(
-      page
-        .locator('[data-testid="step-row"]')
-        .first()
-        .getByText("Double-click the submit button"),
+      testStepsPage.rows.first().getByText("Double-click the submit button"),
     ).toBeVisible({ timeout: 10_000 });
 
-    const updatedRow = page.locator('[data-testid="step-row"]').first();
-    await updatedRow.getByRole("button", { name: "Delete step" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await testStepsPage.deleteStep(0);
   });
 
-  test("adds multiple steps and shows them in order", async ({ page }) => {
-    for (const [i, action] of [
-      "First action",
-      "Second action",
-      "Third action",
-    ].entries()) {
-      await page.getByRole("button", { name: "Add Step" }).click();
-      await expect(page.locator("dialog[open]")).toBeVisible();
-      await page.getByLabel("Action").fill(action);
-      await page.getByLabel("Expected Result").fill(`Result ${i + 1}`);
-      await page.getByRole("button", { name: "Save" }).click();
-      await expect(page.locator('[data-testid="step-row"]')).toHaveCount(
-        i + 1,
-        { timeout: 10_000 },
-      );
+  test("adds multiple steps and shows them in order", async ({
+    testStepsPage,
+  }) => {
+    const actions = ["First action", "Second action", "Third action"];
+
+    for (const [i, action] of actions.entries()) {
+      await testStepsPage.addStep(action, `Result ${i + 1}`);
+      await expect(testStepsPage.rows).toHaveCount(i + 1, { timeout: 10_000 });
     }
 
-    const rows = page.locator('[data-testid="step-row"]');
-    await expect(rows.first().getByText("First action")).toBeVisible();
-    await expect(rows.nth(1).getByText("Second action")).toBeVisible();
-    await expect(rows.nth(2).getByText("Third action")).toBeVisible();
+    await expect(
+      testStepsPage.rows.first().getByText("First action"),
+    ).toBeVisible();
+    await expect(
+      testStepsPage.rows.nth(1).getByText("Second action"),
+    ).toBeVisible();
+    await expect(
+      testStepsPage.rows.nth(2).getByText("Third action"),
+    ).toBeVisible();
 
     for (let i = 0; i < 3; i++) {
-      const firstRow = page.locator('[data-testid="step-row"]').first();
-      await firstRow.getByRole("button", { name: "Delete step" }).click();
-      await page
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Delete", exact: true })
-        .click();
+      await testStepsPage.deleteStep(0);
     }
   });
 });

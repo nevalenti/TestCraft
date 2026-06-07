@@ -1,6 +1,10 @@
 import path from "node:path";
 
-import { expect, test } from "@playwright/test";
+import { expect, test } from "../fixtures";
+import { ProjectsPage } from "../pages/projects.page";
+import { SuitesPage } from "../pages/suites.page";
+import { TestCasesPage } from "../pages/test-cases.page";
+import { TestRunsPage } from "../pages/test-runs.page";
 
 const AUTH_FILE = path.join(import.meta.dirname, ".auth/user.json");
 
@@ -17,53 +21,26 @@ test.describe("Test Results", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    await page.getByRole("button", { name: /new project/i }).click();
-    await page.getByLabel("Name").fill(projectName);
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const projectCard = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    await expect(projectCard).toBeVisible({ timeout: 15_000 });
-    await projectCard.getByRole("link", { name: "Open project" }).click();
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    await projects.create(projectName);
+    await projects.open(projectName);
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
-    await page.getByRole("button", { name: "New Suite" }).click();
-    await page.getByLabel("Name").fill("E2E Results Suite");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const suiteCard = page
-      .locator('[data-testid="suite-card"]')
-      .filter({ hasText: "E2E Results Suite" });
-    await expect(suiteCard).toBeVisible({ timeout: 15_000 });
-    await suiteCard.getByRole("link", { name: "Open test suite" }).click();
+    const suites = new SuitesPage(page);
+    await suites.create("E2E Results Suite");
+    await suites.open("E2E Results Suite");
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+$/, {
       timeout: 15_000,
     });
 
-    await page.getByRole("button", { name: "New Test Case" }).click();
-    await page.getByLabel("Name").fill(testCaseName);
-    await page.getByRole("button", { name: "Save" }).click();
-    await expect(
-      page
-        .locator('[data-testid="case-card"]')
-        .filter({ hasText: testCaseName }),
-    ).toBeVisible({ timeout: 15_000 });
+    await new TestCasesPage(page).create(testCaseName);
 
-    await page.goto(projectPath);
-    await page.getByRole("link", { name: /Test Runs/i }).click();
-    await page.getByRole("button", { name: "New Run" }).click();
-    await page.getByLabel("Name").fill("E2E Results Run");
-    await page.getByLabel("Environment").fill("staging");
-    await page.getByRole("button", { name: "Save" }).click();
-
-    const runCard = page
-      .locator('[data-testid="run-card"]')
-      .filter({ hasText: "E2E Results Run" });
-    await expect(runCard).toBeVisible({ timeout: 15_000 });
-    await runCard.getByRole("link", { name: "Open test run" }).click();
+    const runs = new TestRunsPage(page);
+    await runs.goto(projectPath);
+    await runs.create("E2E Results Run", "staging");
+    await runs.open("E2E Results Run");
     await page.waitForURL(/\/projects\/[^/]+\/runs\/[^/]+$/, {
       timeout: 15_000,
     });
@@ -77,142 +54,74 @@ test.describe("Test Results", () => {
     const ctx = await browser.newContext({ storageState: AUTH_FILE });
     const page = await ctx.newPage();
 
-    await page.goto("/projects");
-    const card = page
-      .locator('[data-testid="project-card"]')
-      .filter({ hasText: projectName });
-    if ((await card.count()) === 0) {
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    if ((await projects.getCard(projectName).count()) === 0) {
       await ctx.close();
       return;
     }
-
-    await card.hover();
-    await card.getByRole("button", { name: "Delete project" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await projects.delete(projectName);
 
     await ctx.close();
   });
 
-  test.beforeEach(async ({ page }) => {
-    await page.goto(runPath);
-    await expect(
-      page.getByRole("button", { name: "Add Result" }),
-    ).toBeVisible();
+  test.beforeEach(async ({ testResultsPage }) => {
+    await testResultsPage.goto(runPath);
   });
 
   test("renders empty state with no results", async ({ page }) => {
     await expect(page.getByText("No results recorded")).toBeVisible();
   });
 
-  test("records a result and shows pass rate summary", async ({ page }) => {
-    await page.getByRole("button", { name: "Add Result" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page.getByLabel("Test Case").selectOption({ label: testCaseName });
-    await page.getByLabel("Status").selectOption("Passed");
-    await page.getByRole("button", { name: "Save" }).click();
+  test("records a result and shows pass rate summary", async ({
+    testResultsPage,
+    page,
+  }) => {
+    await testResultsPage.addResult(testCaseName, "Passed");
 
-    const row = page.locator('[data-testid="result-row"]').first();
+    const row = testResultsPage.rows.first();
     await expect(row).toBeVisible({ timeout: 10_000 });
     await expect(row.getByText(testCaseName)).toBeVisible();
     await expect(row.getByText("Passed")).toBeVisible();
     await expect(page.getByText("pass rate")).toBeVisible();
     await expect(page.getByText("100%")).toBeVisible();
 
-    await row.getByRole("button", { name: "Delete result" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
-    await expect(page.locator('[data-testid="result-row"]')).toHaveCount(0);
+    await testResultsPage.deleteResult(0);
+    await expect(testResultsPage.rows).toHaveCount(0);
   });
 
-  test("filters results by status", async ({ page }) => {
+  test("filters results by status", async ({ testResultsPage }) => {
     for (const status of ["Passed", "Failed"] as const) {
-      await page.getByRole("button", { name: "Add Result" }).click();
-      await expect(page.locator("dialog[open]")).toBeVisible();
-      await page
-        .locator("dialog[open]")
-        .getByLabel("Test Case")
-        .selectOption({ label: testCaseName });
-      await page
-        .locator("dialog[open]")
-        .getByLabel("Status")
-        .selectOption(status);
-      await page
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Save" })
-        .click();
-      await expect(page.locator("dialog[open]")).not.toBeVisible();
-      await expect(
-        page.locator('[data-testid="result-row"]').last(),
-      ).toBeVisible({ timeout: 10_000 });
+      await testResultsPage.addResult(testCaseName, status);
+      await expect(testResultsPage.rows.last()).toBeVisible({
+        timeout: 10_000,
+      });
     }
+    await expect(testResultsPage.rows).toHaveCount(2, { timeout: 10_000 });
 
-    await expect(page.locator('[data-testid="result-row"]')).toHaveCount(2, {
+    await testResultsPage.filterByStatus("passed");
+    await expect(testResultsPage.rows).toHaveCount(1);
+    await expect(testResultsPage.rows.getByText("Passed")).toBeVisible();
+
+    await testResultsPage.showAllResults();
+    await expect(testResultsPage.rows).toHaveCount(2);
+
+    for (let i = 0; i < 2; i++) {
+      await testResultsPage.deleteResult(0);
+    }
+  });
+
+  test("edits a result status", async ({ testResultsPage }) => {
+    await testResultsPage.addResult(testCaseName, "Passed");
+    await expect(testResultsPage.rows.first().getByText("Passed")).toBeVisible({
       timeout: 10_000,
     });
 
-    await page
-      .getByRole("button", { name: /passed/i })
-      .first()
-      .click();
-    await expect(page.locator('[data-testid="result-row"]')).toHaveCount(1);
-    await expect(
-      page.locator('[data-testid="result-row"]').getByText("Passed"),
-    ).toBeVisible();
+    await testResultsPage.editResult(0, "Failed");
+    await expect(testResultsPage.rows.first().getByText("Failed")).toBeVisible({
+      timeout: 10_000,
+    });
 
-    await page.getByRole("button", { name: "All results" }).click();
-    await expect(page.locator('[data-testid="result-row"]')).toHaveCount(2);
-
-    for (let i = 0; i < 2; i++) {
-      const firstRow = page.locator('[data-testid="result-row"]').first();
-      await firstRow.getByRole("button", { name: "Delete result" }).click();
-      await page
-        .locator("dialog[open]")
-        .getByRole("button", { name: "Delete", exact: true })
-        .click();
-    }
-  });
-
-  test("edits a result status", async ({ page }) => {
-    await page.getByRole("button", { name: "Add Result" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page
-      .locator("dialog[open] #result-test-case")
-      .selectOption({ label: testCaseName });
-    await page.locator("dialog[open] #result-status").selectOption("Passed");
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-
-    const row = page.locator('[data-testid="result-row"]').first();
-    await expect(row.getByText("Passed")).toBeVisible({ timeout: 10_000 });
-
-    await row.getByRole("button", { name: "Edit result" }).click();
-    await expect(page.locator("dialog[open]")).toBeVisible();
-    await page
-      .locator("dialog[open] #update-result-status")
-      .selectOption("Failed");
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Save" })
-      .click();
-    await expect(page.locator("dialog[open]")).not.toBeVisible();
-
-    await expect(
-      page.locator('[data-testid="result-row"]').first().getByText("Failed"),
-    ).toBeVisible({ timeout: 10_000 });
-
-    const updatedRow = page.locator('[data-testid="result-row"]').first();
-    await updatedRow.getByRole("button", { name: "Delete result" }).click();
-    await page
-      .locator("dialog[open]")
-      .getByRole("button", { name: "Delete", exact: true })
-      .click();
+    await testResultsPage.deleteResult(0);
   });
 });
