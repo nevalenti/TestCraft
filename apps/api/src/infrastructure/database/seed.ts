@@ -1,3 +1,5 @@
+import { addHours } from "date-fns";
+
 import { logger } from "@/infrastructure/logging/logger";
 
 import prisma from "./prisma.client.js";
@@ -859,8 +861,7 @@ export const seedDatabase = async () => {
     },
   });
 
-  const h = (base: Date, hours: number) =>
-    new Date(base.getTime() + hours * 3_600_000);
+  const h = (base: Date, hours: number) => addHours(base, hours);
 
   const baseDate = h(now, -14 * 24);
   const sprintDate = h(now, -3 * 24);

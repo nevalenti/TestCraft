@@ -31,6 +31,7 @@ export default defineConfig({
     reporters: ["verbose", "html"],
     outputFile: { html: "./test-results/index.html" },
     env: {
+      VITE_API_URL: "http://localhost:5000",
       VITE_KEYCLOAK_URL: "http://localhost:8080",
       VITE_KEYCLOAK_REALM: "testcraft",
       VITE_KEYCLOAK_CLIENT_ID: "testcraft-web",
