@@ -51,13 +51,13 @@ export const SuitesTab = () => {
       <div className="mb-4 flex items-center gap-3">
         <input
           type="search"
-          className="input input-bordered bg-base-200 w-full max-w-sm"
+          className="input-bordered input w-full max-w-sm bg-base-200"
           placeholder="Search test suites…"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
         <button
-          className="btn btn-primary btn-sm ml-auto shrink-0"
+          className="btn ml-auto shrink-0 btn-sm btn-primary"
           onClick={openCreate}
         >
           <PlusIcon className="size-4" aria-hidden="true" />
@@ -87,18 +87,18 @@ export const SuitesTab = () => {
               typeIcon={<RectangleGroupIcon className="size-3.5" />}
             >
               <div className="flex flex-col gap-1.5">
-                <span className="text-base font-semibold leading-snug line-clamp-2">
+                <span className="line-clamp-2 text-base leading-snug font-semibold">
                   {suite.name}
                 </span>
-                <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
+                <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                   {suite.description ?? (
-                    <span className="italic text-base-content/30">
+                    <span className="text-base-content/30 italic">
                       No description
                     </span>
                   )}
                 </p>
               </div>
-              <p className="text-base-content/50 mt-3 text-xs tabular-nums">
+              <p className="mt-3 text-xs text-base-content/50 tabular-nums">
                 {formatDate(suite.createdAt)}
               </p>
             </ResourceCard>

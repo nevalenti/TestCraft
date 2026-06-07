@@ -50,7 +50,7 @@ export const UpdateResultForm = ({
       >
         <select
           id="update-result-status"
-          className="select select-bordered w-full"
+          className="select-bordered select w-full"
           autoFocus
           {...register("status")}
         >
@@ -68,7 +68,7 @@ export const UpdateResultForm = ({
       >
         <textarea
           id="update-result-notes"
-          className="textarea textarea-bordered bg-base-200 w-full"
+          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("notes")}

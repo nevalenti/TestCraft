@@ -11,7 +11,7 @@ const AppLayout = () => (
   <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">
     <Header />
     <BreadcrumbBar />
-    <main className="flex flex-1 min-h-0">
+    <main className="flex min-h-0 flex-1">
       <ErrorBoundary>
         <Outlet />
       </ErrorBoundary>

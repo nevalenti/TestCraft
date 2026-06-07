@@ -127,7 +127,7 @@ export const FileDropZone = ({
       />
 
       {files.length === 0 ? (
-        <div className="pointer-events-none flex select-none flex-col items-center gap-2.5 px-4 py-8 text-center">
+        <div className="pointer-events-none flex flex-col items-center gap-2.5 px-4 py-8 text-center select-none">
           <div className="rounded-full bg-base-300 p-2.5">
             <ArrowUpTrayIcon className="size-5 text-base-content/50" />
           </div>
@@ -156,7 +156,7 @@ export const FileDropZone = ({
               <span className="flex-1 truncate text-sm font-medium text-base-content/80">
                 {file.name}
               </span>
-              <span className="whitespace-nowrap text-xs tabular-nums text-base-content/40">
+              <span className="text-xs whitespace-nowrap text-base-content/40 tabular-nums">
                 {(file.size / 1024).toFixed(1)} KB
               </span>
               <button

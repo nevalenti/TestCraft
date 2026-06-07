@@ -33,7 +33,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
     >
       <div
         data-testid="step-row"
-        className={`relative card-bg-info border rounded-lg shadow-md group transition-shadow duration-200 ${
+        className={`card-bg-info group relative rounded-lg border shadow-md transition-shadow duration-200 ${
           isDragging
             ? "border-dashed border-primary/30 !shadow-none"
             : "border-base-content/20 hover:shadow-xl"
@@ -41,15 +41,15 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
       >
         <div className={isDragging ? "invisible" : undefined}>
           <div className="flex items-start gap-3 p-4 pr-24">
-            <div className="flex items-center shrink-0 pt-0.5">
-              <span className="flex size-8 items-center justify-center rounded-md bg-base-content/10 text-base-content text-sm font-bold tabular-nums">
+            <div className="flex shrink-0 items-center pt-0.5">
+              <span className="flex size-8 items-center justify-center rounded-md bg-base-content/10 text-sm font-bold text-base-content tabular-nums">
                 {step.order}
               </span>
             </div>
-            <div className="flex-1 min-w-0">
-              <div className="grid gap-4 sm:grid-cols-2 mb-3">
+            <div className="min-w-0 flex-1">
+              <div className="mb-3 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/50 mb-1.5">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/50 uppercase">
                     Action
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -57,7 +57,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-base-content/50 mb-1.5">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/50 uppercase">
                     Expected Result
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -65,20 +65,20 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] tabular-nums text-base-content/40">
+              <p className="text-[11px] text-base-content/40 tabular-nums">
                 {formatDate(step.createdAt)}
               </p>
             </div>
           </div>
         </div>
-        <div className="absolute top-1/2 -translate-y-1/2 right-2.5 z-10 flex items-center gap-1">
-          <div className="flex flex-col gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity duration-150">
+        <div className="absolute top-1/2 right-2.5 z-10 flex -translate-y-1/2 items-center gap-1">
+          <div className="flex flex-col gap-1 opacity-100 transition-opacity duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
             <ResourceActions onEdit={onEdit} onDelete={onDelete} label="step" />
           </div>
           <button
             {...attributes}
             {...listeners}
-            className="btn btn-ghost btn-sm touch-none cursor-grab active:cursor-grabbing"
+            className="btn cursor-grab touch-none btn-ghost btn-sm active:cursor-grabbing"
             aria-label="Drag to reorder step"
           >
             <Bars3Icon className="size-5" aria-hidden="true" />

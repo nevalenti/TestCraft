@@ -50,10 +50,10 @@ export const ProjectsPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             Projects
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
@@ -62,17 +62,17 @@ export const ProjectsPage = () => {
         </div>
       </header>
 
-      <section className="page-content flex-1 overflow-y-auto min-h-0">
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <div className="mb-4 flex items-center gap-3">
           <input
             type="search"
-            className="input input-bordered bg-base-200 w-full max-w-sm"
+            className="input-bordered input w-full max-w-sm bg-base-200"
             placeholder="Search projects…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
           <button
-            className="btn btn-primary btn-sm ml-auto shrink-0"
+            className="btn ml-auto shrink-0 btn-sm btn-primary"
             onClick={openCreate}
           >
             <PlusIcon className="size-4" aria-hidden="true" />

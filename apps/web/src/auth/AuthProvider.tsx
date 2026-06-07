@@ -31,8 +31,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (error) {
     return (
       <div className="flex h-screen items-center justify-center bg-base-200">
-        <div className="text-center space-y-2">
-          <p className="text-error font-semibold">Auth initialisation failed</p>
+        <div className="space-y-2 text-center">
+          <p className="font-semibold text-error">Auth initialisation failed</p>
           <p className="text-sm text-base-content/60">{error}</p>
         </div>
       </div>
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   if (!ready) {
     return (
       <div className="flex h-screen items-center justify-center bg-base-200">
-        <span className="loading loading-spinner loading-lg text-primary" />
+        <span className="loading loading-lg loading-spinner text-primary" />
       </div>
     );
   }

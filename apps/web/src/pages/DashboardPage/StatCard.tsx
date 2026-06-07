@@ -12,16 +12,16 @@ export const StatCard = ({
   accent: string;
 }) => (
   <div className="rounded-lg border border-base-content/20 bg-base-100 p-4 shadow-sm">
-    <div className="flex items-center justify-between mb-3">
-      <span className="text-[11px] font-semibold uppercase tracking-widest text-base-content/50">
+    <div className="mb-3 flex items-center justify-between">
+      <span className="text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
         {label}
       </span>
       <span className={accent}>{icon}</span>
     </div>
     {isLoading ? (
-      <div className="skeleton h-9 w-16 rounded" />
+      <div className="h-9 w-16 skeleton rounded" />
     ) : (
-      <p className={`text-4xl font-bold font-display ${accent}`}>{value}</p>
+      <p className={`font-display text-4xl font-bold ${accent}`}>{value}</p>
     )}
   </div>
 );

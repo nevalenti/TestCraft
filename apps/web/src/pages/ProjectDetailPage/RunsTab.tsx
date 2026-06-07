@@ -72,20 +72,20 @@ export const RunsTab = () => {
       <div className="mb-4 flex items-center gap-3">
         <input
           type="search"
-          className="input input-bordered bg-base-200 w-full max-w-sm"
+          className="input-bordered input w-full max-w-sm bg-base-200"
           placeholder="Search test runs…"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
-        <div className="ml-auto flex items-center gap-2 shrink-0">
+        <div className="ml-auto flex shrink-0 items-center gap-2">
           <button
-            className="btn btn-secondary btn-sm gap-1.5"
+            className="btn gap-1.5 btn-sm btn-secondary"
             onClick={openImport}
           >
             <ArrowUpTrayIcon className="size-4" />
             Import
           </button>
-          <button className="btn btn-primary btn-sm" onClick={openCreate}>
+          <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Run
           </button>
@@ -114,16 +114,16 @@ export const RunsTab = () => {
               typeIcon={<BoltIcon className="size-3.5" />}
             >
               <div className="flex flex-col gap-1.5">
-                <span className="text-base font-semibold leading-snug line-clamp-2">
+                <span className="line-clamp-2 text-base leading-snug font-semibold">
                   {run.name}
                 </span>
-                <p className="text-base-content/60 text-sm font-medium">
+                <p className="text-sm font-medium text-base-content/60">
                   {run.environment}
                 </p>
               </div>
               <div className="mt-3 flex items-center justify-between gap-2">
                 <RunStatusBadge status={run.status} />
-                <p className="text-base-content/50 text-xs tabular-nums">
+                <p className="text-xs text-base-content/50 tabular-nums">
                   {formatDate(run.createdAt)}
                 </p>
               </div>

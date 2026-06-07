@@ -52,10 +52,10 @@ export const DashboardPage = () => {
   const isLoadingRuns = projectsPending || runsPending;
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             Overview
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
@@ -64,7 +64,7 @@ export const DashboardPage = () => {
         </div>
         <Link
           to="/projects"
-          className="btn btn-soft btn-square btn-lg rounded-xl shadow-md"
+          className="btn btn-square rounded-xl shadow-md btn-soft btn-lg"
           aria-label="Projects"
         >
           <FolderIcon className="size-6 text-primary" />
@@ -72,7 +72,7 @@ export const DashboardPage = () => {
       </header>
 
       <section className="page-content flex flex-col gap-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 shrink-0">
+        <div className="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-3">
           <StatCard
             label="Projects"
             value={projects?.length ?? 0}
@@ -97,14 +97,14 @@ export const DashboardPage = () => {
         </div>
 
         <div className="flex flex-col">
-          <h2 className="text-[11px] font-semibold uppercase tracking-widest text-base-content/50 mb-3">
+          <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
             Active Runs
           </h2>
           {isLoadingRuns ? (
             <ActiveRunsSkeleton />
           ) : activeRuns.length === 0 ? (
             <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
-              <p className="text-sm font-semibold text-base-content/60 mb-1">
+              <p className="mb-1 text-sm font-semibold text-base-content/60">
                 No active runs
               </p>
               <p className="text-xs text-base-content/40">
@@ -121,15 +121,15 @@ export const DashboardPage = () => {
                       <Link
                         to="/projects/$projectId/runs/$runId"
                         params={{ projectId: run.projectId, runId: run.id }}
-                        className="flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-base-200/50 transition-colors group"
+                        className="group flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-base-200/50"
                       >
-                        <div className="flex items-center gap-3 min-w-0">
-                          <BoltIcon className="size-4 text-warning shrink-0" />
+                        <div className="flex min-w-0 items-center gap-3">
+                          <BoltIcon className="size-4 shrink-0 text-warning" />
                           <div className="min-w-0">
-                            <p className="text-sm font-semibold truncate">
+                            <p className="truncate text-sm font-semibold">
                               {run.name}
                             </p>
-                            <p className="text-xs text-base-content/50 truncate">
+                            <p className="truncate text-xs text-base-content/50">
                               {project && (
                                 <span className="font-medium text-base-content/65">
                                   {project.name}
@@ -142,7 +142,7 @@ export const DashboardPage = () => {
                             </p>
                           </div>
                         </div>
-                        <ArrowRightIcon className="size-4 text-base-content/30 shrink-0 motion-safe:group-hover:translate-x-0.5 transition-transform" />
+                        <ArrowRightIcon className="size-4 shrink-0 text-base-content/30 transition-transform motion-safe:group-hover:translate-x-0.5" />
                       </Link>
                     </li>
                   );

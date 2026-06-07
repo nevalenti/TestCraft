@@ -59,7 +59,7 @@ export const TestCaseForm = ({
       <FormField label="Name" htmlFor="case-name" error={errors.name?.message}>
         <input
           id="case-name"
-          className={`input input-bordered bg-base-200 w-full${errors.name ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
           placeholder="User can log in with valid credentials"
           autoFocus
           {...register("name")}
@@ -72,7 +72,7 @@ export const TestCaseForm = ({
       >
         <select
           id="case-priority"
-          className="select select-bordered w-full"
+          className="select-bordered select w-full"
           {...register("priority")}
         >
           {priorityOptions.map((option) => (
@@ -89,7 +89,7 @@ export const TestCaseForm = ({
       >
         <textarea
           id="case-description"
-          className="textarea textarea-bordered bg-base-200 w-full"
+          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("description")}

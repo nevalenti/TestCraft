@@ -44,7 +44,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
       <div className="modal-box">
         <button
           type="button"
-          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
           onClick={onClose}
           aria-label="Close dialog"
         >

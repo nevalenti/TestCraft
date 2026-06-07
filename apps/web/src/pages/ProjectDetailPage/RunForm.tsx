@@ -53,7 +53,7 @@ export const RunForm = ({
       <FormField label="Name" htmlFor="run-name" error={errors.name?.message}>
         <input
           id="run-name"
-          className={`input input-bordered bg-base-200 w-full${errors.name ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
           placeholder="Sprint 42 Regression"
           autoFocus
           {...register("name")}
@@ -66,7 +66,7 @@ export const RunForm = ({
       >
         <input
           id="run-environment"
-          className={`input input-bordered bg-base-200 w-full${errors.environment ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.environment ? " input-error" : ""}`}
           placeholder="staging"
           {...register("environment")}
         />
@@ -78,7 +78,7 @@ export const RunForm = ({
       >
         <select
           id="run-status"
-          className="select select-bordered w-full"
+          className="select-bordered select w-full"
           {...register("status")}
         >
           {runStatusOptions.map((option) => (

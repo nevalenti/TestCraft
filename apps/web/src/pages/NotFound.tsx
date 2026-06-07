@@ -6,24 +6,24 @@ export const NotFound = () => {
     <div className="flex flex-1 items-center justify-center px-4">
       <div className="text-center">
         <div className="relative mb-8">
-          <h1 className="text-base-content/15 text-[160px] leading-none font-black select-none">
+          <h1 className="text-[160px] leading-none font-black text-base-content/15 select-none">
             404
           </h1>
         </div>
-        <h2 className="text-base-content mb-4 text-4xl font-bold">
+        <h2 className="mb-4 text-4xl font-bold text-base-content">
           Page Not Found
         </h2>
-        <p className="text-base-content/80 mx-auto mb-8 max-w-md text-lg">
+        <p className="mx-auto mb-8 max-w-md text-lg text-base-content/80">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link to="/" className="btn btn-primary btn-sm gap-1.5">
+          <Link to="/" className="btn gap-1.5 btn-sm btn-primary">
             <HomeIcon className="size-4" aria-hidden="true" />
             Go Home
           </Link>
           <button
             onClick={() => window.history.back()}
-            className="btn btn-ghost btn-sm gap-1.5"
+            className="btn gap-1.5 btn-ghost btn-sm"
           >
             <ArrowLeftIcon className="size-4" aria-hidden="true" />
             Go Back

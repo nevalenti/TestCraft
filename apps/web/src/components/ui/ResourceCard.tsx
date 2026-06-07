@@ -27,7 +27,7 @@ export const ResourceCard = ({
 }: ResourceCardProps) => (
   <div
     data-testid={testId}
-    className={`relative ${cardBg} border border-base-content/20 rounded-lg shadow-md transition-shadow duration-200 hover:shadow-xl motion-safe:hover:-translate-y-0.5 motion-safe:transition-all group overflow-hidden`}
+    className={`relative ${cardBg} group overflow-hidden rounded-lg border border-base-content/20 shadow-md transition-shadow duration-200 hover:shadow-xl motion-safe:transition-all motion-safe:hover:-translate-y-0.5`}
   >
     {to && (
       <Link
@@ -36,20 +36,20 @@ export const ResourceCard = ({
         aria-label={`Open ${label}`}
       />
     )}
-    <div className="p-4 pr-10 flex flex-col justify-between min-h-[120px]">
+    <div className="flex min-h-[120px] flex-col justify-between p-4 pr-10">
       {typeIcon && (
         <div
-          className={`flex items-center gap-1.5 mb-3 ${accentText} font-bold`}
+          className={`mb-3 flex items-center gap-1.5 ${accentText} font-bold`}
         >
           {typeIcon}
-          <span className="text-[11px] uppercase tracking-[0.08em]">
+          <span className="text-[11px] tracking-[0.08em] uppercase">
             {label}
           </span>
         </div>
       )}
       {children}
     </div>
-    <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1 opacity-100 sm:opacity-0 sm:translate-x-2 sm:group-hover:opacity-100 sm:group-hover:translate-x-0 focus-within:opacity-100 focus-within:translate-x-0 transition-all duration-150">
+    <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1 opacity-100 transition-all duration-150 focus-within:translate-x-0 focus-within:opacity-100 sm:translate-x-2 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
       <ResourceActions onEdit={onEdit} onDelete={onDelete} label={label} />
     </div>
   </div>

@@ -15,11 +15,11 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="navbar border-border bg-base-200 h-14 border-b px-4 sm:px-6 lg:px-8 header-stripes shrink-0">
-        <div className="flex-1 flex items-center min-w-0">
+      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-200 px-4 sm:px-6 lg:px-8">
+        <div className="flex min-w-0 flex-1 items-center">
           <Link
             to="/"
-            className="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0"
+            className="flex shrink-0 items-center gap-2.5 text-base-content transition-opacity hover:opacity-75"
           >
             <LogoMark />
             <span
@@ -31,13 +31,13 @@ export const Header = () => {
           </Link>
         </div>
 
-        <div className="flex items-center gap-3 shrink-0">
+        <div className="flex shrink-0 items-center gap-3">
           <ThemeToggle />
           <button
             onClick={() =>
               keycloak.logout({ redirectUri: window.location.origin + "/" })
             }
-            className="btn btn-ghost btn-sm btn-circle"
+            className="btn btn-circle btn-ghost btn-sm"
             aria-label="Sign out"
           >
             <ArrowRightStartOnRectangleIcon
@@ -47,7 +47,7 @@ export const Header = () => {
           </button>
           <label
             htmlFor="mobile-nav-drawer"
-            className="btn btn-ghost btn-sm btn-square lg:hidden"
+            className="btn btn-square btn-ghost btn-sm lg:hidden"
             aria-label="Open menu"
           >
             <Bars3Icon className="size-5" aria-hidden="true" />
@@ -68,15 +68,15 @@ export const Header = () => {
             aria-label="Close menu"
             className="drawer-overlay"
           />
-          <div className="bg-base-100 flex min-h-full w-72 flex-col">
-            <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+          <div className="flex min-h-full w-72 flex-col bg-base-100">
+            <div className="flex items-center justify-between border-b border-border p-4">
               <span
                 className="text-sm font-extrabold tracking-tight text-base-content"
                 style={{ fontFamily: "var(--font-display)" }}
               ></span>
               <label
                 htmlFor="mobile-nav-drawer"
-                className="btn btn-ghost btn-sm btn-square"
+                className="btn btn-square btn-ghost btn-sm"
                 aria-label="Close menu"
               >
                 <XMarkIcon className="size-4" aria-hidden="true" />

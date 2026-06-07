@@ -132,7 +132,7 @@ export const ImportForm = ({
       >
         <input
           id="import-environment"
-          className={`input input-bordered bg-base-200 w-full${errors.environment ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.environment ? " input-error" : ""}`}
           placeholder="staging"
           value={environment}
           onChange={(event) => setEnvironment(event.target.value)}
@@ -142,7 +142,7 @@ export const ImportForm = ({
       <FormField label="Run name (optional)" htmlFor="import-name">
         <input
           id="import-name"
-          className="input input-bordered bg-base-200 w-full"
+          className="input-bordered input w-full bg-base-200"
           placeholder="Derived from file if left blank"
           value={name}
           onChange={(event) => setName(event.target.value)}

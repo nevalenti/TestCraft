@@ -64,12 +64,12 @@ export const TestSuitePage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             {suite?.name ?? (
-              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
             )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
@@ -78,17 +78,17 @@ export const TestSuitePage = () => {
         </div>
       </header>
 
-      <section className="page-content flex-1 overflow-y-auto min-h-0">
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <div className="mb-4 flex items-center gap-3">
           <input
             type="search"
-            className="input input-bordered bg-base-200 w-full max-w-sm"
+            className="input-bordered input w-full max-w-sm bg-base-200"
             placeholder="Search test cases…"
             value={search}
             onChange={(event) => setSearch(event.target.value)}
           />
           <button
-            className="btn btn-primary btn-sm ml-auto shrink-0"
+            className="btn ml-auto shrink-0 btn-sm btn-primary"
             onClick={openCreate}
           >
             <PlusIcon className="size-4" aria-hidden="true" />
@@ -120,12 +120,12 @@ export const TestSuitePage = () => {
                   typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
                 >
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-base font-semibold leading-snug line-clamp-2">
+                    <span className="line-clamp-2 text-base leading-snug font-semibold">
                       {testCase.name}
                     </span>
-                    <p className="text-base-content/70 line-clamp-2 text-sm leading-relaxed">
+                    <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                       {testCase.description ?? (
-                        <span className="italic text-base-content/30">
+                        <span className="text-base-content/30 italic">
                           No description
                         </span>
                       )}
@@ -141,7 +141,7 @@ export const TestSuitePage = () => {
                         </span>
                       )}
                     </div>
-                    <span className="text-[11px] tabular-nums text-base-content/40">
+                    <span className="text-[11px] text-base-content/40 tabular-nums">
                       {formatDate(testCase.createdAt)}
                     </span>
                   </div>

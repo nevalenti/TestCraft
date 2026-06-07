@@ -52,7 +52,7 @@ export const ProjectForm = ({
       >
         <input
           id="project-name"
-          className={`input input-bordered bg-base-200 w-full${errors.name ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
           placeholder="My Project"
           autoFocus
           {...register("name")}
@@ -65,7 +65,7 @@ export const ProjectForm = ({
       >
         <textarea
           id="project-description"
-          className="textarea textarea-bordered bg-base-200 w-full"
+          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("description")}

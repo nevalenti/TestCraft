@@ -146,12 +146,12 @@ export const TestCasePage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             {testCase?.name ?? (
-              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
             )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
@@ -160,10 +160,10 @@ export const TestCasePage = () => {
         </div>
       </header>
 
-      <section className="page-content flex-1 overflow-y-auto min-h-0">
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <div className="mb-4 flex justify-end">
           <button
-            className="btn btn-primary btn-sm shrink-0"
+            className="btn shrink-0 btn-sm btn-primary"
             onClick={openCreate}
           >
             <PlusIcon className="size-4" aria-hidden="true" />
@@ -209,9 +209,9 @@ export const TestCasePage = () => {
               </SortableContext>
               <DragOverlay dropAnimation={null}>
                 {activeStep && (
-                  <div className="card-bg-info border border-border rounded-lg p-4 shadow-2xl ring-1 ring-primary/20 cursor-grabbing rotate-[0.5deg]">
-                    <div className="flex items-center gap-2.5 mb-4">
-                      <span className="flex size-6 items-center justify-center rounded bg-base-content/10 text-base-content/70 text-[11px] font-bold tabular-nums shrink-0">
+                  <div className="card-bg-info rotate-[0.5deg] cursor-grabbing rounded-lg border border-border p-4 shadow-2xl ring-1 ring-primary/20">
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <span className="flex size-6 shrink-0 items-center justify-center rounded bg-base-content/10 text-[11px] font-bold text-base-content/70 tabular-nums">
                         {activeStep.order}
                       </span>
                       <span className="text-xs font-semibold text-base-content/60">
@@ -220,7 +220,7 @@ export const TestCasePage = () => {
                     </div>
                     <div className="grid gap-5 sm:grid-cols-2">
                       <div>
-                        <p className="text-[11px] font-semibold text-base-content/50 mb-1.5 uppercase tracking-wider">
+                        <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
                           Action
                         </p>
                         <p className="text-sm leading-relaxed text-base-content/90">
@@ -228,7 +228,7 @@ export const TestCasePage = () => {
                         </p>
                       </div>
                       <div>
-                        <p className="text-[11px] font-semibold text-base-content/50 mb-1.5 uppercase tracking-wider">
+                        <p className="mb-1.5 text-[11px] font-semibold tracking-wider text-base-content/50 uppercase">
                           Expected Result
                         </p>
                         <p className="text-sm leading-relaxed text-base-content/90">

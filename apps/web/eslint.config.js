@@ -1,9 +1,12 @@
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 import globals from "globals";
 import react from "eslint-plugin-react";
 import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 // @ts-expect-error -- no bundled type definitions
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import tailwind from "eslint-plugin-tailwindcss";
 import { defineConfig, globalIgnores } from "eslint/config";
 import {
   js,
@@ -11,6 +14,8 @@ import {
   sharedPlugins,
   sharedRules,
 } from "../../eslint.config.base.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig([
   globalIgnores(["dist"]),
@@ -24,6 +29,7 @@ export default defineConfig([
       reactHooks.configs.flat.recommended,
       jsxA11y.flatConfigs.recommended,
       reactRefresh.configs.vite,
+      tailwind.configs.recommended,
     ],
     plugins: {
       ...sharedPlugins,
@@ -32,6 +38,24 @@ export default defineConfig([
       ...sharedRules,
       "jsx-a11y/no-autofocus": "off",
       "react-hooks/incompatible-library": "off",
+      "tailwindcss/no-custom-classname": [
+        "warn",
+        {
+          whitelist: [
+            "btn-.*",
+            "input-bordered",
+            "select-bordered",
+            "textarea-bordered",
+            "drawer-overlay",
+            "header-stripes",
+            "page-header",
+            "page-content",
+            "card-bg-.+",
+            "app-shadow",
+            "font-display",
+          ],
+        },
+      ],
     },
     languageOptions: {
       globals: globals.browser,
@@ -41,6 +65,9 @@ export default defineConfig([
     },
     settings: {
       react: { version: "19.2" },
+      tailwindcss: {
+        cssConfigPath: path.resolve(__dirname, "src/styles.css"),
+      },
     },
   },
   {

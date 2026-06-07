@@ -48,7 +48,7 @@ export const SuiteForm = ({
       <FormField label="Name" htmlFor="suite-name" error={errors.name?.message}>
         <input
           id="suite-name"
-          className={`input input-bordered bg-base-200 w-full${errors.name ? " input-error" : ""}`}
+          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
           placeholder="Login Flow"
           autoFocus
           {...register("name")}
@@ -61,7 +61,7 @@ export const SuiteForm = ({
       >
         <textarea
           id="suite-description"
-          className="textarea textarea-bordered bg-base-200 w-full"
+          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("description")}

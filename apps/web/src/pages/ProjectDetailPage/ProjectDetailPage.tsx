@@ -22,20 +22,20 @@ export const ProjectDetailPage = () => {
 
   if (isPending)
     return (
-      <div className="w-full flex flex-col min-h-0">
+      <div className="flex min-h-0 w-full flex-col">
         <div className="page-header flex items-center justify-between gap-4">
           <div>
-            <div className="text-2xl font-bold tracking-tight font-display mb-0.5">
-              <span className="skeleton inline-block w-52 h-[0.75em] rounded align-middle" />
+            <div className="mb-0.5 font-display text-2xl font-bold tracking-tight">
+              <span className="inline-block h-[0.75em] w-52 skeleton rounded align-middle" />
             </div>
             <p className="mt-0.5 text-sm">
-              <span className="skeleton inline-block w-80 h-[0.7em] rounded" />
+              <span className="inline-block h-[0.7em] w-80 skeleton rounded" />
             </p>
           </div>
         </div>
-        <div className="flex gap-1.5 px-4 sm:px-6 lg:px-8 py-3 border-b border-border shrink-0">
-          <div className="px-3 py-1.5 text-sm font-medium rounded-full skeleton w-28" />
-          <div className="px-3 py-1.5 text-sm font-medium rounded-full skeleton w-24" />
+        <div className="flex shrink-0 gap-1.5 border-b border-border px-4 py-3 sm:px-6 lg:px-8">
+          <div className="w-28 skeleton rounded-full px-3 py-1.5 text-sm font-medium" />
+          <div className="w-24 skeleton rounded-full px-3 py-1.5 text-sm font-medium" />
         </div>
         <div className="page-content">
           <SkeletonGrid />
@@ -47,8 +47,8 @@ export const ProjectDetailPage = () => {
     return (
       <div className="flex flex-1 items-center justify-center p-8">
         <div className="text-center">
-          <p className="text-error font-semibold mb-2">Project not found</p>
-          <p className="text-base-content/60 text-sm mb-4">
+          <p className="mb-2 font-semibold text-error">Project not found</p>
+          <p className="mb-4 text-sm text-base-content/60">
             This project may have been deleted or does not exist.
           </p>
         </div>
@@ -56,9 +56,9 @@ export const ProjectDetailPage = () => {
     );
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header">
-        <h1 className="text-2xl font-bold tracking-tight font-display">
+        <h1 className="font-display text-2xl font-bold tracking-tight">
           {project.name}
         </h1>
         <p className="mt-0.5 text-sm text-base-content/60">
@@ -67,7 +67,7 @@ export const ProjectDetailPage = () => {
         </p>
       </header>
 
-      <div className="flex gap-1.5 px-4 sm:px-6 lg:px-8 py-3 border-b border-border shrink-0">
+      <div className="flex shrink-0 gap-1.5 border-b border-border px-4 py-3 sm:px-6 lg:px-8">
         <Link
           to="/projects/$projectId/suites"
           params={{ projectId }}
@@ -76,7 +76,7 @@ export const ProjectDetailPage = () => {
         >
           Test Suites
           {!!project.suiteCount && (
-            <span className="badge badge-sm badge-ghost rounded-full">
+            <span className="badge rounded-full badge-ghost badge-sm">
               {project.suiteCount}
             </span>
           )}
@@ -89,14 +89,14 @@ export const ProjectDetailPage = () => {
         >
           Test Runs
           {!!project.runCount && (
-            <span className="badge badge-sm badge-ghost rounded-full">
+            <span className="badge rounded-full badge-ghost badge-sm">
               {project.runCount}
             </span>
           )}
         </Link>
       </div>
 
-      <section className="page-content flex-1 overflow-y-auto min-h-0">
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <Outlet />
       </section>
     </div>

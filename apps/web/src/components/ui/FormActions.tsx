@@ -21,7 +21,7 @@ export const FormActions = ({
       disabled={isLoading}
     >
       {isLoading ? (
-        <span className="loading loading-spinner loading-sm" />
+        <span className="loading loading-sm loading-spinner" />
       ) : (
         label
       )}

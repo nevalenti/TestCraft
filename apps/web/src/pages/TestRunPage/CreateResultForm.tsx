@@ -66,7 +66,7 @@ export const CreateResultForm = ({
       >
         <select
           id="result-test-case"
-          className={`select select-bordered w-full${errors.testCaseId ? " select-error" : ""}`}
+          className={`select-bordered select w-full${errors.testCaseId ? " select-error" : ""}`}
           disabled={loadingCases}
           autoFocus
           {...register("testCaseId")}
@@ -92,7 +92,7 @@ export const CreateResultForm = ({
       >
         <select
           id="result-status"
-          className="select select-bordered w-full"
+          className="select-bordered select w-full"
           {...register("status")}
         >
           {statusOptions.map((option) => (
@@ -110,7 +110,7 @@ export const CreateResultForm = ({
         <input
           id="result-executed-at"
           type="datetime-local"
-          className="input input-bordered bg-base-200 w-full"
+          className="input-bordered input w-full bg-base-200"
           {...register("executedAt")}
         />
       </FormField>
@@ -121,7 +121,7 @@ export const CreateResultForm = ({
       >
         <textarea
           id="result-notes"
-          className="textarea textarea-bordered bg-base-200 w-full"
+          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("notes")}

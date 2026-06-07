@@ -9,7 +9,7 @@ const RUN_STATUS_STYLES: Record<TestRunStatus, string> = {
 
 export const RunStatusBadge = ({ status }: { status: TestRunStatus }) => (
   <span
-    className={`inline-flex items-center text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded border ${RUN_STATUS_STYLES[status]}`}
+    className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${RUN_STATUS_STYLES[status]}`}
   >
     {status}
   </span>

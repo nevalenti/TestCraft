@@ -53,7 +53,7 @@ export const StepForm = ({
       >
         <textarea
           id="step-action"
-          className={`textarea textarea-bordered bg-base-200 w-full${errors.action ? " textarea-error" : ""}`}
+          className={`textarea-bordered textarea w-full bg-base-200${errors.action ? " textarea-error" : ""}`}
           placeholder="Navigate to the login page"
           rows={3}
           autoFocus
@@ -67,7 +67,7 @@ export const StepForm = ({
       >
         <textarea
           id="step-expected-result"
-          className={`textarea textarea-bordered bg-base-200 w-full${errors.expectedResult ? " textarea-error" : ""}`}
+          className={`textarea-bordered textarea w-full bg-base-200${errors.expectedResult ? " textarea-error" : ""}`}
           placeholder="Login page is displayed"
           rows={3}
           {...register("expectedResult")}

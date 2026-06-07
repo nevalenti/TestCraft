@@ -23,18 +23,18 @@ export const Notifications = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`flex items-center gap-2.5 rounded-2xl py-2 pl-3.5 pr-2 shadow-sm max-w-sm ${typeClass[notification.type] ?? "bg-base-200 text-base-content"}`}
+          className={`flex max-w-sm items-center gap-2.5 rounded-2xl py-2 pr-2 pl-3.5 shadow-sm ${typeClass[notification.type] ?? "bg-base-200 text-base-content"}`}
         >
           <span
-            className="size-2.5 rounded-full shrink-0 bg-current opacity-60"
+            className="size-2.5 shrink-0 rounded-full bg-current opacity-60"
             aria-hidden="true"
           />
-          <span className="text-sm font-medium flex-1 text-center">
+          <span className="flex-1 text-center text-sm font-medium">
             {notification.message}
           </span>
           <button
             onClick={() => remove(notification.id)}
-            className="size-6 rounded-full flex items-center justify-center opacity-40 hover:opacity-100 hover:bg-current/10 transition-colors shrink-0"
+            className="flex size-6 shrink-0 items-center justify-center rounded-full opacity-40 transition-colors hover:bg-current/10 hover:opacity-100"
             aria-label="Dismiss notification"
           >
             <XMarkIcon className="size-3.5" aria-hidden="true" />

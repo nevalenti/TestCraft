@@ -118,7 +118,7 @@ export const TestRunPage = () => {
         cell: ({ row, table }) => {
           const { pageIndex, pageSize } = table.getState().pagination;
           return (
-            <span className="text-base-content/40 tabular-nums text-xs">
+            <span className="text-xs text-base-content/40 tabular-nums">
               {pageIndex * pageSize + row.index + 1}
             </span>
           );
@@ -127,7 +127,7 @@ export const TestRunPage = () => {
       columnHelper.accessor("testCaseName", {
         header: "Test Case",
         cell: (info) => (
-          <span className="font-medium text-sm line-clamp-1">
+          <span className="line-clamp-1 text-sm font-medium">
             {info.getValue()}
           </span>
         ),
@@ -143,20 +143,20 @@ export const TestRunPage = () => {
           const value = info.getValue();
           return value ? (
             <div
-              className="max-w-[200px] truncate text-sm text-base-content/60 cursor-default"
+              className="max-w-[200px] cursor-default truncate text-sm text-base-content/60"
               title={value}
             >
               {value}
             </div>
           ) : (
-            <span className="text-base-content/30 italic text-sm">—</span>
+            <span className="text-sm text-base-content/30 italic">—</span>
           );
         },
       }),
       columnHelper.accessor("executedAt", {
         header: "Executed",
         cell: (info) => (
-          <span className="text-xs tabular-nums text-base-content/50 whitespace-nowrap">
+          <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
             {formatDateTime(info.getValue())}
           </span>
         ),
@@ -165,7 +165,7 @@ export const TestRunPage = () => {
         id: "actions",
         header: "",
         cell: ({ row }) => (
-          <div className="flex justify-end gap-0.5 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 focus-within:opacity-100 transition-opacity">
+          <div className="flex justify-end gap-0.5 opacity-100 transition-opacity focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
             <ResourceActions
               onEdit={() => openEdit(row.original)}
               onDelete={() => openDelete(row.original)}
@@ -198,12 +198,12 @@ export const TestRunPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   return (
-    <div className="w-full flex flex-col min-h-0">
+    <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight font-display">
+          <h1 className="font-display text-2xl font-bold tracking-tight">
             {run?.name ?? (
-              <span className="skeleton inline-block w-48 h-[0.75em] rounded align-middle" />
+              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
             )}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
@@ -212,9 +212,9 @@ export const TestRunPage = () => {
         </div>
       </header>
 
-      <section className="page-content flex-1 overflow-y-auto min-h-0">
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
         {runSummary && runSummary.total > 0 && (
-          <p className="text-sm text-base-content/60 mb-4">
+          <p className="mb-4 text-sm text-base-content/60">
             <span className="font-semibold text-base-content">
               {runSummary.total}
             </span>{" "}
@@ -232,13 +232,13 @@ export const TestRunPage = () => {
           <div className="mb-4 flex items-center gap-3">
             <input
               type="search"
-              className="input input-bordered bg-base-200 w-full max-w-sm"
+              className="input-bordered input w-full max-w-sm bg-base-200"
               placeholder="Search test cases…"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
             <button
-              className="btn btn-primary btn-sm ml-auto shrink-0"
+              className="btn ml-auto shrink-0 btn-sm btn-primary"
               onClick={openCreate}
             >
               <PlusIcon className="size-4" aria-hidden="true" />
@@ -252,7 +252,7 @@ export const TestRunPage = () => {
             {statusFilter !== null && (
               <button
                 onClick={() => setStatusFilter(null)}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border border-border bg-base-100 hover:bg-base-200 transition-colors"
+                className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-base-200"
               >
                 All results
               </button>
@@ -265,14 +265,14 @@ export const TestRunPage = () => {
                   onClick={() =>
                     setStatusFilter(statusFilter === value ? null : value)
                   }
-                  className={`flex items-center gap-2 px-3 py-1.5 text-sm rounded-lg border transition-colors ${
+                  className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
                     statusFilter === value
                       ? "border-base-content/40 bg-base-200 shadow-sm"
                       : "border-border bg-base-100 hover:bg-base-200"
                   }`}
                 >
                   <StatusBadge status={value} />
-                  <span className="font-bold text-base-content/75 tabular-nums text-sm">
+                  <span className="text-sm font-bold text-base-content/75 tabular-nums">
                     {count}
                   </span>
                 </button>
@@ -294,7 +294,7 @@ export const TestRunPage = () => {
               description="Add results to track the outcome of each test case in this run."
               action={
                 <button
-                  className="btn btn-primary btn-sm gap-1.5"
+                  className="btn gap-1.5 btn-sm btn-primary"
                   onClick={openCreate}
                 >
                   <PlusIcon className="size-4" aria-hidden="true" />
@@ -304,7 +304,7 @@ export const TestRunPage = () => {
             />
           ) : resultsPage?.items.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16 text-center">
-              <p className="text-sm font-semibold text-base-content/60 mb-2">
+              <p className="mb-2 text-sm font-semibold text-base-content/60">
                 No results match
               </p>
               <div className="flex gap-2">
@@ -371,7 +371,7 @@ export const TestRunPage = () => {
                       <tr
                         key={row.id}
                         data-testid="result-row"
-                        className="group hover:bg-base-200/50 transition-colors"
+                        className="group transition-colors hover:bg-base-200/50"
                       >
                         {row.getVisibleCells().map((cell) => (
                           <td key={cell.id}>
@@ -398,7 +398,7 @@ export const TestRunPage = () => {
                   </span>
                   <div className="flex gap-2">
                     <button
-                      className="btn btn-sm btn-neutral btn-square"
+                      className="btn btn-square btn-sm btn-neutral"
                       onClick={() => table.previousPage()}
                       disabled={!table.getCanPreviousPage()}
                       aria-label="Previous page"
@@ -406,7 +406,7 @@ export const TestRunPage = () => {
                       <ChevronLeftIcon className="size-4" />
                     </button>
                     <button
-                      className="btn btn-sm btn-neutral btn-square"
+                      className="btn btn-square btn-sm btn-neutral"
                       onClick={() => table.nextPage()}
                       disabled={!table.getCanNextPage()}
                       aria-label="Next page"
