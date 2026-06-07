@@ -12,7 +12,7 @@ RUN pnpm install --frozen-lockfile
 COPY packages/types/ ./packages/types/
 COPY apps/web/ ./apps/web/
 
-ARG VITE_API_URL=""
+ARG VITE_API_URL=http://localhost:8080
 ARG VITE_KEYCLOAK_URL=http://localhost:8080
 ARG VITE_KEYCLOAK_REALM=testcraft
 ARG VITE_KEYCLOAK_CLIENT_ID=testcraft-web
