@@ -4,7 +4,7 @@ import type {
   TestCase,
   UpdateTestCase,
 } from "@testcraft/types";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -14,6 +14,7 @@ import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -31,6 +32,7 @@ export const TestSuitePage = () => {
   const projectId = useRequiredParam("projectId");
   const suiteId = useRequiredParam("suiteId");
   const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestCase>();
 
@@ -40,16 +42,7 @@ export const TestSuitePage = () => {
     data: testCases,
     isPending,
     isError,
-  } = useTestCases(projectId, suiteId);
-  const filteredCases = useMemo(
-    () =>
-      !search
-        ? testCases
-        : testCases?.filter((testCase) =>
-            testCase.name.toLowerCase().includes(search.toLowerCase()),
-          ),
-    [testCases, search],
-  );
+  } = useTestCases(projectId, suiteId, debouncedSearch || undefined);
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
@@ -107,14 +100,14 @@ export const TestSuitePage = () => {
             <SkeletonGrid />
           ) : isError ? (
             <ErrorState />
-          ) : filteredCases?.length === 0 ? (
+          ) : testCases?.length === 0 ? (
             <EmptyState
               title="No test cases yet"
               description="Add test cases to document expected behaviour."
             />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredCases?.map((testCase) => (
+              {testCases?.map((testCase) => (
                 <ResourceCard
                   key={testCase.id}
                   testId="case-card"

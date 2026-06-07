@@ -7,13 +7,7 @@ import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
 import { useProjectTestCases } from "@/hooks/useTestCases";
 import { statusOptions } from "@/lib/constants";
-
-const toDatetimeLocal = (iso: string) => {
-  const d = new Date(iso);
-  return new Date(d.getTime() - d.getTimezoneOffset() * 60_000)
-    .toISOString()
-    .slice(0, 16);
-};
+import { toDatetimeLocal } from "@/lib/format";
 
 const schema = z.object({
   testCaseId: z.string().min(1, "Select a test case"),

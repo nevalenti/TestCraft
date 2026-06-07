@@ -68,7 +68,7 @@ export const LazyTestRunPage = suspend(
 export const LazyProjectSuitesPage = suspend(
   React.lazy(() =>
     import("./ProjectDetailPage/SuitesTab").then((m) => ({
-      default: m.SuitesSection,
+      default: m.SuitesTab,
     })),
   ),
 );
@@ -76,7 +76,7 @@ export const LazyProjectSuitesPage = suspend(
 export const LazyProjectRunsPage = suspend(
   React.lazy(() =>
     import("./ProjectDetailPage/RunsTab").then((m) => ({
-      default: m.RunsSection,
+      default: m.RunsTab,
     })),
   ),
 );

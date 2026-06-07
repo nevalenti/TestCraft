@@ -23,7 +23,7 @@ import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
 import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
 
-export const RunsSection = () => {
+export const RunsTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);

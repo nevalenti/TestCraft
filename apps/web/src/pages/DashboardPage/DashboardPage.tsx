@@ -7,9 +7,11 @@ import {
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { TestRunStatus } from "@testcraft/types";
+import { compareDesc } from "date-fns";
 import { useMemo } from "react";
 
 import { testRunQueries } from "@/api/testRuns";
+import { ErrorState } from "@/components/ErrorState";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProjects } from "@/hooks/useProjects";
 import { formatDate } from "@/lib/format";
@@ -17,7 +19,7 @@ import { ActiveRunsSkeleton } from "@/pages/DashboardPage/ActiveRunsSkeleton";
 import { StatCard } from "@/pages/DashboardPage/StatCard";
 
 export const DashboardPage = () => {
-  const { data: projects, isPending: projectsPending } = useProjects();
+  const { data: projects, isPending: projectsPending, isError } = useProjects();
 
   const projectMap = useMemo(
     () => new Map((projects ?? []).map((project) => [project.id, project])),
@@ -30,10 +32,8 @@ export const DashboardPage = () => {
       activeRuns: results
         .flatMap((result) => result.data?.items ?? [])
         .filter((run) => run.status === TestRunStatus.Active)
-        .sort(
-          (itemA, itemB) =>
-            new Date(itemB.createdAt).getTime() -
-            new Date(itemA.createdAt).getTime(),
+        .sort((itemA, itemB) =>
+          compareDesc(new Date(itemA.createdAt), new Date(itemB.createdAt)),
         ),
       runsPending:
         results.length > 0 && results.some((result) => result.isPending),
@@ -41,6 +41,8 @@ export const DashboardPage = () => {
   });
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
+
+  if (isError) return <ErrorState />;
 
   const totalSuites = (projects ?? []).reduce(
     (sum, project) => sum + (project.suiteCount ?? 0),

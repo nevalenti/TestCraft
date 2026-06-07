@@ -1,10 +1,11 @@
 import axios from "axios";
 
 import keycloak from "@/auth/keycloak";
+import { env } from "@/lib/env";
 import { useNotificationsStore } from "@/stores/notifications";
 
 const client = axios.create({
-  baseURL: `${import.meta.env.VITE_API_URL ?? ""}/api/v1`,
+  baseURL: `${env.VITE_API_URL}/api/v1`,
   headers: {
     "Content-Type": "application/json",
   },

@@ -30,11 +30,11 @@ vi.mock("@/hooks/useProjects", () => ({
 vi.mock("@/hooks/useBreadcrumbs", () => ({ useBreadcrumbs: vi.fn() }));
 
 vi.mock("@/pages/ProjectDetailPage/SuitesTab", () => ({
-  SuitesSection: vi.fn(() => <div data-testid="suites-section" />),
+  SuitesTab: vi.fn(() => <div data-testid="suites-section" />),
 }));
 
 vi.mock("@/pages/ProjectDetailPage/RunsTab", () => ({
-  RunsSection: vi.fn(() => <div data-testid="runs-section" />),
+  RunsTab: vi.fn(() => <div data-testid="runs-section" />),
 }));
 
 import { useProject } from "@/hooks/useProjects";

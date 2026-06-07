@@ -1,5 +1,7 @@
+import { addDays } from "date-fns";
+
 export const setCookie = (name: string, value: string, days = 365): void => {
-  const expires = new Date(Date.now() + days * 864e5).toUTCString();
+  const expires = addDays(new Date(), days).toUTCString();
   const secure = window.location.protocol === "https:" ? "Secure;" : "";
   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires};path=/;${secure}SameSite=Strict`;
 };

@@ -23,7 +23,7 @@ import {
 import { formatDate } from "@/lib/format";
 import { SuiteForm } from "@/pages/ProjectDetailPage/SuiteForm";
 
-export const SuitesSection = () => {
+export const SuitesTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
