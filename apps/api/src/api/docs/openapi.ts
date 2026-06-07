@@ -16,7 +16,7 @@ import {
 
 import {
   importAllureSchema,
-  importJunitSchema,
+  importJUnitSchema,
 } from "@/api/schemas/import.schemas";
 import {
   createProjectSchema,
@@ -602,7 +602,7 @@ registry.registerPath({
     "Parses a JUnit XML report and creates a completed test run with results. Suites and cases are created if they do not already exist.",
   tags: ["Import"],
   security: auth,
-  request: { params: projectIdParam, body: reqBody(importJunitSchema) },
+  request: { params: projectIdParam, body: reqBody(importJUnitSchema) },
   responses: {
     201: json(TestRunSchema, "Imported test run"),
     400: r400,

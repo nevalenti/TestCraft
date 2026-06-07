@@ -38,10 +38,43 @@ export const problem = (res: Response, body: ProblemDetail): void => {
 };
 
 export const problems = {
+  validation: (errors: FieldError[]): ValidationProblem => ({
+    type: "about:blank",
+    title: "Validation Failed",
+    status: 400,
+    errors,
+  }),
+
+  unauthorized: (): ProblemDetail => ({
+    type: "about:blank",
+    title: "Unauthorized",
+    status: 401,
+  }),
+
+  forbidden: (): ProblemDetail => ({
+    type: "about:blank",
+    title: "Forbidden",
+    status: 403,
+  }),
+
   notFound: (): ProblemDetail => ({
     type: "about:blank",
     title: "Not Found",
     status: 404,
+  }),
+
+  timeout: (): ProblemDetail => ({
+    type: "about:blank",
+    title: "Request Timeout",
+    status: 408,
+    detail: "The server did not receive a complete request in time.",
+  }),
+
+  conflict: (detail: string): ProblemDetail => ({
+    type: "about:blank",
+    title: "Conflict",
+    status: 409,
+    detail,
   }),
 
   unprocessable: (detail: string): ProblemDetail => ({
@@ -51,23 +84,16 @@ export const problems = {
     detail,
   }),
 
-  validation: (errors: FieldError[]): ValidationProblem => ({
+  tooManyRequests: (): ProblemDetail => ({
     type: "about:blank",
-    title: "Validation Failed",
-    status: 400,
-    errors,
+    title: "Too Many Requests",
+    status: 429,
+    detail: "Rate limit exceeded, please try again later.",
   }),
 
   internal: (): ProblemDetail => ({
     type: "about:blank",
     title: "An unexpected error occurred",
     status: 500,
-  }),
-
-  tooManyRequests: (): ProblemDetail => ({
-    type: "about:blank",
-    title: "Too Many Requests",
-    status: 429,
-    detail: "Rate limit exceeded, please try again later.",
   }),
 };

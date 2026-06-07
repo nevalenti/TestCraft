@@ -33,7 +33,7 @@ export class ProjectService implements IProjectService {
     return project;
   }
 
-  create(userId: string, input: CreateProject) {
+  create(userId: string, input: CreateProject): Promise<Project> {
     return this.projectRepository.create(userId, input);
   }
 

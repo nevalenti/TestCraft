@@ -8,3 +8,11 @@ export const resolvePagination = (pagination?: PaginationParams) => {
   const pageSize = pagination?.pageSize ?? DEFAULT_PAGE_SIZE;
   return { page, pageSize, skip: (page - 1) * pageSize, take: pageSize };
 };
+
+export const extractPagination = (query: {
+  page?: unknown;
+  pageSize?: unknown;
+}) => ({
+  page: Number(query.page) || DEFAULT_PAGE,
+  pageSize: Number(query.pageSize) || DEFAULT_PAGE_SIZE,
+});

@@ -1,4 +1,4 @@
 keycloak_url            = "http://localhost:8080"
 keycloak_admin_user     = "admin"
 keycloak_admin_password = "changeme"
-dev_user_password       = "dev"
+e2e_user_password       = "dev"

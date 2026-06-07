@@ -28,6 +28,7 @@ import { TestSuiteRepository } from "@/infrastructure/repositories/test-suite.re
 interface Cradle {
   prisma: typeof prismaClient;
   cache: CacheService;
+
   projectRepository: ProjectRepository;
   testSuiteRepository: TestSuiteRepository;
   testCaseRepository: TestCaseRepository;
@@ -35,6 +36,7 @@ interface Cradle {
   testRunRepository: TestRunRepository;
   testResultRepository: TestResultRepository;
   importRepository: ImportRepository;
+
   projectService: ProjectService;
   testSuiteService: TestSuiteService;
   testCaseService: TestCaseService;
@@ -42,6 +44,7 @@ interface Cradle {
   testRunService: TestRunService;
   testResultService: TestResultService;
   importService: ImportService;
+
   projectController: ProjectController;
   testSuiteController: TestSuiteController;
   testCaseController: TestCaseController;

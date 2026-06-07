@@ -15,27 +15,7 @@ import { TestRun } from "@/domain/test-run";
 import { PrismaClient } from "@/generated/prisma/client";
 import { isNotFound } from "@/infrastructure/database/prisma.errors";
 
-export const runSelect = {
-  id: true,
-  projectId: true,
-  name: true,
-  environment: true,
-  status: true,
-  executedById: true,
-  createdAt: true,
-  updatedAt: true,
-} as const;
-
-export const toDto = (run: {
-  id: string;
-  projectId: string;
-  name: string;
-  environment: string;
-  status: string;
-  executedById: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-}): TestRun => ({ ...run, status: run.status as TestRunStatus });
+import { runSelect, toTestRun } from "./test-run.mapper";
 
 export class TestRunRepository implements ITestRunRepository {
   constructor(private readonly prisma: PrismaClient) {}
@@ -45,7 +25,7 @@ export class TestRunRepository implements ITestRunRepository {
       where: { id, isDeleted: false },
       select: runSelect,
     });
-    return run ? toDto(run) : null;
+    return run ? toTestRun(run) : null;
   }
 
   async getAll(
@@ -72,7 +52,7 @@ export class TestRunRepository implements ITestRunRepository {
       }),
       this.prisma.testRun.count({ where }),
     ]);
-    return { items: rows.map(toDto), total, page, pageSize };
+    return { items: rows.map(toTestRun), total, page, pageSize };
   }
 
   async getById(projectId: string, id: string): Promise<TestRun | null> {
@@ -80,7 +60,7 @@ export class TestRunRepository implements ITestRunRepository {
       where: { id, projectId, isDeleted: false, project: { isDeleted: false } },
       select: runSelect,
     });
-    return run ? toDto(run) : null;
+    return run ? toTestRun(run) : null;
   }
 
   async getSummary(
@@ -139,7 +119,7 @@ export class TestRunRepository implements ITestRunRepository {
       },
       select: runSelect,
     });
-    return toDto(run);
+    return toTestRun(run);
   }
 
   async update(
@@ -162,7 +142,7 @@ export class TestRunRepository implements ITestRunRepository {
         },
         select: runSelect,
       });
-      return toDto(run);
+      return toTestRun(run);
     } catch (err) {
       if (isNotFound(err)) return null;
       throw err;

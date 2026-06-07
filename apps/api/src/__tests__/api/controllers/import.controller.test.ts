@@ -8,7 +8,7 @@ import { errorHandler } from "@/api/middleware/error-handler.middleware";
 import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   importAllureSchema,
-  importJunitSchema,
+  importJUnitSchema,
 } from "@/api/schemas/import.schemas";
 import { IImportService } from "@/application/import/import.service";
 import { DomainError } from "@/domain/errors";
@@ -19,7 +19,7 @@ vi.mock("@/infrastructure/logging/logger", () => ({
 }));
 
 const mockService: IImportService = {
-  importJunit: vi.fn(),
+  importJUnit: vi.fn(),
   importAllure: vi.fn(),
 };
 
@@ -28,7 +28,7 @@ const buildApp = () => {
   const router = Router({ mergeParams: true });
   router.post(
     "/junit",
-    validateBody(importJunitSchema),
+    validateBody(importJUnitSchema),
     controller.importJUnit,
   );
   router.post(
@@ -59,7 +59,7 @@ const run: TestRun = {
   updatedAt: new Date(),
 };
 
-const validJunitXml = `<?xml version="1.0"?>
+const validJUnitXml = `<?xml version="1.0"?>
 <testsuite name="Auth Tests">
   <testcase name="Login" classname="AuthSpec" />
 </testsuite>`;
@@ -74,29 +74,29 @@ describe("ImportController #api", { tags: ["unit"] }, () => {
 
   describe("POST /junit — given a valid JUnit body — imports and returns the run", () => {
     it("responds 201 with the created run", async () => {
-      vi.mocked(mockService.importJunit).mockResolvedValue(run);
+      vi.mocked(mockService.importJUnit).mockResolvedValue(run);
 
       const res = await request
         .post("/projects/proj-1/import/junit")
-        .send({ xml: validJunitXml, environment: "staging" });
+        .send({ xml: validJUnitXml, environment: "staging" });
 
       expect(res.status).toBe(201);
       expect(res.body.id).toBe("run-1");
-      expect(mockService.importJunit).toHaveBeenCalledWith(
+      expect(mockService.importJUnit).toHaveBeenCalledWith(
         "proj-1",
-        expect.objectContaining({ xml: validJunitXml, environment: "staging" }),
+        expect.objectContaining({ xml: validJUnitXml, environment: "staging" }),
         "user-1",
       );
     });
 
     it("forwards the optional name to the service", async () => {
-      vi.mocked(mockService.importJunit).mockResolvedValue(run);
+      vi.mocked(mockService.importJUnit).mockResolvedValue(run);
 
       await request
         .post("/projects/proj-1/import/junit")
-        .send({ xml: validJunitXml, environment: "staging", name: "Custom" });
+        .send({ xml: validJUnitXml, environment: "staging", name: "Custom" });
 
-      expect(mockService.importJunit).toHaveBeenCalledWith(
+      expect(mockService.importJUnit).toHaveBeenCalledWith(
         "proj-1",
         expect.objectContaining({ name: "Custom" }),
         "user-1",
@@ -121,7 +121,7 @@ describe("ImportController #api", { tags: ["unit"] }, () => {
     it("responds 400 with an environment field error", async () => {
       const res = await request
         .post("/projects/proj-1/import/junit")
-        .send({ xml: validJunitXml });
+        .send({ xml: validJUnitXml });
 
       expect(res.status).toBe(400);
       expect(res.body.errors).toEqual(
@@ -134,7 +134,7 @@ describe("ImportController #api", { tags: ["unit"] }, () => {
 
   describe("POST /junit — when the service throws a DomainError — returns 422", () => {
     it("responds 422 with the domain error message", async () => {
-      vi.mocked(mockService.importJunit).mockRejectedValue(
+      vi.mocked(mockService.importJUnit).mockRejectedValue(
         new DomainError("Invalid JUnit XML: could not parse the document"),
       );
 
@@ -149,13 +149,13 @@ describe("ImportController #api", { tags: ["unit"] }, () => {
 
   describe("POST /junit — when the service throws an unexpected error — returns 500", () => {
     it("responds 500 without leaking internal details", async () => {
-      vi.mocked(mockService.importJunit).mockRejectedValue(
+      vi.mocked(mockService.importJUnit).mockRejectedValue(
         new Error("db crash"),
       );
 
       const res = await request
         .post("/projects/proj-1/import/junit")
-        .send({ xml: validJunitXml, environment: "staging" });
+        .send({ xml: validJUnitXml, environment: "staging" });
 
       expect(res.status).toBe(500);
       expect(res.body).not.toHaveProperty("stack");

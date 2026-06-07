@@ -25,7 +25,7 @@ const projectSelect = {
   },
 } as const;
 
-const toDto = (project: {
+const toProject = (project: {
   id: string;
   userId: string;
   name: string;
@@ -70,7 +70,7 @@ export class ProjectRepository implements IProjectRepository {
       }),
       this.prisma.project.count({ where }),
     ]);
-    return { items: rows.map(toDto), total, page, pageSize };
+    return { items: rows.map(toProject), total, page, pageSize };
   }
 
   async getById(userId: string, id: string): Promise<Project | null> {
@@ -78,7 +78,7 @@ export class ProjectRepository implements IProjectRepository {
       where: { id, userId, isDeleted: false },
       select: projectSelect,
     });
-    return project ? toDto(project) : null;
+    return project ? toProject(project) : null;
   }
 
   async create(userId: string, input: CreateProject): Promise<Project> {
@@ -90,7 +90,7 @@ export class ProjectRepository implements IProjectRepository {
       },
       select: projectSelect,
     });
-    return toDto(project);
+    return toProject(project);
   }
 
   async update(
@@ -104,7 +104,7 @@ export class ProjectRepository implements IProjectRepository {
         data: { name: input.name, description: input.description ?? null },
         select: projectSelect,
       });
-      return toDto(project);
+      return toProject(project);
     } catch (err) {
       if (isNotFound(err)) return null;
       throw err;

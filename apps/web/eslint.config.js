@@ -31,6 +31,7 @@ export default defineConfig([
     rules: {
       ...sharedRules,
       "jsx-a11y/no-autofocus": "off",
+      "react-hooks/incompatible-library": "off",
     },
     languageOptions: {
       globals: globals.browser,

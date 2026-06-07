@@ -15,7 +15,7 @@ const resultInclude = {
   testCase: { select: { name: true, suiteId: true } },
 } as const;
 
-const toDto = (result: {
+const toTestResult = (result: {
   id: string;
   testRunId: string;
   testCaseId: string;
@@ -73,7 +73,7 @@ export class TestResultRepository implements ITestResultRepository {
       }),
       this.prisma.testResult.count({ where }),
     ]);
-    return { items: rows.map(toDto), total, page, pageSize };
+    return { items: rows.map(toTestResult), total, page, pageSize };
   }
 
   async getById(runId: string, id: string): Promise<TestResult | null> {
@@ -86,7 +86,7 @@ export class TestResultRepository implements ITestResultRepository {
       },
       include: resultInclude,
     });
-    return result ? toDto(result) : null;
+    return result ? toTestResult(result) : null;
   }
 
   async create(
@@ -105,7 +105,7 @@ export class TestResultRepository implements ITestResultRepository {
       },
       include: resultInclude,
     });
-    return toDto(result);
+    return toTestResult(result);
   }
 
   async update(
@@ -124,7 +124,7 @@ export class TestResultRepository implements ITestResultRepository {
         data: { status: input.status, notes: input.notes ?? null },
         include: resultInclude,
       });
-      return toDto(result);
+      return toTestResult(result);
     } catch (err) {
       if (isNotFound(err)) return null;
       throw err;

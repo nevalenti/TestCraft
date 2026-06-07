@@ -6,29 +6,29 @@ import { DomainError, NotFoundError } from "@/domain/errors";
 import { isConstraintViolation } from "@/infrastructure/database/prisma.errors";
 import { logger } from "@/infrastructure/logging/logger";
 
-export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
-  if (err instanceof NotFoundError) {
+export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
+  if (error instanceof NotFoundError) {
     problem(res, problems.notFound());
     return;
   }
 
-  if (err instanceof DomainError) {
-    problem(res, problems.unprocessable(err.message));
+  if (error instanceof DomainError) {
+    problem(res, problems.unprocessable(error.message));
     return;
   }
 
-  if (err instanceof ZodError) {
-    problem(res, problems.validation(zodToFieldErrors(err.issues)));
+  if (error instanceof ZodError) {
+    problem(res, problems.validation(zodToFieldErrors(error.issues)));
     return;
   }
 
-  if (isConstraintViolation(err)) {
-    problem(res, problems.unprocessable("Referenced entity does not exist"));
+  if (isConstraintViolation(error)) {
+    problem(res, problems.conflict("Referenced entity does not exist"));
     return;
   }
 
   logger.error(
-    { err, method: req.method, url: req.url },
+    { err: error, method: req.method, url: req.url },
     "Unhandled exception",
   );
   problem(res, problems.internal());

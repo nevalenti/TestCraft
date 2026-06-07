@@ -14,7 +14,7 @@ import {
   useCreateTestRun,
   useDeleteTestRun,
   useImportAllure,
-  useImportJunitXml,
+  useImportJUnitXml,
   useTestRuns,
   useUpdateTestRun,
 } from "@/hooks/useTestRuns";
@@ -36,7 +36,7 @@ export const RunsSection = () => {
   const createRun = useCreateTestRun(projectId);
   const updateRun = useUpdateTestRun(projectId);
   const deleteRun = useDeleteTestRun(projectId);
-  const importJunit = useImportJunitXml(projectId);
+  const importJUnit = useImportJUnitXml(projectId);
   const importAllure = useImportAllure(projectId);
 
   const handleCreate = (input: CreateTestRun) =>
@@ -49,7 +49,7 @@ export const RunsSection = () => {
     data,
   ) => {
     if (data.type === "junit") {
-      importJunit.mutate(
+      importJUnit.mutate(
         { xml: data.xml, environment: data.environment, name: data.name },
         { onSuccess: close },
       );
@@ -181,7 +181,7 @@ export const RunsSection = () => {
           <ImportForm
             onSubmit={handleImport}
             onCancel={close}
-            isLoading={importJunit.isPending || importAllure.isPending}
+            isLoading={importJUnit.isPending || importAllure.isPending}
           />
         )}
       </Modal>

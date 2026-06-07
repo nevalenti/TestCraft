@@ -16,9 +16,9 @@ variable "keycloak_admin_password" {
   sensitive   = true
 }
 
-variable "dev_user_password" {
+variable "e2e_user_password" {
   description = "Password for the dev user created in the testcraft realm"
   type        = string
   sensitive   = true
-  default     = "dev"
+  default     = "e2e"
 }

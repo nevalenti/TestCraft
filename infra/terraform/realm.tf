@@ -5,8 +5,8 @@ resource "keycloak_realm" "testcraft" {
 
   ssl_required = "none"
 
-  registration_allowed            = true
-  registration_email_as_username  = true
+  registration_allowed           = true
+  registration_email_as_username = true
 
   access_token_lifespan    = "15m"
   sso_session_idle_timeout = "30m"
@@ -34,9 +34,9 @@ resource "keycloak_openid_client" "web" {
   ]
 
   valid_post_logout_redirect_uris = [
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "http://localhost:5999",
+    "http://localhost:3000/*",
+    "http://localhost:5173/*",
+    "http://localhost:5999/*",
   ]
 
   web_origins = [
@@ -46,18 +46,18 @@ resource "keycloak_openid_client" "web" {
   ]
 }
 
-resource "keycloak_user" "dev" {
+resource "keycloak_user" "e2e" {
   realm_id = keycloak_realm.testcraft.id
-  username = "dev"
+  username = "e2e"
   enabled  = true
 
-  email          = "dev@testcraft.dev"
+  email          = "e2e@testcraft.dev"
   email_verified = true
-  first_name     = "Dev"
+  first_name     = "E2E"
   last_name      = "User"
 
   initial_password {
-    value     = var.dev_user_password
+    value     = var.e2e_user_password
     temporary = false
   }
 }

@@ -6,7 +6,7 @@ export class ImportController {
   constructor(private readonly importService: IImportService) {}
 
   importJUnit = async (req: Request, res: Response): Promise<void> => {
-    const run = await this.importService.importJunit(
+    const run = await this.importService.importJUnit(
       req.params.projectId as string,
       req.body,
       req.user?.id,

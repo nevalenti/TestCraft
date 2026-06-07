@@ -8,8 +8,8 @@ import type { TestRun } from "@/domain/test-run";
 import { Prisma, PrismaClient } from "@/generated/prisma/client";
 import {
   runSelect,
-  toDto,
-} from "@/infrastructure/repositories/test-run.repository";
+  toTestRun,
+} from "@/infrastructure/repositories/test-run.mapper";
 
 const insertResults = async (
   transaction: Prisma.TransactionClient,
@@ -120,7 +120,7 @@ export class ImportRepository implements IImportRepository {
         select: runSelect,
       });
       await insertResults(transaction, projectId, run.id, cases, userId, now);
-      return toDto(run);
+      return toTestRun(run);
     });
   }
 }

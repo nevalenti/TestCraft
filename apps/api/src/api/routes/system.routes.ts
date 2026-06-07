@@ -8,48 +8,59 @@ import { registry } from "@/infrastructure/metrics/metrics";
 
 const router: Router = Router();
 
+const pingDb = async (): Promise<boolean> => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const isBearerTokenValid = (
+  authHeader: string | undefined,
+  token: string,
+): boolean => {
+  const provided = authHeader ?? "";
+  const expected = `Bearer ${token}`;
+  return (
+    provided.length === expected.length &&
+    timingSafeEqual(Buffer.from(provided), Buffer.from(expected))
+  );
+};
+
 router.get("/ready", (_req, res) => {
   res.json({ status: "ok" });
 });
 
 router.get("/health", async (_req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
+  if (await pingDb()) {
     res.json({ status: "healthy" });
-  } catch {
+  } else {
     res.status(503).json({ status: "unhealthy" });
   }
 });
 
 router.get("/status", async (_req, res) => {
-  let dbStatus: "up" | "down" = "up";
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-  } catch {
-    dbStatus = "down";
-  }
+  const dbUp = await pingDb();
   const mem = process.memoryUsage();
   res.json({
-    status: dbStatus === "up" ? "ok" : "degraded",
+    status: dbUp ? "ok" : "degraded",
     uptime: Math.floor(process.uptime()),
     memory: { rss: mem.rss, heapUsed: mem.heapUsed, heapTotal: mem.heapTotal },
-    db: dbStatus,
+    db: dbUp ? "up" : "down",
     version: process.env.npm_package_version ?? "unknown",
     node: process.version,
   });
 });
 
 router.get("/metrics", async (req, res) => {
-  if (config.metricsToken) {
-    const provided = req.headers.authorization ?? "";
-    const expected = `Bearer ${config.metricsToken}`;
-    const same =
-      provided.length === expected.length &&
-      timingSafeEqual(Buffer.from(provided), Buffer.from(expected));
-    if (!same) {
-      res.status(401).end();
-      return;
-    }
+  if (
+    config.metricsToken &&
+    !isBearerTokenValid(req.headers.authorization, config.metricsToken)
+  ) {
+    res.status(401).end();
+    return;
   }
   res.set("Content-Type", registry.contentType);
   res.end(await registry.metrics());

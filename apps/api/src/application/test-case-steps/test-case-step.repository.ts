@@ -15,10 +15,6 @@ export interface ReorderStep {
   order: number;
 }
 
-export interface BulkReorderSteps {
-  steps: ReorderStep[];
-}
-
 export interface ITestCaseStepRepository {
   getAll(
     caseId: string,

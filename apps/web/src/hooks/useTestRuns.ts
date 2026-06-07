@@ -83,7 +83,7 @@ export const useImportAllure = (projectId: string) =>
       importsApi.allure(projectId, input),
   );
 
-export const useImportJunitXml = (projectId: string) =>
+export const useImportJUnitXml = (projectId: string) =>
   useImportMutation(
     projectId,
     (input: Parameters<typeof importsApi.junit>[1]) =>

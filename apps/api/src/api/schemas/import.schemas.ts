@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const importJunitSchema = z.object({
+export const importJUnitSchema = z.object({
   xml: z.string().min(1, "XML content is required").max(4_500_000),
   environment: z.string().min(1, "Environment is required").max(255),
   name: z.string().min(1).max(255).optional(),

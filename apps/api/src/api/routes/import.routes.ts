@@ -1,17 +1,19 @@
-import { Router } from "express";
+import { json, Router } from "express";
 
 import { validateBody } from "@/api/middleware/validate-request.middleware";
 import {
   importAllureSchema,
-  importJunitSchema,
+  importJUnitSchema,
 } from "@/api/schemas/import.schemas";
 import { importController } from "@/container";
 
 const router: Router = Router({ mergeParams: true });
 
+router.use(json({ limit: "5mb" }));
+
 router.post(
   "/junit",
-  validateBody(importJunitSchema),
+  validateBody(importJUnitSchema),
   importController.importJUnit,
 );
 

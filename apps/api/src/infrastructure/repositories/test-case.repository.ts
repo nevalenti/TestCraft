@@ -25,7 +25,7 @@ const caseSelect = {
   _count: { select: { steps: { where: { isDeleted: false } } } },
 } as const;
 
-const toDto = (testCase: {
+const toTestCase = (testCase: {
   id: string;
   suiteId: string;
   name: string;
@@ -72,7 +72,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       }),
       this.prisma.testCase.count({ where }),
     ]);
-    return { items: rows.map(toDto), total, page, pageSize };
+    return { items: rows.map(toTestCase), total, page, pageSize };
   }
 
   async getAllByProject(
@@ -98,7 +98,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       }),
       this.prisma.testCase.count({ where }),
     ]);
-    return { items: rows.map(toDto), total, page, pageSize };
+    return { items: rows.map(toTestCase), total, page, pageSize };
   }
 
   async getById(suiteId: string, id: string): Promise<TestCase | null> {
@@ -106,7 +106,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       where: { id, suiteId, isDeleted: false, suite: { isDeleted: false } },
       select: caseSelect,
     });
-    return testCase ? toDto(testCase) : null;
+    return testCase ? toTestCase(testCase) : null;
   }
 
   async create(suiteId: string, input: CreateTestCase): Promise<TestCase> {
@@ -119,7 +119,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       },
       select: caseSelect,
     });
-    return toDto(testCase);
+    return toTestCase(testCase);
   }
 
   async update(
@@ -137,7 +137,7 @@ export class TestCaseRepository implements ITestCaseRepository {
         },
         select: caseSelect,
       });
-      return toDto(testCase);
+      return toTestCase(testCase);
     } catch (err) {
       if (isNotFound(err)) return null;
       throw err;

@@ -6,6 +6,7 @@ import { openApiDocument } from "@/api/docs/openapi";
 const router: Router = Router();
 
 router.use("/", swaggerUi.serve);
+
 router.get(
   "/",
   swaggerUi.setup(openApiDocument, {

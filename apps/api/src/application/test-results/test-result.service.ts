@@ -36,6 +36,14 @@ export class TestResultService implements ITestResultService {
     private readonly cache: CacheService,
   ) {}
 
+  private async assertRunIsModifiable(runId: string): Promise<void> {
+    const run = await this.testRunRepository.findById(runId);
+    if (!run) throw new NotFoundError();
+    if (!canAddResultToRun(run.status)) {
+      throw new DomainError(`Cannot modify results in a ${run.status} test run`);
+    }
+  }
+
   getAll(
     runId: string,
     status?: TestResultStatus,
@@ -56,12 +64,7 @@ export class TestResultService implements ITestResultService {
     input: CreateTestResult,
     userId?: string,
   ): Promise<TestResult> {
-    const run = await this.testRunRepository.findById(runId);
-    if (!run) throw new NotFoundError();
-    if (!canAddResultToRun(run.status)) {
-      throw new DomainError(`Cannot add results to a ${run.status} test run`);
-    }
-
+    await this.assertRunIsModifiable(runId);
     const result = await this.testResultRepository.create(runId, input, userId);
     await this.cache.del(cacheKeys.testRunSummary(runId));
     return result;
@@ -72,12 +75,7 @@ export class TestResultService implements ITestResultService {
     id: string,
     input: UpdateTestResult,
   ): Promise<TestResult> {
-    const run = await this.testRunRepository.findById(runId);
-    if (!run) throw new NotFoundError();
-    if (!canAddResultToRun(run.status)) {
-      throw new DomainError(`Cannot update results in a ${run.status} test run`);
-    }
-
+    await this.assertRunIsModifiable(runId);
     const result = await this.testResultRepository.update(runId, id, input);
     if (!result) throw new NotFoundError();
     await this.cache.del(cacheKeys.testRunSummary(runId));

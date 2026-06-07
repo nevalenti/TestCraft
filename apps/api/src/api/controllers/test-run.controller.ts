@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 
-import { extractPagination } from "@/api/middleware/validate-request.middleware";
 import { ITestRunService } from "@/application/test-runs/test-run.service";
+import { extractPagination } from "@/domain/pagination";
 
 export class TestRunController {
   constructor(private readonly testRunService: ITestRunService) {}

@@ -1,8 +1,8 @@
 import { TestResultStatus } from "@testcraft/types";
 import { Request, Response } from "express";
 
-import { extractPagination } from "@/api/middleware/validate-request.middleware";
 import { ITestResultService } from "@/application/test-results/test-result.service";
+import { extractPagination } from "@/domain/pagination";
 
 export class TestResultController {
   constructor(private readonly testResultService: ITestResultService) {}
