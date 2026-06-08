@@ -42,9 +42,6 @@ export const parseAllure = (results: AllureResultItem[]): ParsedTestCase[] =>
       "Default Suite";
     const caseName = result.name ?? result.fullName ?? `Unknown (${index + 1})`;
     const status = resolveStatus(result.status);
-    const notes =
-      [result.statusDetails?.message, result.statusDetails?.trace]
-        .filter(Boolean)
-        .join("\n") || null;
+    const notes = result.statusDetails?.message ?? null;
     return { suiteName, caseName, status, notes };
   });

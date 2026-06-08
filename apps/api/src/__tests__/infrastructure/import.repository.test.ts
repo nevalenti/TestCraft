@@ -11,7 +11,7 @@ const USER_A = "a0000000-0000-0000-0000-000000000001";
 const parsed = (
   suiteName: string,
   caseName: string,
-  status = TestResultStatus.Passed,
+  status: TestResultStatus = TestResultStatus.Passed,
 ): ParsedTestCase => ({ suiteName, caseName, status, notes: null });
 
 describe("ImportRepository #integration", { tags: ["integration"] }, () => {
@@ -216,6 +216,72 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       expect(results).toHaveLength(2);
+    });
+
+    it("creates steps for a new test case when provided", async () => {
+      const cases: ParsedTestCase[] = [
+        {
+          suiteName: "Suite",
+          caseName: "Component > given state > does thing",
+          status: TestResultStatus.Passed,
+          notes: null,
+          steps: [
+            {
+              order: 1,
+              action: "Component > given state",
+              expectedResult: "does thing",
+            },
+          ],
+        },
+      ];
+
+      await repo.createRunWithResults(
+        projectId,
+        "Import",
+        "ci",
+        TestRunStatus.Completed,
+        cases,
+      );
+
+      const testCase = await prisma.testCase.findFirstOrThrow({
+        where: { name: "Component > given state > does thing" },
+        include: { steps: true },
+      });
+      expect(testCase.steps).toHaveLength(1);
+      expect(testCase.steps[0].action).toBe("Component > given state");
+      expect(testCase.steps[0].expectedResult).toBe("does thing");
+    });
+
+    it("does not create steps for an existing test case", async () => {
+      const suite = await prisma.testSuite.create({
+        data: { name: "Suite", projectId },
+        select: { id: true },
+      });
+      await prisma.testCase.create({
+        data: { name: "Existing Test", suiteId: suite.id },
+      });
+
+      await repo.createRunWithResults(
+        projectId,
+        "Import",
+        "ci",
+        TestRunStatus.Completed,
+        [
+          {
+            suiteName: "Suite",
+            caseName: "Existing Test",
+            status: TestResultStatus.Passed,
+            notes: null,
+            steps: [{ order: 1, action: "action", expectedResult: "result" }],
+          },
+        ],
+      );
+
+      const testCase = await prisma.testCase.findFirstOrThrow({
+        where: { name: "Existing Test", suiteId: suite.id },
+        include: { steps: true },
+      });
+      expect(testCase.steps).toHaveLength(0);
     });
   });
 });

@@ -1,2 +1,4 @@
--P ubuntu-latest=node:24-alpine
+-P ubuntu-latest=catthehacker/ubuntu:act-latest
 --secret-file .secrets
+--network host
+--env NODE_TLS_REJECT_UNAUTHORIZED=0

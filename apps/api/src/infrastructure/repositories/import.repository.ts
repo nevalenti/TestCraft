@@ -16,8 +16,8 @@ const insertResults = async (
   projectId: string,
   runId: string,
   cases: ParsedTestCase[],
-  userId: string | undefined,
   now: Date,
+  userId?: string,
 ) => {
   const uniqueSuiteNames = [
     ...new Set(cases.map((parsedCase) => parsedCase.suiteName)),
@@ -70,6 +70,16 @@ const insertResults = async (
         select: { id: true },
       });
       caseMap.set(key, created.id);
+      if (parsedCase.steps?.length) {
+        await transaction.testCaseStep.createMany({
+          data: parsedCase.steps.map((step) => ({
+            testCaseId: created.id,
+            order: step.order,
+            action: step.action,
+            expectedResult: step.expectedResult,
+          })),
+        });
+      }
     }
   }
 
@@ -105,7 +115,7 @@ export class ImportRepository implements IImportRepository {
     environment: string,
     status: TestRunStatus,
     cases: ParsedTestCase[],
-    userId: string | undefined,
+    userId?: string,
   ): Promise<TestRun> {
     const now = new Date();
     return this.prisma.$transaction(async (transaction) => {
@@ -119,7 +129,7 @@ export class ImportRepository implements IImportRepository {
         },
         select: runSelect,
       });
-      await insertResults(transaction, projectId, run.id, cases, userId, now);
+      await insertResults(transaction, projectId, run.id, cases, now, userId);
       return toTestRun(run);
     });
   }

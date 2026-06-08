@@ -101,6 +101,19 @@ jobs:
         env:
           DATABASE_URL: postgresql://test:test@localhost:5432/testcraft_test
 
+      - name: Import results to TestCraft
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/import-results
+        with:
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          project-id: ${{ secrets.TESTCRAFT_API_PROJECT_ID }}
+          junit-xml: apps/api/test-results/junit.xml
+          run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
+
   docker:
     name: docker build & push
     needs: build-test

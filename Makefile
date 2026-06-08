@@ -26,13 +26,13 @@ seed:
 	pnpm --filter testcraft-api run db:seed
 
 e2e:
-	pnpm --filter testcraft-e2e run e2e
+	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets
 
 api:
-	act push -W .github/workflows/api.yml -j build-test
+	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
 
 web:
-	act push -W .github/workflows/web.yml -j build-test
+	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
 
 build:
 	docker build -t $(API_IMAGE) -f apps/api/Dockerfile .

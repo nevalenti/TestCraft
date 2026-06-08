@@ -28,8 +28,11 @@ export default defineConfig({
     setupFiles: "./src/__tests__/setup.ts",
     exclude: ["**/node_modules/**", "e2e/**"],
     css: true,
-    reporters: ["verbose", "html"],
-    outputFile: { html: "./test-results/index.html" },
+    reporters: ["verbose", "html", "junit"],
+    outputFile: {
+      html: "./test-results/index.html",
+      junit: "./test-results/junit.xml",
+    },
     env: {
       VITE_API_URL: "http://localhost:5000",
       VITE_KEYCLOAK_URL: "http://localhost:8080",

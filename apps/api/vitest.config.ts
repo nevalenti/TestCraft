@@ -18,6 +18,8 @@ export default defineConfig({
       KEYCLOAK_AUTHORITY: "http://localhost:8080/realms/testcraft",
       CORS_ALLOWED_ORIGINS: "http://localhost:5173",
     },
+    reporters: ["verbose", "junit"],
+    outputFile: { junit: "./test-results/junit.xml" },
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],

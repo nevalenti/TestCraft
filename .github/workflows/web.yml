@@ -69,6 +69,19 @@ jobs:
       - name: Test
         run: pnpm --filter testcraft-web run test
 
+      - name: Import results to TestCraft
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/import-results
+        with:
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          project-id: ${{ secrets.TESTCRAFT_WEB_PROJECT_ID }}
+          junit-xml: apps/web/test-results/junit.xml
+          run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
+
       - name: Upload test report
         if: always()
         continue-on-error: true

@@ -3,7 +3,7 @@ import { XMLParser } from "fast-xml-parser";
 
 import { DomainError } from "@/domain/errors";
 
-import type { ParsedTestCase } from "./import.repository";
+import type { ParsedStep, ParsedTestCase } from "./import.repository";
 
 const junitParser = new XMLParser({
   ignoreAttributes: false,
@@ -16,7 +16,7 @@ const extractXmlText = (node: unknown): string | null => {
   if (typeof node === "string") return node || null;
   if (typeof node === "object" && node !== null) {
     const obj = node as Record<string, unknown>;
-    const text = obj["#text"] ?? obj.message ?? null;
+    const text = obj.message ?? null;
     return typeof text === "string" ? text.trim() || null : null;
   }
   return null;
@@ -42,6 +42,18 @@ const resolveStatus = (
 
 const strVal = (value: unknown): string | null =>
   typeof value === "string" && value ? value : null;
+
+const parseSteps = (caseName: string): ParsedStep[] => {
+  const parts = caseName.split(" > ");
+  if (parts.length < 2) return [];
+  return [
+    {
+      order: 1,
+      action: parts.slice(0, -1).join(" > "),
+      expectedResult: parts.at(-1)!,
+    },
+  ];
+};
 
 export const parseJUnit = (
   xml: string,
@@ -74,7 +86,12 @@ export const parseJUnit = (
       const caseName = strVal(testcase.name) ?? "Unknown";
       const suiteName =
         suiteNameFromAttr ?? strVal(testcase.classname) ?? "Default Suite";
-      cases.push({ suiteName, caseName, ...resolveStatus(testcase) });
+      cases.push({
+        suiteName,
+        caseName,
+        ...resolveStatus(testcase),
+        steps: parseSteps(caseName),
+      });
     }
   }
 

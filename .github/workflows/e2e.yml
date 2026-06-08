@@ -60,6 +60,7 @@ jobs:
       - name: Start Keycloak
         run: |
           docker run -d \
+            --rm \
             --name keycloak \
             --network host \
             -e KC_HEALTH_ENABLED=true \
@@ -115,6 +116,19 @@ jobs:
           VITE_KEYCLOAK_URL: http://localhost:8080
           VITE_KEYCLOAK_REALM: testcraft
           VITE_KEYCLOAK_CLIENT_ID: testcraft-web
+
+      - name: Import results to TestCraft
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/import-results
+        with:
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          project-id: ${{ secrets.TESTCRAFT_E2E_PROJECT_ID }}
+          junit-xml: apps/e2e/e2e-results/junit.xml
+          run-name: "#${{ github.run_id }} e2e (${{ github.ref_name }})"
 
       - name: Upload Playwright report
         if: always()

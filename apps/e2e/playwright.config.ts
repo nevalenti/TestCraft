@@ -13,6 +13,7 @@ export default defineConfig({
   reporter: [
     ["list"],
     ["html", { outputFolder: "e2e-results", open: "never" }],
+    ["junit", { outputFile: "e2e-results/junit.xml" }],
   ],
   use: {
     baseURL: process.env.E2E_BASE_URL,

@@ -9,7 +9,7 @@ import { TestCase } from "@/domain/test-case";
 export interface CreateTestCase {
   name: string;
   description?: string | null;
-  priority: TestCasePriority;
+  priority?: TestCasePriority;
 }
 
 export type UpdateTestCase = CreateTestCase;
