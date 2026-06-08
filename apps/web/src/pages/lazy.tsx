@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 
+import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { PageSkeleton } from "@/layout/PageSkeleton";
 import { DashboardSkeleton } from "@/pages/DashboardPage/DashboardSkeleton";
 
@@ -71,6 +72,7 @@ export const LazyProjectSuitesPage = suspend(
       default: module.SuitesTab,
     })),
   ),
+  <SkeletonGrid />,
 );
 
 export const LazyProjectRunsPage = suspend(
@@ -79,4 +81,5 @@ export const LazyProjectRunsPage = suspend(
       default: module.RunsTab,
     })),
   ),
+  <SkeletonGrid />,
 );

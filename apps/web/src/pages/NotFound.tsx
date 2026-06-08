@@ -1,7 +1,11 @@
 import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
 
+import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+
 export const NotFound = () => {
+  useBreadcrumbs([]);
+
   return (
     <div className="flex flex-1 items-center justify-center px-4">
       <div className="text-center">
@@ -17,7 +21,7 @@ export const NotFound = () => {
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
         <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link to="/" className="btn gap-1.5 btn-sm btn-primary">
+          <Link to="/" className="btn gap-1.5 btn-ghost btn-sm">
             <HomeIcon className="size-4" aria-hidden="true" />
             Go Home
           </Link>

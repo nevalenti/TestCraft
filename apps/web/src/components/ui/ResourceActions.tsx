@@ -15,14 +15,16 @@ export const ResourceActions = ({
 }: ResourceActionsProps) => (
   <>
     <button
-      className={`btn- btn btn-ghost${size}`}
+      // eslint-disable-next-line tailwindcss/classnames-order
+      className={`btn btn-ghost btn-${size}`}
       onClick={onEdit}
       aria-label={`Edit ${label}`}
     >
       <PencilIcon className={size === "xs" ? "size-3.5" : "size-4"} />
     </button>
     <button
-      className={`btn- btn btn-ghost${size} text-error`}
+      // eslint-disable-next-line tailwindcss/classnames-order
+      className={`btn btn-ghost btn-${size} text-error`}
       onClick={onDelete}
       aria-label={`Delete ${label}`}
     >

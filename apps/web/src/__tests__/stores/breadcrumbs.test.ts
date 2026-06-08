@@ -3,13 +3,13 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 beforeEach(() => {
-  useBreadcrumbsStore.getState().set([]);
+  useBreadcrumbsStore.getState().set(null);
 });
 
 describe("useBreadcrumbsStore", () => {
-  describe("initial state — items list is empty", () => {
+  describe("initial state — items list is null", () => {
     it("starts with no breadcrumbs", () => {
-      expect(useBreadcrumbsStore.getState().items).toHaveLength(0);
+      expect(useBreadcrumbsStore.getState().items).toBeNull();
     });
   });
 
@@ -21,10 +21,10 @@ describe("useBreadcrumbsStore", () => {
 
       const { items } = useBreadcrumbsStore.getState();
       expect(items).toHaveLength(2);
-      expect(items[0].label).toBe("Projects");
-      expect(items[0].href).toBe("/projects");
-      expect(items[1].label).toBe("Alpha");
-      expect(items[1].href).toBeUndefined();
+      expect(items![0].label).toBe("Projects");
+      expect(items![0].href).toBe("/projects");
+      expect(items![1].label).toBe("Alpha");
+      expect(items![1].href).toBeUndefined();
     });
 
     it("replaces a previous set of breadcrumbs", () => {
@@ -33,7 +33,7 @@ describe("useBreadcrumbsStore", () => {
 
       const { items } = useBreadcrumbsStore.getState();
       expect(items).toHaveLength(1);
-      expect(items[0].label).toBe("New");
+      expect(items![0].label).toBe("New");
     });
 
     it("can clear breadcrumbs by setting an empty array", () => {

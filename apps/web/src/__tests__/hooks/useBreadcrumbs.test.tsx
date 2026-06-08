@@ -6,7 +6,7 @@ import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 import type { BreadcrumbItem } from "@/types";
 
 afterEach(() => {
-  useBreadcrumbsStore.getState().set([]);
+  useBreadcrumbsStore.getState().set(null);
 });
 
 describe("useBreadcrumbs", () => {
@@ -20,18 +20,18 @@ describe("useBreadcrumbs", () => {
       );
       const { items } = useBreadcrumbsStore.getState();
       expect(items).toHaveLength(2);
-      expect(items[0].label).toBe("Dashboard");
-      expect(items[1].label).toBe("Projects");
+      expect(items![0].label).toBe("Dashboard");
+      expect(items![1].label).toBe("Projects");
     });
   });
 
   describe("on unmount — clears the store", () => {
-    it("resets breadcrumbs to an empty array", () => {
+    it("resets breadcrumbs to null", () => {
       const { unmount } = renderHook(() =>
         useBreadcrumbs([{ label: "Projects", href: "/projects" }]),
       );
       unmount();
-      expect(useBreadcrumbsStore.getState().items).toHaveLength(0);
+      expect(useBreadcrumbsStore.getState().items).toBeNull();
     });
   });
 
@@ -45,7 +45,7 @@ describe("useBreadcrumbs", () => {
       rerender({ items: [{ label: "Settings" }] });
       const { items } = useBreadcrumbsStore.getState();
       expect(items).toHaveLength(1);
-      expect(items[0].label).toBe("Settings");
+      expect(items![0].label).toBe("Settings");
     });
   });
 });

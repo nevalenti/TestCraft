@@ -13,7 +13,7 @@ COPY packages/types/ ./packages/types/
 COPY apps/web/ ./apps/web/
 
 ARG VITE_API_URL=https://testcraft.dev
-ARG VITE_KEYCLOAK_URL=https//testcraft.dev:8443
+ARG VITE_KEYCLOAK_URL=https://testcraft.dev:8443
 ARG VITE_KEYCLOAK_REALM=testcraft
 ARG VITE_KEYCLOAK_CLIENT_ID=testcraft-web
 

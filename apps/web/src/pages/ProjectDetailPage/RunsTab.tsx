@@ -70,6 +70,7 @@ export const RunsTab = () => {
 
   const renderRuns = () => {
     if (isPending) return <SkeletonGrid />;
+
     if (runs?.length === 0)
       return (
         <EmptyState
@@ -77,6 +78,7 @@ export const RunsTab = () => {
           description="Start a test run to record and track results."
         />
       );
+
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {runs?.map((run) => (

@@ -46,6 +46,7 @@ export default defineConfig([
         "warn",
         {
           whitelist: [
+            "btn",
             "btn-.*",
             "input-bordered",
             "select-bordered",

@@ -49,6 +49,7 @@ export const SuitesTab = () => {
 
   const renderSuites = () => {
     if (isPending) return <SkeletonGrid />;
+
     if (suites?.length === 0)
       return (
         <EmptyState
@@ -56,6 +57,7 @@ export const SuitesTab = () => {
           description="Group related test cases into suites."
         />
       );
+
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {suites?.map((suite) => (
