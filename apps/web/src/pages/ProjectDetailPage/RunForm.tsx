@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormInput } from "@/components/ui/FormInput";
 import { runStatusOptions } from "@/lib/constants";
 
 const schema = z.object({
@@ -51,9 +52,9 @@ export const RunForm = ({
       className="space-y-4"
     >
       <FormField label="Name" htmlFor="run-name" error={errors.name?.message}>
-        <input
+        <FormInput
           id="run-name"
-          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
+          hasError={!!errors.name}
           placeholder="Sprint 42 Regression"
           autoFocus
           {...register("name")}
@@ -64,9 +65,9 @@ export const RunForm = ({
         htmlFor="run-environment"
         error={errors.environment?.message}
       >
-        <input
+        <FormInput
           id="run-environment"
-          className={`input-bordered input w-full bg-base-200${errors.environment ? " input-error" : ""}`}
+          hasError={!!errors.environment}
           placeholder="staging"
           {...register("environment")}
         />

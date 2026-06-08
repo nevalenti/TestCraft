@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 import { priorityOptions } from "@/lib/constants";
 
 const schema = z.object({
@@ -57,9 +59,9 @@ export const TestCaseForm = ({
       className="space-y-4"
     >
       <FormField label="Name" htmlFor="case-name" error={errors.name?.message}>
-        <input
+        <FormInput
           id="case-name"
-          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
+          hasError={!!errors.name}
           placeholder="User can log in with valid credentials"
           autoFocus
           {...register("name")}
@@ -87,9 +89,8 @@ export const TestCaseForm = ({
         htmlFor="case-description"
         error={errors.description?.message}
       >
-        <textarea
+        <FormTextarea
           id="case-description"
-          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("description")}

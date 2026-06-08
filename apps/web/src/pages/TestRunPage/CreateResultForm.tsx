@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 import { useProjectTestCases } from "@/hooks/useTestCases";
 import { statusOptions } from "@/lib/constants";
 import { toDatetimeLocal } from "@/lib/format";
@@ -106,10 +108,9 @@ export const CreateResultForm = ({
         htmlFor="result-executed-at"
         error={errors.executedAt?.message}
       >
-        <input
+        <FormInput
           id="result-executed-at"
           type="datetime-local"
-          className="input-bordered input w-full bg-base-200"
           {...register("executedAt")}
         />
       </FormField>
@@ -118,9 +119,8 @@ export const CreateResultForm = ({
         htmlFor="result-notes"
         error={errors.notes?.message}
       >
-        <textarea
+        <FormTextarea
           id="result-notes"
-          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("notes")}

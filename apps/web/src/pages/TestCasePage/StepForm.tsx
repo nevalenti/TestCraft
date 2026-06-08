@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 
 const schema = z.object({
   action: z.string().min(1, "Action is required").max(255),
@@ -51,9 +52,9 @@ export const StepForm = ({
         htmlFor="step-action"
         error={errors.action?.message}
       >
-        <textarea
+        <FormTextarea
           id="step-action"
-          className={`textarea-bordered textarea w-full bg-base-200${errors.action ? " textarea-error" : ""}`}
+          hasError={!!errors.action}
           placeholder="Navigate to the login page"
           rows={3}
           autoFocus
@@ -65,9 +66,9 @@ export const StepForm = ({
         htmlFor="step-expected-result"
         error={errors.expectedResult?.message}
       >
-        <textarea
+        <FormTextarea
           id="step-expected-result"
-          className={`textarea-bordered textarea w-full bg-base-200${errors.expectedResult ? " textarea-error" : ""}`}
+          hasError={!!errors.expectedResult}
           placeholder="Login page is displayed"
           rows={3}
           {...register("expectedResult")}

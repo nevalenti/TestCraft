@@ -5,6 +5,7 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 import { statusOptions } from "@/lib/constants";
 
 const schema = z.object({
@@ -66,9 +67,8 @@ export const UpdateResultForm = ({
         htmlFor="update-result-notes"
         error={errors.notes?.message}
       >
-        <textarea
+        <FormTextarea
           id="update-result-notes"
-          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("notes")}

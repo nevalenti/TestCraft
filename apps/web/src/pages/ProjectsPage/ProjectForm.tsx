@@ -5,6 +5,8 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
+import { FormInput } from "@/components/ui/FormInput";
+import { FormTextarea } from "@/components/ui/FormTextarea";
 
 const schema = z.object({
   name: z.string().min(1, "Name is required").max(255),
@@ -50,9 +52,9 @@ export const ProjectForm = ({
         htmlFor="project-name"
         error={errors.name?.message}
       >
-        <input
+        <FormInput
           id="project-name"
-          className={`input-bordered input w-full bg-base-200${errors.name ? " input-error" : ""}`}
+          hasError={!!errors.name}
           placeholder="My Project"
           autoFocus
           {...register("name")}
@@ -63,9 +65,8 @@ export const ProjectForm = ({
         htmlFor="project-description"
         error={errors.description?.message}
       >
-        <textarea
+        <FormTextarea
           id="project-description"
-          className="textarea-bordered textarea w-full bg-base-200"
           placeholder="Optional"
           rows={2}
           {...register("description")}

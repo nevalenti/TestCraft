@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
@@ -112,28 +113,23 @@ export const RunsTab = () => {
 
   return (
     <>
-      <div className="mb-4 flex items-center gap-3">
-        <input
-          type="search"
-          className="input-bordered input w-full max-w-sm bg-base-200"
-          placeholder="Search test runs…"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <div className="ml-auto flex shrink-0 items-center gap-2">
-          <button
-            className="btn gap-1.5 btn-sm btn-secondary"
-            onClick={openImport}
-          >
-            <ArrowUpTrayIcon className="size-4" />
-            Import
-          </button>
-          <button className="btn btn-sm btn-primary" onClick={openCreate}>
-            <PlusIcon className="size-4" aria-hidden="true" />
-            New Run
-          </button>
-        </div>
-      </div>
+      <ListToolbar
+        search={search}
+        onSearch={setSearch}
+        placeholder="Search test runs…"
+      >
+        <button
+          className="btn gap-1.5 btn-sm btn-secondary"
+          onClick={openImport}
+        >
+          <ArrowUpTrayIcon className="size-4" />
+          Import
+        </button>
+        <button className="btn btn-sm btn-primary" onClick={openCreate}>
+          <PlusIcon className="size-4" aria-hidden="true" />
+          New Run
+        </button>
+      </ListToolbar>
 
       {renderRuns()}
 

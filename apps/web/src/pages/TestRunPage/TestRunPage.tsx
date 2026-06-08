@@ -1,11 +1,6 @@
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
+import { PlusIcon } from "@heroicons/react/24/solid";
 import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   type PaginationState,
@@ -23,6 +18,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceActions } from "@/components/ui/ResourceActions";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
@@ -42,6 +38,7 @@ import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
 import { RESULTS_PAGE_SIZE, statusOptions } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
+import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
 
 type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
@@ -60,12 +57,6 @@ const SUMMARY_KEY: Record<string, SummaryCountKey> = {
 };
 
 const columnHelper = createColumnHelper<TestResult>();
-
-const getSortIcon = (sorted: false | "asc" | "desc"): string => {
-  if (sorted === "asc") return "▲";
-  if (sorted === "desc") return "▼";
-  return "⬍";
-};
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
@@ -258,94 +249,7 @@ export const TestRunPage = () => {
           </div>
         </div>
       );
-    return (
-      <>
-        <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
-          <table className="table table-sm">
-            <thead>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr
-                  key={headerGroup.id}
-                  className="text-xs text-base-content/60"
-                >
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      onClick={header.column.getToggleSortingHandler()}
-                      className={
-                        header.column.getCanSort()
-                          ? "cursor-pointer select-none"
-                          : ""
-                      }
-                    >
-                      <span className="inline-flex items-center gap-1">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext(),
-                        )}
-                        {header.column.getCanSort() && (
-                          <span className="text-base-content/30">
-                            {getSortIcon(header.column.getIsSorted())}
-                          </span>
-                        )}
-                      </span>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr
-                  key={row.id}
-                  data-testid="result-row"
-                  className="group transition-colors hover:bg-base-200/50"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext(),
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {pageCount > 1 && (
-          <div className="mt-4 flex items-center justify-between gap-4">
-            <span className="text-sm text-base-content/60">
-              Page{" "}
-              <span className="font-semibold text-base-content">
-                {pagination.pageIndex + 1}
-              </span>{" "}
-              of {pageCount}
-            </span>
-            <div className="flex gap-2">
-              <button
-                className="btn btn-square btn-sm btn-neutral"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-                aria-label="Previous page"
-              >
-                <ChevronLeftIcon className="size-4" />
-              </button>
-              <button
-                className="btn btn-square btn-sm btn-neutral"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-                aria-label="Next page"
-              >
-                <ChevronRightIcon className="size-4" />
-              </button>
-            </div>
-          </div>
-        )}
-      </>
-    );
+    return <ResultsTable table={table} pageCount={pageCount} />;
   };
 
   return (
@@ -380,22 +284,16 @@ export const TestRunPage = () => {
         )}
 
         {runSummary && runSummary.total > 0 && (
-          <div className="mb-4 flex items-center gap-3">
-            <input
-              type="search"
-              className="input-bordered input w-full max-w-sm bg-base-200"
-              placeholder="Search test cases…"
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-            />
-            <button
-              className="btn ml-auto shrink-0 btn-sm btn-primary"
-              onClick={openCreate}
-            >
+          <ListToolbar
+            search={search}
+            onSearch={setSearch}
+            placeholder="Search test cases…"
+          >
+            <button className="btn btn-sm btn-primary" onClick={openCreate}>
               <PlusIcon className="size-4" aria-hidden="true" />
               Add Result
             </button>
-          </div>
+          </ListToolbar>
         )}
 
         {runSummary && runSummary.total > 0 && (

@@ -8,6 +8,7 @@ import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
@@ -92,22 +93,16 @@ export const SuitesTab = () => {
 
   return (
     <>
-      <div className="mb-4 flex items-center gap-3">
-        <input
-          type="search"
-          className="input-bordered input w-full max-w-sm bg-base-200"
-          placeholder="Search test suites…"
-          value={search}
-          onChange={(event) => setSearch(event.target.value)}
-        />
-        <button
-          className="btn ml-auto shrink-0 btn-sm btn-primary"
-          onClick={openCreate}
-        >
+      <ListToolbar
+        search={search}
+        onSearch={setSearch}
+        placeholder="Search test suites…"
+      >
+        <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" aria-hidden="true" />
           New Suite
         </button>
-      </div>
+      </ListToolbar>
 
       {renderSuites()}
 

@@ -5,6 +5,7 @@ import { useState } from "react";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
@@ -86,22 +87,16 @@ export const ProjectsPage = () => {
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
-        <div className="mb-4 flex items-center gap-3">
-          <input
-            type="search"
-            className="input-bordered input w-full max-w-sm bg-base-200"
-            placeholder="Search projects…"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-          />
-          <button
-            className="btn ml-auto shrink-0 btn-sm btn-primary"
-            onClick={openCreate}
-          >
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          placeholder="Search projects…"
+        >
+          <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Project
           </button>
-        </div>
+        </ListToolbar>
         <div className="min-h-80">{renderProjects()}</div>
       </section>
 
