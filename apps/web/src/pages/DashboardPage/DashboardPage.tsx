@@ -19,7 +19,12 @@ import { ActiveRunsSkeleton } from "@/pages/DashboardPage/ActiveRunsSkeleton";
 import { StatCard } from "@/pages/DashboardPage/StatCard";
 
 export const DashboardPage = () => {
-  const { data: projects, isPending: projectsPending, isError } = useProjects();
+  const {
+    data: projects,
+    isPending: projectsPending,
+    isError,
+    error,
+  } = useProjects();
 
   const projectMap = useMemo(
     () => new Map((projects ?? []).map((project) => [project.id, project])),
@@ -41,7 +46,7 @@ export const DashboardPage = () => {
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
 
-  if (isError) return <ErrorState />;
+  if (isError) return <ErrorState error={error} />;
 
   const totalSuites = (projects ?? []).reduce(
     (sum, project) => sum + (project.suiteCount ?? 0),

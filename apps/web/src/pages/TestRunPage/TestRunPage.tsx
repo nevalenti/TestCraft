@@ -81,6 +81,7 @@ export const TestRunPage = () => {
     data: resultsPage,
     isPending,
     isError,
+    error,
   } = useTestResults(
     projectId,
     runId,
@@ -199,10 +200,7 @@ export const TestRunPage = () => {
 
   const renderResults = () => {
     if (isPending) return <SkeletonGrid />;
-    if (isError)
-      return (
-        <ErrorState message="Failed to load results. Please check your connection and try again." />
-      );
+    if (isError) return <ErrorState error={error} />;
     if (
       resultsPage?.items.length === 0 &&
       statusFilter === null &&

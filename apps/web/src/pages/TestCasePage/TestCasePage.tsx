@@ -63,6 +63,7 @@ export const TestCasePage = () => {
     data: steps,
     isPending,
     isError,
+    error,
   } = useTestCaseSteps(projectId, suiteId, caseId);
   const createStep = useCreateTestCaseStep(projectId, suiteId, caseId);
   const updateStep = useUpdateTestCaseStep(projectId, suiteId, caseId);
@@ -155,7 +156,7 @@ export const TestCasePage = () => {
           ))}
         </div>
       );
-    if (isError) return <ErrorState />;
+    if (isError) return <ErrorState error={error} />;
     if (sortedSteps.length === 0)
       return (
         <EmptyState

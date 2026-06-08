@@ -29,6 +29,7 @@ export const ProjectsPage = () => {
     data: projects,
     isPending,
     isError,
+    error,
   } = useProjects(debouncedSearch || undefined);
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -43,10 +44,7 @@ export const ProjectsPage = () => {
   const handleDelete = (id: string) =>
     deleteProject.mutate(id, { onSuccess: close });
 
-  if (isError)
-    return (
-      <ErrorState message="Failed to load projects. Please check your connection and try again." />
-    );
+  if (isError) return <ErrorState error={error} />;
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 

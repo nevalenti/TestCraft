@@ -43,6 +43,7 @@ export const TestSuitePage = () => {
     data: testCases,
     isPending,
     isError,
+    error,
   } = useTestCases(projectId, suiteId, debouncedSearch || undefined);
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
@@ -66,7 +67,7 @@ export const TestSuitePage = () => {
 
   const renderTestCases = () => {
     if (isPending) return <SkeletonGrid />;
-    if (isError) return <ErrorState />;
+    if (isError) return <ErrorState error={error} />;
     if (testCases?.length === 0)
       return (
         <EmptyState
