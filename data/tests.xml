@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="TestCraft Full Regression Suite" tests="100" failures="6" errors="0" skipped="4" time="187.432">
+
+  <testsuite name="Authentication" tests="12" failures="1" errors="0" skipped="1" time="18.743">
+    <testcase name="should login with valid credentials" classname="Authentication.Login" time="1.234"/>
+    <testcase name="should reject login with incorrect password" classname="Authentication.Login" time="0.891"/>
+    <testcase name="should reject login for non-existent email" classname="Authentication.Login" time="0.743"/>
+    <testcase name="should show validation error for missing email field" classname="Authentication.Validation" time="0.312"/>
+    <testcase name="should show validation error for missing password field" classname="Authentication.Validation" time="0.298"/>
+    <testcase name="should redirect to dashboard after successful login" classname="Authentication.Login" time="2.145"/>
+    <testcase name="should logout and clear session cookie" classname="Authentication.Session" time="1.567"/>
+    <testcase name="should persist authenticated session after page reload" classname="Authentication.Session" time="2.089"/>
+    <testcase name="should redirect unauthenticated users to login page" classname="Authentication.Session" time="1.123"/>
+    <testcase name="should handle expired JWT token gracefully" classname="Authentication.Session" time="0.000">
+      <skipped/>
+    </testcase>
+    <testcase name="should rate-limit login attempts after 10 consecutive failures" classname="Authentication.Security" time="4.234">
+      <failure message="Expected HTTP 429 but received 200 OK after 10 rapid login attempts">AssertionError: expected response.status (200) to equal 429
+  at Authentication.Security (auth.spec.ts:147:5)
+  at Context.&lt;anonymous&gt; (auth.spec.ts:141:3)</failure>
+    </testcase>
+    <testcase name="should enforce minimum password length of 8 characters on registration" classname="Authentication.Registration" time="0.887"/>
+  </testsuite>
+
+  <testsuite name="Project Management" tests="14" failures="1" errors="0" skipped="0" time="24.567">
+    <testcase name="should display empty state when no projects exist" classname="ProjectManagement.List" time="0.987"/>
+    <testcase name="should create a new project with name only" classname="ProjectManagement.Create" time="1.456"/>
+    <testcase name="should create a new project with name and description" classname="ProjectManagement.Create" time="1.712"/>
+    <testcase name="should display projects in a paginated list" classname="ProjectManagement.List" time="2.345"/>
+    <testcase name="should navigate to project detail page on card click" classname="ProjectManagement.Navigation" time="1.098"/>
+    <testcase name="should edit project name via settings panel" classname="ProjectManagement.Edit" time="1.876"/>
+    <testcase name="should edit project description via settings panel" classname="ProjectManagement.Edit" time="1.654"/>
+    <testcase name="should delete a project permanently" classname="ProjectManagement.Delete" time="2.123"/>
+    <testcase name="should show confirmation dialog before deleting project" classname="ProjectManagement.Delete" time="1.456"/>
+    <testcase name="should show validation error when project name is empty" classname="ProjectManagement.Validation" time="0.432"/>
+    <testcase name="should show validation error when project name exceeds 255 characters" classname="ProjectManagement.Validation" time="0.398"/>
+    <testcase name="should search and filter projects by name" classname="ProjectManagement.Search" time="1.234"/>
+    <testcase name="should sort projects by creation date descending" classname="ProjectManagement.Sort" time="1.876">
+      <failure message="Projects not ordered by createdAt DESC: found older project before newer one">AssertionError: expected projects[0].createdAt to be after projects[1].createdAt
+  at ProjectManagement.Sort (project.spec.ts:89:7)
+  at Context.&lt;anonymous&gt; (project.spec.ts:84:3)</failure>
+    </testcase>
+    <testcase name="should display total test run count on project card" classname="ProjectManagement.Display" time="1.219"/>
+  </testsuite>
+
+  <testsuite name="Test Suite Management" tests="11" failures="0" errors="0" skipped="1" time="16.891">
+    <testcase name="should display test suites list for a project" classname="TestSuiteManagement.List" time="1.234"/>
+    <testcase name="should display empty state when project has no test suites" classname="TestSuiteManagement.List" time="0.876"/>
+    <testcase name="should create a new test suite with name only" classname="TestSuiteManagement.Create" time="1.567"/>
+    <testcase name="should create a new test suite with name and description" classname="TestSuiteManagement.Create" time="1.789"/>
+    <testcase name="should edit test suite name" classname="TestSuiteManagement.Edit" time="1.654"/>
+    <testcase name="should edit test suite description" classname="TestSuiteManagement.Edit" time="1.432"/>
+    <testcase name="should delete a test suite" classname="TestSuiteManagement.Delete" time="1.987"/>
+    <testcase name="should show confirmation dialog before deleting a test suite" classname="TestSuiteManagement.Delete" time="1.345"/>
+    <testcase name="should show validation error when suite name is empty" classname="TestSuiteManagement.Validation" time="0.398"/>
+    <testcase name="should display test case count badge per suite card" classname="TestSuiteManagement.Display" time="1.123"/>
+    <testcase name="should search and filter test suites by name" classname="TestSuiteManagement.Search" time="0.000">
+      <skipped/>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="Test Case CRUD" tests="12" failures="0" errors="0" skipped="0" time="19.345">
+    <testcase name="should create test case with name only" classname="TestCaseCRUD.Create" time="1.456"/>
+    <testcase name="should create test case with description" classname="TestCaseCRUD.Create" time="1.678"/>
+    <testcase name="should create test case with Low priority" classname="TestCaseCRUD.Create" time="1.234"/>
+    <testcase name="should create test case with Medium priority as default" classname="TestCaseCRUD.Create" time="1.198"/>
+    <testcase name="should create test case with High priority" classname="TestCaseCRUD.Create" time="1.312"/>
+    <testcase name="should create test case with Critical priority" classname="TestCaseCRUD.Create" time="1.287"/>
+    <testcase name="should display test case list for a suite" classname="TestCaseCRUD.List" time="1.876"/>
+    <testcase name="should display test case detail page" classname="TestCaseCRUD.Detail" time="2.134"/>
+    <testcase name="should edit test case name inline" classname="TestCaseCRUD.Edit" time="1.765"/>
+    <testcase name="should edit test case description" classname="TestCaseCRUD.Edit" time="1.543"/>
+    <testcase name="should edit test case priority" classname="TestCaseCRUD.Edit" time="1.456"/>
+    <testcase name="should delete a test case" classname="TestCaseCRUD.Delete" time="1.906"/>
+  </testsuite>
+
+  <testsuite name="Test Case Steps" tests="8" failures="1" errors="0" skipped="0" time="13.678">
+    <testcase name="should add a step to a test case" classname="TestCaseSteps.Create" time="1.876"/>
+    <testcase name="should add multiple steps to a test case" classname="TestCaseSteps.Create" time="2.345"/>
+    <testcase name="should edit step action text" classname="TestCaseSteps.Edit" time="1.543"/>
+    <testcase name="should edit step expected result text" classname="TestCaseSteps.Edit" time="1.487"/>
+    <testcase name="should delete a step from a test case" classname="TestCaseSteps.Delete" time="1.654"/>
+    <testcase name="should reorder steps via drag and drop" classname="TestCaseSteps.Reorder" time="2.876">
+      <failure message="Drag-and-drop reorder did not update step order in the database">AssertionError: expected step[0].order to equal 2 but got 1
+  at TestCaseSteps.Reorder (steps.spec.ts:203:9)
+  at Context.&lt;anonymous&gt; (steps.spec.ts:198:3)</failure>
+    </testcase>
+    <testcase name="should show validation error for empty step action" classname="TestCaseSteps.Validation" time="0.456"/>
+    <testcase name="should show validation error for empty expected result" classname="TestCaseSteps.Validation" time="0.441"/>
+  </testsuite>
+
+  <testsuite name="Test Run Management" tests="12" failures="1" errors="0" skipped="1" time="28.912">
+    <testcase name="should create a new test run" classname="TestRunManagement.Create" time="1.876"/>
+    <testcase name="should display test run list for a project" classname="TestRunManagement.List" time="2.134"/>
+    <testcase name="should display test run detail with all test results" classname="TestRunManagement.Detail" time="2.567"/>
+    <testcase name="should mark test result as Passed" classname="TestRunManagement.Results" time="1.654"/>
+    <testcase name="should mark test result as Failed with notes" classname="TestRunManagement.Results" time="1.876"/>
+    <testcase name="should mark test result as Blocked" classname="TestRunManagement.Results" time="1.543"/>
+    <testcase name="should mark test result as Skipped" classname="TestRunManagement.Results" time="1.498"/>
+    <testcase name="should display test run progress percentage" classname="TestRunManagement.Progress" time="1.234"/>
+    <testcase name="should transition test run status to Completed" classname="TestRunManagement.Status" time="2.109"/>
+    <testcase name="should transition test run status to Archived" classname="TestRunManagement.Status" time="1.987"/>
+    <testcase name="should filter test results by status within a run" classname="TestRunManagement.Filter" time="1.765"/>
+    <testcase name="should show execution time for each test result" classname="TestRunManagement.Display" time="0.000">
+      <skipped/>
+    </testcase>
+  </testsuite>
+
+  <testsuite name="Import and Export" tests="10" failures="0" errors="0" skipped="0" time="21.456">
+    <testcase name="import valid JUnit XML and create a test run" classname="ImportExport.JUnit" time="3.456"/>
+    <testcase name="import valid Allure JSON results and create a test run" classname="ImportExport.Allure" time="2.987"/>
+    <testcase name="should return 400 for malformed JUnit XML" classname="ImportExport.Validation" time="0.678"/>
+    <testcase name="should return 400 when import file exceeds 5MB limit" classname="ImportExport.Validation" time="0.543"/>
+    <testcase name="should map JUnit failure element to Failed result status" classname="ImportExport.JUnit" time="2.134"/>
+    <testcase name="should map JUnit error element to Failed result status" classname="ImportExport.JUnit" time="1.987"/>
+    <testcase name="should map JUnit skipped element to Skipped result status" classname="ImportExport.JUnit" time="1.876"/>
+    <testcase name="should map Allure passed status to Passed result" classname="ImportExport.Allure" time="2.234"/>
+    <testcase name="should map Allure broken status to Failed result" classname="ImportExport.Allure" time="2.189"/>
+    <testcase name="should handle JUnit XML with multiple testsuites root element" classname="ImportExport.JUnit" time="3.372"/>
+  </testsuite>
+
+  <testsuite name="Dashboard" tests="9" failures="1" errors="0" skipped="1" time="14.234">
+    <testcase name="should display total projects count on dashboard" classname="Dashboard.Metrics" time="1.456"/>
+    <testcase name="should display recent test runs on dashboard" classname="Dashboard.RecentRuns" time="1.876"/>
+    <testcase name="should display overall pass rate chart" classname="Dashboard.Charts" time="2.134">
+      <failure message="Pass rate chart renders as empty when results contain only Blocked status">Error: Chart element has zero height
+  at Dashboard.Charts (dashboard.spec.ts:78:11)
+  at Context.&lt;anonymous&gt; (dashboard.spec.ts:73:3)</failure>
+    </testcase>
+    <testcase name="should show empty state for a new account with no data" classname="Dashboard.EmptyState" time="0.987"/>
+    <testcase name="should navigate to project detail from dashboard card" classname="Dashboard.Navigation" time="1.234"/>
+    <testcase name="should display last run status badge per project" classname="Dashboard.Display" time="1.345"/>
+    <testcase name="should highlight projects with recent critical failures" classname="Dashboard.Display" time="1.456"/>
+    <testcase name="should refresh dashboard metrics after a new test run is created" classname="Dashboard.Refresh" time="0.000">
+      <skipped/>
+    </testcase>
+    <testcase name="should display test activity summary for the past 7 days" classname="Dashboard.Activity" time="1.746"/>
+  </testsuite>
+
+  <testsuite name="User Settings" tests="7" failures="1" errors="0" skipped="0" time="11.234">
+    <testcase name="should display user profile form with current values" classname="UserSettings.Profile" time="1.234"/>
+    <testcase name="should update display name successfully" classname="UserSettings.Profile" time="1.567"/>
+    <testcase name="should validate email format on profile update" classname="UserSettings.Validation" time="0.876"/>
+    <testcase name="should change password with valid current password" classname="UserSettings.Password" time="1.987"/>
+    <testcase name="should reject password change with incorrect current password" classname="UserSettings.Password" time="1.456">
+      <failure message="API returned 200 instead of 400 when current password is wrong">AssertionError: expected response.status to equal 400 but got 200
+  at UserSettings.Password (settings.spec.ts:112:7)
+  at Context.&lt;anonymous&gt; (settings.spec.ts:108:3)</failure>
+    </testcase>
+    <testcase name="should enforce minimum password length of 8 characters" classname="UserSettings.Password" time="0.876"/>
+    <testcase name="should show success toast notification on profile save" classname="UserSettings.UX" time="1.238"/>
+  </testsuite>
+
+  <testsuite name="API Security" tests="5" failures="0" errors="0" skipped="0" time="8.372">
+    <testcase name="should reject API requests without Authorization header" classname="APISecurity.Auth" time="0.654"/>
+    <testcase name="should reject requests with expired JWT token" classname="APISecurity.Auth" time="0.712"/>
+    <testcase name="should return 404 for resources belonging to another user" classname="APISecurity.Authorization" time="1.234"/>
+    <testcase name="should enforce project ownership scoping on all nested routes" classname="APISecurity.Authorization" time="2.987"/>
+    <testcase name="should sanitize search input to prevent reflected XSS" classname="APISecurity.InputSanitization" time="2.785"/>
+  </testsuite>
+
+</testsuites>

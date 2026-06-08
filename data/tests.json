@@ -1,0 +1,1121 @@
+[
+  {
+    "name": "should login with valid credentials",
+    "fullName": "Authentication.Login#should_login_with_valid_credentials",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Login" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should reject login with incorrect password",
+    "fullName": "Authentication.Login#should_reject_login_with_incorrect_password",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Login" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should reject login for non-existent email",
+    "fullName": "Authentication.Login#should_reject_login_for_non_existent_email",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Login" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show validation error for missing email field",
+    "fullName": "Authentication.Validation#should_show_validation_error_for_missing_email_field",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should show validation error for missing password field",
+    "fullName": "Authentication.Validation#should_show_validation_error_for_missing_password_field",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should redirect to dashboard after successful login",
+    "fullName": "Authentication.Login#should_redirect_to_dashboard_after_successful_login",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Login" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should logout and clear session cookie",
+    "fullName": "Authentication.Session#should_logout_and_clear_session_cookie",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Session" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should persist authenticated session after page reload",
+    "fullName": "Authentication.Session#should_persist_authenticated_session_after_page_reload",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Session" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should redirect unauthenticated users to login page",
+    "fullName": "Authentication.Session#should_redirect_unauthenticated_users_to_login_page",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Session" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should handle expired JWT token gracefully",
+    "fullName": "Authentication.Session#should_handle_expired_JWT_token_gracefully",
+    "status": "skipped",
+    "statusDetails": {
+      "message": "Skipped: JWT expiry simulation not yet configured in test environment"
+    },
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Session" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should rate-limit login attempts after 10 consecutive failures",
+    "fullName": "Authentication.Security#should_rate_limit_login_attempts",
+    "status": "broken",
+    "statusDetails": {
+      "message": "Expected HTTP 429 but received 200 OK after 10 rapid login attempts",
+      "trace": "Error: expect(response.status).toBe(429)\n  at Authentication.Security (auth.spec.ts:147:5)\n  at Context.<anonymous> (auth.spec.ts:141:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Security" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should enforce minimum password length of 8 characters on registration",
+    "fullName": "Authentication.Registration#should_enforce_minimum_password_length",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Authentication" },
+      { "name": "feature", "value": "Registration" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should display empty state when no projects exist",
+    "fullName": "ProjectManagement.List#should_display_empty_state_when_no_projects_exist",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Project List" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create a new project with name only",
+    "fullName": "ProjectManagement.Create#should_create_a_new_project_with_name_only",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Create Project" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should create a new project with name and description",
+    "fullName": "ProjectManagement.Create#should_create_a_new_project_with_name_and_description",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Create Project" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should display projects in a paginated list",
+    "fullName": "ProjectManagement.List#should_display_projects_in_a_paginated_list",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Project List" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should navigate to project detail page on card click",
+    "fullName": "ProjectManagement.Navigation#should_navigate_to_project_detail_page_on_card_click",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Navigation" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should edit project name via settings panel",
+    "fullName": "ProjectManagement.Edit#should_edit_project_name_via_settings_panel",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Edit Project" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit project description via settings panel",
+    "fullName": "ProjectManagement.Edit#should_edit_project_description_via_settings_panel",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Edit Project" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should delete a project permanently",
+    "fullName": "ProjectManagement.Delete#should_delete_a_project_permanently",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Delete Project" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show confirmation dialog before deleting project",
+    "fullName": "ProjectManagement.Delete#should_show_confirmation_dialog_before_deleting_project",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Delete Project" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show validation error when project name is empty",
+    "fullName": "ProjectManagement.Validation#should_show_validation_error_when_project_name_is_empty",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should show validation error when project name exceeds 255 characters",
+    "fullName": "ProjectManagement.Validation#should_show_validation_error_when_project_name_exceeds_255_characters",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should search and filter projects by name",
+    "fullName": "ProjectManagement.Search#should_search_and_filter_projects_by_name",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Search" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should sort projects by creation date descending",
+    "fullName": "ProjectManagement.Sort#should_sort_projects_by_creation_date_descending",
+    "status": "failed",
+    "statusDetails": {
+      "message": "Projects not ordered by createdAt DESC: found older project before newer one",
+      "trace": "AssertionError: expected projects[0].createdAt to be after projects[1].createdAt\n  at ProjectManagement.Sort (project.spec.ts:89:7)\n  at Context.<anonymous> (project.spec.ts:84:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Sorting" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should display total test run count on project card",
+    "fullName": "ProjectManagement.Display#should_display_total_test_run_count_on_project_card",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Project Management" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should display test suites list for a project",
+    "fullName": "TestSuiteManagement.List#should_display_test_suites_list_for_a_project",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Suite List" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should display empty state when project has no test suites",
+    "fullName": "TestSuiteManagement.List#should_display_empty_state_when_project_has_no_test_suites",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Suite List" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create a new test suite with name only",
+    "fullName": "TestSuiteManagement.Create#should_create_a_new_test_suite_with_name_only",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Create Suite" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should create a new test suite with name and description",
+    "fullName": "TestSuiteManagement.Create#should_create_a_new_test_suite_with_name_and_description",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Create Suite" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit test suite name",
+    "fullName": "TestSuiteManagement.Edit#should_edit_test_suite_name",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Edit Suite" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit test suite description",
+    "fullName": "TestSuiteManagement.Edit#should_edit_test_suite_description",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Edit Suite" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should delete a test suite",
+    "fullName": "TestSuiteManagement.Delete#should_delete_a_test_suite",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Delete Suite" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show confirmation dialog before deleting a test suite",
+    "fullName": "TestSuiteManagement.Delete#should_show_confirmation_dialog_before_deleting_a_test_suite",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Delete Suite" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show validation error when suite name is empty",
+    "fullName": "TestSuiteManagement.Validation#should_show_validation_error_when_suite_name_is_empty",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should display test case count badge per suite card",
+    "fullName": "TestSuiteManagement.Display#should_display_test_case_count_badge_per_suite_card",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should navigate to suite detail page on card click",
+    "fullName": "TestSuiteManagement.Navigation#should_navigate_to_suite_detail_page_on_card_click",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Navigation" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should search and filter test suites by name",
+    "fullName": "TestSuiteManagement.Search#should_search_and_filter_test_suites_by_name",
+    "status": "skipped",
+    "statusDetails": {
+      "message": "Skipped: search debounce timing is unstable in CI environment"
+    },
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Search" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should paginate test suites when more than 20 exist",
+    "fullName": "TestSuiteManagement.Pagination#should_paginate_test_suites_when_more_than_20_exist",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Suite Management" },
+      { "name": "feature", "value": "Pagination" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create test case with name only",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_name_only",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should create test case with description",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_description",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should create test case with Low priority",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_Low_priority",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create test case with Medium priority as default",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_Medium_priority_as_default",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should create test case with High priority",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_High_priority",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create test case with Critical priority",
+    "fullName": "TestCaseCRUD.Create#should_create_test_case_with_Critical_priority",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Create Test Case" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should display test case list for a suite",
+    "fullName": "TestCaseCRUD.List#should_display_test_case_list_for_a_suite",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "List Test Cases" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should display test case detail page",
+    "fullName": "TestCaseCRUD.Detail#should_display_test_case_detail_page",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Test Case Detail" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit test case name inline",
+    "fullName": "TestCaseCRUD.Edit#should_edit_test_case_name_inline",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Edit Test Case" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit test case description",
+    "fullName": "TestCaseCRUD.Edit#should_edit_test_case_description",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Edit Test Case" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should edit test case priority",
+    "fullName": "TestCaseCRUD.Edit#should_edit_test_case_priority",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Edit Test Case" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should delete a test case",
+    "fullName": "TestCaseCRUD.Delete#should_delete_a_test_case",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case CRUD" },
+      { "name": "feature", "value": "Delete Test Case" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should add a step to a test case",
+    "fullName": "TestCaseSteps.Create#should_add_a_step_to_a_test_case",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Create Step" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should add multiple steps to a test case",
+    "fullName": "TestCaseSteps.Create#should_add_multiple_steps_to_a_test_case",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Create Step" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should edit step action text",
+    "fullName": "TestCaseSteps.Edit#should_edit_step_action_text",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Edit Step" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should edit step expected result text",
+    "fullName": "TestCaseSteps.Edit#should_edit_step_expected_result_text",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Edit Step" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should delete a step from a test case",
+    "fullName": "TestCaseSteps.Delete#should_delete_a_step_from_a_test_case",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Delete Step" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should reorder steps via drag and drop",
+    "fullName": "TestCaseSteps.Reorder#should_reorder_steps_via_drag_and_drop",
+    "status": "failed",
+    "statusDetails": {
+      "message": "Drag-and-drop reorder did not update step order in the database",
+      "trace": "AssertionError: expected step[0].order to equal 2 but got 1\n  at TestCaseSteps.Reorder (steps.spec.ts:203:9)\n  at Context.<anonymous> (steps.spec.ts:198:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Reorder Steps" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should show validation error for empty step action",
+    "fullName": "TestCaseSteps.Validation#should_show_validation_error_for_empty_step_action",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should show validation error for empty expected result",
+    "fullName": "TestCaseSteps.Validation#should_show_validation_error_for_empty_expected_result",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Case Steps" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should create a new test run",
+    "fullName": "TestRunManagement.Create#should_create_a_new_test_run",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Create Test Run" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should display test run list for a project",
+    "fullName": "TestRunManagement.List#should_display_test_run_list_for_a_project",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Run List" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should display test run detail with all test results",
+    "fullName": "TestRunManagement.Detail#should_display_test_run_detail_with_all_test_results",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Run Detail" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should mark test result as Passed",
+    "fullName": "TestRunManagement.Results#should_mark_test_result_as_Passed",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Results" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should mark test result as Failed with notes",
+    "fullName": "TestRunManagement.Results#should_mark_test_result_as_Failed_with_notes",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Results" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should mark test result as Blocked",
+    "fullName": "TestRunManagement.Results#should_mark_test_result_as_Blocked",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Results" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should mark test result as Skipped",
+    "fullName": "TestRunManagement.Results#should_mark_test_result_as_Skipped",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Test Results" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should display test run progress percentage",
+    "fullName": "TestRunManagement.Progress#should_display_test_run_progress_percentage",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Progress" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should transition test run status to Completed",
+    "fullName": "TestRunManagement.Status#should_transition_test_run_status_to_Completed",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Run Status" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should transition test run status to Archived",
+    "fullName": "TestRunManagement.Status#should_transition_test_run_status_to_Archived",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Run Status" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should filter test results by status within a run",
+    "fullName": "TestRunManagement.Filter#should_filter_test_results_by_status_within_a_run",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Filtering" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should display run environment label on detail page",
+    "fullName": "TestRunManagement.Display#should_display_run_environment_label_on_detail_page",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should show execution time for each test result",
+    "fullName": "TestRunManagement.Display#should_show_execution_time_for_each_test_result",
+    "status": "skipped",
+    "statusDetails": {
+      "message": "Skipped: execution time tracking not yet implemented on the frontend"
+    },
+    "labels": [
+      { "name": "suite", "value": "Test Run Management" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "import valid JUnit XML and create a test run",
+    "fullName": "ImportExport.JUnit#import_valid_JUnit_XML_and_create_a_test_run",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "JUnit Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "import valid Allure JSON results and create a test run",
+    "fullName": "ImportExport.Allure#import_valid_Allure_JSON_results_and_create_a_test_run",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "Allure Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should return 400 for malformed JUnit XML",
+    "fullName": "ImportExport.Validation#should_return_400_for_malformed_JUnit_XML",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should return 400 when import file exceeds 5MB limit",
+    "fullName": "ImportExport.Validation#should_return_400_when_import_file_exceeds_5MB_limit",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should map JUnit failure element to Failed result status",
+    "fullName": "ImportExport.JUnit#should_map_JUnit_failure_element_to_Failed_result_status",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "JUnit Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should map JUnit error element to Failed result status",
+    "fullName": "ImportExport.JUnit#should_map_JUnit_error_element_to_Failed_result_status",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "JUnit Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should map JUnit skipped element to Skipped result status",
+    "fullName": "ImportExport.JUnit#should_map_JUnit_skipped_element_to_Skipped_result_status",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "JUnit Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should map Allure passed status to Passed result",
+    "fullName": "ImportExport.Allure#should_map_Allure_passed_status_to_Passed_result",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "Allure Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should map Allure broken status to Failed result",
+    "fullName": "ImportExport.Allure#should_map_Allure_broken_status_to_Failed_result",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "Allure Import" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should handle JUnit XML with multiple testsuites root element",
+    "fullName": "ImportExport.JUnit#should_handle_JUnit_XML_with_multiple_testsuites_root_element",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Import & Export" },
+      { "name": "feature", "value": "JUnit Import" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should display total projects count on dashboard",
+    "fullName": "Dashboard.Metrics#should_display_total_projects_count_on_dashboard",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Metrics" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should display recent test runs on dashboard",
+    "fullName": "Dashboard.RecentRuns#should_display_recent_test_runs_on_dashboard",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Recent Runs" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should display overall pass rate chart",
+    "fullName": "Dashboard.Charts#should_display_overall_pass_rate_chart",
+    "status": "failed",
+    "statusDetails": {
+      "message": "Pass rate chart renders as empty when results contain only Blocked status",
+      "trace": "Error: Chart element has zero height\n  at Dashboard.Charts (dashboard.spec.ts:78:11)\n  at Context.<anonymous> (dashboard.spec.ts:73:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Charts" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should show empty state for a new account with no data",
+    "fullName": "Dashboard.EmptyState#should_show_empty_state_for_a_new_account_with_no_data",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Empty State" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should navigate to project detail from dashboard card",
+    "fullName": "Dashboard.Navigation#should_navigate_to_project_detail_from_dashboard_card",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Navigation" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should display last run status badge per project",
+    "fullName": "Dashboard.Display#should_display_last_run_status_badge_per_project",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should highlight projects with recent critical failures",
+    "fullName": "Dashboard.Display#should_highlight_projects_with_recent_critical_failures",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Display" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should refresh dashboard metrics after a new test run is created",
+    "fullName": "Dashboard.Refresh#should_refresh_dashboard_metrics_after_a_new_test_run_is_created",
+    "status": "skipped",
+    "statusDetails": {
+      "message": "Skipped: real-time refresh requires WebSocket support not yet available"
+    },
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Refresh" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should display test activity summary for the past 7 days",
+    "fullName": "Dashboard.Activity#should_display_test_activity_summary_for_the_past_7_days",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Dashboard" },
+      { "name": "feature", "value": "Activity" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should display user profile form with current values",
+    "fullName": "UserSettings.Profile#should_display_user_profile_form_with_current_values",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Profile" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should update display name successfully",
+    "fullName": "UserSettings.Profile#should_update_display_name_successfully",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Profile" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should validate email format on profile update",
+    "fullName": "UserSettings.Validation#should_validate_email_format_on_profile_update",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Validation" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should change password with valid current password",
+    "fullName": "UserSettings.Password#should_change_password_with_valid_current_password",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Password" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should reject password change with incorrect current password",
+    "fullName": "UserSettings.Password#should_reject_password_change_with_incorrect_current_password",
+    "status": "failed",
+    "statusDetails": {
+      "message": "API returned 200 instead of 400 when current password is wrong",
+      "trace": "AssertionError: expected response.status to equal 400 but got 200\n  at UserSettings.Password (settings.spec.ts:112:7)\n  at Context.<anonymous> (settings.spec.ts:108:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Password" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should enforce minimum password length of 8 characters",
+    "fullName": "UserSettings.Password#should_enforce_minimum_password_length_of_8_characters",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "Password" },
+      { "name": "severity", "value": "critical" }
+    ]
+  },
+  {
+    "name": "should show success toast notification on profile save",
+    "fullName": "UserSettings.UX#should_show_success_toast_notification_on_profile_save",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "User Settings" },
+      { "name": "feature", "value": "UX" },
+      { "name": "severity", "value": "minor" }
+    ]
+  },
+  {
+    "name": "should reject API requests without Authorization header",
+    "fullName": "APISecurity.Auth#should_reject_API_requests_without_Authorization_header",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "API Security" },
+      { "name": "feature", "value": "Authentication" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should reject requests with expired JWT token",
+    "fullName": "APISecurity.Auth#should_reject_requests_with_expired_JWT_token",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "API Security" },
+      { "name": "feature", "value": "Authentication" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should return 404 for resources belonging to another user",
+    "fullName": "APISecurity.Authorization#should_return_404_for_resources_belonging_to_another_user",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "API Security" },
+      { "name": "feature", "value": "Authorization" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should enforce project ownership scoping on all nested routes",
+    "fullName": "APISecurity.Authorization#should_enforce_project_ownership_scoping_on_all_nested_routes",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "API Security" },
+      { "name": "feature", "value": "Authorization" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should sanitize search input to prevent reflected XSS",
+    "fullName": "APISecurity.InputSanitization#should_sanitize_search_input_to_prevent_reflected_XSS",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "API Security" },
+      { "name": "feature", "value": "Input Sanitization" },
+      { "name": "severity", "value": "blocker" }
+    ]
+  },
+  {
+    "name": "should load project list page under 300ms on warm cache",
+    "fullName": "Performance.Load#should_load_project_list_page_under_300ms_on_warm_cache",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Performance" },
+      { "name": "feature", "value": "Page Load" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should load test case list under 500ms for 200 items",
+    "fullName": "Performance.Load#should_load_test_case_list_under_500ms_for_200_items",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Performance" },
+      { "name": "feature", "value": "Page Load" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should import 1000 test cases in under 10 seconds",
+    "fullName": "Performance.Import#should_import_1000_test_cases_in_under_10_seconds",
+    "status": "broken",
+    "statusDetails": {
+      "message": "Import of 1000 cases took 14.3s, exceeding the 10s threshold",
+      "trace": "Error: Timeout exceeded: operation took 14300ms (limit: 10000ms)\n  at Performance.Import (performance.spec.ts:45:11)\n  at Context.<anonymous> (performance.spec.ts:40:3)"
+    },
+    "labels": [
+      { "name": "suite", "value": "Performance" },
+      { "name": "feature", "value": "Import Performance" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should render dashboard page under 500ms",
+    "fullName": "Performance.Load#should_render_dashboard_page_under_500ms",
+    "status": "passed",
+    "labels": [
+      { "name": "suite", "value": "Performance" },
+      { "name": "feature", "value": "Page Load" },
+      { "name": "severity", "value": "normal" }
+    ]
+  },
+  {
+    "name": "should handle 50 concurrent test result updates without data loss",
+    "fullName": "Performance.Concurrency#should_handle_50_concurrent_test_result_updates_without_data_loss",
+    "status": "skipped",
+    "statusDetails": {
+      "message": "Skipped: concurrency load testing requires dedicated test environment"
+    },
+    "labels": [
+      { "name": "suite", "value": "Performance" },
+      { "name": "feature", "value": "Concurrency" },
+      { "name": "severity", "value": "normal" }
+    ]
+  }
+]
