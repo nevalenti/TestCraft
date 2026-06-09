@@ -103,11 +103,9 @@ export const FileDropZone = ({
       className={cn(
         "rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
         c.ring,
-        isDragging
-          ? c.drag
-          : hasError
-            ? "border-error/50 bg-error/5"
-            : cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
+        isDragging && c.drag,
+        !isDragging && hasError && "border-error/50 bg-error/5",
+        !isDragging && !hasError && cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
       )}
       onClick={openPicker}
       onKeyDown={(event) =>
