@@ -64,7 +64,7 @@ jobs:
             --name keycloak \
             --network host \
             -e KC_HEALTH_ENABLED=true \
-            -v ${{ github.workspace }}/apps/e2e/keycloak-realm.json:/opt/keycloak/data/import/realm.json \
+            -v ${{ github.workspace }}/infra/keycloak/keycloak-realm.json:/opt/keycloak/data/import/realm.json \
             quay.io/keycloak/keycloak:26.2 \
             start-dev --import-realm
 

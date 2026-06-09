@@ -31,7 +31,7 @@ configMapGenerator:
 
   - name: keycloak-realm
     files:
-      - testcraft-realm.json=apps/e2e/keycloak-realm.json
+      - testcraft-realm.json=infra/keycloak/keycloak-realm.json
     options:
       disableNameSuffixHash: true
 

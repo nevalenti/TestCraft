@@ -42,7 +42,7 @@ export default defineConfig({
     },
     {
       command: "pnpm --filter testcraft-api dev",
-      url: "http://localhost:5000/ready",
+      url: "http://localhost:5000/api/ready",
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

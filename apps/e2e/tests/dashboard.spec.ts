@@ -11,7 +11,7 @@ test.describe("Dashboard", () => {
       page.locator("span").filter({ hasText: /^Projects$/ }),
     ).toBeVisible();
     await expect(
-      page.locator("span").filter({ hasText: /^Active Runs$/ }),
+      page.locator("span").filter({ hasText: /^Test Runs$/ }),
     ).toBeVisible();
     await expect(
       page.locator("span").filter({ hasText: /^Test Suites$/ }),
