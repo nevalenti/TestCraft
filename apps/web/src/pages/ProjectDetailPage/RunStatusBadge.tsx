@@ -1,5 +1,7 @@
 import { TestRunStatus } from "@testcraft/types";
 
+import { cn } from "@/lib/cn";
+
 const RUN_STATUS_STYLES: Record<TestRunStatus, string> = {
   [TestRunStatus.Active]: "bg-warning/15 text-warning border-warning/30",
   [TestRunStatus.Completed]: "bg-success/15 text-success border-success/30",
@@ -9,7 +11,10 @@ const RUN_STATUS_STYLES: Record<TestRunStatus, string> = {
 
 export const RunStatusBadge = ({ status }: { status: TestRunStatus }) => (
   <span
-    className={`inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase ${RUN_STATUS_STYLES[status]}`}
+    className={cn(
+      "inline-flex items-center rounded border px-1.5 py-0.5 text-[10px] font-semibold tracking-wider uppercase",
+      RUN_STATUS_STYLES[status],
+    )}
   >
     {status}
   </span>

@@ -1,3 +1,5 @@
+import { cn } from "@/lib/cn";
+
 export const StatCard = ({
   label,
   value,
@@ -16,12 +18,12 @@ export const StatCard = ({
       <span className="text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
         {label}
       </span>
-      <span className={accent}>{icon}</span>
+      <span className={cn(accent)}>{icon}</span>
     </div>
     {isLoading ? (
       <div className="h-9 w-16 skeleton rounded" />
     ) : (
-      <p className={`font-display text-4xl font-bold ${accent}`}>{value}</p>
+      <p className={cn("font-display text-4xl font-bold", accent)}>{value}</p>
     )}
   </div>
 );

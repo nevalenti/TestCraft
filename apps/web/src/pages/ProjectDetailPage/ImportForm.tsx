@@ -2,6 +2,8 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import type { AllureResultItem } from "@testcraft/types";
 import { useState } from "react";
 
+import { cn } from "@/lib/cn";
+
 import { FileDropZone } from "@/components/ui/FileDropZone";
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
@@ -147,7 +149,10 @@ export const ImportForm = ({
       >
         <input
           id="import-environment"
-          className={`input-bordered input w-full bg-base-200${errors.environment ? " input-error" : ""}`}
+          className={cn(
+            "input-bordered input w-full bg-base-200",
+            errors.environment && "input-error",
+          )}
           placeholder="staging"
           value={environment}
           onChange={(event) => setEnvironment(event.target.value)}

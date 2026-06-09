@@ -3,6 +3,8 @@ import { type CreateTestResult, TestResultStatus } from "@testcraft/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { cn } from "@/lib/cn";
+
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
 import { FormInput } from "@/components/ui/FormInput";
@@ -73,7 +75,10 @@ export const CreateResultForm = ({
       >
         <select
           id="result-test-case"
-          className={`select-bordered select w-full${errors.testCaseId ? " select-error" : ""}`}
+          className={cn(
+            "select-bordered select w-full",
+            errors.testCaseId && "select-error",
+          )}
           disabled={loadingCases}
           autoFocus
           {...register("testCaseId")}

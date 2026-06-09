@@ -1,3 +1,5 @@
+import { cn } from "@/lib/cn";
+
 interface FormActionsProps {
   onCancel: () => void;
   isLoading: boolean;
@@ -17,7 +19,10 @@ export const FormActions = ({
     </button>
     <button
       type="submit"
-      className={`btn btn-sm ${variant === "secondary" ? "btn-secondary" : "btn-primary"}`}
+      className={cn(
+        "btn btn-sm",
+        variant === "secondary" ? "btn-secondary" : "btn-primary",
+      )}
       disabled={isLoading}
     >
       {isLoading ? (

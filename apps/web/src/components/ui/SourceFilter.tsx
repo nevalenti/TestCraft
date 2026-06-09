@@ -1,3 +1,5 @@
+import { cn } from "@/lib/cn";
+
 interface SourceFilterProps {
   sources: string[];
   counts: Record<string, number>;
@@ -27,11 +29,12 @@ export const SourceFilter = ({
         <button
           key={source}
           onClick={() => onChange(value === source ? null : source)}
-          className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+          className={cn(
+            "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors",
             value === source
               ? "border-base-content/40 bg-base-200 shadow-sm"
-              : "border-border bg-base-100 hover:bg-base-200"
-          }`}
+              : "border-border bg-base-100 hover:bg-base-200",
+          )}
         >
           <span className="text-sm font-medium text-base-content/75">
             {source}

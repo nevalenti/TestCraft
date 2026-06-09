@@ -1,5 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
+import { cn } from "@/lib/cn";
 import { useNotificationsStore } from "@/stores/notifications";
 
 const typeClass: Record<string, string> = {
@@ -23,7 +24,10 @@ export const Notifications = () => {
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className={`flex max-w-sm items-center gap-2.5 rounded-2xl py-2 pr-2 pl-3.5 shadow-sm ${typeClass[notification.type] ?? "bg-base-200 text-base-content"}`}
+          className={cn(
+            "flex max-w-sm items-center gap-2.5 rounded-2xl py-2 pr-2 pl-3.5 shadow-sm",
+            typeClass[notification.type] ?? "bg-base-200 text-base-content",
+          )}
         >
           <span
             className="size-2.5 shrink-0 rounded-full bg-current opacity-60"

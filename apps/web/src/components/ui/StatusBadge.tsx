@@ -6,6 +6,8 @@ import {
 } from "@heroicons/react/24/solid";
 import { TestResultStatus } from "@testcraft/types";
 
+import { cn } from "@/lib/cn";
+
 const config: Record<
   TestResultStatus,
   { label: string; cls: string; icon: React.ReactNode }
@@ -35,7 +37,7 @@ const config: Record<
 export const StatusBadge = ({ status }: { status: TestResultStatus }) => {
   const { label, cls, icon } = config[status];
   return (
-    <span className={`badge badge-sm ${cls} gap-1 font-medium`}>
+    <span className={cn("badge badge-sm gap-1 font-medium", cls)}>
       {icon}
       {label}
     </span>

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
 import { ResourceActions } from "@/components/ui/ResourceActions";
+import { cn } from "@/lib/cn";
 
 interface ResourceCardProps {
   to?: string;
@@ -27,7 +28,10 @@ export const ResourceCard = ({
 }: ResourceCardProps) => (
   <div
     data-testid={testId}
-    className={`relative ${cardBg} group overflow-hidden rounded-lg border border-base-content/20 shadow-md transition-shadow duration-200 hover:shadow-xl motion-safe:transition-all motion-safe:hover:-translate-y-0.5`}
+    className={cn(
+      "relative group overflow-hidden rounded-lg border border-base-content/20 shadow-md transition-shadow duration-200 hover:shadow-xl motion-safe:transition-all motion-safe:hover:-translate-y-0.5",
+      cardBg,
+    )}
   >
     {to && (
       <Link
@@ -39,7 +43,7 @@ export const ResourceCard = ({
     <div className="flex min-h-[120px] flex-col justify-between p-4 pr-10">
       {typeIcon && (
         <div
-          className={`mb-3 flex items-center gap-1.5 ${accentText} font-bold`}
+          className={cn("mb-3 flex items-center gap-1.5 font-bold", accentText)}
         >
           {typeIcon}
           <span className="text-[11px] tracking-[0.08em] uppercase">

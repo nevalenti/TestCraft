@@ -5,6 +5,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { useRef, useState } from "react";
 
+import { cn } from "@/lib/cn";
+
 interface FileDropZoneProps {
   id: string;
   accept: string;
@@ -93,18 +95,20 @@ export const FileDropZone = ({
     onFilesChange(files.filter((_, fileIndex) => fileIndex !== index));
   };
 
-  let borderClass: string;
-  if (isDragging) borderClass = c.drag;
-  else if (hasError) borderClass = "border-error/50 bg-error/5";
-  else
-    borderClass = `border-base-300 bg-base-200/40 ${c.hover} transition-colors`;
-
   return (
     <div
       role="button"
       tabIndex={0}
       aria-label="File upload area"
-      className={`rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${c.ring} ${borderClass}`}
+      className={cn(
+        "rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        c.ring,
+        isDragging
+          ? c.drag
+          : hasError
+            ? "border-error/50 bg-error/5"
+            : cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
+      )}
       onClick={openPicker}
       onKeyDown={(event) =>
         (event.key === "Enter" || event.key === " ") && openPicker()
@@ -133,7 +137,7 @@ export const FileDropZone = ({
           </div>
           <div>
             <p className="text-sm text-base-content/70">
-              <span className={`font-medium ${c.text}`}>Click to upload</span>{" "}
+              <span className={cn("font-medium", c.text)}>Click to upload</span>{" "}
               or drag & drop
             </p>
             {hint && (
@@ -171,7 +175,10 @@ export const FileDropZone = ({
           ))}
           <button
             type="button"
-            className={`mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors ${c.textMuted}`}
+            className={cn(
+              "mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors",
+              c.textMuted,
+            )}
             onClick={openPicker}
           >
             <ArrowUpTrayIcon className="size-3" />
