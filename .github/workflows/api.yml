@@ -73,9 +73,6 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
-      - name: Install build tools
-        run: apt-get install -y python3 make g++
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
