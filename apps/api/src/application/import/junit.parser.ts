@@ -5,11 +5,13 @@ import { DomainError } from "@/domain/errors";
 
 import type { ParsedStep, ParsedTestCase } from "./import.repository";
 
+const ARRAY_NODES = new Set(["testsuite", "testcase"]);
+
 const junitParser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
   textNodeName: "#text",
-  isArray: (name) => ["testsuite", "testcase"].includes(name),
+  isArray: (name) => ARRAY_NODES.has(name),
 });
 
 const extractXmlText = (node: unknown): string | null => {
@@ -25,15 +27,10 @@ const extractXmlText = (node: unknown): string | null => {
 const resolveStatus = (
   testcase: Record<string, unknown>,
 ): { status: TestResultStatus; notes: string | null } => {
-  if ("failure" in testcase)
+  if ("failure" in testcase || "error" in testcase)
     return {
       status: TestResultStatus.Failed,
-      notes: extractXmlText(testcase.failure),
-    };
-  if ("error" in testcase)
-    return {
-      status: TestResultStatus.Failed,
-      notes: extractXmlText(testcase.error),
+      notes: extractXmlText(testcase.failure ?? testcase.error),
     };
   if ("skipped" in testcase)
     return { status: TestResultStatus.Skipped, notes: null };
@@ -43,17 +40,21 @@ const resolveStatus = (
 const strVal = (value: unknown): string | null =>
   typeof value === "string" && value ? value : null;
 
+const SEP = " > ";
+
 const parseSteps = (caseName: string): ParsedStep[] => {
-  const parts = caseName.split(" > ");
-  if (parts.length < 2) return [];
+  const idx = caseName.lastIndexOf(SEP);
+  if (idx === -1) return [];
   return [
     {
       order: 1,
-      action: parts.slice(0, -1).join(" > "),
-      expectedResult: parts.at(-1)!,
+      action: caseName.slice(0, idx),
+      expectedResult: caseName.slice(idx + SEP.length),
     },
   ];
 };
+
+const DEFAULT_RUN_NAME = "Imported Run";
 
 export const parseJUnit = (
   xml: string,
@@ -66,34 +67,33 @@ export const parseJUnit = (
   }
 
   let suites: Record<string, unknown>[] = [];
-  let runName = "Imported Run";
+  let runName = DEFAULT_RUN_NAME;
 
   if (doc.testsuites) {
     const testsuites = doc.testsuites as Record<string, unknown>;
-    runName = strVal(testsuites.name) ?? "Imported Run";
+    runName = strVal(testsuites.name) ?? DEFAULT_RUN_NAME;
     suites = (testsuites.testsuite as Record<string, unknown>[]) ?? [];
   } else if (doc.testsuite) {
     suites = doc.testsuite as Record<string, unknown>[];
     const first = suites[0];
-    if (first) runName = strVal(first.name) ?? "Imported Run";
+    if (first) runName = strVal(first.name) ?? DEFAULT_RUN_NAME;
   }
 
-  const cases: ParsedTestCase[] = [];
-  for (const suite of suites) {
+  const cases = suites.flatMap((suite) => {
     const suiteNameFromAttr = strVal(suite.name);
-    const testcases = (suite.testcase as Record<string, unknown>[]) ?? [];
-    for (const testcase of testcases) {
-      const caseName = strVal(testcase.name) ?? "Unknown";
-      const suiteName =
-        suiteNameFromAttr ?? strVal(testcase.classname) ?? "Default Suite";
-      cases.push({
-        suiteName,
-        caseName,
-        ...resolveStatus(testcase),
-        steps: parseSteps(caseName),
-      });
-    }
-  }
+    return ((suite.testcase as Record<string, unknown>[]) ?? []).map(
+      (testcase) => {
+        const caseName = strVal(testcase.name) ?? "Unknown";
+        return {
+          suiteName:
+            suiteNameFromAttr ?? strVal(testcase.classname) ?? "Default Suite",
+          caseName,
+          ...resolveStatus(testcase),
+          steps: parseSteps(caseName),
+        };
+      },
+    );
+  });
 
   return { runName, cases };
 };

@@ -28,20 +28,20 @@ const labelValue = (
   ...keys: string[]
 ): string | null => {
   if (!labels) return null;
+  const map = new Map(labels.map((l) => [l.name, l.value]));
   for (const key of keys) {
-    const found = labels.find((label) => label.name === key);
-    if (found?.value) return found.value;
+    const val = map.get(key);
+    if (val) return val;
   }
   return null;
 };
 
 export const parseAllure = (results: AllureResultItem[]): ParsedTestCase[] =>
-  results.map((result, index) => {
-    const suiteName =
+  results.map((result, index) => ({
+    suiteName:
       labelValue(result.labels, "suite", "parentSuite", "testClass") ??
-      "Default Suite";
-    const caseName = result.name ?? result.fullName ?? `Unknown (${index + 1})`;
-    const status = resolveStatus(result.status);
-    const notes = result.statusDetails?.message ?? null;
-    return { suiteName, caseName, status, notes };
-  });
+      "Default Suite",
+    caseName: result.name ?? result.fullName ?? `Unknown (${index + 1})`,
+    status: resolveStatus(result.status),
+    notes: result.statusDetails?.message ?? null,
+  }));
