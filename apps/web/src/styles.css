@@ -4,7 +4,7 @@
 @plugin "daisyui" {
   themes:
     dracula --default,
-    dim --prefersdark;
+    emerald --prefersdark;
 }
 
 @theme {

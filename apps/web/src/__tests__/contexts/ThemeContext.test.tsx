@@ -17,7 +17,7 @@ const TestConsumer = () => {
   const { isDark, toggleTheme } = useTheme();
   return (
     <>
-      <span data-testid="state">{isDark ? "dim" : "dracula"}</span>
+      <span data-testid="state">{isDark ? "emerald" : "dracula"}</span>
       <button onClick={toggleTheme}>toggle</button>
     </>
   );
@@ -55,7 +55,7 @@ describe("ThemeProvider", () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(screen.getByTestId("state")).toHaveTextContent("dim");
+      expect(screen.getByTestId("state")).toHaveTextContent("emerald");
     });
 
     it("updates the data-theme attribute to the dark value", async () => {
@@ -65,7 +65,7 @@ describe("ThemeProvider", () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole("button", { name: "toggle" }));
-      expect(document.documentElement.dataset.theme).toBe("dim");
+      expect(document.documentElement.dataset.theme).toBe("emerald");
     });
   });
 
