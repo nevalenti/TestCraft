@@ -31,7 +31,7 @@ export const DashboardPage = () => {
     [projects],
   );
 
-  const { activeRuns, runsPending } = useQueries({
+  const { activeRuns, totalRuns, runsPending } = useQueries({
     queries: (projects ?? []).map((project) => testRunQueries.all(project.id)),
     combine: (results) => ({
       activeRuns: results
@@ -40,6 +40,10 @@ export const DashboardPage = () => {
         .toSorted((itemA, itemB) =>
           compareDesc(new Date(itemA.createdAt), new Date(itemB.createdAt)),
         ),
+      totalRuns: results.reduce(
+        (sum, result) => sum + (result.data?.total ?? 0),
+        0,
+      ),
       runsPending: results.some((result) => result.isPending),
     }),
   });
@@ -139,8 +143,8 @@ export const DashboardPage = () => {
             accent="text-primary"
           />
           <StatCard
-            label="Active Runs"
-            value={activeRuns.length}
+            label="Test Runs"
+            value={totalRuns}
             icon={<BoltIcon className="size-5" />}
             isLoading={isLoadingRuns}
             accent="text-warning"

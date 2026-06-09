@@ -8,6 +8,7 @@ export const runSelect = {
   name: true,
   environment: true,
   status: true,
+  source: true,
   executedById: true,
   createdAt: true,
   updatedAt: true,
@@ -19,6 +20,7 @@ export const toTestRun = (run: {
   name: string;
   environment: string;
   status: string;
+  source: string | null;
   executedById: string | null;
   createdAt: Date;
   updatedAt: Date;

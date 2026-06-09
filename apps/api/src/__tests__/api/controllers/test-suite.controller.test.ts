@@ -50,6 +50,7 @@ const suite: TestSuite = {
   projectId: "proj-1",
   name: "Checkout Flow",
   description: null,
+  source: null,
   createdAt: new Date(),
   updatedAt: new Date(),
 };

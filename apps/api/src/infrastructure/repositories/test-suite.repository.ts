@@ -15,6 +15,7 @@ const suiteSelect = {
   projectId: true,
   name: true,
   description: true,
+  source: true,
   createdAt: true,
   updatedAt: true,
 } as const;

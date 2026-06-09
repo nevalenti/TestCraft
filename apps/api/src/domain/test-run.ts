@@ -6,6 +6,7 @@ export interface TestRun {
   name: string;
   environment: string;
   status: TestRunStatus;
+  source: string | null;
   executedById: string | null;
   createdAt: Date;
   updatedAt: Date;

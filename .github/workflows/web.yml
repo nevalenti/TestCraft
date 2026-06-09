@@ -51,6 +51,9 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
 
+      - name: Install build tools
+        run: apt-get install -y python3 make g++
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -74,13 +77,14 @@ jobs:
         continue-on-error: true
         uses: ./.github/actions/import-results
         with:
-          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           username: ${{ secrets.TESTCRAFT_USERNAME }}
           password: ${{ secrets.TESTCRAFT_PASSWORD }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          project-id: ${{ secrets.TESTCRAFT_WEB_PROJECT_ID }}
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          project-name: TestCraft
           junit-xml: apps/web/test-results/junit.xml
           run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
+          source: web
 
       - name: Upload test report
         if: always()

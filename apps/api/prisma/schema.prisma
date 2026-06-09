@@ -19,6 +19,7 @@ model Project {
   testSuites  TestSuite[]
   testRuns    TestRun[]
 
+  @@unique([userId, name])
   @@index([userId])
   @@map("projects")
 }
@@ -27,6 +28,7 @@ model TestSuite {
   id          String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name        String
   description String?
+  source      String?
   projectId   String     @map("project_id") @db.Uuid
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @default(now()) @map("updated_at")
@@ -79,6 +81,7 @@ model TestRun {
   name         String
   environment  String
   status       TestRunStatus @default(Active)
+  source       String?
   executedById String?       @map("executed_by_id") @db.Uuid
   projectId    String        @map("project_id") @db.Uuid
   createdAt    DateTime      @default(now()) @map("created_at")

@@ -24,5 +24,6 @@ export interface IImportRepository {
     status: TestRunStatus,
     cases: ParsedTestCase[],
     userId?: string,
+    source?: string,
   ): Promise<TestRun>;
 }

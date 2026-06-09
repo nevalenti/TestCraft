@@ -54,6 +54,7 @@ const run: TestRun = {
   name: "Imported Run",
   environment: "staging",
   status: TestRunStatus.Completed,
+  source: null,
   executedById: "user-1",
   createdAt: new Date(),
   updatedAt: new Date(),

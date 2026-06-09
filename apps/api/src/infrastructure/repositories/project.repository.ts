@@ -5,10 +5,14 @@ import {
   IProjectRepository,
   UpdateProject,
 } from "@/application/projects/project.repository";
+import { DomainError } from "@/domain/errors";
 import { resolvePagination } from "@/domain/pagination";
 import { Project } from "@/domain/project";
 import { PrismaClient } from "@/generated/prisma/client";
-import { isNotFound } from "@/infrastructure/database/prisma.errors";
+import {
+  isNotFound,
+  isUniqueViolation,
+} from "@/infrastructure/database/prisma.errors";
 
 const projectSelect = {
   id: true,
@@ -82,15 +86,21 @@ export class ProjectRepository implements IProjectRepository {
   }
 
   async create(userId: string, input: CreateProject): Promise<Project> {
-    const project = await this.prisma.project.create({
-      data: {
-        userId,
-        name: input.name,
-        description: input.description ?? null,
-      },
-      select: projectSelect,
-    });
-    return toProject(project);
+    try {
+      const project = await this.prisma.project.create({
+        data: {
+          userId,
+          name: input.name,
+          description: input.description ?? null,
+        },
+        select: projectSelect,
+      });
+      return toProject(project);
+    } catch (err) {
+      if (isUniqueViolation(err))
+        throw new DomainError("A project with this name already exists");
+      throw err;
+    }
   }
 
   async update(
@@ -107,6 +117,8 @@ export class ProjectRepository implements IProjectRepository {
       return toProject(project);
     } catch (err) {
       if (isNotFound(err)) return null;
+      if (isUniqueViolation(err))
+        throw new DomainError("A project with this name already exists");
       throw err;
     }
   }

@@ -28,7 +28,7 @@ app.use(httpLogger);
 app.use(httpMetrics);
 app.use(json({ limit: "100kb" }));
 
-app.use(systemRoutes);
+app.use("/api", systemRoutes);
 app.use("/api/v1/docs", docsRoutes);
 
 app.use("/api/v1", apiVersion, rateLimiter, requestTimeout, v1Routes);

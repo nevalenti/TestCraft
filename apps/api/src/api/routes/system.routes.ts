@@ -29,6 +29,10 @@ const isBearerTokenValid = (
   );
 };
 
+router.get("/auth-config", (_req, res) => {
+  res.json({ authority: config.keycloak.authority });
+});
+
 router.get("/ready", (_req, res) => {
   res.json({ status: "ok" });
 });

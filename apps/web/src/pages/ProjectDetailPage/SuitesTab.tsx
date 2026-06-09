@@ -12,6 +12,7 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SourceFilter } from "@/components/ui/SourceFilter";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -27,6 +28,7 @@ import { SuiteForm } from "@/pages/ProjectDetailPage/SuiteForm";
 export const SuitesTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestSuite>();
@@ -47,6 +49,20 @@ export const SuitesTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const allSuites = suites ?? [];
+  const sources = [
+    ...new Set(allSuites.map((s) => s.source).filter(Boolean) as string[]),
+  ].toSorted();
+  const sourceCounts = Object.fromEntries(
+    sources.map((src) => [
+      src,
+      allSuites.filter((s) => s.source === src).length,
+    ]),
+  );
+  const visibleSuites = sourceFilter
+    ? allSuites.filter((s) => s.source === sourceFilter)
+    : suites;
+
   const renderSuites = () => {
     if (isPending) return <SkeletonGrid />;
 
@@ -60,7 +76,7 @@ export const SuitesTab = () => {
 
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {suites?.map((suite) => (
+        {visibleSuites?.map((suite) => (
           <ResourceCard
             key={suite.id}
             testId="suite-card"
@@ -84,9 +100,18 @@ export const SuitesTab = () => {
                 )}
               </p>
             </div>
-            <p className="mt-3 text-xs text-base-content/50 tabular-nums">
-              {formatDate(suite.createdAt)}
-            </p>
+            <div className="mt-4 flex items-center justify-between gap-2">
+              {suite.source ? (
+                <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                  {suite.source}
+                </span>
+              ) : (
+                <span />
+              )}
+              <span className="shrink-0 text-[11px] font-medium text-base-content/40 tabular-nums">
+                {formatDate(suite.createdAt)}
+              </span>
+            </div>
           </ResourceCard>
         ))}
       </div>
@@ -105,6 +130,13 @@ export const SuitesTab = () => {
           New Suite
         </button>
       </ListToolbar>
+
+      <SourceFilter
+        sources={sources}
+        counts={sourceCounts}
+        value={sourceFilter}
+        onChange={setSourceFilter}
+      />
 
       {renderSuites()}
 

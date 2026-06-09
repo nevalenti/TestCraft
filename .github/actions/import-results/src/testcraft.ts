@@ -4,6 +4,7 @@ export const importResults = async (
   token: string,
   name: string,
   xml: string,
+  source?: string,
 ): Promise<void> => {
   const response = await fetch(
     `${apiUrl}/api/v1/projects/${projectId}/import/junit`,
@@ -13,7 +14,7 @@ export const importResults = async (
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ xml, environment: "ci", name }),
+      body: JSON.stringify({ xml, environment: "ci", name, source }),
     },
   );
 

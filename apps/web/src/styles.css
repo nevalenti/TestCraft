@@ -4,7 +4,7 @@
 @plugin "daisyui" {
   themes:
     dracula --default,
-    emerald --prefersdark;
+    dim --prefersdark;
 }
 
 @theme {
@@ -55,16 +55,6 @@
     );
   }
 
-  [data-theme="emerald"] .header-stripes {
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0px,
-      transparent 8px,
-      oklch(0 0 0 / 0.06) 8px,
-      oklch(0 0 0 / 0.06) 10px
-    );
-  }
-
   [data-theme="dracula"] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
@@ -92,26 +82,18 @@
     .page-content {
       padding-inline: 1.5rem;
     }
+
+    .app-shadow {
+      box-shadow:
+        0 20px 40px -8px oklch(0 0 0 / 0.18),
+        0 8px 16px -4px oklch(0 0 0 / 0.1);
+    }
   }
 
   @media (min-width: 1024px) {
     .page-header,
     .page-content {
       padding-inline: 2rem;
-    }
-  }
-
-  @media (min-width: 640px) {
-    .app-shadow {
-      box-shadow:
-        0 20px 40px -8px oklch(0 0 0 / 0.18),
-        0 8px 16px -4px oklch(0 0 0 / 0.1);
-    }
-
-    [data-theme="emerald"] .app-shadow {
-      box-shadow:
-        0 0 0 1px oklch(from var(--color-primary) l c h / 0.2),
-        0 8px 24px -4px oklch(0 0 0 / 0.5);
     }
   }
 }
@@ -136,14 +118,8 @@
     background-color: var(--color-base-200);
   }
 
-  [data-theme="emerald"] {
-    --color-border: oklch(0 0 0 / 0.18);
-    --card-bg-alpha: 0.12;
-  }
-
   [data-theme="dracula"] {
     --color-border: oklch(1 0 0 / 0.15);
-    --card-bg-alpha: 0.2;
   }
 
   @keyframes modal-enter {

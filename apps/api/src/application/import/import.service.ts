@@ -11,12 +11,14 @@ export interface ImportJUnit {
   xml: string;
   environment: string;
   name?: string;
+  source?: string;
 }
 
 export interface ImportAllure {
   results: AllureResultItem[];
   environment: string;
   name?: string;
+  source?: string;
 }
 
 export interface IImportService {
@@ -48,6 +50,7 @@ export class ImportService implements IImportService {
       TestRunStatus.Completed,
       cases,
       userId,
+      input.source,
     );
   }
 
@@ -64,6 +67,7 @@ export class ImportService implements IImportService {
       TestRunStatus.Completed,
       cases,
       userId,
+      input.source,
     );
   }
 }

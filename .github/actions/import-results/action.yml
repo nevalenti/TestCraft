@@ -2,9 +2,6 @@ name: Import results to TestCraft
 description: Authenticates with Keycloak and uploads a JUnit XML report to TestCraft
 
 inputs:
-  keycloak-authority:
-    description: Keycloak realm URL (e.g. https://auth.example.com/realms/myrealm)
-    required: false
   username:
     description: TestCraft service account username
     required: false
@@ -14,15 +11,21 @@ inputs:
   api-url:
     description: TestCraft API base URL — when empty the step is a no-op
     required: false
-  project-id:
-    description: TestCraft project ID to import results into
-    required: false
+  project-name:
+    description: TestCraft project name to import results into
+    required: true
   junit-xml:
     description: Path to the JUnit XML report file
     required: true
   run-name:
     description: Display name for the imported test run
     required: true
+  keycloak-authority:
+    description: Public Keycloak authority URL — when set, skips fetching from api-url/api/auth-config
+    required: false
+  source:
+    description: Source tag for test suites (e.g. api, web, e2e)
+    required: false
 
 runs:
   using: node20

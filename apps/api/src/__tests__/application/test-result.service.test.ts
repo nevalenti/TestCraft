@@ -16,6 +16,7 @@ const makeRun = (status: TestRunStatus): TestRun => ({
   name: "Regression",
   environment: "staging",
   status,
+  source: null,
   executedById: null,
   createdAt: new Date(),
   updatedAt: new Date(),

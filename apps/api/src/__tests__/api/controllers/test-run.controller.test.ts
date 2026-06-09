@@ -54,6 +54,7 @@ const run: TestRun = {
   name: "v2.5 Regression",
   environment: "staging",
   status: TestRunStatus.Active,
+  source: null,
   executedById: null,
   createdAt: new Date(),
   updatedAt: new Date(),

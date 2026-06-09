@@ -5,3 +5,6 @@ export const isNotFound = (err: unknown): boolean =>
 
 export const isConstraintViolation = (err: unknown): boolean =>
   err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2003";
+
+export const isUniqueViolation = (err: unknown): boolean =>
+  err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002";

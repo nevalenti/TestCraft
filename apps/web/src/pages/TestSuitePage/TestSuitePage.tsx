@@ -125,11 +125,18 @@ export const TestSuitePage = () => {
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {suite?.name ?? (
-              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
+          <div className="flex items-center gap-2">
+            <h1 className="font-display text-2xl font-bold tracking-tight">
+              {suite?.name ?? (
+                <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
+              )}
+            </h1>
+            {suite?.source && (
+              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                {suite.source}
+              </span>
             )}
-          </h1>
+          </div>
           <p className="mt-0.5 text-sm text-base-content/60">
             {suite?.description ?? "Test cases in this suite"}
           </p>

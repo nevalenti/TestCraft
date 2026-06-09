@@ -3,6 +3,7 @@ export interface TestSuite {
   projectId: string;
   name: string;
   description?: string;
+  source?: string;
   createdAt: string;
   updatedAt?: string;
 }

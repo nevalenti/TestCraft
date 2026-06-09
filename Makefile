@@ -1,11 +1,13 @@
-.PHONY: dev down clean apply migrate seed e2e api web \
-        build load images destroy status deploy
+.PHONY: up down clean migrate seed e2e api web \
+        build load images destroy status deploy \
+        build-action debug-import
 
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
 KUBECTL = sudo k3s kubectl
 
 -include .env
+-include .secrets
 export
 unexport DATABASE_URL
 unexport POSTGRES_EXPORTER_DSN
@@ -16,14 +18,30 @@ up:
 down:
 	docker compose down -v
 
-apply:
-	terraform -chdir=infra/terraform apply
-
 migrate:
 	pnpm --filter testcraft-api run db:migrate
 
 seed:
 	pnpm --filter testcraft-api run db:seed
+
+build-action:
+	npm run build --prefix .github/actions/import-results
+
+debug-import: build-action
+	mkdir -p /tmp/testcraft-debug
+	printf '<?xml version="1.0" encoding="UTF-8"?>\n<testsuites tests="1"><testsuite tests="1"><testcase name="debug"/></testsuite></testsuites>' \
+		> /tmp/testcraft-debug/junit.xml
+	env \
+	  "NODE_TLS_REJECT_UNAUTHORIZED=0" \
+	  "INPUT_API-URL=$(TESTCRAFT_API_URL)" \
+	  "INPUT_USERNAME=$(TESTCRAFT_USERNAME)" \
+	  "INPUT_PASSWORD=$(TESTCRAFT_PASSWORD)" \
+	  "INPUT_KEYCLOAK-AUTHORITY=$(TESTCRAFT_KEYCLOAK_AUTHORITY)" \
+	  "INPUT_PROJECT-NAME=TestCraft" \
+	  "INPUT_JUNIT-XML=/tmp/testcraft-debug/junit.xml" \
+	  "INPUT_RUN-NAME=debug run" \
+	  "INPUT_SOURCE=debug" \
+	  node .github/actions/import-results/dist/index.js
 
 e2e:
 	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets

@@ -8,6 +8,7 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SourceFilter } from "@/components/ui/SourceFilter";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -27,6 +28,7 @@ import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
 export const RunsTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
+  const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
   const { modal, close, openCreate, openEdit, openDelete, openImport } =
     useModal<TestRun>();
@@ -68,6 +70,17 @@ export const RunsTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const allRuns = runs ?? [];
+  const sources = [
+    ...new Set(allRuns.map((r) => r.source).filter(Boolean) as string[]),
+  ].toSorted();
+  const sourceCounts = Object.fromEntries(
+    sources.map((src) => [src, allRuns.filter((r) => r.source === src).length]),
+  );
+  const visibleRuns = sourceFilter
+    ? allRuns.filter((r) => r.source === sourceFilter)
+    : runs;
+
   const renderRuns = () => {
     if (isPending) return <SkeletonGrid />;
 
@@ -81,7 +94,7 @@ export const RunsTab = () => {
 
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {runs?.map((run) => (
+        {visibleRuns?.map((run) => (
           <ResourceCard
             key={run.id}
             testId="run-card"
@@ -101,11 +114,18 @@ export const RunsTab = () => {
                 {run.environment}
               </p>
             </div>
-            <div className="mt-3 flex items-center justify-between gap-2">
-              <RunStatusBadge status={run.status} />
-              <p className="text-xs text-base-content/50 tabular-nums">
+            <div className="mt-4 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1">
+                <RunStatusBadge status={run.status} />
+                {run.source && (
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                    {run.source}
+                  </span>
+                )}
+              </div>
+              <span className="shrink-0 text-[11px] font-medium text-base-content/40 tabular-nums">
                 {formatDate(run.createdAt)}
-              </p>
+              </span>
             </div>
           </ResourceCard>
         ))}
@@ -132,6 +152,13 @@ export const RunsTab = () => {
           New Run
         </button>
       </ListToolbar>
+
+      <SourceFilter
+        sources={sources}
+        counts={sourceCounts}
+        value={sourceFilter}
+        onChange={setSourceFilter}
+      />
 
       {renderRuns()}
 
