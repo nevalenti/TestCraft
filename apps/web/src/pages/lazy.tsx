@@ -13,7 +13,9 @@ const suspend = (
       <Component />
     </Suspense>
   );
+
   Suspended.displayName = `Suspended(${Component.displayName ?? Component.name})`;
+
   return Suspended;
 };
 

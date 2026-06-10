@@ -14,6 +14,7 @@ interface Props {
 
 const extractMessage = (error: unknown): string | undefined => {
   const data = (error as AxiosError<ApiProblem>)?.response?.data;
+
   return data?.detail ?? data?.title;
 };
 
@@ -26,6 +27,7 @@ export const ErrorState = ({
     message ??
     extractMessage(error) ??
     "Please check your connection and try again.";
+
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="text-center">

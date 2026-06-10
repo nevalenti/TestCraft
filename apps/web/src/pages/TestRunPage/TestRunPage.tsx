@@ -46,6 +46,7 @@ type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
 const passRateClass = (rate: number) => {
   if (rate >= 80) return "text-success";
   if (rate >= 50) return "text-warning";
+
   return "text-error";
 };
 
@@ -118,6 +119,7 @@ export const TestRunPage = () => {
         header: "#",
         cell: ({ row, table }) => {
           const { pageIndex, pageSize } = table.getState().pagination;
+
           return (
             <span className="text-xs text-base-content/40 tabular-nums">
               {pageIndex * pageSize + row.index + 1}
@@ -142,6 +144,7 @@ export const TestRunPage = () => {
         enableSorting: false,
         cell: (info) => {
           const value = info.getValue();
+
           return value ? (
             <div
               className="max-w-[200px] cursor-default truncate text-sm text-base-content/60"
@@ -247,6 +250,7 @@ export const TestRunPage = () => {
           </div>
         </div>
       );
+
     return <ResultsTable table={table} pageCount={pageCount} />;
   };
 
@@ -306,6 +310,7 @@ export const TestRunPage = () => {
             )}
             {statusOptions.map(({ value }) => {
               const count = runSummary[SUMMARY_KEY[value]];
+
               return count > 0 ? (
                 <button
                   key={value}

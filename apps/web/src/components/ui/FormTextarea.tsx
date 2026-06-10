@@ -13,5 +13,6 @@ export const FormTextarea = ({
   const cls = [base, hasError && "textarea-error", className]
     .filter(Boolean)
     .join(" ");
+
   return <textarea className={cls} {...props} />;
 };

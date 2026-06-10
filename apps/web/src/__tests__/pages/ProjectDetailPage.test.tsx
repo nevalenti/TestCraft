@@ -63,6 +63,7 @@ describe("ProjectDetailPage", () => {
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
       const { container } = render(<ProjectDetailPage />);
+
       expect(container.querySelector(".skeleton")).toBeInTheDocument();
     });
   });

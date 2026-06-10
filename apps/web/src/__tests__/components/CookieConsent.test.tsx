@@ -59,6 +59,7 @@ describe("CookieConsent", () => {
   describe("when Accept all is clicked — calls accept", () => {
     it("invokes the accept handler", async () => {
       const accept = vi.fn();
+
       mockConsent({ isShowing: true, accept });
       render(<CookieConsent />);
       await userEvent.click(screen.getByRole("button", { name: "Accept all" }));
@@ -69,6 +70,7 @@ describe("CookieConsent", () => {
   describe("when Decline is clicked — calls decline", () => {
     it("invokes the decline handler", async () => {
       const decline = vi.fn();
+
       mockConsent({ isShowing: true, decline });
       render(<CookieConsent />);
       await userEvent.click(screen.getByRole("button", { name: "Decline" }));

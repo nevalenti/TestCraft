@@ -26,6 +26,7 @@ export const useTestCase = (projectId: string, suiteId: string, id: string) =>
 
 export const useCreateTestCase = (projectId: string, suiteId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: CreateTestCase) =>
       testCasesApi.create(projectId, suiteId, input),
@@ -40,6 +41,7 @@ export const useCreateTestCase = (projectId: string, suiteId: string) => {
 
 export const useUpdateTestCase = (projectId: string, suiteId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, ...input }: { id: string } & UpdateTestCase) =>
       testCasesApi.update(projectId, suiteId, id, input),
@@ -57,6 +59,7 @@ export const useUpdateTestCase = (projectId: string, suiteId: string) => {
 
 export const useDeleteTestCase = (projectId: string, suiteId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => testCasesApi.delete(projectId, suiteId, id),
     onSuccess: (_, id) => {

@@ -15,6 +15,7 @@ let shouldThrow = false;
 
 const Flaky = () => {
   if (shouldThrow) throw new Error("Something exploded");
+
   return <p>Child rendered successfully</p>;
 };
 
@@ -102,6 +103,7 @@ describe("ErrorBoundary", () => {
     it("invokes onError with the Error instance", () => {
       shouldThrow = true;
       const onError = vi.fn();
+
       render(
         <ErrorBoundary onError={onError}>
           <Flaky />

@@ -20,6 +20,7 @@ client.interceptors.request.use(async (config) => {
     }
     config.headers.Authorization = `Bearer ${keycloak.token}`;
   }
+
   return config;
 });
 

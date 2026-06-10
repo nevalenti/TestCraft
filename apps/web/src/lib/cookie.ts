@@ -11,6 +11,7 @@ export const getCookie = (name: string): string | null => {
   const match = document.cookie
     .split("; ")
     .find((cookie) => cookie.startsWith(name + "="));
+
   return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 };
 

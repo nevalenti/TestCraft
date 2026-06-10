@@ -14,6 +14,7 @@ describe("useRequiredParam", () => {
     it("returns the string value", () => {
       vi.mocked(useParams).mockReturnValue({ projectId: "proj-1" });
       const { result } = renderHook(() => useRequiredParam("projectId"));
+
       expect(result.current).toBe("proj-1");
     });
   });
@@ -34,6 +35,7 @@ describe("useRequiredParam", () => {
         suiteId: "suite-2",
       });
       const { result } = renderHook(() => useRequiredParam("suiteId"));
+
       expect(result.current).toBe("suite-2");
     });
   });

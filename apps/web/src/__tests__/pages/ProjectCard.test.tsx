@@ -113,6 +113,7 @@ describe("ProjectCard", () => {
   describe("action buttons", () => {
     it("calls onEdit when Edit is clicked", async () => {
       const onEdit = vi.fn();
+
       render(
         <ProjectCard
           project={makeProject()}
@@ -128,6 +129,7 @@ describe("ProjectCard", () => {
 
     it("calls onDelete when Delete is clicked", async () => {
       const onDelete = vi.fn();
+
       render(
         <ProjectCard
           project={makeProject()}

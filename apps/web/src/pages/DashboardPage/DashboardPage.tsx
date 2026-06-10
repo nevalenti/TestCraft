@@ -72,11 +72,13 @@ export const DashboardPage = () => {
           </p>
         </div>
       );
+
     return (
       <div className="rounded-lg border border-border bg-base-100 shadow-sm">
         <ul className="divide-y divide-border">
           {activeRuns.map((run) => {
             const project = projectMap.get(run.projectId);
+
             return (
               <li key={run.id}>
                 <Link

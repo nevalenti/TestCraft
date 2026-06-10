@@ -71,6 +71,7 @@ describe("TestCaseForm", () => {
   describe("when submitted — calls onSubmit with entered values", () => {
     it("passes name, priority, and undefined description when empty", async () => {
       const onSubmit = vi.fn();
+
       render(
         <TestCaseForm
           onSubmit={onSubmit}
@@ -91,6 +92,7 @@ describe("TestCaseForm", () => {
   describe("when Cancel is clicked — calls onCancel", () => {
     it("invokes onCancel once", async () => {
       const onCancel = vi.fn();
+
       render(
         <TestCaseForm
           onSubmit={vi.fn()}

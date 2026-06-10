@@ -40,6 +40,7 @@ describe("ThemeToggle", () => {
 
     it("calls toggleTheme on click", async () => {
       const toggleTheme = vi.fn();
+
       vi.spyOn(
         await import("@/contexts/ThemeContext"),
         "useTheme",

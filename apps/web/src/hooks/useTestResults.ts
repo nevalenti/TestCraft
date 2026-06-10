@@ -22,6 +22,7 @@ export const useTestResult = (projectId: string, runId: string, id: string) =>
 
 export const useCreateTestResult = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: CreateTestResult) =>
       testResultsApi.create(projectId, runId, input),
@@ -39,6 +40,7 @@ export const useCreateTestResult = (projectId: string, runId: string) => {
 
 export const useUpdateTestResult = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, ...input }: { id: string } & UpdateTestResult) =>
       testResultsApi.update(projectId, runId, id, input),
@@ -59,6 +61,7 @@ export const useUpdateTestResult = (projectId: string, runId: string) => {
 
 export const useDeleteTestResult = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => testResultsApi.delete(projectId, runId, id),
     onSuccess: (_, id) => {

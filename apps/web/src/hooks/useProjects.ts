@@ -21,6 +21,7 @@ export const useProject = (id: string) => useQuery(projectQueries.detail(id));
 
 export const useCreateProject = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: CreateProject) => projectsApi.create(input),
     onSuccess: () => {
@@ -32,6 +33,7 @@ export const useCreateProject = () => {
 
 export const useUpdateProject = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, ...input }: { id: string } & UpdateProject) =>
       projectsApi.update(id, input),
@@ -47,6 +49,7 @@ export const useUpdateProject = () => {
 
 export const useDeleteProject = () => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => projectsApi.delete(id),
     onSuccess: (_, id) => {

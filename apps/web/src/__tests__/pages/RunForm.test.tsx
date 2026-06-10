@@ -66,6 +66,7 @@ describe("RunForm", () => {
   describe("when submitted — calls onSubmit with entered values", () => {
     it("passes name, environment, and status", async () => {
       const onSubmit = vi.fn();
+
       render(
         <RunForm onSubmit={onSubmit} onCancel={vi.fn()} isLoading={false} />,
       );
@@ -83,6 +84,7 @@ describe("RunForm", () => {
   describe("when Cancel is clicked — calls onCancel", () => {
     it("invokes onCancel once", async () => {
       const onCancel = vi.fn();
+
       render(
         <RunForm onSubmit={vi.fn()} onCancel={onCancel} isLoading={false} />,
       );

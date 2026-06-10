@@ -31,6 +31,7 @@ describe("SuiteForm", () => {
   describe("when submitted with a name — calls onSubmit", () => {
     it("passes name and undefined description when description is empty", async () => {
       const onSubmit = vi.fn();
+
       render(
         <SuiteForm onSubmit={onSubmit} onCancel={vi.fn()} isLoading={false} />,
       );
@@ -46,6 +47,7 @@ describe("SuiteForm", () => {
   describe("when Cancel is clicked — calls onCancel", () => {
     it("invokes onCancel once", async () => {
       const onCancel = vi.fn();
+
       render(
         <SuiteForm onSubmit={vi.fn()} onCancel={onCancel} isLoading={false} />,
       );

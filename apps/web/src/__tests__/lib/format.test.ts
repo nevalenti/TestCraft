@@ -12,6 +12,7 @@ describe("formatDate", () => {
 
     it("produces the same output as when given an equivalent ISO string", () => {
       const date = new Date("2024-06-15T00:00:00.000Z");
+
       expect(formatDate(date)).toBe(formatDate(date.toISOString()));
     });
 
@@ -27,6 +28,7 @@ describe("formatDate", () => {
 
     it("does not include a time component in the output", () => {
       const result = formatDate("2024-06-15T14:30:00.000Z");
+
       expect(result).not.toMatch(/\d{1,2}:\d{2}/);
     });
   });
@@ -42,11 +44,13 @@ describe("formatDateTime", () => {
 
     it("produces the same output as when given an equivalent ISO string", () => {
       const date = new Date("2024-06-15T14:30:00.000Z");
+
       expect(formatDateTime(date)).toBe(formatDateTime(date.toISOString()));
     });
 
     it("returns a longer string than formatDate for the same input (time component added)", () => {
       const input = "2024-06-15T14:30:00.000Z";
+
       expect(formatDateTime(input).length).toBeGreaterThan(
         formatDate(input).length,
       );

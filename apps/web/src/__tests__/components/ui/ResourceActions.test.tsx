@@ -28,6 +28,7 @@ describe("ResourceActions", () => {
   describe("when the edit button is clicked — calls onEdit", () => {
     it("invokes onEdit once", async () => {
       const onEdit = vi.fn();
+
       render(
         <ResourceActions onEdit={onEdit} onDelete={vi.fn()} label="suite" />,
       );
@@ -39,6 +40,7 @@ describe("ResourceActions", () => {
   describe("when the delete button is clicked — calls onDelete", () => {
     it("invokes onDelete once", async () => {
       const onDelete = vi.fn();
+
       render(
         <ResourceActions onEdit={vi.fn()} onDelete={onDelete} label="suite" />,
       );

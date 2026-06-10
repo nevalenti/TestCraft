@@ -33,6 +33,7 @@ describe("FormActions", () => {
   describe("when Cancel is clicked — calls onCancel", () => {
     it("invokes the handler once", async () => {
       const onCancel = vi.fn();
+
       render(<FormActions onCancel={onCancel} isLoading={false} />);
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
       expect(onCancel).toHaveBeenCalledOnce();
@@ -44,6 +45,7 @@ describe("FormActions", () => {
       const { container } = render(
         <FormActions onCancel={vi.fn()} isLoading={true} />,
       );
+
       expect(container.querySelector('button[type="submit"]')).toBeDisabled();
     });
 

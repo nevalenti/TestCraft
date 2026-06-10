@@ -15,6 +15,7 @@ describe("useDebounce", () => {
   describe("given an initial value — returns it immediately", () => {
     it("debounced value matches the initial value", () => {
       const { result } = renderHook(() => useDebounce("hello", 300));
+
       expect(result.current).toBe("hello");
     });
   });

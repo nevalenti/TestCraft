@@ -7,6 +7,7 @@ describe("SkeletonGrid", () => {
   describe("given no count prop — renders 6 skeleton cards by default", () => {
     it("has 6 aria-hidden skeleton cards", () => {
       const { container } = render(<SkeletonGrid />);
+
       expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(
         6,
       );
@@ -16,6 +17,7 @@ describe("SkeletonGrid", () => {
   describe("given a custom count — renders that many skeleton cards", () => {
     it("renders 3 cards when count is 3", () => {
       const { container } = render(<SkeletonGrid count={3} />);
+
       expect(container.querySelectorAll('[aria-hidden="true"]')).toHaveLength(
         3,
       );

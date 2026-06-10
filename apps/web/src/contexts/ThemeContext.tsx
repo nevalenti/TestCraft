@@ -17,7 +17,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
+
   if (!context) throw new Error("useTheme must be used inside ThemeProvider");
+
   return context;
 };
 
@@ -27,6 +29,7 @@ const DARK = "emerald";
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);
+
   return stored === LIGHT || stored === DARK ? stored : LIGHT;
 };
 

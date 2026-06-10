@@ -26,6 +26,7 @@ export const useTestRunSummary = (projectId: string, id: string) =>
 
 export const useCreateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: CreateTestRun) => testRunsApi.create(projectId, input),
     onSuccess: () => {
@@ -42,6 +43,7 @@ export const useCreateTestRun = (projectId: string) => {
 
 export const useUpdateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, ...input }: { id: string } & UpdateTestRun) =>
       testRunsApi.update(projectId, id, input),
@@ -62,6 +64,7 @@ const useImportMutation = <T>(
   mutationFn: (input: T) => Promise<TestRun>,
 ) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn,
     onSuccess: () => {
@@ -92,6 +95,7 @@ export const useImportJUnitXml = (projectId: string) =>
 
 export const useDeleteTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) => testRunsApi.delete(projectId, id),
     onSuccess: (_, id) => {

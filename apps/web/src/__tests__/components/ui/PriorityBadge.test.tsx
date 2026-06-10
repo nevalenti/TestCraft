@@ -8,6 +8,7 @@ describe("PriorityBadge", () => {
   describe("PriorityBadge — given undefined priority — renders nothing", () => {
     it("returns null without crashing", () => {
       const { container } = render(<PriorityBadge priority={undefined} />);
+
       expect(container).toBeEmptyDOMElement();
     });
   });

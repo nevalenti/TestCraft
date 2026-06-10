@@ -31,6 +31,7 @@ const detectFormat = (files: File[]): DetectedFormat => {
     return "junit";
   if (files.every((file) => file.name.toLowerCase().endsWith(".json")))
     return "allure";
+
   return "mixed";
 };
 
@@ -40,6 +41,7 @@ const validateImport = (
   detectedFormat: DetectedFormat,
 ): FormErrors => {
   const next: FormErrors = {};
+
   if (!environment.trim()) next.environment = "Environment is required";
   if (files.length === 0) next.files = "Please drop a file to import";
   else if (detectedFormat === "mixed")
@@ -49,9 +51,11 @@ const validateImport = (
   else {
     const MAX = 5 * 1024 * 1024;
     const oversized = files.find((file) => file.size > MAX);
+
     if (oversized)
       next.files = `"${oversized.name}" exceeds the 5 MB size limit`;
   }
+
   return next;
 };
 
@@ -60,15 +64,18 @@ const parseAllureFiles = async (
 ): Promise<{ results: AllureResultItem[] } | { fileError: string }> => {
   const texts = await Promise.all(files.map((file) => file.text()));
   const results: AllureResultItem[] = [];
+
   for (const [i, text] of texts.entries()) {
     try {
       const parsed = JSON.parse(text) as AllureResultItem | AllureResultItem[];
+
       if (Array.isArray(parsed)) results.push(...parsed);
       else results.push(parsed);
     } catch {
       return { fileError: `"${files[i].name}" is not valid JSON` };
     }
   }
+
   return { results };
 };
 
@@ -92,11 +99,13 @@ export const ImportForm = ({
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const next = validateImport(files, environment, detectedFormat);
+
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
     if (detectedFormat === "junit") {
       const xml = await files[0].text();
+
       onSubmit({
         type: "junit",
         xml,
@@ -105,10 +114,13 @@ export const ImportForm = ({
       });
     } else if (detectedFormat === "allure") {
       const allureData = await parseAllureFiles(files);
+
       if ("fileError" in allureData) {
         setErrors((prev) => ({ ...prev, files: allureData.fileError }));
+
         return;
       }
+
       onSubmit({
         type: "allure",
         results: allureData.results,

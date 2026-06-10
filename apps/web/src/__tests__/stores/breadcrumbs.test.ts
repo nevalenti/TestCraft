@@ -20,6 +20,7 @@ describe("useBreadcrumbsStore", () => {
         .set([{ label: "Projects", href: "/projects" }, { label: "Alpha" }]);
 
       const { items } = useBreadcrumbsStore.getState();
+
       expect(items).toHaveLength(2);
       expect(items![0].label).toBe("Projects");
       expect(items![0].href).toBe("/projects");
@@ -32,6 +33,7 @@ describe("useBreadcrumbsStore", () => {
       useBreadcrumbsStore.getState().set([{ label: "New", href: "/new" }]);
 
       const { items } = useBreadcrumbsStore.getState();
+
       expect(items).toHaveLength(1);
       expect(items![0].label).toBe("New");
     });

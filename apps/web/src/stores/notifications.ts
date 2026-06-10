@@ -37,6 +37,7 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
 
     add: (notification) => {
       const id = nanoid();
+
       set((state) => ({
         notifications: [...state.notifications, { ...notification, id }],
       }));
@@ -50,6 +51,7 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
 
     remove: (id) => {
       const timer = timers.get(id);
+
       if (timer) clearTimeout(timer);
       dismiss(id);
     },

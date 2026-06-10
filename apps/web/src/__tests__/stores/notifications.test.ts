@@ -24,6 +24,7 @@ describe("useNotificationsStore", () => {
         .getState()
         .add({ type: "error", message: "Failed" });
       const [n] = useNotificationsStore.getState().notifications;
+
       expect(n.message).toBe("Failed");
       expect(n.type).toBe("error");
     });
@@ -34,6 +35,7 @@ describe("useNotificationsStore", () => {
       const ids = useNotificationsStore
         .getState()
         .notifications.map((notification) => notification.id);
+
       expect(new Set(ids).size).toBe(2);
     });
   });
@@ -68,6 +70,7 @@ describe("useNotificationsStore", () => {
       useNotificationsStore.getState().add({ type: "info", message: "One" });
       useNotificationsStore.getState().add({ type: "info", message: "Two" });
       const { notifications } = useNotificationsStore.getState();
+
       useNotificationsStore.getState().remove(notifications[0].id);
       expect(useNotificationsStore.getState().notifications).toHaveLength(1);
     });
@@ -85,6 +88,7 @@ describe("useNotificationsStore", () => {
       useNotificationsStore.getState().remove(removeId);
 
       const remaining = useNotificationsStore.getState().notifications;
+
       expect(remaining).toHaveLength(1);
       expect(remaining[0].message).toBe("Keep");
     });
@@ -100,6 +104,7 @@ describe("useNotificationsStore", () => {
         timeout: 3000,
       });
       const { notifications } = useNotificationsStore.getState();
+
       useNotificationsStore.getState().remove(notifications[0].id);
 
       vi.advanceTimersByTime(3000);

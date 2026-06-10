@@ -35,6 +35,7 @@ export const useCreateTestCaseStep = (
   caseId: string,
 ) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (input: CreateTestCaseStep) =>
       testCaseStepsApi.create(projectId, suiteId, caseId, input),
@@ -53,6 +54,7 @@ export const useUpdateTestCaseStep = (
   caseId: string,
 ) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: ({ id, ...input }: { id: string } & UpdateTestCaseStep) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
@@ -80,6 +82,7 @@ export const useBulkReorderSteps = (
 ) => {
   const queryClient = useQueryClient();
   const queryKey = queryKeys.testCaseSteps.all(projectId, suiteId, caseId);
+
   return useMutation({
     mutationFn: (input: BulkReorderSteps) =>
       testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, input),
@@ -87,19 +90,24 @@ export const useBulkReorderSteps = (
       await queryClient.cancelQueries({ queryKey });
       const previous =
         queryClient.getQueryData<Paginated<TestCaseStep>>(queryKey);
+
       queryClient.setQueryData<Paginated<TestCaseStep>>(
         queryKey,
         produce((draft) => {
           if (!draft) return;
+
           const orderMap = new Map(
             input.steps.map((step) => [step.id, step.order]),
           );
+
           for (const item of draft.items) {
             const next = orderMap.get(item.id);
+
             if (next !== undefined) item.order = next;
           }
         }),
       );
+
       return { previous };
     },
     onError: (_error, _input, context) => {
@@ -117,6 +125,7 @@ export const useDeleteTestCaseStep = (
   caseId: string,
 ) => {
   const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (id: string) =>
       testCaseStepsApi.delete(projectId, suiteId, caseId, id),

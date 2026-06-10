@@ -38,6 +38,7 @@ describe("StatusBadge", () => {
       const { container } = render(
         <StatusBadge status={TestResultStatus.Passed} />,
       );
+
       expect(container.querySelector("span")).toBeInTheDocument();
     });
   });

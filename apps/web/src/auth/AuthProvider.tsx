@@ -13,6 +13,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     if (initialized.current) return;
+
     initialized.current = true;
 
     keycloak

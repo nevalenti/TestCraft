@@ -82,6 +82,7 @@ describe("ResourceCard", () => {
   describe("when edit is clicked — calls onEdit", () => {
     it("invokes onEdit once", async () => {
       const onEdit = vi.fn();
+
       render(
         <ResourceCard onEdit={onEdit} onDelete={vi.fn()} label="project">
           <span>content</span>
@@ -97,6 +98,7 @@ describe("ResourceCard", () => {
   describe("when delete is clicked — calls onDelete", () => {
     it("invokes onDelete once", async () => {
       const onDelete = vi.fn();
+
       render(
         <ResourceCard onEdit={vi.fn()} onDelete={onDelete} label="project">
           <span>content</span>

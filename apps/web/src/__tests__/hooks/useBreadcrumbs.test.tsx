@@ -19,6 +19,7 @@ describe("useBreadcrumbs", () => {
         ]),
       );
       const { items } = useBreadcrumbsStore.getState();
+
       expect(items).toHaveLength(2);
       expect(items![0].label).toBe("Dashboard");
       expect(items![1].label).toBe("Projects");
@@ -30,6 +31,7 @@ describe("useBreadcrumbs", () => {
       const { unmount } = renderHook(() =>
         useBreadcrumbs([{ label: "Projects", href: "/projects" }]),
       );
+
       unmount();
       expect(useBreadcrumbsStore.getState().items).toBeNull();
     });
@@ -42,8 +44,10 @@ describe("useBreadcrumbs", () => {
           items: [{ label: "Projects", href: "/projects" }] as BreadcrumbItem[],
         },
       });
+
       rerender({ items: [{ label: "Settings" }] });
       const { items } = useBreadcrumbsStore.getState();
+
       expect(items).toHaveLength(1);
       expect(items![0].label).toBe("Settings");
     });

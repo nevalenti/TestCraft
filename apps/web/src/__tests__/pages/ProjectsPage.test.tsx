@@ -101,6 +101,7 @@ describe("ProjectsPage", () => {
       );
 
       const { container } = render(<ProjectsPage />);
+
       expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
     });
   });

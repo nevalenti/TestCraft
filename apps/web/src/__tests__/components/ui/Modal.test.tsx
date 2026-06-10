@@ -61,6 +61,7 @@ describe("Modal", () => {
   describe("when the close button is clicked — calls onClose", () => {
     it("invokes onClose once", async () => {
       const onClose = vi.fn();
+
       render(
         <Modal isOpen={true} onClose={onClose} title="Confirm">
           <p>content</p>
@@ -80,6 +81,7 @@ describe("Modal", () => {
           <p>Cached content</p>
         </Modal>,
       );
+
       rerender(
         <Modal isOpen={false} onClose={vi.fn()} title="Test">
           <p>Cached content</p>

@@ -21,6 +21,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
 
   useLayoutEffect(() => {
     const dialog = ref.current;
+
     if (isOpen) {
       dialog?.showModal();
     } else {
@@ -28,6 +29,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
       dialog?.close();
       isProgrammatic.current = false;
     }
+
     return () => {
       isProgrammatic.current = true;
       dialog?.close();

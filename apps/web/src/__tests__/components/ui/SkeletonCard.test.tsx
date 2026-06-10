@@ -7,11 +7,13 @@ describe("SkeletonCard", () => {
   describe("renders a loading placeholder hidden from assistive technology", () => {
     it("has aria-hidden set to true", () => {
       const { container } = render(<SkeletonCard />);
+
       expect(container.firstChild).toHaveAttribute("aria-hidden", "true");
     });
 
     it("renders skeleton elements", () => {
       const { container } = render(<SkeletonCard />);
+
       expect(container.querySelectorAll(".skeleton").length).toBeGreaterThan(0);
     });
   });

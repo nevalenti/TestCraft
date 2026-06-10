@@ -10,11 +10,13 @@ const clearThemeCookie = () => {
 
 const BareConsumer = () => {
   useTheme();
+
   return null;
 };
 
 const TestConsumer = () => {
   const { isDark, toggleTheme } = useTheme();
+
   return (
     <>
       <span data-testid="state">{isDark ? "emerald" : "dracula"}</span>

@@ -81,6 +81,7 @@ export const TestCasePage = () => {
     const sorted = [...(steps ?? [])].toSorted(
       (itemA, itemB) => itemA.order - itemB.order,
     );
+
     return {
       sortedSteps: sorted,
       nextOrder: sorted.length > 0 ? sorted.at(-1)!.order + 1 : 1,
@@ -108,14 +109,17 @@ export const TestCasePage = () => {
 
   const handleDragOver = ({ active, over }: DragOverEvent) => {
     if (!over || active.id === over.id) return;
+
     const prev = localStepsRef.current;
     const oldIndex = prev.findIndex((step) => step.id === active.id);
     const newIndex = prev.findIndex((step) => step.id === over.id);
+
     localStepsRef.current = arrayMove(prev, oldIndex, newIndex);
   };
 
   const handleDragEnd = ({ over }: DragEndEvent) => {
     const finalSteps = localStepsRef.current;
+
     setLocalSteps(finalSteps);
     setActiveId(null);
     if (!over) return;
@@ -126,6 +130,7 @@ export const TestCasePage = () => {
     }));
     const hasChanges = reordered.some(({ id, order }) => {
       const original = sortedSteps.find((step) => step.id === id);
+
       return original?.order !== order;
     });
 
@@ -164,6 +169,7 @@ export const TestCasePage = () => {
           description="Break this test case down into clear, ordered steps."
         />
       );
+
     return (
       <DndContext
         sensors={sensors}

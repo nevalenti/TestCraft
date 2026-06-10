@@ -13,5 +13,6 @@ export const FormInput = ({
   const cls = [base, hasError && "input-error", className]
     .filter(Boolean)
     .join(" ");
+
   return <input className={cls} {...props} />;
 };

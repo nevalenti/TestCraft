@@ -57,6 +57,7 @@ describe("ConfirmDialog", () => {
   describe("when Cancel is clicked — calls onClose", () => {
     it("invokes onClose once", async () => {
       const onClose = vi.fn();
+
       render(<ConfirmDialog {...defaultProps} onClose={onClose} />);
       await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
       expect(onClose).toHaveBeenCalledOnce();
@@ -66,6 +67,7 @@ describe("ConfirmDialog", () => {
   describe("when confirm button is clicked — calls onConfirm", () => {
     it("invokes onConfirm once", async () => {
       const onConfirm = vi.fn();
+
       render(<ConfirmDialog {...defaultProps} onConfirm={onConfirm} />);
       await userEvent.click(screen.getByRole("button", { name: "Delete" }));
       expect(onConfirm).toHaveBeenCalledOnce();
@@ -81,6 +83,7 @@ describe("ConfirmDialog", () => {
       const confirmBtn = [...buttons].find((button) =>
         button.classList.contains("btn-error"),
       );
+
       expect(confirmBtn).toBeDisabled();
     });
   });

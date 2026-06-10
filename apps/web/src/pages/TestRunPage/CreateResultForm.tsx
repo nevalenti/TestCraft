@@ -51,6 +51,7 @@ export const CreateResultForm = ({
   });
 
   let defaultOptionText: string;
+
   if (loadingCases) defaultOptionText = "Loading…";
   else if (cases?.length === 0) defaultOptionText = "No test cases in project";
   else defaultOptionText = "Select a test case";

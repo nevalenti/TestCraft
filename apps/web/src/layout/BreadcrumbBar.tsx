@@ -16,6 +16,7 @@ export const BreadcrumbBar = () => {
         <ol className="flex items-center gap-1.5">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
+
             return (
               <li
                 key={item.href ?? item.label}

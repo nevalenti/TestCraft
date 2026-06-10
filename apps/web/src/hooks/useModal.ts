@@ -15,5 +15,6 @@ export const useModal = <T>() => {
     (item: T) => setModal({ type: "delete", item }),
     [],
   );
+
   return { modal, close, openCreate, openImport, openEdit, openDelete };
 };

@@ -16,7 +16,9 @@ export const PriorityBadge = ({
   priority: TestCasePriority | undefined;
 }) => {
   const item = priority === undefined ? undefined : config[priority];
+
   if (!item) return null;
+
   return (
     <span className={`badge badge-sm font-medium ${item.cls}`}>
       {item.label}

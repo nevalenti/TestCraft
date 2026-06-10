@@ -21,10 +21,12 @@ interface FileDropZoneProps {
 const isAccepted = (file: File, accept: string): boolean =>
   accept.split(",").some((token) => {
     const trimmed = token.trim();
+
     if (trimmed.startsWith("."))
       return file.name.toLowerCase().endsWith(trimmed.toLowerCase());
     if (trimmed.endsWith("/*"))
       return file.type.startsWith(trimmed.slice(0, -1));
+
     return file.type === trimmed;
   });
 
@@ -62,6 +64,7 @@ export const FileDropZone = ({
 
   const openPicker = () => {
     if (!inputRef.current) return;
+
     inputRef.current.value = "";
     inputRef.current.click();
   };
@@ -88,6 +91,7 @@ export const FileDropZone = ({
     const dropped = [...event.dataTransfer.files].filter((droppedFile) =>
       isAccepted(droppedFile, accept),
     );
+
     if (dropped.length > 0) onFilesChange(dropped);
   };
 
@@ -105,7 +109,9 @@ export const FileDropZone = ({
         c.ring,
         isDragging && c.drag,
         !isDragging && hasError && "border-error/50 bg-error/5",
-        !isDragging && !hasError && cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
+        !isDragging &&
+          !hasError &&
+          cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
       )}
       onClick={openPicker}
       onKeyDown={(event) =>

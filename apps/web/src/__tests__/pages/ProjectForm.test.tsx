@@ -50,6 +50,7 @@ describe("ProjectForm", () => {
   describe("when submitted with a name — calls onSubmit with the entered values", () => {
     it("passes name and undefined description when description is empty", async () => {
       const onSubmit = vi.fn();
+
       render(
         <ProjectForm
           onSubmit={onSubmit}
@@ -67,6 +68,7 @@ describe("ProjectForm", () => {
 
     it("passes the description when filled", async () => {
       const onSubmit = vi.fn();
+
       render(
         <ProjectForm
           onSubmit={onSubmit}
@@ -87,6 +89,7 @@ describe("ProjectForm", () => {
   describe("when Cancel is clicked — calls onCancel", () => {
     it("invokes onCancel once", async () => {
       const onCancel = vi.fn();
+
       render(
         <ProjectForm
           onSubmit={vi.fn()}
@@ -104,6 +107,7 @@ describe("ProjectForm", () => {
       const { container } = render(
         <ProjectForm onSubmit={vi.fn()} onCancel={vi.fn()} isLoading={true} />,
       );
+
       expect(container.querySelector('button[type="submit"]')).toBeDisabled();
     });
   });

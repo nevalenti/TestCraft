@@ -13,6 +13,7 @@ describe("Notifications", () => {
   describe("Notifications — given no notifications — renders nothing", () => {
     it("produces an empty DOM element", () => {
       const { container } = render(<Notifications />);
+
       expect(container).toBeEmptyDOMElement();
     });
   });
@@ -65,6 +66,7 @@ describe("Notifications", () => {
       const [firstDismiss] = screen.getAllByRole("button", {
         name: /dismiss/i,
       });
+
       await userEvent.click(firstDismiss);
 
       expect(screen.getByText("Keep me")).toBeInTheDocument();

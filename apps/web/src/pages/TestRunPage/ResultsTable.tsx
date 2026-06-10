@@ -5,6 +5,7 @@ import type { TestResult } from "@testcraft/types";
 const getSortIcon = (sorted: false | "asc" | "desc"): string => {
   if (sorted === "asc") return "▲";
   if (sorted === "desc") return "▼";
+
   return "⬍";
 };
 

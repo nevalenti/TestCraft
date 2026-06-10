@@ -20,6 +20,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 vi.mock("@tanstack/react-query", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@tanstack/react-query")>();
+
   return { ...actual, useQueries: vi.fn() };
 });
 
@@ -119,6 +120,7 @@ describe("DashboardPage", () => {
   describe("with active runs — renders each run", () => {
     it("displays the run name", () => {
       const run = makeRun("run-1", "proj-1", TestRunStatus.Active);
+
       setupMocks({
         projects: [makeProject("proj-1", "Alpha")],
         activeRuns: [run],
