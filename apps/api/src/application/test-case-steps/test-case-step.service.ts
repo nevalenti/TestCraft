@@ -36,7 +36,9 @@ export class TestCaseStepService implements ITestCaseStepService {
 
   async getById(caseId: string, id: string): Promise<TestCaseStep> {
     const step = await this.testCaseStepRepository.getById(caseId, id);
+
     if (!step) throw new NotFoundError();
+
     return step;
   }
 
@@ -50,21 +52,26 @@ export class TestCaseStepService implements ITestCaseStepService {
     input: UpdateTestCaseStep,
   ): Promise<TestCaseStep> {
     const step = await this.testCaseStepRepository.update(caseId, id, input);
+
     if (!step) throw new NotFoundError();
+
     return step;
   }
 
   async bulkReorder(caseId: string, steps: ReorderStep[]): Promise<void> {
     const ids = steps.map((step) => step.id);
     const found = await this.testCaseStepRepository.findByIds(caseId, ids);
+
     if (found.length !== ids.length) {
       throw new DomainError("One or more steps not found");
     }
+
     return this.testCaseStepRepository.bulkReorder(caseId, steps);
   }
 
   async delete(caseId: string, id: string): Promise<void> {
     const deleted = await this.testCaseStepRepository.delete(caseId, id);
+
     if (!deleted) throw new NotFoundError();
   }
 }

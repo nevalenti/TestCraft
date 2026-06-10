@@ -28,11 +28,15 @@ const labelValue = (
   ...keys: string[]
 ): string | null => {
   if (!labels) return null;
+
   const map = new Map(labels.map((l) => [l.name, l.value]));
+
   for (const key of keys) {
     const val = map.get(key);
+
     if (val) return val;
   }
+
   return null;
 };
 

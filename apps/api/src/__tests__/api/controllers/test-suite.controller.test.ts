@@ -28,6 +28,7 @@ const mockService: ITestSuiteService = {
 const buildApp = () => {
   const controller = new TestSuiteController(mockService);
   const router = Router({ mergeParams: true });
+
   router.get("/", controller.getAll);
   router.get("/:id", controller.getById);
   router.post("/", validateBody(createTestSuiteSchema), controller.create);
@@ -35,6 +36,7 @@ const buildApp = () => {
   router.delete("/:id", controller.remove);
 
   const app = express();
+
   app.use(express.json());
   app.use((_req, _res, next) => {
     _req.user = { id: "user-1" };
@@ -42,6 +44,7 @@ const buildApp = () => {
   });
   app.use("/projects/:projectId/suites", router);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

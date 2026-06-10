@@ -30,6 +30,7 @@ const mockService: ITestCaseStepService = {
 const buildApp = () => {
   const controller = new TestCaseStepController(mockService);
   const router = Router({ mergeParams: true });
+
   router.get("/", controller.getAll);
   router.get("/:id", controller.getById);
   router.post("/", validateBody(createTestCaseStepSchema), controller.create);
@@ -42,6 +43,7 @@ const buildApp = () => {
   router.delete("/:id", controller.remove);
 
   const app = express();
+
   app.use(express.json());
   app.use((_req, _res, next) => {
     _req.user = { id: "user-1" };
@@ -49,6 +51,7 @@ const buildApp = () => {
   });
   app.use("/cases/:caseId/steps", router);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

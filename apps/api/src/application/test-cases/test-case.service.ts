@@ -46,7 +46,9 @@ export class TestCaseService implements ITestCaseService {
 
   async getById(suiteId: string, id: string): Promise<TestCase> {
     const testCase = await this.testCaseRepository.getById(suiteId, id);
+
     if (!testCase) throw new NotFoundError();
+
     return testCase;
   }
 
@@ -60,12 +62,15 @@ export class TestCaseService implements ITestCaseService {
     input: UpdateTestCase,
   ): Promise<TestCase> {
     const testCase = await this.testCaseRepository.update(suiteId, id, input);
+
     if (!testCase) throw new NotFoundError();
+
     return testCase;
   }
 
   async delete(suiteId: string, id: string): Promise<void> {
     const deleted = await this.testCaseRepository.delete(suiteId, id);
+
     if (!deleted) throw new NotFoundError();
   }
 }

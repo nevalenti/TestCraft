@@ -8,8 +8,10 @@ export const seedDatabase = async () => {
   const existingProjects = await prisma.project.count({
     where: { isDeleted: false },
   });
+
   if (existingProjects > 0) {
     logger.info("Database already seeded, skipping.");
+
     return;
   }
 

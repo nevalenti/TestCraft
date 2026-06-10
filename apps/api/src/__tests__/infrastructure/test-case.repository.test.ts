@@ -16,6 +16,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new TestCaseRepository(prisma);
@@ -31,11 +32,13 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
       data: { name: "Project", userId: USER_A },
       select: { id: true },
     });
+
     projectId = project.id;
     const suite = await prisma.testSuite.create({
       data: { name: "Suite A", projectId },
       select: { id: true },
     });
+
     suiteId = suite.id;
   });
 
@@ -58,6 +61,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
 
     it("defaults priority to Medium when not provided", async () => {
       const tc = await repo.create(suiteId, { name: "Default priority" });
+
       expect(tc.priority).toBe(TestCasePriority.Medium);
     });
   });
@@ -75,9 +79,11 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
 
     it("excludes soft-deleted cases", async () => {
       const tc = await repo.create(suiteId, { name: "Gone" });
+
       await repo.delete(suiteId, tc.id);
 
       const { total } = await repo.getAll(suiteId);
+
       expect(total).toBe(0);
     });
 
@@ -87,6 +93,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
       await repo.create(suiteId, { name: "Dashboard" });
 
       const { items, total } = await repo.getAll(suiteId, "test");
+
       expect(total).toBe(2);
       expect(items.every((tc) => tc.name.toLowerCase().includes("test"))).toBe(
         true,
@@ -124,10 +131,12 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Suite B", projectId },
         select: { id: true },
       });
+
       await repo.create(suiteId, { name: "Case in A" });
       await repo.create(suite2.id, { name: "Case in B" });
 
       const { total } = await repo.getAllByProject(projectId);
+
       expect(total).toBe(2);
     });
 
@@ -140,10 +149,12 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Other Suite", projectId: other.id },
         select: { id: true },
       });
+
       await repo.create(otherSuite.id, { name: "Not mine" });
       await repo.create(suiteId, { name: "Mine" });
 
       const { total } = await repo.getAllByProject(projectId);
+
       expect(total).toBe(1);
     });
 
@@ -152,6 +163,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
       await repo.create(suiteId, { name: "UI Checkout" });
 
       const { total } = await repo.getAllByProject(projectId, "api");
+
       expect(total).toBe(1);
     });
   });
@@ -160,6 +172,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
     it("returns the case when it belongs to the suite", async () => {
       const created = await repo.create(suiteId, { name: "My Case" });
       const found = await repo.getById(suiteId, created.id);
+
       expect(found?.id).toBe(created.id);
     });
 
@@ -169,11 +182,13 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const tc = await repo.create(otherSuite.id, { name: "Theirs" });
+
       expect(await repo.getById(suiteId, tc.id)).toBeNull();
     });
 
     it("returns null for a soft-deleted case", async () => {
       const tc = await repo.create(suiteId, { name: "Gone" });
+
       await repo.delete(suiteId, tc.id);
       expect(await repo.getById(suiteId, tc.id)).toBeNull();
     });
@@ -193,6 +208,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
         description: "New desc",
         priority: TestCasePriority.Critical,
       });
+
       expect(updated?.name).toBe("Renamed");
       expect(updated?.description).toBe("New desc");
       expect(updated?.priority).toBe(TestCasePriority.Critical);
@@ -212,6 +228,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const tc = await repo.create(otherSuite.id, { name: "Theirs" });
+
       expect(await repo.update(suiteId, tc.id, { name: "Hijack" })).toBeNull();
     });
   });
@@ -219,9 +236,11 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
   describe("delete", () => {
     it("soft-deletes the case and returns true", async () => {
       const tc = await repo.create(suiteId, { name: "To delete" });
+
       expect(await repo.delete(suiteId, tc.id)).toBe(true);
 
       const raw = await prisma.testCase.findUnique({ where: { id: tc.id } });
+
       expect(raw?.isDeleted).toBe(true);
       expect(raw?.deletedAt).not.toBeNull();
     });
@@ -234,6 +253,7 @@ describe("TestCaseRepository #integration", { tags: ["integration"] }, () => {
 
     it("returns false on a second delete attempt", async () => {
       const tc = await repo.create(suiteId, { name: "Double-delete" });
+
       await repo.delete(suiteId, tc.id);
       expect(await repo.delete(suiteId, tc.id)).toBe(false);
     });

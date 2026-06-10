@@ -43,6 +43,7 @@ export class ImportService implements IImportService {
     userId?: string,
   ): Promise<TestRun> {
     const { runName, cases } = parseJUnit(input.xml);
+
     return this.importRepository.createRunWithResults(
       projectId,
       input.name ?? runName,
@@ -60,6 +61,7 @@ export class ImportService implements IImportService {
     userId?: string,
   ): Promise<TestRun> {
     const cases = parseAllure(input.results);
+
     return this.importRepository.createRunWithResults(
       projectId,
       input.name ?? "Allure Import",

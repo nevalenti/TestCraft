@@ -22,6 +22,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new ImportRepository(prisma);
@@ -37,6 +38,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
       data: { name: "Project", userId: USER_A },
       select: { id: true },
     });
+
     projectId = project.id;
   });
 
@@ -66,6 +68,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { projectId },
         select: { name: true },
       });
+
       expect(suites.map((suite) => suite.name).toSorted()).toEqual([
         "Auth Suite",
         "Checkout",
@@ -75,6 +78,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { testRunId: run.id },
         select: { status: true },
       });
+
       expect(results).toHaveLength(3);
     });
 
@@ -95,6 +99,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { projectId, name: "Auth Suite" },
         select: { id: true },
       });
+
       expect(suites).toHaveLength(1);
     });
 
@@ -103,6 +108,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Auth Suite", projectId },
         select: { id: true },
       });
+
       await prisma.testCase.create({
         data: { name: "Login test", suiteId: suite.id },
       });
@@ -119,6 +125,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { suiteId: suite.id, name: "Login test" },
         select: { id: true },
       });
+
       expect(cases).toHaveLength(1);
     });
 
@@ -150,6 +157,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { testRunId: run.id },
         select: { status: true, notes: true },
       });
+
       expect(results).toHaveLength(1);
       expect(results[0].status).toBe(TestResultStatus.Passed);
       expect(results[0].notes).toBe("attempt 2");
@@ -177,6 +185,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { testRunId: run.id },
         select: { notes: true },
       });
+
       expect(result.notes).toBe("NullPointerException at line 42");
     });
 
@@ -194,6 +203,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { id: run.id },
         select: { executedById: true },
       });
+
       expect(dbRun.executedById).toBe(USER_A);
     });
 
@@ -215,6 +225,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { testRunId: run.id },
         select: { id: true },
       });
+
       expect(results).toHaveLength(2);
     });
 
@@ -247,6 +258,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { name: "Component > given state > does thing" },
         include: { steps: true },
       });
+
       expect(testCase.steps).toHaveLength(1);
       expect(testCase.steps[0].action).toBe("Component > given state");
       expect(testCase.steps[0].expectedResult).toBe("does thing");
@@ -257,6 +269,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Suite", projectId },
         select: { id: true },
       });
+
       await prisma.testCase.create({
         data: { name: "Existing Test", suiteId: suite.id },
       });
@@ -281,6 +294,7 @@ describe("ImportRepository #integration", { tags: ["integration"] }, () => {
         where: { name: "Existing Test", suiteId: suite.id },
         include: { steps: true },
       });
+
       expect(testCase.steps).toHaveLength(0);
     });
   });

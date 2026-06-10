@@ -27,6 +27,7 @@ const mockService: IProjectService = {
 const buildApp = () => {
   const controller = new ProjectController(mockService);
   const router = Router();
+
   router.get("/", controller.getAll);
   router.get("/:id", controller.getById);
   router.post("/", validateBody(createProjectSchema), controller.create);
@@ -34,6 +35,7 @@ const buildApp = () => {
   router.delete("/:id", controller.remove);
 
   const app = express();
+
   app.use(express.json());
   app.use((_req, _res, next) => {
     _req.user = { id: "user-1" };
@@ -41,6 +43,7 @@ const buildApp = () => {
   });
   app.use("/", router);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

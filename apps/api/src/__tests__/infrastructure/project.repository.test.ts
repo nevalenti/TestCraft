@@ -14,6 +14,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new ProjectRepository(prisma);
@@ -46,6 +47,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
 
     it("stores a null description when omitted", async () => {
       const project = await repo.create(USER_A, { name: "No desc" });
+
       expect(project.description).toBeNull();
     });
   });
@@ -55,6 +57,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
       await repo.create(USER_A, { name: "A-1" });
       await repo.create(USER_A, { name: "A-2" });
       const b = await repo.create(USER_B, { name: "B-1" });
+
       await repo.delete(USER_B, b.id);
 
       const { items, total } = await repo.getAll(USER_A);
@@ -68,9 +71,11 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
 
     it("does not return soft-deleted projects", async () => {
       const p = await repo.create(USER_A, { name: "Gone" });
+
       await repo.delete(USER_A, p.id);
 
       const { total } = await repo.getAll(USER_A);
+
       expect(total).toBe(0);
     });
 
@@ -80,6 +85,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
       await repo.create(USER_A, { name: "Mobile" });
 
       const { items, total } = await repo.getAll(USER_A, "tests");
+
       expect(total).toBe(2);
       expect(
         items.every((project) => project.name.toLowerCase().includes("tests")),
@@ -112,11 +118,13 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
       const allIds = [...page1.items, ...page2.items, ...page3.items].map(
         (project) => project.id,
       );
+
       expect(new Set(allIds).size).toBe(5);
     });
 
     it("returns an empty page when there are no projects", async () => {
       const result = await repo.getAll(USER_A);
+
       expect(result.items).toHaveLength(0);
       expect(result.total).toBe(0);
     });
@@ -126,16 +134,19 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
     it("returns the project when it belongs to the user", async () => {
       const created = await repo.create(USER_A, { name: "Mine" });
       const found = await repo.getById(USER_A, created.id);
+
       expect(found?.id).toBe(created.id);
     });
 
     it("returns null for another user's project", async () => {
       const p = await repo.create(USER_B, { name: "Not mine" });
+
       expect(await repo.getById(USER_A, p.id)).toBeNull();
     });
 
     it("returns null for a soft-deleted project", async () => {
       const p = await repo.create(USER_A, { name: "Deleted" });
+
       await repo.delete(USER_A, p.id);
       expect(await repo.getById(USER_A, p.id)).toBeNull();
     });
@@ -169,6 +180,7 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
 
     it("returns null when updating another user's project", async () => {
       const p = await repo.create(USER_B, { name: "B project" });
+
       expect(await repo.update(USER_A, p.id, { name: "Hijack" })).toBeNull();
     });
   });
@@ -176,9 +188,11 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
   describe("delete", () => {
     it("soft-deletes the project and returns true", async () => {
       const p = await repo.create(USER_A, { name: "To delete" });
+
       expect(await repo.delete(USER_A, p.id)).toBe(true);
 
       const raw = await prisma.project.findUnique({ where: { id: p.id } });
+
       expect(raw?.isDeleted).toBe(true);
       expect(raw?.deletedAt).not.toBeNull();
     });
@@ -191,12 +205,14 @@ describe("ProjectRepository #integration", { tags: ["integration"] }, () => {
 
     it("returns false on a second delete attempt", async () => {
       const p = await repo.create(USER_A, { name: "Double-delete" });
+
       await repo.delete(USER_A, p.id);
       expect(await repo.delete(USER_A, p.id)).toBe(false);
     });
 
     it("returns false when deleting another user's project", async () => {
       const p = await repo.create(USER_B, { name: "B project" });
+
       expect(await repo.delete(USER_A, p.id)).toBe(false);
     });
   });

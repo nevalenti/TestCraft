@@ -12,6 +12,7 @@ export class TestCaseController {
       req.query.search as string | undefined,
       extractPagination(req.query),
     );
+
     res.json(result);
   };
 
@@ -21,6 +22,7 @@ export class TestCaseController {
       req.query.search as string | undefined,
       extractPagination(req.query),
     );
+
     res.json(result);
   };
 
@@ -29,6 +31,7 @@ export class TestCaseController {
       req.params.suiteId as string,
       req.params.id as string,
     );
+
     res.json(testCase);
   };
 
@@ -37,6 +40,7 @@ export class TestCaseController {
       req.params.suiteId as string,
       req.body,
     );
+
     res.status(201).json(testCase);
   };
 
@@ -46,6 +50,7 @@ export class TestCaseController {
       req.params.id as string,
       req.body,
     );
+
     res.json(testCase);
   };
 

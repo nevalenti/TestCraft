@@ -33,7 +33,9 @@ export class TestSuiteService implements ITestSuiteService {
 
   async getById(projectId: string, id: string): Promise<TestSuite> {
     const suite = await this.testSuiteRepository.getById(projectId, id);
+
     if (!suite) throw new NotFoundError();
+
     return suite;
   }
 
@@ -47,12 +49,15 @@ export class TestSuiteService implements ITestSuiteService {
     input: UpdateTestSuite,
   ): Promise<TestSuite> {
     const suite = await this.testSuiteRepository.update(projectId, id, input);
+
     if (!suite) throw new NotFoundError();
+
     return suite;
   }
 
   async delete(projectId: string, id: string): Promise<void> {
     const deleted = await this.testSuiteRepository.delete(projectId, id);
+
     if (!deleted) throw new NotFoundError();
   }
 }

@@ -36,18 +36,24 @@ export class TestRunService implements ITestRunService {
 
   async getById(projectId: string, id: string): Promise<TestRun> {
     const run = await this.testRunRepository.getById(projectId, id);
+
     if (!run) throw new NotFoundError();
+
     return run;
   }
 
   async getSummary(projectId: string, id: string): Promise<TestRunSummary> {
     const key = cacheKeys.testRunSummary(id);
     const cached = await this.cache.get<TestRunSummary>(key);
+
     if (cached) return cached;
 
     const summary = await this.testRunRepository.getSummary(projectId, id);
+
     if (!summary) throw new NotFoundError();
+
     await this.cache.set(key, summary);
+
     return summary;
   }
 
@@ -61,6 +67,7 @@ export class TestRunService implements ITestRunService {
     input: UpdateTestRun,
   ): Promise<TestRun> {
     const current = await this.testRunRepository.getById(projectId, id);
+
     if (!current) throw new NotFoundError();
 
     if (!canTransitionRunStatus(current.status, input.status)) {
@@ -70,13 +77,17 @@ export class TestRunService implements ITestRunService {
     }
 
     const updated = await this.testRunRepository.update(projectId, id, input);
+
     if (updated) await this.cache.del(cacheKeys.testRunSummary(id));
+
     return updated!;
   }
 
   async delete(projectId: string, id: string): Promise<void> {
     const deleted = await this.testRunRepository.delete(projectId, id);
+
     if (!deleted) throw new NotFoundError();
+
     await this.cache.del(cacheKeys.testRunSummary(id));
   }
 }

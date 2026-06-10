@@ -7,8 +7,10 @@ import { DomainError, NotFoundError } from "@/domain/errors";
 
 const makeApp = (thrower: RequestHandler) => {
   const app = express();
+
   app.use(thrower);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

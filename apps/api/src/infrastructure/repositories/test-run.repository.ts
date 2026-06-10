@@ -25,6 +25,7 @@ export class TestRunRepository implements ITestRunRepository {
       where: { id, isDeleted: false },
       select: runSelect,
     });
+
     return run ? toTestRun(run) : null;
   }
 
@@ -52,6 +53,7 @@ export class TestRunRepository implements ITestRunRepository {
       }),
       this.prisma.testRun.count({ where }),
     ]);
+
     return { items: rows.map(toTestRun), total, page, pageSize };
   }
 
@@ -60,6 +62,7 @@ export class TestRunRepository implements ITestRunRepository {
       where: { id, projectId, isDeleted: false, project: { isDeleted: false } },
       select: runSelect,
     });
+
     return run ? toTestRun(run) : null;
   }
 
@@ -83,6 +86,7 @@ export class TestRunRepository implements ITestRunRepository {
         _count: { status: true },
       }),
     ]);
+
     if (!exists) return null;
 
     const counts: Record<string, number> = {
@@ -91,6 +95,7 @@ export class TestRunRepository implements ITestRunRepository {
       Blocked: 0,
       Skipped: 0,
     };
+
     for (const groupEntry of grouped) {
       counts[groupEntry.status] = groupEntry._count.status;
     }
@@ -119,6 +124,7 @@ export class TestRunRepository implements ITestRunRepository {
       },
       select: runSelect,
     });
+
     return toTestRun(run);
   }
 
@@ -142,9 +148,11 @@ export class TestRunRepository implements ITestRunRepository {
         },
         select: runSelect,
       });
+
       return toTestRun(run);
     } catch (err) {
       if (isNotFound(err)) return null;
+
       throw err;
     }
   }
@@ -160,9 +168,11 @@ export class TestRunRepository implements ITestRunRepository {
         },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

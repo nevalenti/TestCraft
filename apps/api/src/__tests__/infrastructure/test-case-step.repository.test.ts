@@ -17,6 +17,7 @@ describe(
     beforeAll(async () => {
       const databaseUrl = inject("databaseUrl");
       const adapter = new PrismaPg({ connectionString: databaseUrl });
+
       prisma = new PrismaClient({ adapter });
       await prisma.$connect();
       repo = new TestCaseStepRepository(prisma);
@@ -40,6 +41,7 @@ describe(
         data: { name: "TC", suiteId: suite.id },
         select: { id: true },
       });
+
       caseId = tc.id;
     });
 
@@ -80,6 +82,7 @@ describe(
         });
 
         const { items } = await repo.getAll(caseId);
+
         expect(items.map((step) => step.order)).toEqual([1, 2, 3]);
       });
 
@@ -89,9 +92,11 @@ describe(
           action: "Gone",
           expectedResult: "gone",
         });
+
         await repo.delete(caseId, step.id);
 
         const { total } = await repo.getAll(caseId);
+
         expect(total).toBe(0);
       });
 
@@ -127,6 +132,7 @@ describe(
         });
 
         const found = await repo.findByIds(caseId, [s1.id]);
+
         expect(found).toHaveLength(1);
         expect(found[0].id).toBe(s1.id);
         expect(found.map((step) => step.id)).not.toContain(s2.id);
@@ -148,11 +154,13 @@ describe(
         });
 
         const found = await repo.findByIds(caseId, [step.id]);
+
         expect(found).toHaveLength(0);
       });
 
       it("returns an empty array when ids list is empty", async () => {
         const found = await repo.findByIds(caseId, []);
+
         expect(found).toHaveLength(0);
       });
     });
@@ -165,6 +173,7 @@ describe(
           expectedResult: "a",
         });
         const found = await repo.getById(caseId, created.id);
+
         expect(found?.id).toBe(created.id);
       });
 
@@ -174,6 +183,7 @@ describe(
           action: "Gone",
           expectedResult: "gone",
         });
+
         await repo.delete(caseId, step.id);
         expect(await repo.getById(caseId, step.id)).toBeNull();
       });
@@ -197,6 +207,7 @@ describe(
           action: "Updated",
           expectedResult: "updated",
         });
+
         expect(updated?.action).toBe("Updated");
         expect(updated?.expectedResult).toBe("updated");
         expect(updated?.order).toBe(5);
@@ -241,6 +252,7 @@ describe(
         const orderMap = Object.fromEntries(
           items.map((step) => [step.id, step.order]),
         );
+
         expect(orderMap[s1.id]).toBe(3);
         expect(orderMap[s2.id]).toBe(1);
         expect(orderMap[s3.id]).toBe(2);
@@ -254,11 +266,13 @@ describe(
           action: "To delete",
           expectedResult: "deleted",
         });
+
         expect(await repo.delete(caseId, step.id)).toBe(true);
 
         const raw = await prisma.testCaseStep.findUnique({
           where: { id: step.id },
         });
+
         expect(raw?.isDeleted).toBe(true);
         expect(raw?.deletedAt).not.toBeNull();
       });
@@ -275,6 +289,7 @@ describe(
           action: "Double",
           expectedResult: "double",
         });
+
         await repo.delete(caseId, step.id);
         expect(await repo.delete(caseId, step.id)).toBe(false);
       });

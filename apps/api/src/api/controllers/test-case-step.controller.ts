@@ -11,6 +11,7 @@ export class TestCaseStepController {
       req.params.caseId as string,
       extractPagination(req.query),
     );
+
     res.json(result);
   };
 
@@ -19,6 +20,7 @@ export class TestCaseStepController {
       req.params.caseId as string,
       req.params.id as string,
     );
+
     res.json(step);
   };
 
@@ -27,6 +29,7 @@ export class TestCaseStepController {
       req.params.caseId as string,
       req.body,
     );
+
     res.status(201).json(step);
   };
 
@@ -36,6 +39,7 @@ export class TestCaseStepController {
       req.params.id as string,
       req.body,
     );
+
     res.json(step);
   };
 

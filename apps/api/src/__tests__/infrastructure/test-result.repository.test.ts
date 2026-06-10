@@ -17,6 +17,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new TestResultRepository(prisma);
@@ -36,11 +37,13 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
       data: { name: "Suite", projectId: project.id },
       select: { id: true },
     });
+
     suiteId = suite.id;
     const tc = await prisma.testCase.create({
       data: { name: "My Test Case", suiteId: suite.id },
       select: { id: true },
     });
+
     caseId = tc.id;
     const run = await prisma.testRun.create({
       data: {
@@ -51,6 +54,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
       },
       select: { id: true },
     });
+
     runId = run.id;
   });
 
@@ -98,6 +102,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const now = new Date();
+
       await repo.create(runId, {
         testCaseId: caseId,
         status: TestResultStatus.Passed,
@@ -110,6 +115,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
       });
 
       const { total } = await repo.getAll(runId);
+
       expect(total).toBe(2);
     });
 
@@ -119,6 +125,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const now = new Date();
+
       await repo.create(runId, {
         testCaseId: caseId,
         status: TestResultStatus.Passed,
@@ -134,6 +141,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         runId,
         TestResultStatus.Passed,
       );
+
       expect(total).toBe(1);
       expect(items[0].status).toBe(TestResultStatus.Passed);
     });
@@ -144,9 +152,11 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         status: TestResultStatus.Passed,
         executedAt: new Date(),
       });
+
       await repo.delete(runId, result.id);
 
       const { total } = await repo.getAll(runId);
+
       expect(total).toBe(0);
     });
 
@@ -160,6 +170,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         ),
       );
       const now = new Date();
+
       for (const tc of cases) {
         await repo.create(runId, {
           testCaseId: tc.id,
@@ -191,6 +202,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         executedAt: new Date(),
       });
       const found = await repo.getById(runId, created.id);
+
       expect(found?.id).toBe(created.id);
     });
 
@@ -200,6 +212,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         status: TestResultStatus.Passed,
         executedAt: new Date(),
       });
+
       await repo.delete(runId, result.id);
       expect(await repo.getById(runId, result.id)).toBeNull();
     });
@@ -222,6 +235,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         status: TestResultStatus.Failed,
         notes: "Regression found",
       });
+
       expect(updated?.status).toBe(TestResultStatus.Failed);
       expect(updated?.notes).toBe("Regression found");
     });
@@ -242,11 +256,13 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         status: TestResultStatus.Passed,
         executedAt: new Date(),
       });
+
       expect(await repo.delete(runId, result.id)).toBe(true);
 
       const raw = await prisma.testResult.findUnique({
         where: { id: result.id },
       });
+
       expect(raw?.isDeleted).toBe(true);
       expect(raw?.deletedAt).not.toBeNull();
     });
@@ -263,6 +279,7 @@ describe("TestResultRepository #integration", { tags: ["integration"] }, () => {
         status: TestResultStatus.Passed,
         executedAt: new Date(),
       });
+
       await repo.delete(runId, result.id);
       expect(await repo.delete(runId, result.id)).toBe(false);
     });

@@ -76,6 +76,7 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
     describe("given an Active run", () => {
       it("creates the result and returns it", async () => {
         const result = makeResult();
+
         vi.mocked(mockRunRepo.findById).mockResolvedValue(
           makeRun(TestRunStatus.Active),
         );
@@ -146,6 +147,7 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
   describe("getAll — delegates to the repository", () => {
     it("passes runId, status, and pagination through unchanged", async () => {
       const paginated = { items: [], total: 0, page: 1, pageSize: 50 };
+
       vi.mocked(mockResultRepo.getAll).mockResolvedValue(paginated);
 
       const result = await service.getAll("run-1", TestResultStatus.Failed, {
@@ -166,6 +168,7 @@ describe("TestResultService #unit", { tags: ["unit"] }, () => {
   describe("getById — delegates to the repository", () => {
     it("returns the result when found", async () => {
       const result = makeResult();
+
       vi.mocked(mockResultRepo.getById).mockResolvedValue(result);
 
       const found = await service.getById("run-1", "result-1");

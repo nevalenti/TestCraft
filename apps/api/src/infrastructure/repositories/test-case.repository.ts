@@ -72,6 +72,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       }),
       this.prisma.testCase.count({ where }),
     ]);
+
     return { items: rows.map(toTestCase), total, page, pageSize };
   }
 
@@ -98,6 +99,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       }),
       this.prisma.testCase.count({ where }),
     ]);
+
     return { items: rows.map(toTestCase), total, page, pageSize };
   }
 
@@ -106,6 +108,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       where: { id, suiteId, isDeleted: false, suite: { isDeleted: false } },
       select: caseSelect,
     });
+
     return testCase ? toTestCase(testCase) : null;
   }
 
@@ -119,6 +122,7 @@ export class TestCaseRepository implements ITestCaseRepository {
       },
       select: caseSelect,
     });
+
     return toTestCase(testCase);
   }
 
@@ -137,9 +141,11 @@ export class TestCaseRepository implements ITestCaseRepository {
         },
         select: caseSelect,
       });
+
       return toTestCase(testCase);
     } catch (err) {
       if (isNotFound(err)) return null;
+
       throw err;
     }
   }
@@ -150,9 +156,11 @@ export class TestCaseRepository implements ITestCaseRepository {
         where: { id, suiteId, isDeleted: false, suite: { isDeleted: false } },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

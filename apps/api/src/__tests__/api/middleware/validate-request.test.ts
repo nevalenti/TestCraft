@@ -14,6 +14,7 @@ const schema = z.object({
 });
 
 const app = express();
+
 app.use(express.json());
 app.post("/test", validateBody(schema), (_req, res) => {
   res.status(200).json({ ok: true });
@@ -27,6 +28,7 @@ const querySchema = z.object({
 });
 
 const queryApp = express();
+
 queryApp.get("/test", validateQuery(querySchema), (req, res) => {
   res.json({ page: req.query.page, pageSize: req.query.pageSize });
 });

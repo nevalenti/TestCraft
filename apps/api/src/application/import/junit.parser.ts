@@ -19,8 +19,10 @@ const extractXmlText = (node: unknown): string | null => {
   if (typeof node === "object" && node !== null) {
     const obj = node as Record<string, unknown>;
     const text = obj.message ?? null;
+
     return typeof text === "string" ? text.trim() || null : null;
   }
+
   return null;
 };
 
@@ -34,6 +36,7 @@ const resolveStatus = (
     };
   if ("skipped" in testcase)
     return { status: TestResultStatus.Skipped, notes: null };
+
   return { status: TestResultStatus.Passed, notes: null };
 };
 
@@ -44,7 +47,9 @@ const SEP = " > ";
 
 const parseSteps = (caseName: string): ParsedStep[] => {
   const idx = caseName.lastIndexOf(SEP);
+
   if (idx === -1) return [];
+
   return [
     {
       order: 1,
@@ -60,6 +65,7 @@ export const parseJUnit = (
   xml: string,
 ): { runName: string; cases: ParsedTestCase[] } => {
   let doc: Record<string, unknown>;
+
   try {
     doc = junitParser.parse(xml) as Record<string, unknown>;
   } catch {
@@ -71,19 +77,23 @@ export const parseJUnit = (
 
   if (doc.testsuites) {
     const testsuites = doc.testsuites as Record<string, unknown>;
+
     runName = strVal(testsuites.name) ?? DEFAULT_RUN_NAME;
     suites = (testsuites.testsuite as Record<string, unknown>[]) ?? [];
   } else if (doc.testsuite) {
     suites = doc.testsuite as Record<string, unknown>[];
     const first = suites[0];
+
     if (first) runName = strVal(first.name) ?? DEFAULT_RUN_NAME;
   }
 
   const cases = suites.flatMap((suite) => {
     const suiteNameFromAttr = strVal(suite.name);
+
     return ((suite.testcase as Record<string, unknown>[]) ?? []).map(
       (testcase) => {
         const caseName = strVal(testcase.name) ?? "Unknown";
+
         return {
           suiteName:
             suiteNameFromAttr ?? strVal(testcase.classname) ?? "Default Suite",

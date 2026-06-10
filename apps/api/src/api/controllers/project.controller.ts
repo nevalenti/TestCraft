@@ -12,6 +12,7 @@ export class ProjectController {
       req.query.search as string | undefined,
       extractPagination(req.query),
     );
+
     res.json(result);
   };
 
@@ -20,11 +21,13 @@ export class ProjectController {
       req.user!.id,
       req.params.id as string,
     );
+
     res.json(project);
   };
 
   create = async (req: Request, res: Response): Promise<void> => {
     const project = await this.projectService.create(req.user!.id, req.body);
+
     res.status(201).json(project);
   };
 
@@ -34,6 +37,7 @@ export class ProjectController {
       req.params.id as string,
       req.body,
     );
+
     res.json(project);
   };
 

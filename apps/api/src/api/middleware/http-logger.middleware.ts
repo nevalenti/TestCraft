@@ -13,13 +13,16 @@ export const httpLogger = pinoHttp({
     const result: Record<string, unknown> = {};
 
     const span = trace.getActiveSpan();
+
     if (span?.isRecording()) {
       const { traceId, spanId } = span.spanContext();
+
       result.traceId = traceId;
       result.spanId = spanId;
     }
 
     const expressReq = req as Request;
+
     if (expressReq.route) {
       result.route = `${expressReq.baseUrl}${expressReq.route.path}`;
     }

@@ -31,6 +31,7 @@ export interface ValidationProblem extends ProblemDetail {
 
 export const problem = (res: Response, body: ProblemDetail): void => {
   const instance = res.req?.headers["x-request-id"] as string | undefined;
+
   res
     .status(body.status)
     .contentType(PROBLEM_CONTENT_TYPE)

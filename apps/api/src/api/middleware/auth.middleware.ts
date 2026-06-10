@@ -22,11 +22,13 @@ export const authenticate: RequestHandler = async (req, res, next) => {
 
   if (!authHeader?.startsWith("Bearer ")) {
     problem(res, problems.unauthorized());
+
     return;
   }
 
   try {
     const payload = await verifyToken(authHeader.slice(7));
+
     req.user = { id: payload.sub! };
     req.log = req.log.child({ UserId: req.user.id });
     next();

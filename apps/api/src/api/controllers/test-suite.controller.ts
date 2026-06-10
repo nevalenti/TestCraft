@@ -12,6 +12,7 @@ export class TestSuiteController {
       extractPagination(req.query),
       req.query.search as string | undefined,
     );
+
     res.json(result);
   };
 
@@ -20,6 +21,7 @@ export class TestSuiteController {
       req.params.projectId as string,
       req.params.id as string,
     );
+
     res.json(suite);
   };
 
@@ -28,6 +30,7 @@ export class TestSuiteController {
       req.params.projectId as string,
       req.body,
     );
+
     res.status(201).json(suite);
   };
 
@@ -37,6 +40,7 @@ export class TestSuiteController {
       req.params.id as string,
       req.body,
     );
+
     res.json(suite);
   };
 

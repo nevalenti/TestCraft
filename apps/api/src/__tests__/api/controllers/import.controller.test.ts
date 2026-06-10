@@ -26,6 +26,7 @@ const mockService: IImportService = {
 const buildApp = () => {
   const controller = new ImportController(mockService);
   const router = Router({ mergeParams: true });
+
   router.post(
     "/junit",
     validateBody(importJUnitSchema),
@@ -38,6 +39,7 @@ const buildApp = () => {
   );
 
   const app = express();
+
   app.use(express.json({ limit: "5mb" }));
   app.use((_req, _res, next) => {
     _req.user = { id: "user-1" };
@@ -45,6 +47,7 @@ const buildApp = () => {
   });
   app.use("/projects/:projectId/import", router);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

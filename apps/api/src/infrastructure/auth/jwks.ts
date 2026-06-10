@@ -23,6 +23,7 @@ const getClient = (): JwksClient => {
     rateLimit: true,
     jwksRequestsPerMinute: 10,
   });
+
   return client;
 };
 
@@ -32,6 +33,7 @@ export const getSigningKey = (
 ): void => {
   getClient().getSigningKey(header.kid, (err, key) => {
     if (err) return callback(err);
+
     callback(null, key?.getPublicKey());
   });
 };

@@ -44,6 +44,7 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
       }),
       this.prisma.testCaseStep.count({ where }),
     ]);
+
     return { items, total, page, pageSize };
   }
 
@@ -108,6 +109,7 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
       });
     } catch (err) {
       if (isNotFound(err)) return null;
+
       throw err;
     }
   }
@@ -131,9 +133,11 @@ export class TestCaseStepRepository implements ITestCaseStepRepository {
         },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

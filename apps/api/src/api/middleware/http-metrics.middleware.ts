@@ -19,6 +19,7 @@ export const httpMetrics = (
       route,
       status_code: String(res.statusCode),
     };
+
     httpRequestDuration.observe(labels, (performance.now() - start) / 1000);
     httpRequestsTotal.inc(labels);
   });

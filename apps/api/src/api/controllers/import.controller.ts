@@ -11,6 +11,7 @@ export class ImportController {
       req.body,
       req.user?.id,
     );
+
     res.status(201).json(run);
   };
 
@@ -20,6 +21,7 @@ export class ImportController {
       req.body,
       req.user?.id,
     );
+
     res.status(201).json(run);
   };
 }

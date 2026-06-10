@@ -9,21 +9,25 @@ import { logger } from "@/infrastructure/logging/logger";
 export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
   if (error instanceof NotFoundError) {
     problem(res, problems.notFound());
+
     return;
   }
 
   if (error instanceof DomainError) {
     problem(res, problems.unprocessable(error.message));
+
     return;
   }
 
   if (error instanceof ZodError) {
     problem(res, problems.validation(zodToFieldErrors(error.issues)));
+
     return;
   }
 
   if (isConstraintViolation(error)) {
     problem(res, problems.conflict("Referenced entity does not exist"));
+
     return;
   }
 

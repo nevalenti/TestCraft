@@ -73,6 +73,7 @@ export class TestResultRepository implements ITestResultRepository {
       }),
       this.prisma.testResult.count({ where }),
     ]);
+
     return { items: rows.map(toTestResult), total, page, pageSize };
   }
 
@@ -86,6 +87,7 @@ export class TestResultRepository implements ITestResultRepository {
       },
       include: resultInclude,
     });
+
     return result ? toTestResult(result) : null;
   }
 
@@ -105,6 +107,7 @@ export class TestResultRepository implements ITestResultRepository {
       },
       include: resultInclude,
     });
+
     return toTestResult(result);
   }
 
@@ -124,9 +127,11 @@ export class TestResultRepository implements ITestResultRepository {
         data: { status: input.status, notes: input.notes ?? null },
         include: resultInclude,
       });
+
       return toTestResult(result);
     } catch (err) {
       if (isNotFound(err)) return null;
+
       throw err;
     }
   }
@@ -142,9 +147,11 @@ export class TestResultRepository implements ITestResultRepository {
         },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

@@ -47,6 +47,7 @@ export class TestSuiteRepository implements ITestSuiteRepository {
       }),
       this.prisma.testSuite.count({ where }),
     ]);
+
     return { items, total, page, pageSize };
   }
 
@@ -86,6 +87,7 @@ export class TestSuiteRepository implements ITestSuiteRepository {
       });
     } catch (err) {
       if (isNotFound(err)) return null;
+
       throw err;
     }
   }
@@ -101,9 +103,11 @@ export class TestSuiteRepository implements ITestSuiteRepository {
         },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

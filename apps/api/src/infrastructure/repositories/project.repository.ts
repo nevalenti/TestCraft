@@ -74,6 +74,7 @@ export class ProjectRepository implements IProjectRepository {
       }),
       this.prisma.project.count({ where }),
     ]);
+
     return { items: rows.map(toProject), total, page, pageSize };
   }
 
@@ -82,6 +83,7 @@ export class ProjectRepository implements IProjectRepository {
       where: { id, userId, isDeleted: false },
       select: projectSelect,
     });
+
     return project ? toProject(project) : null;
   }
 
@@ -95,10 +97,12 @@ export class ProjectRepository implements IProjectRepository {
         },
         select: projectSelect,
       });
+
       return toProject(project);
     } catch (err) {
       if (isUniqueViolation(err))
         throw new DomainError("A project with this name already exists");
+
       throw err;
     }
   }
@@ -114,11 +118,13 @@ export class ProjectRepository implements IProjectRepository {
         data: { name: input.name, description: input.description ?? null },
         select: projectSelect,
       });
+
       return toProject(project);
     } catch (err) {
       if (isNotFound(err)) return null;
       if (isUniqueViolation(err))
         throw new DomainError("A project with this name already exists");
+
       throw err;
     }
   }
@@ -129,9 +135,11 @@ export class ProjectRepository implements IProjectRepository {
         where: { id, userId, isDeleted: false },
         data: { isDeleted: true, deletedAt: new Date() },
       });
+
       return true;
     } catch (err) {
       if (isNotFound(err)) return false;
+
       throw err;
     }
   }

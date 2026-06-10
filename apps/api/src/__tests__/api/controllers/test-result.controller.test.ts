@@ -33,6 +33,7 @@ const mockService: ITestResultService = {
 const buildApp = () => {
   const controller = new TestResultController(mockService);
   const router = Router({ mergeParams: true });
+
   router.get("/", validateQuery(testResultQuerySchema), controller.getAll);
   router.get("/:id", controller.getById);
   router.post("/", validateBody(createTestResultSchema), controller.create);
@@ -40,6 +41,7 @@ const buildApp = () => {
   router.delete("/:id", controller.remove);
 
   const app = express();
+
   app.use(express.json());
   app.use((_req, _res, next) => {
     _req.user = { id: "user-1" };
@@ -47,6 +49,7 @@ const buildApp = () => {
   });
   app.use("/projects/:projectId/runs/:runId/results", router);
   app.use(errorHandler);
+
   return supertest(app);
 };
 

@@ -15,6 +15,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new TestRunRepository(prisma);
@@ -30,6 +31,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
       data: { name: "Project", userId: USER_A },
       select: { id: true },
     });
+
     projectId = project.id;
   });
 
@@ -59,6 +61,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         status: TestRunStatus.Active,
       });
       const found = await repo.findById(run.id);
+
       expect(found?.id).toBe(run.id);
     });
 
@@ -68,6 +71,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "prod",
         status: TestRunStatus.Active,
       });
+
       await repo.delete(projectId, run.id);
       expect(await repo.findById(run.id)).toBeNull();
     });
@@ -93,6 +97,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
       });
 
       const { items, total } = await repo.getAll(projectId);
+
       expect(total).toBe(2);
       expect(items.map((run) => run.name).toSorted()).toEqual([
         "Run A",
@@ -106,9 +111,11 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       await repo.delete(projectId, run.id);
 
       const { total } = await repo.getAll(projectId);
+
       expect(total).toBe(0);
     });
 
@@ -117,6 +124,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Other", userId: USER_A },
         select: { id: true },
       });
+
       await repo.create(other.id, {
         name: "Other Run",
         environment: "staging",
@@ -129,6 +137,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
       });
 
       const { total } = await repo.getAll(projectId);
+
       expect(total).toBe(1);
     });
 
@@ -158,6 +167,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         status: TestRunStatus.Active,
       });
       const found = await repo.getById(projectId, created.id);
+
       expect(found?.id).toBe(created.id);
     });
 
@@ -171,6 +181,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       expect(await repo.getById(projectId, run.id)).toBeNull();
     });
 
@@ -180,6 +191,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       await repo.delete(projectId, run.id);
       expect(await repo.getById(projectId, run.id)).toBeNull();
     });
@@ -200,6 +212,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
       });
 
       const summary = await repo.getSummary(projectId, run.id);
+
       expect(summary).toEqual({
         total: 0,
         passed: 0,
@@ -229,6 +242,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         status: TestRunStatus.Active,
       });
       const now = new Date();
+
       await prisma.testResult.createMany({
         data: [
           {
@@ -259,6 +273,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
       });
 
       const summary = await repo.getSummary(projectId, run.id);
+
       expect(summary?.total).toBe(4);
       expect(summary?.passed).toBe(2);
       expect(summary?.failed).toBe(1);
@@ -286,6 +301,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       expect(await repo.getSummary(projectId, run.id)).toBeNull();
     });
   });
@@ -302,6 +318,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "prod",
         status: TestRunStatus.Completed,
       });
+
       expect(updated?.name).toBe("Renamed");
       expect(updated?.environment).toBe("prod");
       expect(updated?.status).toBe(TestRunStatus.Completed);
@@ -327,6 +344,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       expect(
         await repo.update(projectId, run.id, {
           name: "Hijack",
@@ -344,9 +362,11 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       expect(await repo.delete(projectId, run.id)).toBe(true);
 
       const raw = await prisma.testRun.findUnique({ where: { id: run.id } });
+
       expect(raw?.isDeleted).toBe(true);
       expect(raw?.deletedAt).not.toBeNull();
     });
@@ -363,6 +383,7 @@ describe("TestRunRepository #integration", { tags: ["integration"] }, () => {
         environment: "staging",
         status: TestRunStatus.Active,
       });
+
       await repo.delete(projectId, run.id);
       expect(await repo.delete(projectId, run.id)).toBe(false);
     });

@@ -14,6 +14,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
   beforeAll(async () => {
     const databaseUrl = inject("databaseUrl");
     const adapter = new PrismaPg({ connectionString: databaseUrl });
+
     prisma = new PrismaClient({ adapter });
     await prisma.$connect();
     repo = new TestSuiteRepository(prisma);
@@ -29,6 +30,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
       data: { name: "Test Project", userId: USER_A },
       select: { id: true },
     });
+
     projectId = project.id;
   });
 
@@ -49,6 +51,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
 
     it("stores a null description when omitted", async () => {
       const suite = await repo.create(projectId, { name: "No desc" });
+
       expect(suite.description).toBeNull();
     });
   });
@@ -66,9 +69,11 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
 
     it("excludes soft-deleted suites", async () => {
       const suite = await repo.create(projectId, { name: "Gone" });
+
       await repo.delete(projectId, suite.id);
 
       const { total } = await repo.getAll(projectId);
+
       expect(total).toBe(0);
     });
 
@@ -77,10 +82,12 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
         data: { name: "Other", userId: USER_A },
         select: { id: true },
       });
+
       await repo.create(other.id, { name: "Other Suite" });
       await repo.create(projectId, { name: "Mine" });
 
       const { total } = await repo.getAll(projectId);
+
       expect(total).toBe(1);
     });
 
@@ -96,11 +103,13 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
       expect(page1.items).toHaveLength(2);
       expect(page2.items).toHaveLength(2);
       const allIds = [...page1.items, ...page2.items].map((suite) => suite.id);
+
       expect(new Set(allIds).size).toBe(4);
     });
 
     it("returns an empty page when there are no suites", async () => {
       const { items, total } = await repo.getAll(projectId);
+
       expect(items).toHaveLength(0);
       expect(total).toBe(0);
     });
@@ -110,6 +119,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
     it("returns the suite when it belongs to the project", async () => {
       const created = await repo.create(projectId, { name: "Suite A" });
       const found = await repo.getById(projectId, created.id);
+
       expect(found?.id).toBe(created.id);
     });
 
@@ -119,11 +129,13 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const suite = await repo.create(other.id, { name: "Other Suite" });
+
       expect(await repo.getById(projectId, suite.id)).toBeNull();
     });
 
     it("returns null for a soft-deleted suite", async () => {
       const suite = await repo.create(projectId, { name: "Gone" });
+
       await repo.delete(projectId, suite.id);
       expect(await repo.getById(projectId, suite.id)).toBeNull();
     });
@@ -142,6 +154,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
         name: "Renamed",
         description: "New desc",
       });
+
       expect(updated?.name).toBe("Renamed");
       expect(updated?.description).toBe("New desc");
     });
@@ -160,6 +173,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
         select: { id: true },
       });
       const suite = await repo.create(other.id, { name: "Theirs" });
+
       expect(
         await repo.update(projectId, suite.id, { name: "Hijack" }),
       ).toBeNull();
@@ -169,11 +183,13 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
   describe("delete", () => {
     it("soft-deletes the suite and returns true", async () => {
       const suite = await repo.create(projectId, { name: "To delete" });
+
       expect(await repo.delete(projectId, suite.id)).toBe(true);
 
       const raw = await prisma.testSuite.findUnique({
         where: { id: suite.id },
       });
+
       expect(raw?.isDeleted).toBe(true);
       expect(raw?.deletedAt).not.toBeNull();
     });
@@ -186,6 +202,7 @@ describe("TestSuiteRepository #integration", { tags: ["integration"] }, () => {
 
     it("returns false on a second delete attempt", async () => {
       const suite = await repo.create(projectId, { name: "Double-delete" });
+
       await repo.delete(projectId, suite.id);
       expect(await repo.delete(projectId, suite.id)).toBe(false);
     });

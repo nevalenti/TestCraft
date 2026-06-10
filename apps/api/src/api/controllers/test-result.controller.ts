@@ -14,6 +14,7 @@ export class TestResultController {
       extractPagination(req.query),
       req.query.search as string | undefined,
     );
+
     res.json(result);
   };
 
@@ -22,6 +23,7 @@ export class TestResultController {
       req.params.runId as string,
       req.params.id as string,
     );
+
     res.json(result);
   };
 
@@ -31,6 +33,7 @@ export class TestResultController {
       req.body,
       req.user?.id,
     );
+
     res.status(201).json(result);
   };
 
@@ -40,6 +43,7 @@ export class TestResultController {
       req.params.id as string,
       req.body,
     );
+
     res.json(result);
   };
 

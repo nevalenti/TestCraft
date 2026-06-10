@@ -38,6 +38,7 @@ export class TestResultService implements ITestResultService {
 
   private async assertRunIsModifiable(runId: string): Promise<void> {
     const run = await this.testRunRepository.findById(runId);
+
     if (!run) throw new NotFoundError();
     if (!canAddResultToRun(run.status)) {
       throw new DomainError(`Cannot modify results in a ${run.status} test run`);
@@ -55,7 +56,9 @@ export class TestResultService implements ITestResultService {
 
   async getById(runId: string, id: string): Promise<TestResult> {
     const result = await this.testResultRepository.getById(runId, id);
+
     if (!result) throw new NotFoundError();
+
     return result;
   }
 
@@ -66,7 +69,9 @@ export class TestResultService implements ITestResultService {
   ): Promise<TestResult> {
     await this.assertRunIsModifiable(runId);
     const result = await this.testResultRepository.create(runId, input, userId);
+
     await this.cache.del(cacheKeys.testRunSummary(runId));
+
     return result;
   }
 
@@ -77,14 +82,19 @@ export class TestResultService implements ITestResultService {
   ): Promise<TestResult> {
     await this.assertRunIsModifiable(runId);
     const result = await this.testResultRepository.update(runId, id, input);
+
     if (!result) throw new NotFoundError();
+
     await this.cache.del(cacheKeys.testRunSummary(runId));
+
     return result;
   }
 
   async delete(runId: string, id: string): Promise<void> {
     const deleted = await this.testResultRepository.delete(runId, id);
+
     if (!deleted) throw new NotFoundError();
+
     await this.cache.del(cacheKeys.testRunSummary(runId));
   }
 }

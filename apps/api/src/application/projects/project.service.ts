@@ -29,7 +29,9 @@ export class ProjectService implements IProjectService {
 
   async getById(userId: string, id: string): Promise<Project> {
     const project = await this.projectRepository.getById(userId, id);
+
     if (!project) throw new NotFoundError();
+
     return project;
   }
 
@@ -43,12 +45,15 @@ export class ProjectService implements IProjectService {
     input: UpdateProject,
   ): Promise<Project> {
     const project = await this.projectRepository.update(userId, id, input);
+
     if (!project) throw new NotFoundError();
+
     return project;
   }
 
   async delete(userId: string, id: string): Promise<void> {
     const deleted = await this.projectRepository.delete(userId, id);
+
     if (!deleted) throw new NotFoundError();
   }
 }

@@ -11,6 +11,7 @@ const router: Router = Router();
 const pingDb = async (): Promise<boolean> => {
   try {
     await prisma.$queryRaw`SELECT 1`;
+
     return true;
   } catch {
     return false;
@@ -23,6 +24,7 @@ const isBearerTokenValid = (
 ): boolean => {
   const provided = authHeader ?? "";
   const expected = `Bearer ${token}`;
+
   return (
     provided.length === expected.length &&
     timingSafeEqual(Buffer.from(provided), Buffer.from(expected))
@@ -48,6 +50,7 @@ router.get("/health", async (_req, res) => {
 router.get("/status", async (_req, res) => {
   const dbUp = await pingDb();
   const mem = process.memoryUsage();
+
   res.json({
     status: dbUp ? "ok" : "degraded",
     uptime: Math.floor(process.uptime()),
@@ -64,8 +67,10 @@ router.get("/metrics", async (req, res) => {
     !isBearerTokenValid(req.headers.authorization, config.metricsToken)
   ) {
     res.status(401).end();
+
     return;
   }
+
   res.set("Content-Type", registry.contentType);
   res.end(await registry.metrics());
 });

@@ -42,6 +42,7 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
       it("delegates to the repository and returns the updated run", async () => {
         const current = makeRun(TestRunStatus.Active);
         const updated = { ...current, status: TestRunStatus.Completed };
+
         vi.mocked(mockRepo.getById).mockResolvedValue(current);
         vi.mocked(mockRepo.update).mockResolvedValue(updated);
 
@@ -129,6 +130,7 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
   describe("getAll — delegates to the repository", () => {
     it("passes projectId and pagination through unchanged", async () => {
       const paginated = { items: [], total: 0, page: 1, pageSize: 50 };
+
       vi.mocked(mockRepo.getAll).mockResolvedValue(paginated);
 
       const result = await service.getAll("proj-1", { page: 1, pageSize: 50 });
@@ -145,6 +147,7 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
   describe("getById — delegates to the repository", () => {
     it("returns the run when found", async () => {
       const run = makeRun(TestRunStatus.Active);
+
       vi.mocked(mockRepo.getById).mockResolvedValue(run);
 
       const result = await service.getById("proj-1", "run-1");
@@ -163,6 +166,7 @@ describe("TestRunService #unit", { tags: ["unit"] }, () => {
         skipped: 1,
         passRate: 80,
       };
+
       vi.mocked(mockRepo.getSummary).mockResolvedValue(summary);
 
       const result = await service.getSummary("proj-1", "run-1");

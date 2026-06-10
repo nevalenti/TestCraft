@@ -25,11 +25,13 @@ const attachLog = (_req: Request, _res: Response, next: NextFunction) => {
 
 const buildApp = () => {
   const app = express();
+
   app.use(attachLog);
   app.get("/protected", authenticate, (req, res) => {
     res.json({ userId: req.user!.id });
   });
   app.use(errorHandler);
+
   return supertest(app);
 };
 
