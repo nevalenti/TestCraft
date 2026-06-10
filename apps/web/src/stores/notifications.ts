@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { nanoid } from "nanoid";
 import { create } from "zustand";
 
@@ -26,34 +25,21 @@ interface NotificationsState {
 export const useNotificationsStore = create<NotificationsState>((set) => {
   const timers = new Map<string, ReturnType<typeof setTimeout>>();
 
-  const cancel = (id: string) => {
-    const timer = timers.get(id);
-    if (timer) {
-      clearTimeout(timer);
-      timers.delete(id);
-    }
+  const dismiss = (id: string) => {
+    timers.delete(id);
+    set((state) => ({
+      notifications: state.notifications.filter((n) => n.id !== id),
+    }));
   };
-
-  const dismiss = (id: string) =>
-    set(
-      produce<NotificationsState>((draft) => {
-        const index = draft.notifications.findIndex(
-          (notification) => notification.id === id,
-        );
-        if (index !== -1) draft.notifications.splice(index, 1);
-      }),
-    );
 
   return {
     notifications: [],
 
     add: (notification) => {
       const id = nanoid();
-      set(
-        produce<NotificationsState>((draft) => {
-          draft.notifications.push({ ...notification, id });
-        }),
-      );
+      set((state) => ({
+        notifications: [...state.notifications, { ...notification, id }],
+      }));
       if (notification.timeout) {
         timers.set(
           id,
@@ -63,18 +49,15 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
     },
 
     remove: (id) => {
-      cancel(id);
+      const timer = timers.get(id);
+      if (timer) clearTimeout(timer);
       dismiss(id);
     },
 
     clearAll: () => {
       for (const timer of timers.values()) clearTimeout(timer);
       timers.clear();
-      set(
-        produce<NotificationsState>((draft) => {
-          draft.notifications = [];
-        }),
-      );
+      set({ notifications: [] });
     },
   };
 });
