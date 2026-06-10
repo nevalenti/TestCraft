@@ -104,7 +104,7 @@ jobs:
       - name: Import results to TestCraft
         if: always()
         continue-on-error: true
-        uses: ./.github/actions/import-results
+        uses: ./.github/actions/testcraft
         with:
           username: ${{ secrets.TESTCRAFT_USERNAME }}
           password: ${{ secrets.TESTCRAFT_PASSWORD }}

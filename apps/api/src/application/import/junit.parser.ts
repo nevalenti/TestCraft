@@ -43,6 +43,19 @@ const resolveStatus = (
 const strVal = (value: unknown): string | null =>
   typeof value === "string" && value ? value : null;
 
+const resolveSuiteName = (
+  suiteNameFromAttr: string | null,
+  testcase: Record<string, unknown>,
+): string => {
+  const classname = strVal(testcase.classname);
+
+  if (suiteNameFromAttr?.toLowerCase().endsWith(".dll")) {
+    return classname ?? suiteNameFromAttr;
+  }
+
+  return suiteNameFromAttr ?? classname ?? "Default Suite";
+};
+
 const SEP = " > ";
 
 const parseSteps = (caseName: string): ParsedStep[] => {
@@ -95,8 +108,7 @@ export const parseJUnit = (
         const caseName = strVal(testcase.name) ?? "Unknown";
 
         return {
-          suiteName:
-            suiteNameFromAttr ?? strVal(testcase.classname) ?? "Default Suite",
+          suiteName: resolveSuiteName(suiteNameFromAttr, testcase),
           caseName,
           ...resolveStatus(testcase),
           steps: parseSteps(caseName),

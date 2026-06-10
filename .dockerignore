@@ -12,6 +12,11 @@ apps/api/test-results/
 apps/web/e2e/
 apps/api/src/__tests__/
 
+apps/Api/**/bin/
+apps/Api/**/obj/
+apps/Api/test-results/
+apps/Api/tests/
+
 .env
 .env.*
 !.env.example
@@ -23,6 +28,7 @@ apps/api/src/__tests__/
 .vscode
 .idea
 .editorconfig
+!apps/Api/.editorconfig
 .DS_Store
 Thumbs.db
 

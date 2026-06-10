@@ -32,3 +32,39 @@ indent_size = 2
 
 [Makefile]
 indent_style = tab
+
+[*.cs]
+dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
+dotnet_analyzer_diagnostic.category-Blocker Bug.severity = suggestion
+dotnet_analyzer_diagnostic.category-Critical Bug.severity = suggestion
+dotnet_analyzer_diagnostic.category-Major Bug.severity = suggestion
+dotnet_analyzer_diagnostic.category-Minor Bug.severity = suggestion
+dotnet_analyzer_diagnostic.category-Blocker Vulnerability.severity = suggestion
+dotnet_analyzer_diagnostic.category-Critical Vulnerability.severity = suggestion
+dotnet_analyzer_diagnostic.category-Major Vulnerability.severity = suggestion
+dotnet_analyzer_diagnostic.category-Blocker Code Smell.severity = suggestion
+dotnet_analyzer_diagnostic.category-Critical Code Smell.severity = suggestion
+dotnet_analyzer_diagnostic.category-Major Code Smell.severity = suggestion
+dotnet_analyzer_diagnostic.category-Minor Code Smell.severity = suggestion
+dotnet_analyzer_diagnostic.category-Info Code Smell.severity = suggestion
+dotnet_analyzer_diagnostic.category-Critical Security Hotspot.severity = suggestion
+dotnet_analyzer_diagnostic.category-Major Security Hotspot.severity = suggestion
+dotnet_analyzer_diagnostic.category-Minor Security Hotspot.severity = suggestion
+
+indent_size = 4
+indent_style = space
+
+csharp_new_line_before_open_brace = all
+csharp_new_line_between_query_expression_clauses = true
+
+csharp_space_after_cast = false
+csharp_space_after_keywords_in_control_flow_statements = true
+csharp_space_between_method_call_parameter_list_parentheses = false
+csharp_space_between_method_declaration_parameter_list_parentheses = false
+
+dotnet_sort_system_directives_first = true
+dotnet_separate_import_directive_groups = true
+
+dotnet_naming_rule.methods_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.properties_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion

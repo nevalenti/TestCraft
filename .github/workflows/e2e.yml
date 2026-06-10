@@ -40,7 +40,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:17-alpine
+        image: postgres:16-alpine
         env:
           POSTGRES_USER: e2e
           POSTGRES_PASSWORD: e2e
@@ -120,7 +120,7 @@ jobs:
       - name: Import results to TestCraft
         if: always()
         continue-on-error: true
-        uses: ./.github/actions/import-results
+        uses: ./.github/actions/testcraft
         with:
           username: ${{ secrets.TESTCRAFT_USERNAME }}
           password: ${{ secrets.TESTCRAFT_PASSWORD }}

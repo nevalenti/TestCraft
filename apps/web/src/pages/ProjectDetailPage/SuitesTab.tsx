@@ -11,8 +11,11 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
+import { ResourceListItem } from "@/components/ui/ResourceListItem";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SkeletonList } from "@/components/ui/SkeletonList";
 import { SourceFilter } from "@/components/ui/SourceFilter";
+import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -24,12 +27,14 @@ import {
 } from "@/hooks/useTestSuites";
 import { formatDate } from "@/lib/format";
 import { SuiteForm } from "@/pages/ProjectDetailPage/SuiteForm";
+import { useViewModeStore } from "@/stores/viewMode";
 
 export const SuitesTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
+  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestSuite>();
   const { data: suites, isPending } = useTestSuites(
@@ -64,7 +69,8 @@ export const SuitesTab = () => {
     : suites;
 
   const renderSuites = () => {
-    if (isPending) return <SkeletonGrid />;
+    if (isPending)
+      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
 
     if (suites?.length === 0)
       return (
@@ -72,6 +78,47 @@ export const SuitesTab = () => {
           title="No test suites yet"
           description="Group related test cases into suites."
         />
+      );
+
+    if (viewMode === "list")
+      return (
+        <div className="flex flex-col gap-2">
+          {visibleSuites?.map((suite) => (
+            <ResourceListItem
+              key={suite.id}
+              testId="suite-card"
+              onEdit={() => openEdit(suite)}
+              onDelete={() => openDelete(suite)}
+              to={`/projects/${projectId}/suites/${suite.id}`}
+              label="test suite"
+              accentText="text-success"
+              typeIcon={<RectangleGroupIcon className="size-4" />}
+            >
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="truncate text-sm font-semibold">
+                  {suite.name}
+                </span>
+                <p className="truncate text-xs text-base-content/60">
+                  {suite.description ?? (
+                    <span className="text-base-content/30 italic">
+                      No description
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                {suite.source && (
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                    {suite.source}
+                  </span>
+                )}
+                <span className="text-[11px] font-medium text-base-content/40 tabular-nums">
+                  {formatDate(suite.createdAt)}
+                </span>
+              </div>
+            </ResourceListItem>
+          ))}
+        </div>
       );
 
     return (
@@ -125,6 +172,7 @@ export const SuitesTab = () => {
         onSearch={setSearch}
         placeholder="Search test suites…"
       >
+        <ViewToggle />
         <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" aria-hidden="true" />
           New Suite

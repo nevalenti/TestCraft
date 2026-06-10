@@ -1,4 +1,4 @@
-.PHONY: up down clean migrate seed e2e api web \
+.PHONY: up down clean migrate seed e2e api api-dotnet web \
         build load images destroy status deploy
 
 API_IMAGE = testcraft-api
@@ -29,11 +29,14 @@ e2e:
 api:
 	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
 
+api-dotnet:
+	act push -W .github/workflows/api-dotnet.yml -j build-test --secret-file .secrets
+
 web:
 	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
 
 build:
-	docker build -t $(API_IMAGE) -f apps/api/Dockerfile .
+	docker build -t $(API_IMAGE) -f apps/Api/Dockerfile .
 	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
 
 load:

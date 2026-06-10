@@ -4,67 +4,68 @@ kind: Kustomization
 namespace: testcraft
 
 resources:
-  - infra/k8s/namespace.yaml
-  - infra/k8s/postgres.yaml
-  - infra/k8s/redis.yaml
-  - infra/k8s/keycloak.yaml
-  - infra/k8s/loki.yaml
-  - infra/k8s/prometheus.yaml
-  - infra/k8s/exporters.yaml
-  - infra/k8s/grafana.yaml
-  - infra/k8s/api.yaml
-  - infra/k8s/web.yaml
-  - infra/k8s/gateway.yaml
+  - infrastructure/k8s/namespace.yaml
+  - infrastructure/k8s/postgres.yaml
+  - infrastructure/k8s/redis.yaml
+  - infrastructure/k8s/keycloak.yaml
+  - infrastructure/k8s/loki.yaml
+  - infrastructure/k8s/seq.yaml
+  - infrastructure/k8s/prometheus.yaml
+  - infrastructure/k8s/exporters.yaml
+  - infrastructure/k8s/grafana.yaml
+  - infrastructure/k8s/api.yaml
+  - infrastructure/k8s/web.yaml
+  - infrastructure/k8s/gateway.yaml
 
 configMapGenerator:
   - name: nginx-gateway-config
     files:
-      - nginx.conf=infra/nginx/production.conf
+      - nginx.conf=infrastructure/nginx/production.conf
     options:
       disableNameSuffixHash: true
 
   - name: prometheus-config
     files:
-      - prometheus.yml=infra/prometheus/prometheus.k8s.yml
+      - prometheus.yml=infrastructure/prometheus/prometheus.k8s.yml
     options:
       disableNameSuffixHash: true
 
   - name: keycloak-realm
     files:
-      - testcraft-realm.json=infra/keycloak/keycloak-realm.json
+      - testcraft-realm.json=infrastructure/keycloak/keycloak-realm.json
     options:
       disableNameSuffixHash: true
 
   - name: grafana-provisioning-datasources
     files:
-      - infra/grafana/provisioning/datasources/datasources.yaml
+      - infrastructure/grafana/provisioning/datasources/datasources.yaml
     options:
       disableNameSuffixHash: true
 
   - name: grafana-provisioning-dashboards
     files:
-      - infra/grafana/provisioning/dashboards/dashboards.yaml
-      - infra/grafana/provisioning/dashboards/api-logs.json
-      - infra/grafana/provisioning/dashboards/api-http.json
-      - infra/grafana/provisioning/dashboards/redis-metrics.json
-      - infra/grafana/provisioning/dashboards/postgres-metrics.json
+      - infrastructure/grafana/provisioning/dashboards/dashboards.yaml
+      - infrastructure/grafana/provisioning/dashboards/api-logs.json
+      - infrastructure/grafana/provisioning/dashboards/api-http.json
+      - infrastructure/grafana/provisioning/dashboards/redis-metrics.json
+      - infrastructure/grafana/provisioning/dashboards/postgres-metrics.json
     options:
       disableNameSuffixHash: true
 
   - name: keycloak-dracula-theme
     files:
-      - theme.properties=infra/keycloak/themes/theme.properties
-      - template.ftl=infra/keycloak/themes/template.ftl
-      - login.ftl=infra/keycloak/themes/login.ftl
-      - register.ftl=infra/keycloak/themes/register.ftl
-      - error.ftl=infra/keycloak/themes/error.ftl
-      - login-verify-email.ftl=infra/keycloak/themes/login-verify-email.ftl
+      - theme.properties=infrastructure/keycloak/themes/theme.properties
+      - template.ftl=infrastructure/keycloak/themes/template.ftl
+      - login.ftl=infrastructure/keycloak/themes/login.ftl
+      - register.ftl=infrastructure/keycloak/themes/register.ftl
+      - error.ftl=infrastructure/keycloak/themes/error.ftl
+      - login-verify-email.ftl=infrastructure/keycloak/themes/login-verify-email.ftl
     options:
       disableNameSuffixHash: true
 
   - name: postgres-init
     files:
-      - init.sql=infra/postgres/init.sql
+      - init.sql=infrastructure/postgres/init.sql
     options:
       disableNameSuffixHash: true
 
@@ -78,7 +79,7 @@ secretGenerator:
   - name: testcraft-tls
     type: kubernetes.io/tls
     files:
-      - tls.crt=infra/nginx/tls/tls.crt
-      - tls.key=infra/nginx/tls/tls.key
+      - tls.crt=infrastructure/nginx/tls/tls.crt
+      - tls.key=infrastructure/nginx/tls/tls.key
     options:
       disableNameSuffixHash: true

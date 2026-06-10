@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: seq-data
+  namespace: testcraft
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq
+  namespace: testcraft
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+        - name: seq
+          image: datalust/seq:2024.3
+          env:
+            - name: ACCEPT_EULA
+              value: "Y"
+            - name: BASE_URI_PATH
+              value: /seq
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 1Gi
+              cpu: "1"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: seq-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq
+  namespace: testcraft
+spec:
+  selector:
+    app: seq
+  ports:
+    - port: 80
+      targetPort: 80

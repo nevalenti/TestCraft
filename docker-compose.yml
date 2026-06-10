@@ -39,8 +39,8 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infra/keycloak/themes:/opt/keycloak/themes/dracula/login:ro
-      - ./infra/keycloak/keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
+      - ./infrastructure/keycloak/themes:/opt/keycloak/themes/dracula/login:ro
+      - ./infrastructure/keycloak/keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
     healthcheck:
       test:
         [
@@ -61,13 +61,23 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
+  seq:
+    image: datalust/seq:2024.3
+    container_name: testcraft-seq
+    environment:
+      ACCEPT_EULA: "Y"
+    ports:
+      - "5341:80"
+    volumes:
+      - seq_data:/data
+
   prometheus:
     image: prom/prometheus:v3.4.0
     container_name: testcraft-prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
@@ -85,7 +95,7 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
     depends_on:
       - loki
       - prometheus
@@ -112,5 +122,6 @@ volumes:
   postgres_data:
   keycloak_data:
   loki_data:
+  seq_data:
   prometheus_data:
   grafana_data:

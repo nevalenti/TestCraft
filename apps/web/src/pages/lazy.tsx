@@ -3,6 +3,7 @@ import React, { Suspense } from "react";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { PageSkeleton } from "@/layout/PageSkeleton";
 import { DashboardSkeleton } from "@/pages/DashboardPage/DashboardSkeleton";
+import { ProjectDetailSkeleton } from "@/pages/ProjectDetailPage/ProjectDetailSkeleton";
 
 const suspend = (
   Component: React.ComponentType,
@@ -42,6 +43,7 @@ export const LazyProjectDetailPage = suspend(
       default: module.ProjectDetailPage,
     })),
   ),
+  <ProjectDetailSkeleton />,
 );
 
 export const LazyTestSuitePage = suspend(

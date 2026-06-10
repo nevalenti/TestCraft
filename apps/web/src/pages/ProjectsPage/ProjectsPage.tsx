@@ -8,6 +8,8 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SkeletonList } from "@/components/ui/SkeletonList";
+import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
@@ -19,10 +21,12 @@ import {
 } from "@/hooks/useProjects";
 import { ProjectCard } from "@/pages/ProjectsPage/ProjectCard";
 import { ProjectForm } from "@/pages/ProjectsPage/ProjectForm";
+import { useViewModeStore } from "@/stores/viewMode";
 
 export const ProjectsPage = () => {
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
+  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<Project>();
   const {
@@ -49,7 +53,8 @@ export const ProjectsPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   const renderProjects = () => {
-    if (isPending) return <SkeletonGrid />;
+    if (isPending)
+      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
     if (projects?.length === 0)
       return (
         <EmptyState
@@ -59,11 +64,18 @@ export const ProjectsPage = () => {
       );
 
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div
+        className={
+          viewMode === "list"
+            ? "flex flex-col gap-2"
+            : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        }
+      >
         {projects?.map((project) => (
           <ProjectCard
             key={project.id}
             project={project}
+            viewMode={viewMode}
             onEdit={() => openEdit(project)}
             onDelete={() => openDelete(project)}
           />
@@ -91,6 +103,7 @@ export const ProjectsPage = () => {
           onSearch={setSearch}
           placeholder="Search projects…"
         >
+          <ViewToggle />
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Project

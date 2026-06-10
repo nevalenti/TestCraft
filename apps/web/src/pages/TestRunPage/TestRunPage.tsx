@@ -271,21 +271,6 @@ export const TestRunPage = () => {
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         {runSummary && runSummary.total > 0 && (
-          <p className="mb-4 text-sm text-base-content/60">
-            <span className="font-semibold text-base-content">
-              {runSummary.total}
-            </span>{" "}
-            result{runSummary.total === 1 ? "" : "s"} ·{" "}
-            <span
-              className={`font-semibold ${passRateClass(runSummary.passRate)}`}
-            >
-              {runSummary.passRate}%
-            </span>{" "}
-            pass rate
-          </p>
-        )}
-
-        {runSummary && runSummary.total > 0 && (
           <ListToolbar
             search={search}
             onSearch={setSearch}
@@ -331,6 +316,21 @@ export const TestRunPage = () => {
               ) : null;
             })}
           </div>
+        )}
+
+        {runSummary && runSummary.total > 0 && (
+          <p className="mb-4 px-3 text-sm text-base-content/60">
+            <span className="font-semibold text-base-content">
+              {runSummary.total}
+            </span>{" "}
+            result{runSummary.total === 1 ? "" : "s"} ·{" "}
+            <span
+              className={`font-semibold ${passRateClass(runSummary.passRate)}`}
+            >
+              {runSummary.passRate}%
+            </span>{" "}
+            pass rate
+          </p>
         )}
 
         <div className="min-h-80">{renderResults()}</div>

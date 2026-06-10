@@ -70,7 +70,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
 
       {pageCount > 1 && (
         <div className="mt-4 flex items-center justify-between gap-4">
-          <span className="text-sm text-base-content/60">
+          <span className="px-3 text-sm text-base-content/60">
             Page{" "}
             <span className="font-semibold text-base-content">
               {pageIndex + 1}
@@ -79,7 +79,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
           </span>
           <div className="flex gap-2">
             <button
-              className="btn btn-square btn-sm btn-neutral"
+              className="btn btn-square btn-ghost btn-sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
               aria-label="Previous page"
@@ -87,7 +87,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
               <ChevronLeftIcon className="size-4" />
             </button>
             <button
-              className="btn btn-square btn-sm btn-neutral"
+              className="btn btn-square btn-ghost btn-sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
               aria-label="Next page"

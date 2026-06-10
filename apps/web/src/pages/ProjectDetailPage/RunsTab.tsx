@@ -7,8 +7,11 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
+import { ResourceListItem } from "@/components/ui/ResourceListItem";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SkeletonList } from "@/components/ui/SkeletonList";
 import { SourceFilter } from "@/components/ui/SourceFilter";
+import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -24,12 +27,14 @@ import { formatDate } from "@/lib/format";
 import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
 import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
+import { useViewModeStore } from "@/stores/viewMode";
 
 export const RunsTab = () => {
   const projectId = useRequiredParam("projectId");
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
+  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete, openImport } =
     useModal<TestRun>();
   const { data: runs, isPending } = useTestRuns(
@@ -82,7 +87,8 @@ export const RunsTab = () => {
     : runs;
 
   const renderRuns = () => {
-    if (isPending) return <SkeletonGrid />;
+    if (isPending)
+      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
 
     if (runs?.length === 0)
       return (
@@ -90,6 +96,44 @@ export const RunsTab = () => {
           title="No test runs yet"
           description="Start a test run to record and track results."
         />
+      );
+
+    if (viewMode === "list")
+      return (
+        <div className="flex flex-col gap-2">
+          {visibleRuns?.map((run) => (
+            <ResourceListItem
+              key={run.id}
+              testId="run-card"
+              onEdit={() => openEdit(run)}
+              onDelete={() => openDelete(run)}
+              to={`/projects/${projectId}/runs/${run.id}`}
+              label="test run"
+              accentText="text-warning"
+              typeIcon={<BoltIcon className="size-4" />}
+            >
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="truncate text-sm font-semibold">
+                  {run.name}
+                </span>
+                <p className="truncate text-xs text-base-content/60">
+                  {run.environment}
+                </p>
+              </div>
+              <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                <RunStatusBadge status={run.status} />
+                {run.source && (
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                    {run.source}
+                  </span>
+                )}
+                <span className="text-[11px] font-medium text-base-content/40 tabular-nums">
+                  {formatDate(run.createdAt)}
+                </span>
+              </div>
+            </ResourceListItem>
+          ))}
+        </div>
       );
 
     return (
@@ -140,6 +184,7 @@ export const RunsTab = () => {
         onSearch={setSearch}
         placeholder="Search test runs…"
       >
+        <ViewToggle />
         <button
           className="btn gap-1.5 btn-sm btn-secondary"
           onClick={openImport}

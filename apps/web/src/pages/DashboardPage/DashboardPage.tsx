@@ -128,10 +128,10 @@ export const DashboardPage = () => {
         </div>
         <Link
           to="/projects"
-          className="btn btn-square rounded-xl shadow-md btn-soft btn-lg"
+          className="btn btn-square rounded-xl text-primary shadow-sm btn-lg btn-neutral"
           aria-label="Projects"
         >
-          <FolderIcon className="size-6 text-primary" />
+          <FolderIcon className="size-6" />
         </Link>
       </header>
 

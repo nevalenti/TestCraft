@@ -48,7 +48,7 @@ const projectDetailIndexRoute = createRoute({
   path: "/",
   beforeLoad: ({ params }) => {
     throw redirect({
-      to: "/projects/$projectId/suites",
+      to: "/projects/$projectId/runs",
       params,
       replace: true,
     });

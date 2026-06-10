@@ -13,7 +13,10 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { ResourceCard } from "@/components/ui/ResourceCard";
+import { ResourceListItem } from "@/components/ui/ResourceListItem";
 import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { SkeletonList } from "@/components/ui/SkeletonList";
+import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
@@ -28,12 +31,14 @@ import {
 import { useTestSuite } from "@/hooks/useTestSuites";
 import { formatDate } from "@/lib/format";
 import { TestCaseForm } from "@/pages/TestSuitePage/TestCaseForm";
+import { useViewModeStore } from "@/stores/viewMode";
 
 export const TestSuitePage = () => {
   const projectId = useRequiredParam("projectId");
   const suiteId = useRequiredParam("suiteId");
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
+  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestCase>();
 
@@ -66,7 +71,8 @@ export const TestSuitePage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   const renderTestCases = () => {
-    if (isPending) return <SkeletonGrid />;
+    if (isPending)
+      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
     if (isError) return <ErrorState error={error} />;
     if (testCases?.length === 0)
       return (
@@ -74,6 +80,49 @@ export const TestSuitePage = () => {
           title="No test cases yet"
           description="Add test cases to document expected behaviour."
         />
+      );
+
+    if (viewMode === "list")
+      return (
+        <div className="flex flex-col gap-2">
+          {testCases?.map((testCase) => (
+            <ResourceListItem
+              key={testCase.id}
+              testId="case-card"
+              onEdit={() => openEdit(testCase)}
+              onDelete={() => openDelete(testCase)}
+              to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
+              label="test case"
+              accentText="text-info"
+              typeIcon={<ClipboardDocumentListIcon className="size-4" />}
+            >
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="truncate text-sm font-semibold">
+                  {testCase.name}
+                </span>
+                <p className="truncate text-xs text-base-content/60">
+                  {testCase.description ?? (
+                    <span className="text-base-content/30 italic">
+                      No description
+                    </span>
+                  )}
+                </p>
+              </div>
+              <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                {testCase.stepCount > 0 && (
+                  <span className="text-[11px] text-base-content/50">
+                    {testCase.stepCount} step
+                    {testCase.stepCount === 1 ? "" : "s"}
+                  </span>
+                )}
+                <PriorityBadge priority={testCase.priority} />
+                <span className="text-[11px] text-base-content/40 tabular-nums">
+                  {formatDate(testCase.createdAt)}
+                </span>
+              </div>
+            </ResourceListItem>
+          ))}
+        </div>
       );
 
     return (
@@ -150,6 +199,7 @@ export const TestSuitePage = () => {
           onSearch={setSearch}
           placeholder="Search test cases…"
         >
+          <ViewToggle />
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Test Case

@@ -27,6 +27,10 @@ apps/e2e/tests/.auth/
 .idea/
 .vscode/
 
+bin/
+obj/
+*.user
+
 infra/nginx/tls/
 
 **/.terraform/
