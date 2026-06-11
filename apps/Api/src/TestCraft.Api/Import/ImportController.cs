@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +10,9 @@ namespace TestCraft.Api.Import;
 
 [Authorize]
 [ApiController]
+[ApiVersion("1.0")]
 [RequestSizeLimit(5_000_000)]
-[Route("api/v1/projects/{projectId:guid}/import")]
+[Route("api/v{version:apiVersion}/projects/{projectId:guid}/import")]
 public class ImportController(ISender sender) : ControllerBase
 {
     [HttpPost("junit")]

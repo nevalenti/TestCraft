@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text;
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
@@ -9,6 +10,7 @@ using TestCraft.Infrastructure.Persistence;
 namespace TestCraft.Api.Controllers;
 
 [ApiController]
+[ApiVersionNeutral]
 [Route("api")]
 public class SystemController(IConfiguration configuration, AppDbContext dbContext) : ControllerBase
 {

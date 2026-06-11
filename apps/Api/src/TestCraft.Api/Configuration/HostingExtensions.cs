@@ -39,6 +39,7 @@ public static class HostingExtensions
             .AddSerilogLogging()
             .AddKeycloakAuthentication()
             .AddApiControllers()
+            .AddApiVersioningSupport()
             .AddErrorHandling()
             .AddCorsPolicy()
             .AddApiRateLimiting()
@@ -74,11 +75,7 @@ public static class HostingExtensions
 
         app.UseWhen(
             context => ApiPaths.IsVersionedApi(context.Request.Path),
-            branch =>
-            {
-                branch.UseApiVersion();
-                branch.UseRequestTimeout();
-            }
+            branch => branch.UseRequestTimeout()
         );
 
         app.UseAuthentication();

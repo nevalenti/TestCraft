@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,8 @@ namespace TestCraft.Api.TestRuns;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/projects/{projectId:guid}/runs")]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs")]
 public class TestRunsController(ISender sender) : ControllerBase
 {
     [HttpGet]

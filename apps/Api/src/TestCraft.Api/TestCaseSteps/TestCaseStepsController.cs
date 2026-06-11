@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,7 +16,10 @@ namespace TestCraft.Api.TestCaseSteps;
 
 [Authorize]
 [ApiController]
-[Route("api/v1/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps")]
+[ApiVersion("1.0")]
+[Route(
+    "api/v{version:apiVersion}/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps"
+)]
 public class TestCaseStepsController(ISender sender) : ControllerBase
 {
     [HttpGet]
