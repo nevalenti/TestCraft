@@ -64,11 +64,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
             cancellationToken
         );
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { projectId, id = suite.Id },
-            suite
-        );
+        return CreatedAtAction(nameof(GetById), new { projectId, id = suite.Id }, suite);
     }
 
     [HttpPut("{id:guid}")]

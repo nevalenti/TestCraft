@@ -16,8 +16,10 @@ public class TestRunsApiTests(ApiFactory factory)
     private HttpClient CreateClient(Guid userId)
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", userId.ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
 
         return client;
     }
@@ -30,31 +32,23 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRunRequest
-            {
-                Name = "Smoke Run",
-                Environment = "staging",
-            }
+            new CreateTestRunRequest { Name = "Smoke Run", Environment = "staging" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var created = await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         created!.Status.Should().Be(TestRunStatus.Active);
         created.ProjectId.Should().Be(project.Id);
 
-        var getResponse = await client.GetAsync(
-            $"/api/v1/projects/{project.Id}/runs/{created.Id}"
-        );
+        var getResponse = await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{created.Id}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var fetched =
-            await getResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var fetched = await getResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         fetched!.Id.Should().Be(created.Id);
     }
 
@@ -76,10 +70,9 @@ public class TestRunsApiTests(ApiFactory factory)
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var created = await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         created!.Status.Should().Be(TestRunStatus.Completed);
     }
 
@@ -92,14 +85,12 @@ public class TestRunsApiTests(ApiFactory factory)
         await client.CreateRunAsync(project.Id, "Smoke Run");
         await client.CreateRunAsync(project.Id, "Regression Run");
 
-        var response = await client.GetAsync(
-            $"/api/v1/projects/{project.Id}/runs?search=Smoke"
-        );
+        var response = await client.GetAsync($"/api/v1/projects/{project.Id}/runs?search=Smoke");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var page = await response.Content.ReadFromJsonAsync<
-            Paginated<TestRunResponse>
-        >(ApiTestHelpers.JsonOptions);
+        var page = await response.Content.ReadFromJsonAsync<Paginated<TestRunResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
         page!.Items.Should().ContainSingle(r => r.Name == "Smoke Run");
         page.Items.Should().NotContain(r => r.Name == "Regression Run");
     }
@@ -123,10 +114,9 @@ public class TestRunsApiTests(ApiFactory factory)
 
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var updated =
-            await updateResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var updated = await updateResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         updated!.Status.Should().Be(TestRunStatus.Completed);
     }
 
@@ -135,10 +125,7 @@ public class TestRunsApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
-        var run = await client.CreateRunAsync(
-            project.Id,
-            status: TestRunStatus.Completed
-        );
+        var run = await client.CreateRunAsync(project.Id, status: TestRunStatus.Completed);
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
@@ -151,9 +138,7 @@ public class TestRunsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -173,9 +158,7 @@ public class TestRunsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -190,9 +173,7 @@ public class TestRunsApiTests(ApiFactory factory)
         );
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var getResponse = await client.GetAsync(
-            $"/api/v1/projects/{project.Id}/runs/{run.Id}"
-        );
+        var getResponse = await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -208,10 +189,9 @@ public class TestRunsApiTests(ApiFactory factory)
         );
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var summary =
-            await response.Content.ReadFromJsonAsync<TestRunStatusResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var summary = await response.Content.ReadFromJsonAsync<TestRunStatusResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         summary!.Total.Should().Be(0);
         summary.Passed.Should().Be(0);
         summary.Failed.Should().Be(0);
@@ -229,14 +209,10 @@ public class TestRunsApiTests(ApiFactory factory)
         var project = await ownerClient.CreateProjectAsync();
         var run = await ownerClient.CreateRunAsync(project.Id, "Private Run");
 
-        var response = await otherClient.GetAsync(
-            $"/api/v1/projects/{project.Id}/runs/{run.Id}"
-        );
+        var response = await otherClient.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -264,8 +240,6 @@ public class TestRunsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

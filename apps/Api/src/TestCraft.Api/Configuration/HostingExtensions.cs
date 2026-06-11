@@ -11,31 +11,25 @@ namespace TestCraft.Api.Configuration;
 
 public static class HostingExtensions
 {
-    public static WebApplicationBuilder ConfigureServices(
-        this WebApplicationBuilder builder
-    )
+    public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Host.UseDefaultServiceProvider(
             (context, options) =>
             {
                 options.ValidateOnBuild = true;
-                options.ValidateScopes =
-                    context.HostingEnvironment.IsDevelopment();
+                options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
             }
         );
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
 
-        builder.Services.AddResponseCompression(options =>
-            options.EnableForHttps = true
-        );
+        builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
             options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor
-                | ForwardedHeaders.XForwardedProto;
+                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 
             options.KnownIPNetworks.Clear();
             options.KnownProxies.Clear();
@@ -94,9 +88,7 @@ public static class HostingExtensions
 
         app.MapControllers();
 
-        app.MapFallback(context =>
-            ProblemWriter.WriteAsync(context, Problems.NotFound())
-        );
+        app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
 
         return app;
     }
@@ -127,11 +119,7 @@ public static class HostingExtensions
     {
         diagnosticContext.Set(
             "req",
-            new
-            {
-                method = httpContext.Request.Method,
-                url = httpContext.Request.Path.Value,
-            },
+            new { method = httpContext.Request.Method, url = httpContext.Request.Path.Value },
             destructureObjects: true
         );
 
@@ -141,17 +129,14 @@ public static class HostingExtensions
             return;
         }
 
-        var userId =
-            user.FindFirstValue(ClaimTypes.NameIdentifier)
-            ?? user.FindFirstValue("sub");
+        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
         if (userId is not null)
         {
             diagnosticContext.Set("userId", userId);
         }
 
         var username =
-            user.FindFirstValue("preferred_username")
-            ?? user.FindFirstValue(ClaimTypes.Name);
+            user.FindFirstValue("preferred_username") ?? user.FindFirstValue(ClaimTypes.Name);
         if (username is not null)
         {
             diagnosticContext.Set("username", username);

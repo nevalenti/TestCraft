@@ -12,18 +12,13 @@ public partial class DistributedCacheService(
 {
     private static readonly TimeSpan DefaultTtl = TimeSpan.FromSeconds(300);
 
-    public async Task<T?> GetAsync<T>(
-        string key,
-        CancellationToken cancellationToken = default
-    )
+    public async Task<T?> GetAsync<T>(string key, CancellationToken cancellationToken = default)
     {
         try
         {
             var value = await cache.GetStringAsync(key, cancellationToken);
 
-            return value is null
-                ? default
-                : JsonSerializer.Deserialize<T>(value);
+            return value is null ? default : JsonSerializer.Deserialize<T>(value);
         }
         catch (Exception ex)
         {
@@ -59,10 +54,7 @@ public partial class DistributedCacheService(
         }
     }
 
-    public async Task RemoveAsync(
-        string key,
-        CancellationToken cancellationToken = default
-    )
+    public async Task RemoveAsync(string key, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -74,30 +66,13 @@ public partial class DistributedCacheService(
         }
     }
 
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Cache get failed for key {Key}"
-    )]
-    private static partial void LogCacheGetFailed(
-        ILogger logger,
-        Exception exception,
-        string key
-    );
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cache get failed for key {Key}")]
+    private static partial void LogCacheGetFailed(ILogger logger, Exception exception, string key);
 
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Cache set failed for key {Key}"
-    )]
-    private static partial void LogCacheSetFailed(
-        ILogger logger,
-        Exception exception,
-        string key
-    );
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cache set failed for key {Key}")]
+    private static partial void LogCacheSetFailed(ILogger logger, Exception exception, string key);
 
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Cache delete failed for key {Key}"
-    )]
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Cache delete failed for key {Key}")]
     private static partial void LogCacheDeleteFailed(
         ILogger logger,
         Exception exception,

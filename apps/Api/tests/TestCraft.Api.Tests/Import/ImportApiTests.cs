@@ -25,8 +25,10 @@ public class ImportApiTests(ApiFactory factory)
     private HttpClient CreateClient(Guid userId)
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", userId.ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
 
         return client;
     }
@@ -70,9 +72,7 @@ public class ImportApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -87,9 +87,7 @@ public class ImportApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -106,9 +104,7 @@ public class ImportApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -136,9 +132,7 @@ public class ImportApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -154,19 +148,13 @@ public class ImportApiTests(ApiFactory factory)
                 Environment = "ci",
                 Results =
                 [
-                    new AllureResultItem
-                    {
-                        Name = "weird result",
-                        Status = "not-a-real-status",
-                    },
+                    new AllureResultItem { Name = "weird result", Status = "not-a-real-status" },
                 ],
             }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -186,14 +174,7 @@ public class ImportApiTests(ApiFactory factory)
                     {
                         Name = "checkout flow works",
                         Status = "passed",
-                        Labels =
-                        [
-                            new AllureLabel
-                            {
-                                Name = "suite",
-                                Value = "Checkout",
-                            },
-                        ],
+                        Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },
                 ],
             }

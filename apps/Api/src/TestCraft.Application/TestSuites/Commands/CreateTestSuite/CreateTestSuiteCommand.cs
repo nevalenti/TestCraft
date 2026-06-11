@@ -6,17 +6,14 @@ using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 
-public record CreateTestSuiteCommand
-    : IRequest<TestSuiteResponse>,
-        IProjectScopedRequest
+public record CreateTestSuiteCommand : IRequest<TestSuiteResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required string Name { get; init; }
     public string? Description { get; init; }
 }
 
-public class CreateTestSuiteCommandValidator
-    : AbstractValidator<CreateTestSuiteCommand>
+public class CreateTestSuiteCommandValidator : AbstractValidator<CreateTestSuiteCommand>
 {
     public CreateTestSuiteCommandValidator()
     {

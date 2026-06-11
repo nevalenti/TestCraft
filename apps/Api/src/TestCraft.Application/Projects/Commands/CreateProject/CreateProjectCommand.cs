@@ -14,8 +14,7 @@ public record CreateProjectCommand : IRequest<ProjectResponse>
     public string? Description { get; init; }
 }
 
-public class CreateProjectCommandValidator
-    : AbstractValidator<CreateProjectCommand>
+public class CreateProjectCommandValidator : AbstractValidator<CreateProjectCommand>
 {
     public CreateProjectCommandValidator()
     {
@@ -23,10 +22,8 @@ public class CreateProjectCommandValidator
     }
 }
 
-public class CreateProjectCommandHandler(
-    IApplicationDbContext context,
-    ICurrentUser currentUser
-) : IRequestHandler<CreateProjectCommand, ProjectResponse>
+public class CreateProjectCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
+    : IRequestHandler<CreateProjectCommand, ProjectResponse>
 {
     public async Task<ProjectResponse> Handle(
         CreateProjectCommand request,
@@ -48,9 +45,7 @@ public class CreateProjectCommandHandler(
         }
         catch (DbUpdateException ex) when (DbErrorHelpers.IsUniqueViolation(ex))
         {
-            throw new DomainException(
-                "A project with this name already exists"
-            );
+            throw new DomainException("A project with this name already exists");
         }
 
         return new ProjectResponse

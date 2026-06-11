@@ -11,10 +11,8 @@ public record GetProjectsQuery : IRequest<Paginated<ProjectResponse>>
     public required PaginationParams Pagination { get; init; }
 }
 
-public class GetProjectsQueryHandler(
-    IApplicationDbContext context,
-    ICurrentUser currentUser
-) : IRequestHandler<GetProjectsQuery, Paginated<ProjectResponse>>
+public class GetProjectsQueryHandler(IApplicationDbContext context, ICurrentUser currentUser)
+    : IRequestHandler<GetProjectsQuery, Paginated<ProjectResponse>>
 {
     public async Task<Paginated<ProjectResponse>> Handle(
         GetProjectsQuery request,
@@ -25,9 +23,7 @@ public class GetProjectsQueryHandler(
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(p =>
-                EF.Functions.ILike(p.Name, $"%{request.Search}%")
-            );
+            query = query.Where(p => EF.Functions.ILike(p.Name, $"%{request.Search}%"));
         }
 
         var total = await query.CountAsync(cancellationToken);

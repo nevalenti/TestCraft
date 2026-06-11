@@ -16,10 +16,7 @@ public record DeleteTestCaseCommand : IRequest, IProjectScopedRequest
 public class DeleteTestCaseCommandHandler(IApplicationDbContext context)
     : IRequestHandler<DeleteTestCaseCommand>
 {
-    public async Task Handle(
-        DeleteTestCaseCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeleteTestCaseCommand request, CancellationToken cancellationToken)
     {
         var testCase =
             await context.TestCases.FirstOrDefaultAsync(

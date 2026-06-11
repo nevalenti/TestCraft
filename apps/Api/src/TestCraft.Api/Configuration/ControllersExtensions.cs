@@ -6,9 +6,7 @@ namespace TestCraft.Api.Configuration;
 
 public static class ControllersExtensions
 {
-    public static WebApplicationBuilder AddApiControllers(
-        this WebApplicationBuilder builder
-    )
+    public static WebApplicationBuilder AddApiControllers(this WebApplicationBuilder builder)
     {
         builder
             .Services.AddControllers()
@@ -16,9 +14,7 @@ public static class ControllersExtensions
             {
                 options.JsonSerializerOptions.DefaultIgnoreCondition =
                     JsonIgnoreCondition.WhenWritingNull;
-                options.JsonSerializerOptions.Converters.Add(
-                    new JsonStringEnumConverter()
-                );
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
 
         builder.Services.Configure<ApiBehaviorOptions>(options =>

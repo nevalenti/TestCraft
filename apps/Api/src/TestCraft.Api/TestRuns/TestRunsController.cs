@@ -79,11 +79,7 @@ public class TestRunsController(ISender sender) : ControllerBase
             cancellationToken
         );
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { projectId, id = run.Id },
-            run
-        );
+        return CreatedAtAction(nameof(GetById), new { projectId, id = run.Id }, run);
     }
 
     [HttpPut("{id:guid}")]

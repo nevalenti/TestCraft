@@ -25,10 +25,7 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         maxLength: 255,
                         nullable: false
                     ),
-                    description = table.Column<string>(
-                        type: "text",
-                        nullable: true
-                    ),
+                    description = table.Column<string>(type: "text", nullable: true),
                     user_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
@@ -66,24 +63,15 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         defaultValueSql: "gen_random_uuid()"
                     ),
                     name = table.Column<string>(type: "text", nullable: false),
-                    environment = table.Column<string>(
-                        type: "text",
-                        nullable: false
-                    ),
+                    environment = table.Column<string>(type: "text", nullable: false),
                     status = table.Column<string>(
                         type: "character varying(20)",
                         maxLength: 20,
                         nullable: false
                     ),
                     source = table.Column<string>(type: "text", nullable: true),
-                    executed_by_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: true
-                    ),
-                    project_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
+                    executed_by_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    project_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
                         nullable: false,
@@ -127,15 +115,9 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         defaultValueSql: "gen_random_uuid()"
                     ),
                     name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(
-                        type: "text",
-                        nullable: true
-                    ),
+                    description = table.Column<string>(type: "text", nullable: true),
                     source = table.Column<string>(type: "text", nullable: true),
-                    project_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
+                    project_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
                         nullable: false,
@@ -179,19 +161,13 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         defaultValueSql: "gen_random_uuid()"
                     ),
                     name = table.Column<string>(type: "text", nullable: false),
-                    description = table.Column<string>(
-                        type: "text",
-                        nullable: true
-                    ),
+                    description = table.Column<string>(type: "text", nullable: true),
                     priority = table.Column<string>(
                         type: "character varying(20)",
                         maxLength: 20,
                         nullable: false
                     ),
-                    suite_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
+                    suite_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
                         nullable: false,
@@ -235,18 +211,9 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         defaultValueSql: "gen_random_uuid()"
                     ),
                     order = table.Column<int>(type: "integer", nullable: false),
-                    action = table.Column<string>(
-                        type: "text",
-                        nullable: false
-                    ),
-                    expected_result = table.Column<string>(
-                        type: "text",
-                        nullable: false
-                    ),
-                    test_case_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
+                    action = table.Column<string>(type: "text", nullable: false),
+                    expected_result = table.Column<string>(type: "text", nullable: false),
+                    test_case_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
                         nullable: false,
@@ -299,18 +266,9 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         type: "timestamp with time zone",
                         nullable: false
                     ),
-                    executed_by_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: true
-                    ),
-                    test_run_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
-                    test_case_id = table.Column<Guid>(
-                        type: "uuid",
-                        nullable: false
-                    ),
+                    executed_by_id = table.Column<Guid>(type: "uuid", nullable: true),
+                    test_run_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    test_case_id = table.Column<Guid>(type: "uuid", nullable: false),
                     created_at = table.Column<DateTimeOffset>(
                         type: "timestamp with time zone",
                         nullable: false,

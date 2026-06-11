@@ -5,10 +5,7 @@ namespace TestCraft.Api.Configuration;
 
 public class PinoLevelEnricher : ILogEventEnricher
 {
-    public void Enrich(
-        LogEvent logEvent,
-        ILogEventPropertyFactory propertyFactory
-    )
+    public void Enrich(LogEvent logEvent, ILogEventPropertyFactory propertyFactory)
     {
         var level = logEvent.Level switch
         {
@@ -21,8 +18,6 @@ public class PinoLevelEnricher : ILogEventEnricher
             _ => "info",
         };
 
-        logEvent.AddPropertyIfAbsent(
-            propertyFactory.CreateProperty("level", level)
-        );
+        logEvent.AddPropertyIfAbsent(propertyFactory.CreateProperty("level", level));
     }
 }

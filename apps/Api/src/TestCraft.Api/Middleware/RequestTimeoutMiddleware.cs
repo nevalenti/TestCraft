@@ -9,9 +9,7 @@ public class RequestTimeoutMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context)
     {
         var originalToken = context.RequestAborted;
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(
-            originalToken
-        );
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(originalToken);
         timeoutCts.CancelAfter(Timeout);
         context.RequestAborted = timeoutCts.Token;
 
@@ -20,9 +18,7 @@ public class RequestTimeoutMiddleware(RequestDelegate next)
             await next(context);
         }
         catch (OperationCanceledException)
-            when (timeoutCts.IsCancellationRequested
-                && !originalToken.IsCancellationRequested
-            )
+            when (timeoutCts.IsCancellationRequested && !originalToken.IsCancellationRequested)
         {
             if (!context.Response.HasStarted)
             {
@@ -39,7 +35,6 @@ public class RequestTimeoutMiddleware(RequestDelegate next)
 
 public static class RequestTimeoutMiddlewareExtensions
 {
-    public static IApplicationBuilder UseRequestTimeout(
-        this IApplicationBuilder app
-    ) => app.UseMiddleware<RequestTimeoutMiddleware>();
+    public static IApplicationBuilder UseRequestTimeout(this IApplicationBuilder app) =>
+        app.UseMiddleware<RequestTimeoutMiddleware>();
 }

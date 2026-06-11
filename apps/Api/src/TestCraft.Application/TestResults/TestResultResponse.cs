@@ -18,20 +18,19 @@ public record TestResultResponse
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
 
-    internal static readonly Expression<
-        Func<TestResult, TestResultResponse>
-    > Projection = r => new TestResultResponse
-    {
-        Id = r.Id,
-        TestRunId = r.TestRunId,
-        TestCaseId = r.TestCaseId,
-        SuiteId = r.TestCase!.SuiteId,
-        TestCaseName = r.TestCase!.Name,
-        Status = r.Status,
-        Notes = r.Notes,
-        ExecutedAt = r.ExecutedAt,
-        ExecutedById = r.ExecutedById,
-        CreatedAt = r.CreatedAt,
-        UpdatedAt = r.UpdatedAt,
-    };
+    internal static readonly Expression<Func<TestResult, TestResultResponse>> Projection =
+        r => new TestResultResponse
+        {
+            Id = r.Id,
+            TestRunId = r.TestRunId,
+            TestCaseId = r.TestCaseId,
+            SuiteId = r.TestCase!.SuiteId,
+            TestCaseName = r.TestCase!.Name,
+            Status = r.Status,
+            Notes = r.Notes,
+            ExecutedAt = r.ExecutedAt,
+            ExecutedById = r.ExecutedById,
+            CreatedAt = r.CreatedAt,
+            UpdatedAt = r.UpdatedAt,
+        };
 }

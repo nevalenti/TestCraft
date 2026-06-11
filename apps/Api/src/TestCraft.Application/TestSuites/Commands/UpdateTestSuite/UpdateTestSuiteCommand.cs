@@ -7,9 +7,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.TestSuites.Commands.UpdateTestSuite;
 
-public record UpdateTestSuiteCommand
-    : IRequest<TestSuiteResponse>,
-        IProjectScopedRequest
+public record UpdateTestSuiteCommand : IRequest<TestSuiteResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid Id { get; init; }
@@ -17,8 +15,7 @@ public record UpdateTestSuiteCommand
     public string? Description { get; init; }
 }
 
-public class UpdateTestSuiteCommandValidator
-    : AbstractValidator<UpdateTestSuiteCommand>
+public class UpdateTestSuiteCommandValidator : AbstractValidator<UpdateTestSuiteCommand>
 {
     public UpdateTestSuiteCommandValidator()
     {

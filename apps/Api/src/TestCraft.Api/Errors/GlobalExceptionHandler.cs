@@ -6,9 +6,8 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Api.Errors;
 
-public partial class GlobalExceptionHandler(
-    ILogger<GlobalExceptionHandler> logger
-) : IExceptionHandler
+public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
+    : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -19,10 +18,7 @@ public partial class GlobalExceptionHandler(
         switch (exception)
         {
             case NotFoundException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.NotFound()
-                );
+                await ProblemWriter.WriteAsync(httpContext, Problems.NotFound());
 
                 return true;
 
@@ -65,19 +61,13 @@ public partial class GlobalExceptionHandler(
                     httpContext.Request.Method,
                     httpContext.Request.Path
                 );
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Internal()
-                );
+                await ProblemWriter.WriteAsync(httpContext, Problems.Internal());
 
                 return true;
         }
     }
 
-    [LoggerMessage(
-        Level = LogLevel.Error,
-        Message = "Unhandled exception for {Method} {Path}"
-    )]
+    [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception for {Method} {Path}")]
     private static partial void LogUnhandledException(
         ILogger logger,
         Exception exception,

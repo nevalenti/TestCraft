@@ -13,8 +13,7 @@ public static class DatabaseMigrationExtensions
         }
 
         using var scope = app.Services.CreateScope();
-        var dbContext =
-            scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await dbContext.Database.MigrateAsync();
     }
 }

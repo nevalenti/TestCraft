@@ -8,8 +8,7 @@ public class RequestBodySizeLimitMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
-        var maxRequestBodySizeFeature =
-            context.Features.Get<IHttpMaxRequestBodySizeFeature>();
+        var maxRequestBodySizeFeature = context.Features.Get<IHttpMaxRequestBodySizeFeature>();
         if (maxRequestBodySizeFeature is { IsReadOnly: false })
         {
             maxRequestBodySizeFeature.MaxRequestBodySize = MaxRequestBodySize;
@@ -21,7 +20,6 @@ public class RequestBodySizeLimitMiddleware(RequestDelegate next)
 
 public static class RequestBodySizeLimitMiddlewareExtensions
 {
-    public static IApplicationBuilder UseRequestBodySizeLimit(
-        this IApplicationBuilder app
-    ) => app.UseMiddleware<RequestBodySizeLimitMiddleware>();
+    public static IApplicationBuilder UseRequestBodySizeLimit(this IApplicationBuilder app) =>
+        app.UseMiddleware<RequestBodySizeLimitMiddleware>();
 }

@@ -28,17 +28,14 @@ public class ReorderStepInputValidator : AbstractValidator<ReorderStepInput>
     }
 }
 
-public class BulkReorderStepsCommandValidator
-    : AbstractValidator<BulkReorderStepsCommand>
+public class BulkReorderStepsCommandValidator : AbstractValidator<BulkReorderStepsCommand>
 {
     public BulkReorderStepsCommandValidator()
     {
         RuleFor(x => x.Steps).NotEmpty();
         RuleForEach(x => x.Steps).SetValidator(new ReorderStepInputValidator());
         RuleFor(x => x.Steps)
-            .Must(steps =>
-                steps.Select(s => s.Id).Distinct().Count() == steps.Count
-            )
+            .Must(steps => steps.Select(s => s.Id).Distinct().Count() == steps.Count)
             .WithMessage("Duplicate step IDs are not allowed")
             .When(x => x.Steps.Count > 0);
     }
@@ -47,17 +44,12 @@ public class BulkReorderStepsCommandValidator
 public class BulkReorderStepsCommandHandler(IApplicationDbContext context)
     : IRequestHandler<BulkReorderStepsCommand>
 {
-    public async Task Handle(
-        BulkReorderStepsCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(BulkReorderStepsCommand request, CancellationToken cancellationToken)
     {
         var ids = request.Steps.Select(s => s.Id).ToList();
 
         var found = await context
-            .TestCaseSteps.Where(s =>
-                s.TestCaseId == request.CaseId && ids.Contains(s.Id)
-            )
+            .TestCaseSteps.Where(s => s.TestCaseId == request.CaseId && ids.Contains(s.Id))
             .Select(s => s.Id)
             .ToListAsync(cancellationToken);
 

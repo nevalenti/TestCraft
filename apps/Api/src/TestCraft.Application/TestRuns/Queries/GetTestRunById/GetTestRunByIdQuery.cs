@@ -6,9 +6,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.TestRuns.Queries.GetTestRunById;
 
-public record GetTestRunByIdQuery
-    : IRequest<TestRunResponse>,
-        IProjectScopedRequest
+public record GetTestRunByIdQuery : IRequest<TestRunResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid Id { get; init; }
@@ -22,9 +20,7 @@ public class GetTestRunByIdQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken
     ) =>
         await context
-            .TestRuns.Where(r =>
-                r.Id == request.Id && r.ProjectId == request.ProjectId
-            )
+            .TestRuns.Where(r => r.Id == request.Id && r.ProjectId == request.ProjectId)
             .Select(TestRunResponse.Projection)
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new NotFoundException();

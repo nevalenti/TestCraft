@@ -11,9 +11,7 @@ using TestCraft.Domain.Rules;
 
 namespace TestCraft.Application.TestResults.Commands.CreateTestResult;
 
-public record CreateTestResultCommand
-    : IRequest<TestResultResponse>,
-        IProjectScopedRequest
+public record CreateTestResultCommand : IRequest<TestResultResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid RunId { get; init; }
@@ -23,8 +21,7 @@ public record CreateTestResultCommand
     public required DateTimeOffset ExecutedAt { get; init; }
 }
 
-public class CreateTestResultCommandValidator
-    : AbstractValidator<CreateTestResultCommand>
+public class CreateTestResultCommandValidator : AbstractValidator<CreateTestResultCommand>
 {
     public CreateTestResultCommandValidator()
     {
@@ -53,9 +50,7 @@ public class CreateTestResultCommandHandler(
 
         if (!TestRunRules.CanAddResultToRun(run.Status))
         {
-            throw new DomainException(
-                $"Cannot modify results in a {run.Status} test run"
-            );
+            throw new DomainException($"Cannot modify results in a {run.Status} test run");
         }
 
         var result = new TestResult
@@ -76,10 +71,7 @@ public class CreateTestResultCommandHandler(
             .Select(TestResultResponse.Projection)
             .FirstAsync(cancellationToken);
 
-        await cache.RemoveAsync(
-            CacheKeys.TestRunResponse(request.RunId),
-            cancellationToken
-        );
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
         return summary;
     }

@@ -27,14 +27,10 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             "KEYCLOAK_AUTHORITY",
             "https://keycloak.invalid/realms/testcraft"
         );
-        Environment.SetEnvironmentVariable(
-            "KEYCLOAK_AUDIENCE",
-            "testcraft-web"
-        );
+        Environment.SetEnvironmentVariable("KEYCLOAK_AUDIENCE", "testcraft-web");
 
         using var scope = Services.CreateScope();
-        var dbContext =
-            scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         await dbContext.Database.MigrateAsync();
     }
 

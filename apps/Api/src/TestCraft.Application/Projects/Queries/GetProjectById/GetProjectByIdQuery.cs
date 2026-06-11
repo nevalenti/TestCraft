@@ -6,9 +6,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.Projects.Queries.GetProjectById;
 
-public record GetProjectByIdQuery
-    : IRequest<ProjectResponse>,
-        IProjectScopedRequest
+public record GetProjectByIdQuery : IRequest<ProjectResponse>, IProjectScopedRequest
 {
     public required Guid Id { get; init; }
 

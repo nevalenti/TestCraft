@@ -9,8 +9,7 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
             var headers = context.Response.Headers;
             headers["X-DNS-Prefetch-Control"] = "off";
             headers["X-Frame-Options"] = "SAMEORIGIN";
-            headers["Strict-Transport-Security"] =
-                "max-age=15552000; includeSubDomains";
+            headers["Strict-Transport-Security"] = "max-age=15552000; includeSubDomains";
             headers["X-Download-Options"] = "noopen";
             headers["X-Content-Type-Options"] = "nosniff";
             headers["X-Permitted-Cross-Domain-Policies"] = "none";
@@ -31,7 +30,6 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
 
 public static class SecurityHeadersMiddlewareExtensions
 {
-    public static IApplicationBuilder UseSecurityHeaders(
-        this IApplicationBuilder app
-    ) => app.UseMiddleware<SecurityHeadersMiddleware>();
+    public static IApplicationBuilder UseSecurityHeaders(this IApplicationBuilder app) =>
+        app.UseMiddleware<SecurityHeadersMiddleware>();
 }

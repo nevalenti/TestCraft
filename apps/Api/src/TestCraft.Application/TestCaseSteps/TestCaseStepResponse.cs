@@ -13,16 +13,15 @@ public record TestCaseStepResponse
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
 
-    internal static readonly Expression<
-        Func<TestCaseStep, TestCaseStepResponse>
-    > Projection = s => new TestCaseStepResponse
-    {
-        Id = s.Id,
-        TestCaseId = s.TestCaseId,
-        Order = s.Order,
-        Action = s.Action,
-        ExpectedResult = s.ExpectedResult,
-        CreatedAt = s.CreatedAt,
-        UpdatedAt = s.UpdatedAt,
-    };
+    internal static readonly Expression<Func<TestCaseStep, TestCaseStepResponse>> Projection =
+        s => new TestCaseStepResponse
+        {
+            Id = s.Id,
+            TestCaseId = s.TestCaseId,
+            Order = s.Order,
+            Action = s.Action,
+            ExpectedResult = s.ExpectedResult,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+        };
 }

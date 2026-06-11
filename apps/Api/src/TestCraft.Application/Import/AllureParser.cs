@@ -4,9 +4,7 @@ namespace TestCraft.Application.Import;
 
 public static class AllureParser
 {
-    public static List<ParsedTestCase> Parse(
-        IReadOnlyList<AllureResultItem> results
-    )
+    public static List<ParsedTestCase> Parse(IReadOnlyList<AllureResultItem> results)
     {
         var cases = new List<ParsedTestCase>(results.Count);
 
@@ -17,14 +15,9 @@ public static class AllureParser
                 new ParsedTestCase
                 {
                     SuiteName =
-                        LabelValue(
-                            result.Labels,
-                            "suite",
-                            "parentSuite",
-                            "testClass"
-                        ) ?? "Default Suite",
-                    CaseName =
-                        result.Name ?? result.FullName ?? $"Unknown ({i + 1})",
+                        LabelValue(result.Labels, "suite", "parentSuite", "testClass")
+                        ?? "Default Suite",
+                    CaseName = result.Name ?? result.FullName ?? $"Unknown ({i + 1})",
                     Status = ResolveStatus(result.Status),
                     Notes = result.StatusDetails?.Message,
                 }
@@ -43,10 +36,7 @@ public static class AllureParser
             _ => TestResultStatus.Blocked,
         };
 
-    private static string? LabelValue(
-        IReadOnlyList<AllureLabel>? labels,
-        params string[] keys
-    )
+    private static string? LabelValue(IReadOnlyList<AllureLabel>? labels, params string[] keys)
     {
         if (labels is null)
         {
@@ -61,10 +51,7 @@ public static class AllureParser
 
         foreach (var key in keys)
         {
-            if (
-                map.TryGetValue(key, out var value)
-                && !string.IsNullOrEmpty(value)
-            )
+            if (map.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value))
             {
                 return value;
             }

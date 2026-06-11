@@ -14,13 +14,10 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     public AppDbContext CreateDbContext(string[] args)
     {
         var databaseUrl =
-            Environment.GetEnvironmentVariable("DATABASE_URL")
-            ?? DesignTimeDatabaseUrl;
+            Environment.GetEnvironmentVariable("DATABASE_URL") ?? DesignTimeDatabaseUrl;
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseNpgsql(
-            ConnectionStringHelpers.ToNpgsqlConnectionString(databaseUrl)
-        );
+        optionsBuilder.UseNpgsql(ConnectionStringHelpers.ToNpgsqlConnectionString(databaseUrl));
 
         return new AppDbContext(optionsBuilder.Options);
     }

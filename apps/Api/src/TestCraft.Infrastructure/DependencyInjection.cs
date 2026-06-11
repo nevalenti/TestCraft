@@ -19,22 +19,17 @@ public static class DependencyInjection
     {
         var databaseUrl =
             configuration["DATABASE_URL"]
-            ?? throw new InvalidOperationException(
-                "DATABASE_URL is not configured"
-            );
+            ?? throw new InvalidOperationException("DATABASE_URL is not configured");
 
         services.AddDbContext<AppDbContext>(options =>
-            options.UseNpgsql(
-                ConnectionStringHelpers.ToNpgsqlConnectionString(databaseUrl)
-            )
+            options.UseNpgsql(ConnectionStringHelpers.ToNpgsqlConnectionString(databaseUrl))
         );
 
         var redisUrl = configuration["REDIS_URL"];
         if (!string.IsNullOrEmpty(redisUrl))
         {
             services.AddStackExchangeRedisCache(options =>
-                options.Configuration =
-                    ConnectionStringHelpers.ToRedisConfiguration(redisUrl)
+                options.Configuration = ConnectionStringHelpers.ToRedisConfiguration(redisUrl)
             );
             services.AddSingleton<ICacheService, DistributedCacheService>();
         }

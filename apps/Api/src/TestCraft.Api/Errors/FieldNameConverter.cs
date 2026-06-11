@@ -19,9 +19,8 @@ public static class FieldNameConverter
             segments[i] =
                 bracketIndex < 0
                     ? JsonNamingPolicy.CamelCase.ConvertName(segment)
-                    : JsonNamingPolicy.CamelCase.ConvertName(
-                        segment[..bracketIndex]
-                    ) + segment[bracketIndex..];
+                    : JsonNamingPolicy.CamelCase.ConvertName(segment[..bracketIndex])
+                        + segment[bracketIndex..];
         }
 
         return string.Join('.', segments);

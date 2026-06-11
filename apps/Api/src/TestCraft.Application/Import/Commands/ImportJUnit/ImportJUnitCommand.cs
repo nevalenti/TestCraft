@@ -7,9 +7,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Commands.ImportJUnit;
 
-public record ImportJUnitCommand
-    : IRequest<TestRunResponse>,
-        IProjectScopedRequest
+public record ImportJUnitCommand : IRequest<TestRunResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required string Xml { get; init; }
@@ -30,21 +28,13 @@ public class ImportJUnitCommandValidator : AbstractValidator<ImportJUnitCommand>
             .NotEmpty()
             .WithMessage("Environment is required")
             .MaximumLength(255);
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .MaximumLength(255)
-            .When(x => x.Name is not null);
-        RuleFor(x => x.Source)
-            .NotEmpty()
-            .MaximumLength(100)
-            .When(x => x.Source is not null);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(255).When(x => x.Name is not null);
+        RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
     }
 }
 
-public class ImportJUnitCommandHandler(
-    IApplicationDbContext context,
-    ICurrentUser currentUser
-) : IRequestHandler<ImportJUnitCommand, TestRunResponse>
+public class ImportJUnitCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
+    : IRequestHandler<ImportJUnitCommand, TestRunResponse>
 {
     public Task<TestRunResponse> Handle(
         ImportJUnitCommand request,

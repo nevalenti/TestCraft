@@ -4,9 +4,7 @@ namespace TestCraft.Api.Configuration;
 
 public static class SwaggerExtensions
 {
-    public static WebApplicationBuilder AddSwaggerDocs(
-        this WebApplicationBuilder builder
-    )
+    public static WebApplicationBuilder AddSwaggerDocs(this WebApplicationBuilder builder)
     {
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
@@ -17,8 +15,7 @@ public static class SwaggerExtensions
                 {
                     Title = "TestCraft API",
                     Version = "1.0.0",
-                    Description =
-                        "Test case management and execution tracking API.",
+                    Description = "Test case management and execution tracking API.",
                 }
             );
 
@@ -49,10 +46,7 @@ public static class SwaggerExtensions
         );
         app.UseSwaggerUI(options =>
         {
-            options.SwaggerEndpoint(
-                "/api/v1/docs/v1/swagger.json",
-                "TestCraft API"
-            );
+            options.SwaggerEndpoint("/api/v1/docs/v1/swagger.json", "TestCraft API");
             options.RoutePrefix = "api/v1/docs";
             options.DocumentTitle = "TestCraft API";
         });

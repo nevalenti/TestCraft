@@ -14,11 +14,8 @@ public static class AuthenticationExtensions
     {
         var keycloakAuthority =
             builder.Configuration["KEYCLOAK_AUTHORITY"]
-            ?? throw new InvalidOperationException(
-                "KEYCLOAK_AUTHORITY is not configured"
-            );
-        var keycloakAudience =
-            builder.Configuration["KEYCLOAK_AUDIENCE"] ?? "testcraft-web";
+            ?? throw new InvalidOperationException("KEYCLOAK_AUTHORITY is not configured");
+        var keycloakAudience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? "testcraft-web";
         var requireHttpsMetadata =
             builder.Configuration["KEYCLOAK_REQUIRE_HTTPS_METADATA"] != "false";
 
@@ -30,15 +27,11 @@ public static class AuthenticationExtensions
                 options.Audience = keycloakAudience;
                 options.RequireHttpsMetadata = requireHttpsMetadata;
 
-                options.ConfigurationManager =
-                    new ConfigurationManager<OpenIdConnectConfiguration>(
-                        $"{keycloakAuthority}/protocol/openid-connect/certs",
-                        new JwksOnlyConfigurationRetriever(),
-                        new HttpDocumentRetriever
-                        {
-                            RequireHttps = requireHttpsMetadata,
-                        }
-                    );
+                options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
+                    $"{keycloakAuthority}/protocol/openid-connect/certs",
+                    new JwksOnlyConfigurationRetriever(),
+                    new HttpDocumentRetriever { RequireHttps = requireHttpsMetadata }
+                );
                 options.TokenValidationParameters.ValidateIssuer = false;
 
                 options.Events = new JwtBearerEvents
@@ -52,10 +45,7 @@ public static class AuthenticationExtensions
                         );
                     },
                     OnForbidden = async context =>
-                        await ProblemWriter.WriteAsync(
-                            context.HttpContext,
-                            Problems.Forbidden()
-                        ),
+                        await ProblemWriter.WriteAsync(context.HttpContext, Problems.Forbidden()),
                 };
             });
 

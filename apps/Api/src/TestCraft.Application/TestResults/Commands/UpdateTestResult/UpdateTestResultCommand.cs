@@ -10,9 +10,7 @@ using TestCraft.Domain.Rules;
 
 namespace TestCraft.Application.TestResults.Commands.UpdateTestResult;
 
-public record UpdateTestResultCommand
-    : IRequest<TestResultResponse>,
-        IProjectScopedRequest
+public record UpdateTestResultCommand : IRequest<TestResultResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid RunId { get; init; }
@@ -21,8 +19,7 @@ public record UpdateTestResultCommand
     public string? Notes { get; init; }
 }
 
-public class UpdateTestResultCommandValidator
-    : AbstractValidator<UpdateTestResultCommand>
+public class UpdateTestResultCommandValidator : AbstractValidator<UpdateTestResultCommand>
 {
     public UpdateTestResultCommandValidator()
     {
@@ -31,10 +28,8 @@ public class UpdateTestResultCommandValidator
     }
 }
 
-public class UpdateTestResultCommandHandler(
-    IApplicationDbContext context,
-    ICacheService cache
-) : IRequestHandler<UpdateTestResultCommand, TestResultResponse>
+public class UpdateTestResultCommandHandler(IApplicationDbContext context, ICacheService cache)
+    : IRequestHandler<UpdateTestResultCommand, TestResultResponse>
 {
     public async Task<TestResultResponse> Handle(
         UpdateTestResultCommand request,
@@ -49,9 +44,7 @@ public class UpdateTestResultCommandHandler(
 
         if (!TestRunRules.CanAddResultToRun(run.Status))
         {
-            throw new DomainException(
-                $"Cannot modify results in a {run.Status} test run"
-            );
+            throw new DomainException($"Cannot modify results in a {run.Status} test run");
         }
 
         var result =
@@ -70,10 +63,7 @@ public class UpdateTestResultCommandHandler(
             .Select(TestResultResponse.Projection)
             .FirstAsync(cancellationToken);
 
-        await cache.RemoveAsync(
-            CacheKeys.TestRunResponse(request.RunId),
-            cancellationToken
-        );
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
         return summary;
     }

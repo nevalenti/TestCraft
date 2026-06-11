@@ -3,9 +3,8 @@ using MediatR;
 
 namespace TestCraft.Application.Common.Behaviours;
 
-public class ValidationBehaviour<TRequest, TResponse>(
-    IEnumerable<IValidator<TRequest>> validators
-) : IPipelineBehavior<TRequest, TResponse>
+public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>
 {
     public async Task<TResponse> Handle(
@@ -22,11 +21,7 @@ public class ValidationBehaviour<TRequest, TResponse>(
         var context = new ValidationContext<TRequest>(request);
 
         var failures = (
-            await Task.WhenAll(
-                validators.Select(v =>
-                    v.ValidateAsync(context, cancellationToken)
-                )
-            )
+            await Task.WhenAll(validators.Select(v => v.ValidateAsync(context, cancellationToken)))
         )
             .SelectMany(result => result.Errors)
             .Where(failure => failure is not null)

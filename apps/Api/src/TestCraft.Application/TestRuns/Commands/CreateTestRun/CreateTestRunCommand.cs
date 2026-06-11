@@ -7,9 +7,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestRuns.Commands.CreateTestRun;
 
-public record CreateTestRunCommand
-    : IRequest<TestRunResponse>,
-        IProjectScopedRequest
+public record CreateTestRunCommand : IRequest<TestRunResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required string Name { get; init; }
@@ -17,8 +15,7 @@ public record CreateTestRunCommand
     public TestRunStatus? Status { get; init; }
 }
 
-public class CreateTestRunCommandValidator
-    : AbstractValidator<CreateTestRunCommand>
+public class CreateTestRunCommandValidator : AbstractValidator<CreateTestRunCommand>
 {
     public CreateTestRunCommandValidator()
     {

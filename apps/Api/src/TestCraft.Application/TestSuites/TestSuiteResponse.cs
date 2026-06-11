@@ -13,16 +13,15 @@ public record TestSuiteResponse
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
 
-    internal static readonly Expression<
-        Func<TestSuite, TestSuiteResponse>
-    > Projection = s => new TestSuiteResponse
-    {
-        Id = s.Id,
-        ProjectId = s.ProjectId,
-        Name = s.Name,
-        Description = s.Description,
-        Source = s.Source,
-        CreatedAt = s.CreatedAt,
-        UpdatedAt = s.UpdatedAt,
-    };
+    internal static readonly Expression<Func<TestSuite, TestSuiteResponse>> Projection =
+        s => new TestSuiteResponse
+        {
+            Id = s.Id,
+            ProjectId = s.ProjectId,
+            Name = s.Name,
+            Description = s.Description,
+            Source = s.Source,
+            CreatedAt = s.CreatedAt,
+            UpdatedAt = s.UpdatedAt,
+        };
 }

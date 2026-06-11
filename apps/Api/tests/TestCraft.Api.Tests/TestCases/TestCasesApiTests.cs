@@ -16,8 +16,10 @@ public class TestCasesApiTests(ApiFactory factory)
     private HttpClient CreateClient(Guid userId)
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", userId.ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
 
         return client;
     }
@@ -41,10 +43,9 @@ public class TestCasesApiTests(ApiFactory factory)
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var created = await createResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         created!.Name.Should().Be("Successful login");
         created.Priority.Should().Be(TestCasePriority.High);
         created.SuiteId.Should().Be(suite.Id);
@@ -55,10 +56,9 @@ public class TestCasesApiTests(ApiFactory factory)
         );
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var fetched =
-            await getResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var fetched = await getResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         fetched!.Id.Should().Be(created.Id);
     }
 
@@ -76,10 +76,9 @@ public class TestCasesApiTests(ApiFactory factory)
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var created = await createResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         created!.Priority.Should().Be(TestCasePriority.Medium);
     }
 
@@ -98,9 +97,9 @@ public class TestCasesApiTests(ApiFactory factory)
         );
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var page = await response.Content.ReadFromJsonAsync<
-            Paginated<TestCaseResponse>
-        >(ApiTestHelpers.JsonOptions);
+        var page = await response.Content.ReadFromJsonAsync<Paginated<TestCaseResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
         page!.Items.Should().ContainSingle(c => c.Name == "Successful login");
         page.Items.Should().NotContain(c => c.Name == "Failed checkout");
     }
@@ -130,10 +129,9 @@ public class TestCasesApiTests(ApiFactory factory)
 
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var updated =
-            await updateResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
-                ApiTestHelpers.JsonOptions
-            );
+        var updated = await updateResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         updated!.Name.Should().Be("New Name");
         updated.Description.Should().Be("Updated");
         updated.Priority.Should().Be(TestCasePriority.Critical);
@@ -156,9 +154,7 @@ public class TestCasesApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -167,11 +163,7 @@ public class TestCasesApiTests(ApiFactory factory)
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
         var suite = await client.CreateSuiteAsync(project.Id);
-        var testCase = await client.CreateCaseAsync(
-            project.Id,
-            suite.Id,
-            "To Delete"
-        );
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "To Delete");
 
         var deleteResponse = await client.DeleteAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase.Id}"
@@ -210,8 +202,6 @@ public class TestCasesApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

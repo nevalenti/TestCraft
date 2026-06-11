@@ -36,13 +36,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     public async Task<ActionResult<ProjectResponse>> GetById(
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
-            await sender.Send(
-                new GetProjectByIdQuery { Id = id },
-                cancellationToken
-            )
-        );
+    ) => Ok(await sender.Send(new GetProjectByIdQuery { Id = id }, cancellationToken));
 
     [HttpPost]
     public async Task<ActionResult<ProjectResponse>> Create(
@@ -51,19 +45,11 @@ public class ProjectsController(ISender sender) : ControllerBase
     )
     {
         var project = await sender.Send(
-            new CreateProjectCommand
-            {
-                Name = request.Name,
-                Description = request.Description,
-            },
+            new CreateProjectCommand { Name = request.Name, Description = request.Description },
             cancellationToken
         );
 
-        return CreatedAtAction(
-            nameof(GetById),
-            new { id = project.Id },
-            project
-        );
+        return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
     }
 
     [HttpPut("{id:guid}")]
@@ -85,15 +71,9 @@ public class ProjectsController(ISender sender) : ControllerBase
         );
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(
-        Guid id,
-        CancellationToken cancellationToken
-    )
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await sender.Send(
-            new DeleteProjectCommand { Id = id },
-            cancellationToken
-        );
+        await sender.Send(new DeleteProjectCommand { Id = id }, cancellationToken);
 
         return NoContent();
     }

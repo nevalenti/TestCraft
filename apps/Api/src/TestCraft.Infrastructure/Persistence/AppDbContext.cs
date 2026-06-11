@@ -17,14 +17,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(
-            typeof(AppDbContext).Assembly
-        );
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(
-        CancellationToken cancellationToken = default
-    )
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ApplyAuditTimestamps();
 

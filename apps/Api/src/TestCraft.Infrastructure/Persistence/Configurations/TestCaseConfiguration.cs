@@ -11,10 +11,7 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
         builder.ToTable("test_cases");
 
         builder.HasKey(c => c.Id);
-        builder
-            .Property(c => c.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(c => c.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
         builder.Property(c => c.Name).HasColumnName("name").IsRequired();
         builder.Property(c => c.Description).HasColumnName("description");
         builder
@@ -23,18 +20,9 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
             .HasConversion<string>()
             .HasMaxLength(20);
         builder.Property(c => c.SuiteId).HasColumnName("suite_id");
-        builder
-            .Property(c => c.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(c => c.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(c => c.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
+        builder.Property(c => c.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.Property(c => c.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+        builder.Property(c => c.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
         builder.Property(c => c.DeletedAt).HasColumnName("deleted_at");
 
         builder.HasIndex(c => c.SuiteId);

@@ -23,15 +23,11 @@ public class GetTestCasesByProjectQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken
     )
     {
-        var query = context.TestCases.Where(c =>
-            c.Suite!.ProjectId == request.ProjectId
-        );
+        var query = context.TestCases.Where(c => c.Suite!.ProjectId == request.ProjectId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(c =>
-                EF.Functions.ILike(c.Name, $"%{request.Search}%")
-            );
+            query = query.Where(c => EF.Functions.ILike(c.Name, $"%{request.Search}%"));
         }
 
         var total = await query.CountAsync(cancellationToken);

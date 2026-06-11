@@ -6,9 +6,7 @@ using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
 
-public record CreateTestCaseStepCommand
-    : IRequest<TestCaseStepResponse>,
-        IProjectScopedRequest
+public record CreateTestCaseStepCommand : IRequest<TestCaseStepResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid CaseId { get; init; }
@@ -17,8 +15,7 @@ public record CreateTestCaseStepCommand
     public required string ExpectedResult { get; init; }
 }
 
-public class CreateTestCaseStepCommandValidator
-    : AbstractValidator<CreateTestCaseStepCommand>
+public class CreateTestCaseStepCommandValidator : AbstractValidator<CreateTestCaseStepCommand>
 {
     public CreateTestCaseStepCommandValidator()
     {

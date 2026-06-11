@@ -15,9 +15,7 @@ namespace TestCraft.Api.TestCaseSteps;
 
 [Authorize]
 [ApiController]
-[Route(
-    "api/v1/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps"
-)]
+[Route("api/v1/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps")]
 public class TestCaseStepsController(ISender sender) : ControllerBase
 {
     [HttpGet]

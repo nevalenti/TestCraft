@@ -6,9 +6,7 @@ using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Application.TestSuites.Queries.GetTestSuites;
 
-public record GetTestSuitesQuery
-    : IRequest<Paginated<TestSuiteResponse>>,
-        IProjectScopedRequest
+public record GetTestSuitesQuery : IRequest<Paginated<TestSuiteResponse>>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public string? Search { get; init; }
@@ -23,15 +21,11 @@ public class GetTestSuitesQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken
     )
     {
-        var query = context.TestSuites.Where(s =>
-            s.ProjectId == request.ProjectId
-        );
+        var query = context.TestSuites.Where(s => s.ProjectId == request.ProjectId);
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(s =>
-                EF.Functions.ILike(s.Name, $"%{request.Search}%")
-            );
+            query = query.Where(s => EF.Functions.ILike(s.Name, $"%{request.Search}%"));
         }
 
         var total = await query.CountAsync(cancellationToken);

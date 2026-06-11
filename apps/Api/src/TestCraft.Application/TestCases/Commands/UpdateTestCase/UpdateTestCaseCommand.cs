@@ -8,9 +8,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.TestCases.Commands.UpdateTestCase;
 
-public record UpdateTestCaseCommand
-    : IRequest<TestCaseResponse>,
-        IProjectScopedRequest
+public record UpdateTestCaseCommand : IRequest<TestCaseResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid SuiteId { get; init; }
@@ -20,8 +18,7 @@ public record UpdateTestCaseCommand
     public required TestCasePriority Priority { get; init; }
 }
 
-public class UpdateTestCaseCommandValidator
-    : AbstractValidator<UpdateTestCaseCommand>
+public class UpdateTestCaseCommandValidator : AbstractValidator<UpdateTestCaseCommand>
 {
     public UpdateTestCaseCommandValidator()
     {

@@ -32,9 +32,7 @@ public static class ConnectionStringHelpers
 
         if (!string.IsNullOrEmpty(uri.UserInfo))
         {
-            var password = uri.UserInfo.Split(':', 2) is [_, var pwd]
-                ? pwd
-                : uri.UserInfo;
+            var password = uri.UserInfo.Split(':', 2) is [_, var pwd] ? pwd : uri.UserInfo;
             config += $",password={Uri.UnescapeDataString(password)}";
         }
 

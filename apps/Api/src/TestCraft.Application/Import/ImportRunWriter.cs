@@ -20,8 +20,9 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        await using var transaction =
-            await context.Database.BeginTransactionAsync(cancellationToken);
+        await using var transaction = await context.Database.BeginTransactionAsync(
+            cancellationToken
+        );
 
         var now = DateTimeOffset.UtcNow;
 
@@ -83,12 +84,7 @@ internal static class ImportRunWriter
             source,
             cancellationToken
         );
-        var caseMap = await ResolveTestCasesAsync(
-            context,
-            suiteMap,
-            cases,
-            cancellationToken
-        );
+        var caseMap = await ResolveTestCasesAsync(context, suiteMap, cases, cancellationToken);
 
         await InsertTestResultsAsync(
             context,
@@ -110,26 +106,17 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        var uniqueSuiteNames = cases
-            .Select(c => c.SuiteName)
-            .Distinct()
-            .ToList();
+        var uniqueSuiteNames = cases.Select(c => c.SuiteName).Distinct().ToList();
 
         var existingSuites = await context
-            .TestSuites.Where(s =>
-                s.ProjectId == projectId && uniqueSuiteNames.Contains(s.Name)
-            )
+            .TestSuites.Where(s => s.ProjectId == projectId && uniqueSuiteNames.Contains(s.Name))
             .ToListAsync(cancellationToken);
 
         var suiteMap = existingSuites.ToDictionary(s => s.Name, s => s.Id);
 
         if (!string.IsNullOrEmpty(source))
         {
-            foreach (
-                var suite in existingSuites.Where(s =>
-                    string.IsNullOrEmpty(s.Source)
-                )
-            )
+            foreach (var suite in existingSuites.Where(s => string.IsNullOrEmpty(s.Source)))
             {
                 suite.Source = source;
             }
@@ -167,9 +154,7 @@ internal static class ImportRunWriter
         return suiteMap;
     }
 
-    private static async Task<
-        Dictionary<(Guid SuiteId, string Name), Guid>
-    > ResolveTestCasesAsync(
+    private static async Task<Dictionary<(Guid SuiteId, string Name), Guid>> ResolveTestCasesAsync(
         IApplicationDbContext context,
         IReadOnlyDictionary<string, Guid> suiteMap,
         IReadOnlyList<ParsedTestCase> cases,
@@ -180,15 +165,10 @@ internal static class ImportRunWriter
         var uniqueCaseNames = cases.Select(c => c.CaseName).Distinct().ToList();
 
         var existingCases = await context
-            .TestCases.Where(c =>
-                suiteIds.Contains(c.SuiteId) && uniqueCaseNames.Contains(c.Name)
-            )
+            .TestCases.Where(c => suiteIds.Contains(c.SuiteId) && uniqueCaseNames.Contains(c.Name))
             .ToListAsync(cancellationToken);
 
-        var caseMap = existingCases.ToDictionary(
-            c => (c.SuiteId, c.Name),
-            c => c.Id
-        );
+        var caseMap = existingCases.ToDictionary(c => (c.SuiteId, c.Name), c => c.Id);
 
         var newCases = new Dictionary<(Guid SuiteId, string Name), TestCase>();
         foreach (var parsedCase in cases)
@@ -201,11 +181,7 @@ internal static class ImportRunWriter
                 continue;
             }
 
-            var testCase = new TestCase
-            {
-                SuiteId = suiteId,
-                Name = parsedCase.CaseName,
-            };
+            var testCase = new TestCase { SuiteId = suiteId, Name = parsedCase.CaseName };
 
             if (parsedCase.Steps is { Count: > 0 })
             {
@@ -250,8 +226,7 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        var dedupedCases =
-            new Dictionary<(Guid SuiteId, string Name), ParsedTestCase>();
+        var dedupedCases = new Dictionary<(Guid SuiteId, string Name), ParsedTestCase>();
         foreach (var parsedCase in cases)
         {
             var suiteId = suiteMap[parsedCase.SuiteName];

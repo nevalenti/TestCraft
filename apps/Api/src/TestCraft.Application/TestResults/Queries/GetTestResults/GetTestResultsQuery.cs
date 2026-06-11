@@ -7,9 +7,7 @@ using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Application.TestResults.Queries.GetTestResults;
 
-public record GetTestResultsQuery
-    : IRequest<Paginated<TestResultResponse>>,
-        IProjectScopedRequest
+public record GetTestResultsQuery : IRequest<Paginated<TestResultResponse>>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid RunId { get; init; }
@@ -26,9 +24,7 @@ public class GetTestResultsQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken
     )
     {
-        var query = context.TestResults.Where(r =>
-            r.TestRunId == request.RunId
-        );
+        var query = context.TestResults.Where(r => r.TestRunId == request.RunId);
 
         if (request.Status is not null)
         {
@@ -37,9 +33,7 @@ public class GetTestResultsQueryHandler(IApplicationDbContext context)
 
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
-            query = query.Where(r =>
-                EF.Functions.ILike(r.TestCase!.Name, $"%{request.Search}%")
-            );
+            query = query.Where(r => EF.Functions.ILike(r.TestCase!.Name, $"%{request.Search}%"));
         }
 
         var total = await query.CountAsync(cancellationToken);

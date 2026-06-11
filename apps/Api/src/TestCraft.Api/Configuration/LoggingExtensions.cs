@@ -8,23 +8,15 @@ namespace TestCraft.Api.Configuration;
 
 public static class LoggingExtensions
 {
-    public static WebApplicationBuilder AddSerilogLogging(
-        this WebApplicationBuilder builder
-    )
+    public static WebApplicationBuilder AddSerilogLogging(this WebApplicationBuilder builder)
     {
         builder.Host.UseSerilog(
             (context, _, loggerConfig) =>
             {
                 loggerConfig
                     .MinimumLevel.Information()
-                    .MinimumLevel.Override(
-                        "Microsoft.AspNetCore",
-                        LogEventLevel.Warning
-                    )
-                    .MinimumLevel.Override(
-                        "Microsoft.EntityFrameworkCore",
-                        LogEventLevel.Warning
-                    )
+                    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
                     .Enrich.FromLogContext()
                     .Enrich.With<PinoLevelEnricher>()
                     .WriteTo.Console(new JsonFormatter());
@@ -40,8 +32,7 @@ public static class LoggingExtensions
                             {
                                 Key = "app",
                                 Value =
-                                    context.Configuration["OTEL_SERVICE_NAME"]
-                                    ?? "testcraft-api",
+                                    context.Configuration["OTEL_SERVICE_NAME"] ?? "testcraft-api",
                             },
                         ],
                         handleLogLevelAsLabel: false,

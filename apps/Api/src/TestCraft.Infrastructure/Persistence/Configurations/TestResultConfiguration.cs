@@ -11,10 +11,7 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
         builder.ToTable("test_results");
 
         builder.HasKey(r => r.Id);
-        builder
-            .Property(r => r.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(r => r.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
         builder
             .Property(r => r.Status)
             .HasColumnName("status")
@@ -25,18 +22,9 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
         builder.Property(r => r.ExecutedById).HasColumnName("executed_by_id");
         builder.Property(r => r.TestRunId).HasColumnName("test_run_id");
         builder.Property(r => r.TestCaseId).HasColumnName("test_case_id");
-        builder
-            .Property(r => r.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(r => r.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(r => r.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
+        builder.Property(r => r.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.Property(r => r.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+        builder.Property(r => r.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
         builder.Property(r => r.DeletedAt).HasColumnName("deleted_at");
 
         builder.HasIndex(r => r.TestRunId);

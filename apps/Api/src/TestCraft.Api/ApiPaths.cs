@@ -6,6 +6,5 @@ public static class ApiPaths
     public const string DocsPrefix = "/api/v1/docs";
 
     public static bool IsVersionedApi(PathString path) =>
-        path.StartsWithSegments(V1Prefix)
-        && !path.StartsWithSegments(DocsPrefix);
+        path.StartsWithSegments(V1Prefix) && !path.StartsWithSegments(DocsPrefix);
 }

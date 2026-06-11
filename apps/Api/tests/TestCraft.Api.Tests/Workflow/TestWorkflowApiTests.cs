@@ -26,9 +26,7 @@ namespace TestCraft.Api.Tests.Workflow;
 [Collection(ApiCollection.Name)]
 public class TestWorkflowApiTests(ApiFactory factory)
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(
-        JsonSerializerDefaults.Web
-    )
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },
     };
@@ -36,8 +34,10 @@ public class TestWorkflowApiTests(ApiFactory factory)
     private HttpClient CreateClient()
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", Guid.NewGuid().ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            Guid.NewGuid().ToString()
+        );
 
         return client;
     }
@@ -83,20 +83,13 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         stepResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var step =
-            await stepResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>(
-                JsonOptions
-            );
+        var step = await stepResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>(JsonOptions);
         step!.TestCaseId.Should().Be(testCase.Id);
 
         var run = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{project.Id}/runs",
-                new CreateTestRunRequest
-                {
-                    Name = "Smoke Run",
-                    Environment = "staging",
-                }
+                new CreateTestRunRequest { Name = "Smoke Run", Environment = "staging" }
             )
         ).Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
 
@@ -113,10 +106,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         resultResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var result =
-            await resultResponse.Content.ReadFromJsonAsync<TestResultResponse>(
-                JsonOptions
-            );
+        var result = await resultResponse.Content.ReadFromJsonAsync<TestResultResponse>(
+            JsonOptions
+        );
         result!.TestCaseName.Should().Be("Successful login");
 
         var summaryResponse = await client.GetAsync(
@@ -124,10 +116,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
         summaryResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var summary =
-            await summaryResponse.Content.ReadFromJsonAsync<TestRunStatusResponse>(
-                JsonOptions
-            );
+        var summary = await summaryResponse.Content.ReadFromJsonAsync<TestRunStatusResponse>(
+            JsonOptions
+        );
         summary!.Total.Should().Be(1);
         summary.Passed.Should().Be(1);
         summary.PassRate.Should().Be(100);
@@ -143,10 +134,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         completeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var completed =
-            await completeResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-                JsonOptions
-            );
+        var completed = await completeResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            JsonOptions
+        );
         completed!.Status.Should().Be(TestRunStatus.Completed);
 
         var revertResponse = await client.PutAsJsonAsync(
@@ -159,9 +149,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
             }
         );
 
-        revertResponse
-            .StatusCode.Should()
-            .Be(HttpStatusCode.UnprocessableEntity);
+        revertResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
     }
 
     [Fact]
@@ -196,17 +184,13 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(
-            JsonOptions
-        );
+        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
         run!.Name.Should().Be("My Suite Run");
         run.Environment.Should().Be("ci");
         run.Status.Should().Be(TestRunStatus.Completed);
 
         var summary = await (
-            await client.GetAsync(
-                $"/api/v1/projects/{project.Id}/runs/{run.Id}/summary"
-            )
+            await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
         ).Content.ReadFromJsonAsync<TestRunStatusResponse>(JsonOptions);
 
         summary!.Total.Should().Be(3);
@@ -244,47 +228,26 @@ public class TestWorkflowApiTests(ApiFactory factory)
                     {
                         Name = "checkout flow works",
                         Status = "passed",
-                        Labels =
-                        [
-                            new AllureLabel
-                            {
-                                Name = "suite",
-                                Value = "Checkout",
-                            },
-                        ],
+                        Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },
                     new AllureResultItem
                     {
                         Name = "checkout fails on bad card",
                         Status = "broken",
-                        StatusDetails = new AllureStatusDetails
-                        {
-                            Message = "card declined",
-                        },
-                        Labels =
-                        [
-                            new AllureLabel
-                            {
-                                Name = "suite",
-                                Value = "Checkout",
-                            },
-                        ],
+                        StatusDetails = new AllureStatusDetails { Message = "card declined" },
+                        Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },
                 ],
             }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(
-            JsonOptions
-        );
+        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
         run!.Name.Should().Be("Allure Import");
         run.Status.Should().Be(TestRunStatus.Completed);
 
         var summary = await (
-            await client.GetAsync(
-                $"/api/v1/projects/{project.Id}/runs/{run.Id}/summary"
-            )
+            await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
         ).Content.ReadFromJsonAsync<TestRunStatusResponse>(JsonOptions);
 
         summary!.Total.Should().Be(2);

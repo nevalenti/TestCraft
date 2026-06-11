@@ -4,12 +4,9 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Infrastructure.Auth;
 
-public class CurrentUser(IHttpContextAccessor httpContextAccessor)
-    : ICurrentUser
+public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUser
 {
     public Guid UserId =>
         httpContextAccessor.HttpContext?.User.GetUserId()
-        ?? throw new DomainException(
-            "No authenticated user in the current context"
-        );
+        ?? throw new DomainException("No authenticated user in the current context");
 }

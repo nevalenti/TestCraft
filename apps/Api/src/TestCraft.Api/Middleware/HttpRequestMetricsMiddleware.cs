@@ -20,15 +20,10 @@ public static class HttpRequestMetricsMiddlewareExtensions
     private static readonly Counter RequestsTotal = Metrics.CreateCounter(
         "http_requests_total",
         "Total HTTP requests",
-        new CounterConfiguration
-        {
-            LabelNames = ["method", "route", "status_code"],
-        }
+        new CounterConfiguration { LabelNames = ["method", "route", "status_code"] }
     );
 
-    public static IApplicationBuilder UseHttpRequestMetrics(
-        this IApplicationBuilder app
-    ) =>
+    public static IApplicationBuilder UseHttpRequestMetrics(this IApplicationBuilder app) =>
         app.Use(
             async (context, next) =>
             {
@@ -46,14 +41,10 @@ public static class HttpRequestMetricsMiddlewareExtensions
                 {
                     context.Request.Method,
                     route,
-                    context.Response.StatusCode.ToString(
-                        CultureInfo.InvariantCulture
-                    ),
+                    context.Response.StatusCode.ToString(CultureInfo.InvariantCulture),
                 };
 
-                RequestDuration
-                    .WithLabels(labels)
-                    .Observe(stopwatch.Elapsed.TotalSeconds);
+                RequestDuration.WithLabels(labels).Observe(stopwatch.Elapsed.TotalSeconds);
                 RequestsTotal.WithLabels(labels).Inc();
             }
         );

@@ -8,9 +8,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.Projects.Commands.UpdateProject;
 
-public record UpdateProjectCommand
-    : IRequest<ProjectResponse>,
-        IProjectScopedRequest
+public record UpdateProjectCommand : IRequest<ProjectResponse>, IProjectScopedRequest
 {
     public required Guid Id { get; init; }
     public required string Name { get; init; }
@@ -19,8 +17,7 @@ public record UpdateProjectCommand
     Guid IProjectScopedRequest.ProjectId => Id;
 }
 
-public class UpdateProjectCommandValidator
-    : AbstractValidator<UpdateProjectCommand>
+public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectCommand>
 {
     public UpdateProjectCommandValidator()
     {
@@ -37,10 +34,8 @@ public class UpdateProjectCommandHandler(IApplicationDbContext context)
     )
     {
         var project =
-            await context.Projects.FirstOrDefaultAsync(
-                p => p.Id == request.Id,
-                cancellationToken
-            ) ?? throw new NotFoundException();
+            await context.Projects.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken)
+            ?? throw new NotFoundException();
 
         project.Name = request.Name;
         project.Description = request.Description;
@@ -51,9 +46,7 @@ public class UpdateProjectCommandHandler(IApplicationDbContext context)
         }
         catch (DbUpdateException ex) when (DbErrorHelpers.IsUniqueViolation(ex))
         {
-            throw new DomainException(
-                "A project with this name already exists"
-            );
+            throw new DomainException("A project with this name already exists");
         }
 
         return await context

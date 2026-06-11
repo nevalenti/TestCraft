@@ -7,9 +7,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Commands.ImportAllure;
 
-public record ImportAllureCommand
-    : IRequest<TestRunResponse>,
-        IProjectScopedRequest
+public record ImportAllureCommand : IRequest<TestRunResponse>, IProjectScopedRequest
 {
     public const string DefaultRunName = "Allure Import";
 
@@ -20,8 +18,7 @@ public record ImportAllureCommand
     public string? Source { get; init; }
 }
 
-public class ImportAllureCommandValidator
-    : AbstractValidator<ImportAllureCommand>
+public class ImportAllureCommandValidator : AbstractValidator<ImportAllureCommand>
 {
     private static readonly string[] ValidStatuses =
     [
@@ -44,14 +41,8 @@ public class ImportAllureCommandValidator
             .NotEmpty()
             .WithMessage("Environment is required")
             .MaximumLength(255);
-        RuleFor(x => x.Name)
-            .NotEmpty()
-            .MaximumLength(255)
-            .When(x => x.Name is not null);
-        RuleFor(x => x.Source)
-            .NotEmpty()
-            .MaximumLength(100)
-            .When(x => x.Source is not null);
+        RuleFor(x => x.Name).NotEmpty().MaximumLength(255).When(x => x.Name is not null);
+        RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
 
         RuleForEach(x => x.Results)
             .ChildRules(result =>
@@ -74,10 +65,8 @@ public class ImportAllureCommandValidator
     }
 }
 
-public class ImportAllureCommandHandler(
-    IApplicationDbContext context,
-    ICurrentUser currentUser
-) : IRequestHandler<ImportAllureCommand, TestRunResponse>
+public class ImportAllureCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
+    : IRequestHandler<ImportAllureCommand, TestRunResponse>
 {
     public Task<TestRunResponse> Handle(
         ImportAllureCommand request,

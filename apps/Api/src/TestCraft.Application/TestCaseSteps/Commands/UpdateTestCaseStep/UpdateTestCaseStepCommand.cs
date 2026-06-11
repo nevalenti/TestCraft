@@ -7,9 +7,7 @@ using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.TestCaseSteps.Commands.UpdateTestCaseStep;
 
-public record UpdateTestCaseStepCommand
-    : IRequest<TestCaseStepResponse>,
-        IProjectScopedRequest
+public record UpdateTestCaseStepCommand : IRequest<TestCaseStepResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid CaseId { get; init; }
@@ -19,8 +17,7 @@ public record UpdateTestCaseStepCommand
     public required string ExpectedResult { get; init; }
 }
 
-public class UpdateTestCaseStepCommandValidator
-    : AbstractValidator<UpdateTestCaseStepCommand>
+public class UpdateTestCaseStepCommandValidator : AbstractValidator<UpdateTestCaseStepCommand>
 {
     public UpdateTestCaseStepCommandValidator()
     {

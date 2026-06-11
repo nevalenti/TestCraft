@@ -10,9 +10,7 @@ using TestCraft.Domain.Rules;
 
 namespace TestCraft.Application.TestRuns.Commands.UpdateTestRun;
 
-public record UpdateTestRunCommand
-    : IRequest<TestRunResponse>,
-        IProjectScopedRequest
+public record UpdateTestRunCommand : IRequest<TestRunResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid Id { get; init; }
@@ -21,8 +19,7 @@ public record UpdateTestRunCommand
     public required TestRunStatus Status { get; init; }
 }
 
-public class UpdateTestRunCommandValidator
-    : AbstractValidator<UpdateTestRunCommand>
+public class UpdateTestRunCommandValidator : AbstractValidator<UpdateTestRunCommand>
 {
     public UpdateTestRunCommandValidator()
     {
@@ -32,10 +29,8 @@ public class UpdateTestRunCommandValidator
     }
 }
 
-public class UpdateTestRunCommandHandler(
-    IApplicationDbContext context,
-    ICacheService cache
-) : IRequestHandler<UpdateTestRunCommand, TestRunResponse>
+public class UpdateTestRunCommandHandler(IApplicationDbContext context, ICacheService cache)
+    : IRequestHandler<UpdateTestRunCommand, TestRunResponse>
 {
     public async Task<TestRunResponse> Handle(
         UpdateTestRunCommand request,
@@ -66,10 +61,7 @@ public class UpdateTestRunCommandHandler(
             .Select(TestRunResponse.Projection)
             .FirstAsync(cancellationToken);
 
-        await cache.RemoveAsync(
-            CacheKeys.TestRunResponse(run.Id),
-            cancellationToken
-        );
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
 
         return summary;
     }

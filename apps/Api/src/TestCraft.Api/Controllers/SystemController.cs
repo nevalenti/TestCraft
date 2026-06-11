@@ -10,10 +10,7 @@ namespace TestCraft.Api.Controllers;
 
 [ApiController]
 [Route("api")]
-public class SystemController(
-    IConfiguration configuration,
-    AppDbContext dbContext
-) : ControllerBase
+public class SystemController(IConfiguration configuration, AppDbContext dbContext) : ControllerBase
 {
     [HttpGet("auth-config")]
     [ProducesResponseType(typeof(object), StatusCodes.Status200OK)]
@@ -32,10 +29,7 @@ public class SystemController(
             return Ok(new { status = "healthy" });
         }
 
-        return StatusCode(
-            StatusCodes.Status503ServiceUnavailable,
-            new { status = "unhealthy" }
-        );
+        return StatusCode(StatusCodes.Status503ServiceUnavailable, new { status = "unhealthy" });
     }
 
     [HttpGet("status")]
@@ -48,10 +42,7 @@ public class SystemController(
             new
             {
                 status = dbUp ? "ok" : "degraded",
-                uptime = (long)
-                    (
-                        DateTime.UtcNow - process.StartTime.ToUniversalTime()
-                    ).TotalSeconds,
+                uptime = (long)(DateTime.UtcNow - process.StartTime.ToUniversalTime()).TotalSeconds,
                 memory = new
                 {
                     rss = process.WorkingSet64,
@@ -59,8 +50,7 @@ public class SystemController(
                     heapTotal = GC.GetTotalMemory(forceFullCollection: false),
                 },
                 db = dbUp ? "up" : "down",
-                version = GetType().Assembly.GetName().Version?.ToString()
-                    ?? "unknown",
+                version = GetType().Assembly.GetName().Version?.ToString() ?? "unknown",
                 runtime = $".NET {Environment.Version}",
             }
         );
@@ -72,10 +62,7 @@ public class SystemController(
     )
     {
         var metricsToken = configuration["METRICS_TOKEN"];
-        if (
-            !string.IsNullOrEmpty(metricsToken)
-            && !IsBearerTokenValid(authorization, metricsToken)
-        )
+        if (!string.IsNullOrEmpty(metricsToken) && !IsBearerTokenValid(authorization, metricsToken))
         {
             return Unauthorized();
         }
@@ -86,10 +73,7 @@ public class SystemController(
             HttpContext.RequestAborted
         );
 
-        return File(
-            stream.ToArray(),
-            "text/plain; version=0.0.4; charset=utf-8"
-        );
+        return File(stream.ToArray(), "text/plain; version=0.0.4; charset=utf-8");
     }
 
     private async Task<bool> PingDbAsync()
@@ -112,9 +96,6 @@ public class SystemController(
         var expectedBytes = Encoding.UTF8.GetBytes($"Bearer {token}");
 
         return providedBytes.Length == expectedBytes.Length
-            && CryptographicOperations.FixedTimeEquals(
-                providedBytes,
-                expectedBytes
-            );
+            && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
     }
 }

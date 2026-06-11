@@ -4,16 +4,11 @@ public static class CorsExtensions
 {
     public const string DefaultPolicyName = "Default";
 
-    public static WebApplicationBuilder AddCorsPolicy(
-        this WebApplicationBuilder builder
-    )
+    public static WebApplicationBuilder AddCorsPolicy(this WebApplicationBuilder builder)
     {
-        var corsOrigins = (
-            builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty
-        ).Split(
+        var corsOrigins = (builder.Configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty).Split(
             ',',
-            StringSplitOptions.RemoveEmptyEntries
-                | StringSplitOptions.TrimEntries
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
         );
 
         builder.Services.AddCors(options =>

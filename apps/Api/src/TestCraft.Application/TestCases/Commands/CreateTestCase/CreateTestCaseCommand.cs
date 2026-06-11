@@ -7,9 +7,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestCases.Commands.CreateTestCase;
 
-public record CreateTestCaseCommand
-    : IRequest<TestCaseResponse>,
-        IProjectScopedRequest
+public record CreateTestCaseCommand : IRequest<TestCaseResponse>, IProjectScopedRequest
 {
     public required Guid ProjectId { get; init; }
     public required Guid SuiteId { get; init; }
@@ -18,8 +16,7 @@ public record CreateTestCaseCommand
     public TestCasePriority? Priority { get; init; }
 }
 
-public class CreateTestCaseCommandValidator
-    : AbstractValidator<CreateTestCaseCommand>
+public class CreateTestCaseCommandValidator : AbstractValidator<CreateTestCaseCommand>
 {
     public CreateTestCaseCommandValidator()
     {

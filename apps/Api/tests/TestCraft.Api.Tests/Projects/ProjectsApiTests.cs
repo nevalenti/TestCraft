@@ -15,8 +15,10 @@ public class ProjectsApiTests(ApiFactory factory)
     private HttpClient CreateClient(Guid userId)
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", userId.ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
 
         return client;
     }
@@ -28,30 +30,22 @@ public class ProjectsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest
-            {
-                Name = "My Project",
-                Description = "A test project",
-            }
+            new CreateProjectRequest { Name = "My Project", Description = "A test project" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<ProjectResponse>();
+        var created = await createResponse.Content.ReadFromJsonAsync<ProjectResponse>();
         created.Should().NotBeNull();
         created!.Name.Should().Be("My Project");
         created.Description.Should().Be("A test project");
         created.SuiteCount.Should().Be(0);
         created.RunCount.Should().Be(0);
 
-        var getResponse = await client.GetAsync(
-            $"/api/v1/projects/{created.Id}"
-        );
+        var getResponse = await client.GetAsync($"/api/v1/projects/{created.Id}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var fetched =
-            await getResponse.Content.ReadFromJsonAsync<ProjectResponse>();
+        var fetched = await getResponse.Content.ReadFromJsonAsync<ProjectResponse>();
         fetched!.Id.Should().Be(created.Id);
         fetched.Name.Should().Be("My Project");
     }
@@ -74,9 +68,7 @@ public class ProjectsApiTests(ApiFactory factory)
         var response = await ownerClient.GetAsync("/api/v1/projects");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var page = await response.Content.ReadFromJsonAsync<
-            Paginated<ProjectResponse>
-        >();
+        var page = await response.Content.ReadFromJsonAsync<Paginated<ProjectResponse>>();
         page!.Items.Should().ContainSingle(p => p.Name == "Owner Project");
         page.Items.Should().NotContain(p => p.Name == "Other Project");
     }
@@ -99,8 +91,7 @@ public class ProjectsApiTests(ApiFactory factory)
         );
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var updated =
-            await updateResponse.Content.ReadFromJsonAsync<ProjectResponse>();
+        var updated = await updateResponse.Content.ReadFromJsonAsync<ProjectResponse>();
         updated!.Name.Should().Be("New Name");
     }
 
@@ -116,14 +107,10 @@ public class ProjectsApiTests(ApiFactory factory)
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
-        var deleteResponse = await client.DeleteAsync(
-            $"/api/v1/projects/{created!.Id}"
-        );
+        var deleteResponse = await client.DeleteAsync($"/api/v1/projects/{created!.Id}");
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
-        var getResponse = await client.GetAsync(
-            $"/api/v1/projects/{created.Id}"
-        );
+        var getResponse = await client.GetAsync($"/api/v1/projects/{created.Id}");
         getResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
@@ -140,14 +127,10 @@ public class ProjectsApiTests(ApiFactory factory)
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
-        var response = await otherClient.GetAsync(
-            $"/api/v1/projects/{created!.Id}"
-        );
+        var response = await otherClient.GetAsync($"/api/v1/projects/{created!.Id}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
@@ -174,8 +157,6 @@ public class ProjectsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

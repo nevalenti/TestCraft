@@ -23,9 +23,7 @@ public class GetTestCaseStepsQueryHandler(IApplicationDbContext context)
         CancellationToken cancellationToken
     )
     {
-        var query = context.TestCaseSteps.Where(s =>
-            s.TestCaseId == request.CaseId
-        );
+        var query = context.TestCaseSteps.Where(s => s.TestCaseId == request.CaseId);
 
         var total = await query.CountAsync(cancellationToken);
 

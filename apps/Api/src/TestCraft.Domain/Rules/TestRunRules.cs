@@ -11,10 +11,8 @@ public static class TestRunRules
         [TestRunStatus.Archived] = 2,
     };
 
-    public static bool CanTransitionStatus(
-        TestRunStatus from,
-        TestRunStatus to
-    ) => StatusOrder[to] >= StatusOrder[from];
+    public static bool CanTransitionStatus(TestRunStatus from, TestRunStatus to) =>
+        StatusOrder[to] >= StatusOrder[from];
 
     public static bool CanAddResultToRun(TestRunStatus runStatus) =>
         runStatus != TestRunStatus.Archived;

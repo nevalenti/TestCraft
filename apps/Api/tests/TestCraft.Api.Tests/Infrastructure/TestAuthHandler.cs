@@ -30,9 +30,7 @@ public class TestAuthHandler(
         var token = value["Bearer ".Length..];
         if (!Guid.TryParse(token, out _))
         {
-            return Task.FromResult(
-                AuthenticateResult.Fail("Invalid bearer token")
-            );
+            return Task.FromResult(AuthenticateResult.Fail("Invalid bearer token"));
         }
 
         var claims = new[] { new Claim(ClaimTypes.NameIdentifier, token) };

@@ -15,8 +15,10 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     private HttpClient CreateClient(Guid userId)
     {
         var client = factory.CreateClient();
-        client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", userId.ToString());
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
 
         return client;
     }
@@ -38,9 +40,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task Create_Then_GetById_ReturnsStep()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
@@ -54,8 +54,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
 
-        var created =
-            await createResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
+        var created = await createResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
         created!.TestCaseId.Should().Be(caseId);
         created.Order.Should().Be(1);
 
@@ -64,8 +63,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var fetched =
-            await getResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
+        var fetched = await getResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
         fetched!.Id.Should().Be(created.Id);
     }
 
@@ -73,9 +71,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task GetAll_ReturnsStepsForCase()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
@@ -101,9 +97,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var page = await response.Content.ReadFromJsonAsync<
-            Paginated<TestCaseStepResponse>
-        >();
+        var page = await response.Content.ReadFromJsonAsync<Paginated<TestCaseStepResponse>>();
         page!.Items.Should().HaveCount(2);
     }
 
@@ -111,9 +105,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task Update_ChangesFields()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var created = await (
             await client.PostAsJsonAsync(
@@ -139,8 +131,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var updated =
-            await updateResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
+        var updated = await updateResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>();
         updated!.Action.Should().Be("Open the updated login page");
         updated.ExpectedResult.Should().Be("Updated login form is visible");
     }
@@ -149,9 +140,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task Delete_RemovesStep()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var created = await (
             await client.PostAsJsonAsync(
@@ -180,9 +169,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task BulkReorder_ReordersSteps()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var first = await (
             await client.PostAsJsonAsync(
@@ -241,9 +228,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     public async Task BulkReorder_WithDuplicateIds_ReturnsUnprocessable()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var step = await (
             await client.PostAsJsonAsync(
@@ -270,43 +255,32 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
     public async Task BulkReorder_WithUnknownStepId_ReturnsUnprocessable()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/reorder",
             new BulkReorderStepsRequest
             {
-                Steps =
-                [
-                    new ReorderStepRequest { Id = Guid.NewGuid(), Order = 1 },
-                ],
+                Steps = [new ReorderStepRequest { Id = Guid.NewGuid(), Order = 1 }],
             }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
     public async Task Update_NonExistentStep_ReturnsNotFound()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{Guid.NewGuid()}",
@@ -319,18 +293,14 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]
     public async Task Create_WithInvalidBody_ReturnsValidationProblem()
     {
         var client = CreateClient(Guid.NewGuid());
-        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(
-            client
-        );
+        var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
@@ -343,9 +313,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        response
-            .Content.Headers.ContentType?.MediaType.Should()
-            .Be("application/problem+json");
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
     [Fact]

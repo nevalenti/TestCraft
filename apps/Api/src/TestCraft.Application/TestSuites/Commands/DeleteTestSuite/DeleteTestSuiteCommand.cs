@@ -15,10 +15,7 @@ public record DeleteTestSuiteCommand : IRequest, IProjectScopedRequest
 public class DeleteTestSuiteCommandHandler(IApplicationDbContext context)
     : IRequestHandler<DeleteTestSuiteCommand>
 {
-    public async Task Handle(
-        DeleteTestSuiteCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeleteTestSuiteCommand request, CancellationToken cancellationToken)
     {
         var suite =
             await context.TestSuites.FirstOrDefaultAsync(

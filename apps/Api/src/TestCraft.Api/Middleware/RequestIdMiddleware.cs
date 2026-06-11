@@ -7,8 +7,7 @@ public class RequestIdMiddleware(RequestDelegate next)
     public async Task InvokeAsync(HttpContext context)
     {
         var requestId =
-            context.Request.Headers[HeaderName].FirstOrDefault()
-            ?? Guid.NewGuid().ToString();
+            context.Request.Headers[HeaderName].FirstOrDefault() ?? Guid.NewGuid().ToString();
 
         context.Request.Headers[HeaderName] = requestId;
         context.TraceIdentifier = requestId;
@@ -26,7 +25,6 @@ public class RequestIdMiddleware(RequestDelegate next)
 
 public static class RequestIdMiddlewareExtensions
 {
-    public static IApplicationBuilder UseRequestId(
-        this IApplicationBuilder app
-    ) => app.UseMiddleware<RequestIdMiddleware>();
+    public static IApplicationBuilder UseRequestId(this IApplicationBuilder app) =>
+        app.UseMiddleware<RequestIdMiddleware>();
 }

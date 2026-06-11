@@ -18,17 +18,13 @@ public static class JUnitParser
         }
         catch (Exception)
         {
-            throw new DomainException(
-                "Invalid JUnit XML: could not parse the document"
-            );
+            throw new DomainException("Invalid JUnit XML: could not parse the document");
         }
 
         var root = doc.Root;
         if (root is null)
         {
-            throw new DomainException(
-                "Invalid JUnit XML: could not parse the document"
-            );
+            throw new DomainException("Invalid JUnit XML: could not parse the document");
         }
 
         string runName;
@@ -56,8 +52,7 @@ public static class JUnitParser
             var suiteNameFromAttr = StrVal(suite.Attribute("name")?.Value);
             foreach (var testcase in suite.Elements("testcase"))
             {
-                var caseName =
-                    StrVal(testcase.Attribute("name")?.Value) ?? "Unknown";
+                var caseName = StrVal(testcase.Attribute("name")?.Value) ?? "Unknown";
                 var suiteName = ResolveSuiteName(suiteNameFromAttr, testcase);
                 var (status, notes) = ResolveStatus(testcase);
 
@@ -77,9 +72,7 @@ public static class JUnitParser
         return (runName, cases);
     }
 
-    private static (TestResultStatus Status, string? Notes) ResolveStatus(
-        XElement testcase
-    )
+    private static (TestResultStatus Status, string? Notes) ResolveStatus(XElement testcase)
     {
         var failure = testcase.Element("failure") ?? testcase.Element("error");
         if (failure is not null)
@@ -134,22 +127,15 @@ public static class JUnitParser
         ];
     }
 
-    private static string? StrVal(string? value) =>
-        string.IsNullOrEmpty(value) ? null : value;
+    private static string? StrVal(string? value) => string.IsNullOrEmpty(value) ? null : value;
 
-    private static string ResolveSuiteName(
-        string? suiteNameFromAttr,
-        XElement testcase
-    )
+    private static string ResolveSuiteName(string? suiteNameFromAttr, XElement testcase)
     {
         var classname = StrVal(testcase.Attribute("classname")?.Value);
 
         if (
             suiteNameFromAttr is not null
-            && suiteNameFromAttr.EndsWith(
-                ".dll",
-                StringComparison.OrdinalIgnoreCase
-            )
+            && suiteNameFromAttr.EndsWith(".dll", StringComparison.OrdinalIgnoreCase)
         )
         {
             return classname ?? suiteNameFromAttr;

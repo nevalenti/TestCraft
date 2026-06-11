@@ -17,7 +17,6 @@ public class ApiVersionMiddleware(RequestDelegate next)
 
 public static class ApiVersionMiddlewareExtensions
 {
-    public static IApplicationBuilder UseApiVersion(
-        this IApplicationBuilder app
-    ) => app.UseMiddleware<ApiVersionMiddleware>();
+    public static IApplicationBuilder UseApiVersion(this IApplicationBuilder app) =>
+        app.UseMiddleware<ApiVersionMiddleware>();
 }

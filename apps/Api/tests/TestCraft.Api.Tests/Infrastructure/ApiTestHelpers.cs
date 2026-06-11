@@ -15,9 +15,7 @@ namespace TestCraft.Api.Tests.Infrastructure;
 
 internal static class ApiTestHelpers
 {
-    public static readonly JsonSerializerOptions JsonOptions = new(
-        JsonSerializerDefaults.Web
-    )
+    public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },
     };
@@ -32,11 +30,7 @@ internal static class ApiTestHelpers
             new CreateProjectRequest { Name = name }
         );
 
-        return (
-            await response.Content.ReadFromJsonAsync<ProjectResponse>(
-                JsonOptions
-            )
-        )!;
+        return (await response.Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions))!;
     }
 
     public static async Task<TestSuiteResponse> CreateSuiteAsync(
@@ -50,11 +44,7 @@ internal static class ApiTestHelpers
             new CreateTestSuiteRequest { Name = name }
         );
 
-        return (
-            await response.Content.ReadFromJsonAsync<TestSuiteResponse>(
-                JsonOptions
-            )
-        )!;
+        return (await response.Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions))!;
     }
 
     public static async Task<TestCaseResponse> CreateCaseAsync(
@@ -70,11 +60,7 @@ internal static class ApiTestHelpers
             new CreateTestCaseRequest { Name = name, Priority = priority }
         );
 
-        return (
-            await response.Content.ReadFromJsonAsync<TestCaseResponse>(
-                JsonOptions
-            )
-        )!;
+        return (await response.Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions))!;
     }
 
     public static async Task<TestRunResponse> CreateRunAsync(
@@ -95,10 +81,6 @@ internal static class ApiTestHelpers
             }
         );
 
-        return (
-            await response.Content.ReadFromJsonAsync<TestRunResponse>(
-                JsonOptions
-            )
-        )!;
+        return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
     }
 }

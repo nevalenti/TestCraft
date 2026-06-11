@@ -13,15 +13,10 @@ public record DeleteTestRunCommand : IRequest, IProjectScopedRequest
     public required Guid Id { get; init; }
 }
 
-public class DeleteTestRunCommandHandler(
-    IApplicationDbContext context,
-    ICacheService cache
-) : IRequestHandler<DeleteTestRunCommand>
+public class DeleteTestRunCommandHandler(IApplicationDbContext context, ICacheService cache)
+    : IRequestHandler<DeleteTestRunCommand>
 {
-    public async Task Handle(
-        DeleteTestRunCommand request,
-        CancellationToken cancellationToken
-    )
+    public async Task Handle(DeleteTestRunCommand request, CancellationToken cancellationToken)
     {
         var run =
             await context.TestRuns.FirstOrDefaultAsync(
@@ -34,9 +29,6 @@ public class DeleteTestRunCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        await cache.RemoveAsync(
-            CacheKeys.TestRunResponse(run.Id),
-            cancellationToken
-        );
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
     }
 }

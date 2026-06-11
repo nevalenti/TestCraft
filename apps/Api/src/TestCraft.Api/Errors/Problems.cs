@@ -4,9 +4,7 @@ public static class Problems
 {
     private const string AboutBlank = "about:blank";
 
-    public static ValidationProblemResponse Validation(
-        IReadOnlyList<FieldError> errors
-    ) =>
+    public static ValidationProblemResponse Validation(IReadOnlyList<FieldError> errors) =>
         new()
         {
             Type = AboutBlank,
