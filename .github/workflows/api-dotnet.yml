@@ -51,8 +51,11 @@ jobs:
       - name: Restore
         run: dotnet restore TestCraft.slnx
 
+      - name: Restore tools
+        run: dotnet tool restore
+
       - name: Format check
-        run: dotnet format TestCraft.slnx --verify-no-changes --no-restore
+        run: dotnet csharpier check .
 
       - name: Build
         run: dotnet build TestCraft.slnx --no-restore --configuration Release
