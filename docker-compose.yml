@@ -40,7 +40,7 @@ services:
     volumes:
       - keycloak_data:/opt/keycloak/data
       - ./infrastructure/keycloak/themes:/opt/keycloak/themes/dracula/login:ro
-      - ./infrastructure/keycloak/keycloak-realm.json:/opt/keycloak/data/import/realm.json:ro
+      - ./infrastructure/keycloak/realm.json:/opt/keycloak/data/import/realm.json:ro
     healthcheck:
       test:
         [

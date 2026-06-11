@@ -122,7 +122,7 @@ spec:
             claimName: keycloak-data
         - name: realm-source
           configMap:
-            name: keycloak-realm
+            name: realm
         - name: themes
           emptyDir: {}
         - name: theme-source

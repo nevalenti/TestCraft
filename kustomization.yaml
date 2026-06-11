@@ -30,9 +30,9 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true
 
-  - name: keycloak-realm
+  - name: realm
     files:
-      - testcraft-realm.json=infrastructure/keycloak/keycloak-realm.json
+      - testcraft-realm.json=infrastructure/keycloak/realm.json
     options:
       disableNameSuffixHash: true
 
