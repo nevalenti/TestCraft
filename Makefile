@@ -1,4 +1,4 @@
-.PHONY: up down clean migrate seed e2e api api-dotnet web \
+.PHONY: format up down clean migrate seed e2e api api-dotnet web \
         build load images destroy status deploy
 
 API_IMAGE = testcraft-api
@@ -10,6 +10,10 @@ KUBECTL = sudo k3s kubectl
 export
 unexport DATABASE_URL
 unexport POSTGRES_EXPORTER_DSN
+
+format:
+	pnpm format
+	dotnet csharpier format .
 
 up:
 	docker compose up -d
