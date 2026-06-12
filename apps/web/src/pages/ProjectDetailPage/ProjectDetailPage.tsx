@@ -47,10 +47,10 @@ export const ProjectDetailPage = () => {
             to="/projects/$projectId/runs"
             params={{ projectId }}
             role="tab"
-            className="tab gap-2 leading-none"
+            className="tab gap-2 leading-none font-semibold"
             activeProps={{
               className:
-                "tab tab-active gap-2 leading-none [--tab-bg:var(--color-primary)] text-primary-content",
+                "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
             }}
           >
             Test Runs
@@ -64,10 +64,10 @@ export const ProjectDetailPage = () => {
             to="/projects/$projectId/suites"
             params={{ projectId }}
             role="tab"
-            className="tab gap-2 leading-none"
+            className="tab gap-2 leading-none font-semibold"
             activeProps={{
               className:
-                "tab tab-active gap-2 leading-none [--tab-bg:var(--color-primary)] text-primary-content",
+                "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
             }}
           >
             Test Suites

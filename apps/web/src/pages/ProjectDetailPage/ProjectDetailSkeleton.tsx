@@ -11,7 +11,7 @@ export const ProjectDetailSkeleton = () => (
           <span className="inline-block h-[0.7em] w-80 skeleton rounded" />
         </p>
       </div>
-      <div className="h-9 w-60 skeleton rounded-full border border-border" />
+      <div className="h-9 w-60 skeleton rounded-xl border border-border" />
     </div>
     <div className="page-content">
       <SkeletonGrid />

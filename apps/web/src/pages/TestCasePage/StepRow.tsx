@@ -75,7 +75,12 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
         </div>
         <div className="absolute top-1/2 right-2.5 z-10 flex -translate-y-1/2 items-center gap-1">
           <div className="flex flex-col gap-1 opacity-100 transition-opacity duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
-            <ResourceActions onEdit={onEdit} onDelete={onDelete} label="step" />
+            <ResourceActions
+              onEdit={onEdit}
+              onDelete={onDelete}
+              label="step"
+              size="xs"
+            />
           </div>
           <button
             {...attributes}

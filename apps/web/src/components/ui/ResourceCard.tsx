@@ -54,7 +54,12 @@ export const ResourceCard = ({
       {children}
     </div>
     <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1 opacity-100 transition-all duration-150 focus-within:translate-x-0 focus-within:opacity-100 sm:translate-x-2 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
-      <ResourceActions onEdit={onEdit} onDelete={onDelete} label={label} />
+      <ResourceActions
+        onEdit={onEdit}
+        onDelete={onDelete}
+        label={label}
+        size="xs"
+      />
     </div>
   </div>
 );
