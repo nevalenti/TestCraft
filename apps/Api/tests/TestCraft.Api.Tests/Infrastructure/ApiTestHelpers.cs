@@ -1,14 +1,8 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TestCraft.Api.Projects;
-using TestCraft.Api.TestCases;
-using TestCraft.Api.TestRuns;
-using TestCraft.Api.TestSuites;
-using TestCraft.Application.Projects;
-using TestCraft.Application.TestCases;
-using TestCraft.Application.TestRuns;
-using TestCraft.Application.TestSuites;
+using TestCraft.Api.Requests;
+using TestCraft.Application.Responses;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Tests.Infrastructure;

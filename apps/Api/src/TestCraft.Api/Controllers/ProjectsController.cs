@@ -1,0 +1,80 @@
+using Asp.Versioning;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TestCraft.Api.Requests;
+using TestCraft.Application.Commands;
+using TestCraft.Application.Queries;
+using TestCraft.Application.Responses;
+using TestCraft.Domain.Pagination;
+
+namespace TestCraft.Api.Controllers;
+
+[Authorize]
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/projects")]
+public class ProjectsController(ISender sender) : ControllerBase
+{
+    [HttpGet]
+    public async Task<ActionResult<Paginated<ProjectResponse>>> GetAll(
+        [FromQuery] ProjectQuery query,
+        CancellationToken cancellationToken
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetProjectsQuery
+                {
+                    Search = query.Search,
+                    Pagination = query.ToPaginationParams(),
+                },
+                cancellationToken
+            )
+        );
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<ProjectResponse>> GetById(
+        Guid id,
+        CancellationToken cancellationToken
+    ) => Ok(await sender.Send(new GetProjectByIdQuery { Id = id }, cancellationToken));
+
+    [HttpPost]
+    public async Task<ActionResult<ProjectResponse>> Create(
+        CreateProjectRequest request,
+        CancellationToken cancellationToken
+    )
+    {
+        var project = await sender.Send(
+            new CreateProjectCommand { Name = request.Name, Description = request.Description },
+            cancellationToken
+        );
+
+        return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<ProjectResponse>> Update(
+        Guid id,
+        UpdateProjectRequest request,
+        CancellationToken cancellationToken
+    ) =>
+        Ok(
+            await sender.Send(
+                new UpdateProjectCommand
+                {
+                    Id = id,
+                    Name = request.Name,
+                    Description = request.Description,
+                },
+                cancellationToken
+            )
+        );
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    {
+        await sender.Send(new DeleteProjectCommand { Id = id }, cancellationToken);
+
+        return NoContent();
+    }
+}

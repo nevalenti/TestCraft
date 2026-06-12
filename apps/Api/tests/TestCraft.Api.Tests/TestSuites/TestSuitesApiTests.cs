@@ -2,9 +2,9 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
+using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Api.TestSuites;
-using TestCraft.Application.TestSuites;
+using TestCraft.Application.Responses;
 using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.Tests.TestSuites;

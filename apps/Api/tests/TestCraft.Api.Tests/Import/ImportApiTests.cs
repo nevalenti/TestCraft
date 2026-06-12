@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Import;
+using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Application.Commands;
 using TestCraft.Application.Import;
-using TestCraft.Application.Import.Commands.ImportAllure;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Responses;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Tests.Import;
