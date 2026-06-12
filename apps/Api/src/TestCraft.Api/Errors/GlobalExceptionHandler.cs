@@ -1,13 +1,15 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Api.Errors;
 
-public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
-    : IExceptionHandler
+public partial class GlobalExceptionHandler(
+    ILogger<GlobalExceptionHandler> logger,
+    IDbExceptionClassifier dbExceptionClassifier
+) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
         HttpContext httpContext,
@@ -46,7 +48,7 @@ public partial class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logg
                 return true;
 
             case DbUpdateException dbUpdateException
-                when DbErrorHelpers.IsForeignKeyViolation(dbUpdateException):
+                when dbExceptionClassifier.IsForeignKeyViolation(dbUpdateException):
                 await ProblemWriter.WriteAsync(
                     httpContext,
                     Problems.Conflict("Referenced entity does not exist")

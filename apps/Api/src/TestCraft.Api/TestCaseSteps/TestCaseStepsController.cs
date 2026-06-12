@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCaseSteps;
 using TestCraft.Application.TestCaseSteps.Commands.BulkReorderSteps;
 using TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
@@ -9,7 +10,6 @@ using TestCraft.Application.TestCaseSteps.Commands.DeleteTestCaseStep;
 using TestCraft.Application.TestCaseSteps.Commands.UpdateTestCaseStep;
 using TestCraft.Application.TestCaseSteps.Queries.GetTestCaseStepById;
 using TestCraft.Application.TestCaseSteps.Queries.GetTestCaseSteps;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestCaseSteps;
 

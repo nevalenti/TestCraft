@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Domain.Pagination;
+using TestCraft.Application.Common.Pagination;
 
 namespace TestCraft.Application.Projects.Queries.GetProjects;
 

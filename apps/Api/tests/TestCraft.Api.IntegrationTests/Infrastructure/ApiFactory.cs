@@ -7,7 +7,7 @@ using Npgsql;
 using Testcontainers.PostgreSql;
 using TestCraft.Infrastructure.Persistence;
 
-namespace TestCraft.Api.Tests.Infrastructure;
+namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
 public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {

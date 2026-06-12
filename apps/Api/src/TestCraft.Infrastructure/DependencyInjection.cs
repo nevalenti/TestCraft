@@ -44,6 +44,7 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
+        services.AddSingleton<IDbExceptionClassifier, PostgresExceptionClassifier>();
 
         return services;
     }

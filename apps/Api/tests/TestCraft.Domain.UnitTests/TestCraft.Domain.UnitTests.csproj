@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <IsPackable>false</IsPackable>
+    <!-- CA1707: underscores are idiomatic for xUnit test names. -->
+    <NoWarn>$(NoWarn);CA1707</NoWarn>
+    <VSTestLogger>junit%3BLogFilePath=$(MSBuildThisFileDirectory)../../test-results/junit.xml</VSTestLogger>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="JunitXml.TestLogger" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\TestCraft.Domain\TestCraft.Domain.csproj" />
+  </ItemGroup>
+</Project>

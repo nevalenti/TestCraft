@@ -2,9 +2,9 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCases;
 using TestCraft.Application.TestCases.Queries.GetTestCasesByProject;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestCases;
 

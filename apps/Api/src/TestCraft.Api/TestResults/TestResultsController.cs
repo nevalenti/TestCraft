@@ -2,13 +2,13 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestResults;
 using TestCraft.Application.TestResults.Commands.CreateTestResult;
 using TestCraft.Application.TestResults.Commands.DeleteTestResult;
 using TestCraft.Application.TestResults.Commands.UpdateTestResult;
 using TestCraft.Application.TestResults.Queries.GetTestResultById;
 using TestCraft.Application.TestResults.Queries.GetTestResults;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestResults;
 

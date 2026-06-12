@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
-using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Import;
 using TestCraft.Application.Import.Commands.ImportAllure;
 using TestCraft.Application.Import.Commands.ImportJUnit;
@@ -23,7 +23,7 @@ using TestCraft.Application.TestSuites;
 using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Domain.Enums;
 
-namespace TestCraft.Api.Tests.Workflow;
+namespace TestCraft.Api.IntegrationTests.Workflow;
 
 [Collection(ApiCollection.Name)]
 public class TestWorkflowApiTests(ApiFactory factory)
@@ -204,7 +204,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var suites = await (
             await client.GetAsync($"/api/v1/projects/{project.Id}/suites")
-        ).Content.ReadFromJsonAsync<TestCraft.Domain.Pagination.Paginated<TestSuiteResponse>>();
+        ).Content.ReadFromJsonAsync<TestCraft.Application.Common.Pagination.Paginated<TestSuiteResponse>>();
 
         suites!.Items.Should().ContainSingle(s => s.Name == "Auth");
     }

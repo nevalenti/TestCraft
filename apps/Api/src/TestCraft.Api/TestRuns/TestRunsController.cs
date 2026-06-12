@@ -2,6 +2,7 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestRuns;
 using TestCraft.Application.TestRuns.Commands.CreateTestRun;
 using TestCraft.Application.TestRuns.Commands.DeleteTestRun;
@@ -9,7 +10,6 @@ using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
 using TestCraft.Application.TestRuns.Queries.GetTestRunById;
 using TestCraft.Application.TestRuns.Queries.GetTestRuns;
 using TestCraft.Application.TestRuns.Queries.GetTestRunSummary;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestRuns;
 

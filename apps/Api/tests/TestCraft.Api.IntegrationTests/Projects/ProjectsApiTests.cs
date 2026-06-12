@@ -2,13 +2,13 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Projects;
 using TestCraft.Application.Projects.Commands.CreateProject;
 using TestCraft.Application.Projects.Commands.UpdateProject;
-using TestCraft.Domain.Pagination;
 
-namespace TestCraft.Api.Tests.Projects;
+namespace TestCraft.Api.IntegrationTests.Projects;
 
 [Collection(ApiCollection.Name)]
 public class ProjectsApiTests(ApiFactory factory)

@@ -1,7 +1,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -25,8 +24,10 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
     }
 }
 
-public class UpdateProjectCommandHandler(IApplicationDbContext context)
-    : IRequestHandler<UpdateProjectCommand, ProjectResponse>
+public class UpdateProjectCommandHandler(
+    IApplicationDbContext context,
+    IDbExceptionClassifier dbExceptionClassifier
+) : IRequestHandler<UpdateProjectCommand, ProjectResponse>
 {
     public async Task<ProjectResponse> Handle(
         UpdateProjectCommand request,
@@ -44,7 +45,7 @@ public class UpdateProjectCommandHandler(IApplicationDbContext context)
         {
             await context.SaveChangesAsync(cancellationToken);
         }
-        catch (DbUpdateException ex) when (DbErrorHelpers.IsUniqueViolation(ex))
+        catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
         {
             throw new DomainException("A project with this name already exists");
         }

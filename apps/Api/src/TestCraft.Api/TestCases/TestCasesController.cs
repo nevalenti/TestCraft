@@ -2,13 +2,13 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCases;
 using TestCraft.Application.TestCases.Commands.CreateTestCase;
 using TestCraft.Application.TestCases.Commands.DeleteTestCase;
 using TestCraft.Application.TestCases.Commands.UpdateTestCase;
 using TestCraft.Application.TestCases.Queries.GetTestCaseById;
 using TestCraft.Application.TestCases.Queries.GetTestCases;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestCases;
 

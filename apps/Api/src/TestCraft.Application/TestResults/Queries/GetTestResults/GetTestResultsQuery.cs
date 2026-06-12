@@ -1,9 +1,9 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Application.TestResults.Queries.GetTestResults;
 

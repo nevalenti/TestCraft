@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Import;
 using TestCraft.Application.Import.Commands.ImportAllure;
 using TestCraft.Application.Import.Commands.ImportJUnit;
 using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
-namespace TestCraft.Api.Tests.Import;
+namespace TestCraft.Api.IntegrationTests.Import;
 
 [Collection(ApiCollection.Name)]
 public class ImportApiTests(ApiFactory factory)

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace TestCraft.Api.Tests.Infrastructure;
+namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
 public class TestAuthHandler(
     IOptionsMonitor<AuthenticationSchemeOptions> options,

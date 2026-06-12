@@ -11,7 +11,7 @@ using TestCraft.Application.TestSuites;
 using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Domain.Enums;
 
-namespace TestCraft.Api.Tests.Infrastructure;
+namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
 internal static class ApiTestHelpers
 {

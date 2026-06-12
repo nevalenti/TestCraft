@@ -2,14 +2,14 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCaseSteps;
 using TestCraft.Application.TestCaseSteps.Commands.BulkReorderSteps;
 using TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
 using TestCraft.Application.TestCaseSteps.Commands.UpdateTestCaseStep;
-using TestCraft.Domain.Pagination;
 
-namespace TestCraft.Api.Tests.TestCaseSteps;
+namespace TestCraft.Api.IntegrationTests.TestCaseSteps;
 
 [Collection(ApiCollection.Name)]
 public class TestCaseStepsApiTests(ApiFactory factory)

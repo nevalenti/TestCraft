@@ -2,16 +2,16 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Tests.Infrastructure;
+using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestResults;
 using TestCraft.Application.TestResults.Commands.CreateTestResult;
 using TestCraft.Application.TestResults.Commands.UpdateTestResult;
 using TestCraft.Application.TestRuns;
 using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
 using TestCraft.Domain.Enums;
-using TestCraft.Domain.Pagination;
 
-namespace TestCraft.Api.Tests.TestResults;
+namespace TestCraft.Api.IntegrationTests.TestResults;
 
 [Collection(ApiCollection.Name)]
 public class TestResultsApiTests(ApiFactory factory)

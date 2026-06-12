@@ -1,4 +1,4 @@
-namespace TestCraft.Domain.Pagination;
+namespace TestCraft.Application.Common.Pagination;
 
 public record Paginated<T>
 {

@@ -6,6 +6,7 @@
     <Project Path="apps/Api/src/TestCraft.Infrastructure/TestCraft.Infrastructure.csproj" />
   </Folder>
   <Folder Name="/tests/">
-    <Project Path="apps/Api/tests/TestCraft.Api.Tests/TestCraft.Api.Tests.csproj" />
+    <Project Path="apps/Api/tests/TestCraft.Api.IntegrationTests/TestCraft.Api.IntegrationTests.csproj" />
+    <Project Path="apps/Api/tests/TestCraft.Domain.UnitTests/TestCraft.Domain.UnitTests.csproj" />
   </Folder>
 </Solution>

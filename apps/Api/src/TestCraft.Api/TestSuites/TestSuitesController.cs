@@ -2,13 +2,13 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestSuites;
 using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Application.TestSuites.Commands.DeleteTestSuite;
 using TestCraft.Application.TestSuites.Commands.UpdateTestSuite;
 using TestCraft.Application.TestSuites.Queries.GetTestSuiteById;
 using TestCraft.Application.TestSuites.Queries.GetTestSuites;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.TestSuites;
 

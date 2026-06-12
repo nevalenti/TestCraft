@@ -2,13 +2,13 @@ using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Projects;
 using TestCraft.Application.Projects.Commands.CreateProject;
 using TestCraft.Application.Projects.Commands.DeleteProject;
 using TestCraft.Application.Projects.Commands.UpdateProject;
 using TestCraft.Application.Projects.Queries.GetProjectById;
 using TestCraft.Application.Projects.Queries.GetProjects;
-using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.Projects;
 
