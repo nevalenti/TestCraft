@@ -9,28 +9,25 @@ namespace TestCraft.Api.Configuration;
 public static class AuthenticationExtensions
 {
     public static WebApplicationBuilder AddKeycloakAuthentication(
-        this WebApplicationBuilder builder
+        this WebApplicationBuilder builder,
+        ApiOptions apiOptions
     )
     {
-        var keycloakAuthority =
-            builder.Configuration["KEYCLOAK_AUTHORITY"]
-            ?? throw new InvalidOperationException("KEYCLOAK_AUTHORITY is not configured");
-        var keycloakAudience = builder.Configuration["KEYCLOAK_AUDIENCE"] ?? "testcraft-web";
-        var requireHttpsMetadata =
-            builder.Configuration["KEYCLOAK_REQUIRE_HTTPS_METADATA"] != "false";
-
         builder
             .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.Authority = keycloakAuthority;
-                options.Audience = keycloakAudience;
-                options.RequireHttpsMetadata = requireHttpsMetadata;
+                options.Authority = apiOptions.KeycloakAuthority;
+                options.Audience = apiOptions.KeycloakAudience;
+                options.RequireHttpsMetadata = apiOptions.KeycloakRequireHttpsMetadata;
 
                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    $"{keycloakAuthority}/protocol/openid-connect/certs",
+                    $"{apiOptions.KeycloakAuthority}/protocol/openid-connect/certs",
                     new JwksOnlyConfigurationRetriever(),
-                    new HttpDocumentRetriever { RequireHttps = requireHttpsMetadata }
+                    new HttpDocumentRetriever
+                    {
+                        RequireHttps = apiOptions.KeycloakRequireHttpsMetadata,
+                    }
                 );
                 options.TokenValidationParameters.ValidateIssuer = false;
 

@@ -7,7 +7,8 @@ public static class DatabaseMigrationExtensions
 {
     public static async Task MigrateDatabaseAsync(this WebApplication app)
     {
-        if (!app.Configuration.GetValue<bool>("APPLY_MIGRATIONS"))
+        var apiOptions = app.Services.GetRequiredService<ApiOptions>();
+        if (!apiOptions.ApplyMigrations)
         {
             return;
         }

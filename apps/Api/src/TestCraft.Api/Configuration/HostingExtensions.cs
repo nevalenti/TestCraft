@@ -20,6 +20,9 @@ public static class HostingExtensions
             }
         );
 
+        var apiOptions = ApiOptions.Bind(builder.Configuration);
+        builder.Services.AddSingleton(apiOptions);
+
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
 
@@ -39,12 +42,12 @@ public static class HostingExtensions
         });
 
         return builder
-            .AddSerilogLogging()
-            .AddKeycloakAuthentication()
+            .AddSerilogLogging(apiOptions)
+            .AddKeycloakAuthentication(apiOptions)
             .AddApiControllers()
             .AddApiVersioningSupport()
             .AddErrorHandling()
-            .AddCorsPolicy()
+            .AddCorsPolicy(apiOptions)
             .AddApiRateLimiting()
             .AddSwaggerDocs();
     }

@@ -9,10 +9,13 @@ namespace TestCraft.Api.Configuration;
 
 public static class LoggingExtensions
 {
-    public static WebApplicationBuilder AddSerilogLogging(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddSerilogLogging(
+        this WebApplicationBuilder builder,
+        ApiOptions apiOptions
+    )
     {
         builder.Host.UseSerilog(
-            (context, _, loggerConfig) =>
+            (_, _, loggerConfig) =>
             {
                 loggerConfig
                     .MinimumLevel.Information()
@@ -22,31 +25,21 @@ public static class LoggingExtensions
                     .Enrich.With<PinoLevelEnricher>()
                     .WriteTo.Console(new JsonFormatter());
 
-                var lokiUrl = context.Configuration["LOKI_URL"];
-                if (!string.IsNullOrEmpty(lokiUrl))
+                if (!string.IsNullOrEmpty(apiOptions.LokiUrl))
                 {
                     loggerConfig.WriteTo.GrafanaLoki(
-                        lokiUrl,
-                        labels:
-                        [
-                            new LokiLabel
-                            {
-                                Key = "app",
-                                Value =
-                                    context.Configuration["OTEL_SERVICE_NAME"] ?? "testcraft-api",
-                            },
-                        ],
+                        apiOptions.LokiUrl,
+                        labels: [new LokiLabel { Key = "app", Value = apiOptions.OtelServiceName }],
                         handleLogLevelAsLabel: false,
                         propertiesAsLabels: ["level"]
                     );
                 }
 
-                var seqUrl = context.Configuration["SEQ_URL"];
-                if (!string.IsNullOrEmpty(seqUrl))
+                if (!string.IsNullOrEmpty(apiOptions.SeqUrl))
                 {
                     loggerConfig.WriteTo.Seq(
-                        seqUrl,
-                        apiKey: context.Configuration["SEQ_API_KEY"],
+                        apiOptions.SeqUrl,
+                        apiKey: apiOptions.SeqApiKey,
                         formatProvider: CultureInfo.InvariantCulture
                     );
                 }

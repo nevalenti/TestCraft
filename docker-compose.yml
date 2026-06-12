@@ -52,6 +52,35 @@ services:
       retries: 10
       start_period: 30s
 
+  grafana:
+    image: grafana/grafana:11.6.0
+    container_name: testcraft-grafana
+    ports:
+      - "3001:3000"
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_AUTH_DISABLE_LOGIN_FORM: "true"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+    depends_on:
+      - prometheus
+      - loki
+
+  prometheus:
+    image: prom/prometheus:v3.4.0
+    container_name: testcraft-prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
   loki:
     image: grafana/loki:3.4.3
     container_name: testcraft-loki
@@ -70,35 +99,6 @@ services:
       - "5341:80"
     volumes:
       - seq_data:/data
-
-  prometheus:
-    image: prom/prometheus:v3.4.0
-    container_name: testcraft-prometheus
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus_data:/prometheus
-    command:
-      - --config.file=/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-
-  grafana:
-    image: grafana/grafana:11.6.0
-    container_name: testcraft-grafana
-    ports:
-      - "3001:3000"
-    environment:
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
-      GF_AUTH_DISABLE_LOGIN_FORM: "true"
-    volumes:
-      - grafana_data:/var/lib/grafana
-      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
-    depends_on:
-      - loki
-      - prometheus
 
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.17.1
@@ -121,7 +121,7 @@ services:
 volumes:
   postgres_data:
   keycloak_data:
+  grafana_data:
+  prometheus_data:
   loki_data:
   seq_data:
-  prometheus_data:
-  grafana_data:
