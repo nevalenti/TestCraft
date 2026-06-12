@@ -45,10 +45,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var suite = await sender.Send(
-            command with { ProjectId = projectId },
-            cancellationToken
-        );
+        var suite = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = suite.Id }, suite);
     }

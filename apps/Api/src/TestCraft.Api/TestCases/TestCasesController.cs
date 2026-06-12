@@ -27,7 +27,11 @@ public class TestCasesController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                query with { ProjectId = projectId, SuiteId = suiteId },
+                query with
+                {
+                    ProjectId = projectId,
+                    SuiteId = suiteId,
+                },
                 cancellationToken
             )
         );
@@ -60,7 +64,11 @@ public class TestCasesController(ISender sender) : ControllerBase
     )
     {
         var testCase = await sender.Send(
-            command with { ProjectId = projectId, SuiteId = suiteId },
+            command with
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+            },
             cancellationToken
         );
 
@@ -92,7 +100,11 @@ public class TestCasesController(ISender sender) : ControllerBase
 
         return Ok(
             await sender.Send(
-                command with { ProjectId = projectId, SuiteId = suiteId },
+                command with
+                {
+                    ProjectId = projectId,
+                    SuiteId = suiteId,
+                },
                 cancellationToken
             )
         );

@@ -27,7 +27,11 @@ public class TestResultsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                query with { ProjectId = projectId, RunId = runId },
+                query with
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                },
                 cancellationToken
             )
         );
@@ -60,7 +64,11 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         var result = await sender.Send(
-            command with { ProjectId = projectId, RunId = runId },
+            command with
+            {
+                ProjectId = projectId,
+                RunId = runId,
+            },
             cancellationToken
         );
 
@@ -92,7 +100,11 @@ public class TestResultsController(ISender sender) : ControllerBase
 
         return Ok(
             await sender.Send(
-                command with { ProjectId = projectId, RunId = runId },
+                command with
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                },
                 cancellationToken
             )
         );
