@@ -10,12 +10,15 @@ public sealed class InfrastructureOptions
 
     public string? RedisUrl { get; init; }
 
+    public string? RabbitMqUrl { get; init; }
+
     public static InfrastructureOptions Bind(IConfiguration configuration)
     {
         var options = new InfrastructureOptions
         {
             DatabaseUrl = configuration["DATABASE_URL"] ?? string.Empty,
             RedisUrl = configuration["REDIS_URL"],
+            RabbitMqUrl = configuration["RABBITMQ_URL"],
         };
 
         var results = new List<ValidationResult>();

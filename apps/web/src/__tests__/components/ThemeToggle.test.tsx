@@ -12,9 +12,7 @@ describe("ThemeToggle", () => {
   describe("renders an accessible toggle", () => {
     it("renders a button with an accessible label", () => {
       renderWithTheme(<ThemeToggle />);
-      expect(
-        screen.getByRole("button", { name: /mode/i }),
-      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: /mode/i })).toBeInTheDocument();
     });
   });
 

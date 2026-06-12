@@ -12,6 +12,7 @@ public interface IApplicationDbContext
     DbSet<TestCaseStep> TestCaseSteps { get; }
     DbSet<TestRun> TestRuns { get; }
     DbSet<TestResult> TestResults { get; }
+    DbSet<ImportJob> ImportJobs { get; }
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

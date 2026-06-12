@@ -1,6 +1,7 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TestCraft.Application.Import;
 using TestCraft.Application.Projects;
 using TestCraft.Application.Projects.Commands.CreateProject;
 using TestCraft.Application.TestCases;
@@ -82,5 +83,44 @@ internal static class ApiTestHelpers
         );
 
         return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
+    }
+
+    public static async Task<TestRunResponse> GetRunAsync(
+        this HttpClient client,
+        Guid projectId,
+        Guid runId
+    )
+    {
+        var response = await client.GetAsync($"/api/v1/projects/{projectId}/runs/{runId}");
+
+        return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
+    }
+
+    public static async Task<ImportJobResponse> WaitForImportJobAsync(
+        this HttpClient client,
+        Guid projectId,
+        Guid jobId,
+        TimeSpan? timeout = null
+    )
+    {
+        var deadline = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(5));
+
+        while (true)
+        {
+            var response = await client.GetAsync($"/api/v1/projects/{projectId}/import/{jobId}");
+            var job = (await response.Content.ReadFromJsonAsync<ImportJobResponse>(JsonOptions))!;
+
+            if (job.Status is ImportJobStatus.Completed or ImportJobStatus.Failed)
+            {
+                return job;
+            }
+
+            if (DateTime.UtcNow > deadline)
+            {
+                throw new TimeoutException($"Import job {jobId} did not complete in time");
+            }
+
+            await Task.Delay(50);
+        }
     }
 }

@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<TestCaseStep> TestCaseSteps => Set<TestCaseStep>();
     public DbSet<TestRun> TestRuns => Set<TestRun>();
     public DbSet<TestResult> TestResults => Set<TestResult>();
+    public DbSet<ImportJob> ImportJobs => Set<ImportJob>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

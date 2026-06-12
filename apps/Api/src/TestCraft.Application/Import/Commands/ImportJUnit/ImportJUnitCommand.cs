@@ -1,13 +1,15 @@
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Import.Contracts;
+using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Commands.ImportJUnit;
 
-public record ImportJUnitCommand : IRequest<TestRunResponse>, IProjectScopedRequest
+public record ImportJUnitCommand : IRequest<ImportJobResponse>, IProjectScopedRequest
 {
     public Guid ProjectId { get; init; }
     public required string Xml { get; init; }
@@ -33,26 +35,50 @@ public class ImportJUnitCommandValidator : AbstractValidator<ImportJUnitCommand>
     }
 }
 
-public class ImportJUnitCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
-    : IRequestHandler<ImportJUnitCommand, TestRunResponse>
+public class ImportJUnitCommandHandler(
+    IApplicationDbContext context,
+    ICurrentUser currentUser,
+    IPublishEndpoint publishEndpoint
+) : IRequestHandler<ImportJUnitCommand, ImportJobResponse>
 {
-    public Task<TestRunResponse> Handle(
+    public async Task<ImportJobResponse> Handle(
         ImportJUnitCommand request,
         CancellationToken cancellationToken
     )
     {
-        var (runName, cases) = JUnitParser.Parse(request.Xml);
+        var job = new ImportJob
+        {
+            ProjectId = request.ProjectId,
+            Status = ImportJobStatus.Pending,
+            CreatedById = currentUser.UserId,
+        };
 
-        return ImportRunWriter.CreateRunWithResultsAsync(
-            context,
-            request.ProjectId,
-            request.Name ?? runName,
-            request.Environment,
-            TestRunStatus.Completed,
-            cases,
-            currentUser.UserId,
-            request.Source?.ToLowerInvariant(),
+        context.ImportJobs.Add(job);
+        await context.SaveChangesAsync(cancellationToken);
+
+        await publishEndpoint.Publish(
+            new ImportJUnitRequested
+            {
+                JobId = job.Id,
+                ProjectId = request.ProjectId,
+                Xml = request.Xml,
+                Environment = request.Environment,
+                Name = request.Name,
+                Source = request.Source,
+                UserId = currentUser.UserId,
+            },
             cancellationToken
         );
+
+        return new ImportJobResponse
+        {
+            Id = job.Id,
+            ProjectId = job.ProjectId,
+            Status = job.Status,
+            TestRunId = job.TestRunId,
+            Error = job.Error,
+            CreatedAt = job.CreatedAt,
+            UpdatedAt = job.UpdatedAt,
+        };
     }
 }

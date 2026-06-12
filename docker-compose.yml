@@ -27,6 +27,23 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:4-management-alpine
+    container_name: testcraft-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${POSTGRES_USER}
+      RABBITMQ_DEFAULT_PASS: ${POSTGRES_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
     container_name: testcraft-keycloak
@@ -118,8 +135,20 @@ services:
       redis:
         condition: service_healthy
 
+  rabbitmq-exporter:
+    image: kbudde/rabbitmq-exporter:1.0.0
+    container_name: testcraft-rabbitmq-exporter
+    environment:
+      RABBIT_URL: "http://rabbitmq:15672"
+      RABBIT_USER: ${POSTGRES_USER}
+      RABBIT_PASSWORD: ${POSTGRES_PASSWORD}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+
 volumes:
   postgres_data:
+  rabbitmq_data:
   keycloak_data:
   grafana_data:
   prometheus_data:

@@ -1,13 +1,15 @@
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Import.Contracts;
+using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Commands.ImportAllure;
 
-public record ImportAllureCommand : IRequest<TestRunResponse>, IProjectScopedRequest
+public record ImportAllureCommand : IRequest<ImportJobResponse>, IProjectScopedRequest
 {
     public const string DefaultRunName = "Allure Import";
 
@@ -65,26 +67,50 @@ public class ImportAllureCommandValidator : AbstractValidator<ImportAllureComman
     }
 }
 
-public class ImportAllureCommandHandler(IApplicationDbContext context, ICurrentUser currentUser)
-    : IRequestHandler<ImportAllureCommand, TestRunResponse>
+public class ImportAllureCommandHandler(
+    IApplicationDbContext context,
+    ICurrentUser currentUser,
+    IPublishEndpoint publishEndpoint
+) : IRequestHandler<ImportAllureCommand, ImportJobResponse>
 {
-    public Task<TestRunResponse> Handle(
+    public async Task<ImportJobResponse> Handle(
         ImportAllureCommand request,
         CancellationToken cancellationToken
     )
     {
-        var cases = AllureParser.Parse(request.Results);
+        var job = new ImportJob
+        {
+            ProjectId = request.ProjectId,
+            Status = ImportJobStatus.Pending,
+            CreatedById = currentUser.UserId,
+        };
 
-        return ImportRunWriter.CreateRunWithResultsAsync(
-            context,
-            request.ProjectId,
-            request.Name ?? ImportAllureCommand.DefaultRunName,
-            request.Environment,
-            TestRunStatus.Completed,
-            cases,
-            currentUser.UserId,
-            request.Source?.ToLowerInvariant(),
+        context.ImportJobs.Add(job);
+        await context.SaveChangesAsync(cancellationToken);
+
+        await publishEndpoint.Publish(
+            new ImportAllureRequested
+            {
+                JobId = job.Id,
+                ProjectId = request.ProjectId,
+                Results = request.Results,
+                Environment = request.Environment,
+                Name = request.Name,
+                Source = request.Source,
+                UserId = currentUser.UserId,
+            },
             cancellationToken
         );
+
+        return new ImportJobResponse
+        {
+            Id = job.Id,
+            ProjectId = job.ProjectId,
+            Status = job.Status,
+            TestRunId = job.TestRunId,
+            Error = job.Error,
+            CreatedAt = job.CreatedAt,
+            UpdatedAt = job.UpdatedAt,
+        };
     }
 }

@@ -187,9 +187,14 @@ public class TestWorkflowApiTests(ApiFactory factory)
             new ImportJUnitCommand { Xml = junitXml, Environment = "ci" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
-        run!.Name.Should().Be("My Suite Run");
+        response.StatusCode.Should().Be(HttpStatusCode.Accepted);
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(JsonOptions);
+
+        var completedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
+        completedJob.Status.Should().Be(ImportJobStatus.Completed);
+
+        var run = await client.GetRunAsync(project.Id, completedJob.TestRunId!.Value);
+        run.Name.Should().Be("My Suite Run");
         run.Environment.Should().Be("ci");
         run.Status.Should().Be(TestRunStatus.Completed);
 
@@ -245,9 +250,14 @@ public class TestWorkflowApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
-        run!.Name.Should().Be("Allure Import");
+        response.StatusCode.Should().Be(HttpStatusCode.Accepted);
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(JsonOptions);
+
+        var completedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
+        completedJob.Status.Should().Be(ImportJobStatus.Completed);
+
+        var run = await client.GetRunAsync(project.Id, completedJob.TestRunId!.Value);
+        run.Name.Should().Be("Allure Import");
         run.Status.Should().Be(TestRunStatus.Completed);
 
         var summary = await (

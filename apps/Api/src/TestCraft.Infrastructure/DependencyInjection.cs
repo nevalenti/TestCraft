@@ -1,3 +1,4 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -42,6 +43,26 @@ public static class DependencyInjection
         services.AddScoped<IApplicationDbContext>(provider =>
             provider.GetRequiredService<AppDbContext>()
         );
+
+        services.AddMassTransit(busConfig =>
+        {
+            busConfig.AddConsumers(typeof(Application.DependencyInjection).Assembly);
+
+            if (!string.IsNullOrEmpty(options.RabbitMqUrl))
+            {
+                busConfig.UsingRabbitMq(
+                    (context, cfg) =>
+                    {
+                        cfg.Host(new Uri(options.RabbitMqUrl));
+                        cfg.ConfigureEndpoints(context);
+                    }
+                );
+            }
+            else
+            {
+                busConfig.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+            }
+        });
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();

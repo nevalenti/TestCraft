@@ -28,6 +28,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             "https://keycloak.invalid/realms/testcraft"
         );
         Environment.SetEnvironmentVariable("KEYCLOAK_AUDIENCE", "testcraft-web");
+        Environment.SetEnvironmentVariable("RABBITMQ_URL", "");
 
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();

@@ -86,3 +86,56 @@ spec:
   ports:
     - port: 9121
       targetPort: 9121
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-exporter
+  namespace: testcraft
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rabbitmq-exporter
+  template:
+    metadata:
+      labels:
+        app: rabbitmq-exporter
+    spec:
+      containers:
+        - name: rabbitmq-exporter
+          image: kbudde/rabbitmq-exporter:1.0.0
+          env:
+            - name: RABBIT_URL
+              value: http://rabbitmq:15672
+            - name: RABBIT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: POSTGRES_USER
+            - name: RABBIT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: POSTGRES_PASSWORD
+          ports:
+            - containerPort: 9419
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: "25m"
+            limits:
+              memory: 64Mi
+              cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rabbitmq-exporter
+  namespace: testcraft
+spec:
+  selector:
+    app: rabbitmq-exporter
+  ports:
+    - port: 9419
+      targetPort: 9419

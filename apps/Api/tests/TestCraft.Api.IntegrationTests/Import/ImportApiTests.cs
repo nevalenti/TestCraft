@@ -6,7 +6,6 @@ using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Import;
 using TestCraft.Application.Import.Commands.ImportAllure;
 using TestCraft.Application.Import.Commands.ImportJUnit;
-using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Import;
@@ -50,12 +49,19 @@ public class ImportApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(
             ApiTestHelpers.JsonOptions
         );
-        run!.Name.Should().Be("Nightly Run");
+        job!.Status.Should().Be(ImportJobStatus.Pending);
+
+        var completedJob = await client.WaitForImportJobAsync(project.Id, job.Id);
+        completedJob.Status.Should().Be(ImportJobStatus.Completed);
+        completedJob.TestRunId.Should().NotBeNull();
+
+        var run = await client.GetRunAsync(project.Id, completedJob.TestRunId!.Value);
+        run.Name.Should().Be("Nightly Run");
         run.Source.Should().Be("jenkins");
         run.Status.Should().Be(TestRunStatus.Completed);
     }
@@ -180,12 +186,19 @@ public class ImportApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.Accepted);
 
-        var run = await response.Content.ReadFromJsonAsync<TestRunResponse>(
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(
             ApiTestHelpers.JsonOptions
         );
-        run!.Name.Should().Be(ImportAllureCommand.DefaultRunName);
+        job!.Status.Should().Be(ImportJobStatus.Pending);
+
+        var completedJob = await client.WaitForImportJobAsync(project.Id, job.Id);
+        completedJob.Status.Should().Be(ImportJobStatus.Completed);
+        completedJob.TestRunId.Should().NotBeNull();
+
+        var run = await client.GetRunAsync(project.Id, completedJob.TestRunId!.Value);
+        run.Name.Should().Be(ImportAllureCommand.DefaultRunName);
         run.Status.Should().Be(TestRunStatus.Completed);
     }
 }

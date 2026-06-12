@@ -7,6 +7,7 @@ resources:
   - infrastructure/k8s/namespace.yaml
   - infrastructure/k8s/postgres.yaml
   - infrastructure/k8s/redis.yaml
+  - infrastructure/k8s/rabbitmq.yaml
   - infrastructure/k8s/keycloak.yaml
   - infrastructure/k8s/loki.yaml
   - infrastructure/k8s/seq.yaml
@@ -49,6 +50,7 @@ configMapGenerator:
       - infrastructure/grafana/provisioning/dashboards/api-http.json
       - infrastructure/grafana/provisioning/dashboards/redis-metrics.json
       - infrastructure/grafana/provisioning/dashboards/postgres-metrics.json
+      - infrastructure/grafana/provisioning/dashboards/rabbitmq-metrics.json
     options:
       disableNameSuffixHash: true
 
