@@ -17,6 +17,9 @@ apps/Api/**/obj/
 apps/Api/test-results/
 apps/Api/tests/
 
+apps/Gateway/**/bin/
+apps/Gateway/**/obj/
+
 .env
 .env.*
 !.env.example

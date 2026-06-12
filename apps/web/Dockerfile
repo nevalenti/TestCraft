@@ -29,7 +29,7 @@ FROM nginx:1.27-alpine AS runtime
 
 RUN rm /etc/nginx/conf.d/default.conf
 
-COPY apps/web/nginx.docker.conf.template /etc/nginx/templates/default.conf.template
+COPY apps/web/default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
 

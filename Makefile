@@ -6,13 +6,8 @@
 
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
+GATEWAY_IMAGE = testcraft-gateway
 KUBECTL = sudo k3s kubectl
-
--include .env
--include .secrets
-export
-unexport DATABASE_URL
-unexport POSTGRES_EXPORTER_DSN
 
 up:
 	docker compose up -d
@@ -23,10 +18,12 @@ down:
 build:
 	docker build -t $(API_IMAGE) -f apps/Api/Dockerfile .
 	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
+	docker build -t $(GATEWAY_IMAGE) -f apps/Gateway/Dockerfile .
 
 load:
 	docker save $(API_IMAGE):latest | sudo k3s ctr images import -
 	docker save $(WEB_IMAGE):latest | sudo k3s ctr images import -
+	docker save $(GATEWAY_IMAGE):latest | sudo k3s ctr images import -
 
 images: build load
 
@@ -38,8 +35,8 @@ status:
 
 deploy: images
 	$(KUBECTL) apply -k .
-	$(KUBECTL) rollout restart deployment/api deployment/web -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web -n testcraft --timeout=120s
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
 
 api-dotnet:
 	act push -W .github/workflows/api-dotnet.yml -j build-test --secret-file .secrets

@@ -14,8 +14,9 @@ spec:
         app: gateway
     spec:
       containers:
-        - name: nginx
-          image: nginx:1.27-alpine
+        - name: gateway
+          image: testcraft-gateway:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
             - containerPort: 443
@@ -28,22 +29,16 @@ spec:
             periodSeconds: 10
           resources:
             requests:
-              memory: 16Mi
-              cpu: "50m"
-            limits:
               memory: 64Mi
-              cpu: "250m"
+              cpu: "100m"
+            limits:
+              memory: 256Mi
+              cpu: "500m"
           volumeMounts:
-            - name: nginx-config
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
             - name: tls
-              mountPath: /etc/nginx/tls
+              mountPath: /etc/gateway/tls
               readOnly: true
       volumes:
-        - name: nginx-config
-          configMap:
-            name: nginx-gateway-config
         - name: tls
           secret:
             secretName: testcraft-tls
