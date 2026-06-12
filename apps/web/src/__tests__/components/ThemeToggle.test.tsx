@@ -13,28 +13,26 @@ describe("ThemeToggle", () => {
     it("renders a button with an accessible label", () => {
       renderWithTheme(<ThemeToggle />);
       expect(
-        screen.getByRole("button", { name: /switch to/i }),
+        screen.getByRole("button", { name: /mode/i }),
       ).toBeInTheDocument();
     });
   });
 
   describe("initial state — starts in light mode", () => {
-    it("label indicates switching to dark mode", () => {
+    it("label offers to switch to dark mode", () => {
       renderWithTheme(<ThemeToggle />);
       expect(
-        screen.getByRole("button", { name: "Switch to dark mode" }),
+        screen.getByRole("button", { name: "Dark mode" }),
       ).toBeInTheDocument();
     });
   });
 
   describe("when the toggle is clicked — switches to dark mode", () => {
-    it("label changes to indicate switching back to light mode", async () => {
+    it("label changes to offer switching back to light mode", async () => {
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(
-        screen.getByRole("button", { name: "Switch to dark mode" }),
-      );
+      await userEvent.click(screen.getByRole("button", { name: "Dark mode" }));
       expect(
-        screen.getByRole("button", { name: "Switch to light mode" }),
+        screen.getByRole("button", { name: "Light mode" }),
       ).toBeInTheDocument();
     });
 
@@ -47,9 +45,7 @@ describe("ThemeToggle", () => {
       ).mockReturnValue({ isDark: false, toggleTheme });
 
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(
-        screen.getByRole("button", { name: "Switch to dark mode" }),
-      );
+      await userEvent.click(screen.getByRole("button", { name: "Dark mode" }));
       expect(toggleTheme).toHaveBeenCalledOnce();
     });
   });

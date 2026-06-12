@@ -174,7 +174,7 @@ export const TestRunPage = () => {
               onEdit={() => openEdit(row.original)}
               onDelete={() => openDelete(row.original)}
               label="result"
-              size="sm"
+              size="xs"
             />
           </div>
         ),

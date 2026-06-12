@@ -6,16 +6,13 @@ export const ThemeToggle = () => {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <button
-      onClick={toggleTheme}
-      className="btn btn-circle btn-ghost btn-sm"
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
-    >
+    <button onClick={toggleTheme}>
       {isDark ? (
-        <MoonIcon className="size-5" aria-hidden="true" />
+        <SunIcon className="size-4" aria-hidden="true" />
       ) : (
-        <SunIcon className="size-5" aria-hidden="true" />
+        <MoonIcon className="size-4" aria-hidden="true" />
       )}
+      {isDark ? "Light mode" : "Dark mode"}
     </button>
   );
 };

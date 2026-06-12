@@ -26,17 +26,6 @@ describe("useBreadcrumbs", () => {
     });
   });
 
-  describe("on unmount — clears the store", () => {
-    it("resets breadcrumbs to null", () => {
-      const { unmount } = renderHook(() =>
-        useBreadcrumbs([{ label: "Projects", href: "/projects" }]),
-      );
-
-      unmount();
-      expect(useBreadcrumbsStore.getState().items).toBeNull();
-    });
-  });
-
   describe("when items change — updates the store", () => {
     it("reflects the new items", () => {
       const { rerender } = renderHook(({ items }) => useBreadcrumbs(items), {

@@ -1,6 +1,8 @@
 import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
+  ChevronDownIcon,
+  UserCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
@@ -12,6 +14,8 @@ import { LogoMark } from "@/layout/LogoMark";
 
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
+  const displayName =
+    keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
 
   return (
     <>
@@ -32,19 +36,45 @@ export const Header = () => {
         </div>
 
         <div className="flex shrink-0 items-center gap-3">
-          <ThemeToggle />
-          <button
-            onClick={() =>
-              keycloak.logout({ redirectUri: globalThis.location.origin + "/" })
-            }
-            className="btn btn-circle btn-ghost btn-sm"
-            aria-label="Sign out"
-          >
-            <ArrowRightStartOnRectangleIcon
-              className="size-5"
-              aria-hidden="true"
-            />
-          </button>
+          <div className="dropdown dropdown-end">
+            <div
+              tabIndex={0}
+              role="button"
+              className="btn gap-1.5 btn-ghost btn-sm"
+              aria-label="Account menu"
+            >
+              <UserCircleIcon className="size-5" aria-hidden="true" />
+              {displayName && (
+                <span className="hidden max-w-32 truncate sm:inline">
+                  {displayName}
+                </span>
+              )}
+              <ChevronDownIcon
+                className="size-3.5 opacity-50"
+                aria-hidden="true"
+              />
+            </div>
+            <ul className="dropdown-content menu z-10 mt-2 w-44 rounded-box bg-base-100 p-2 shadow-md">
+              <li>
+                <ThemeToggle />
+              </li>
+              <li>
+                <button
+                  onClick={() =>
+                    keycloak.logout({
+                      redirectUri: globalThis.location.origin + "/",
+                    })
+                  }
+                >
+                  <ArrowRightStartOnRectangleIcon
+                    className="size-4"
+                    aria-hidden="true"
+                  />
+                  Sign out
+                </button>
+              </li>
+            </ul>
+          </div>
           <label
             htmlFor="mobile-nav-drawer"
             className="btn btn-square btn-ghost btn-sm lg:hidden"

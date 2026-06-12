@@ -52,6 +52,7 @@ export default defineConfig([
             "select-bordered",
             "textarea-bordered",
             "drawer-overlay",
+            "dropdown.*",
             "header-stripes",
             "page-header",
             "page-content",
