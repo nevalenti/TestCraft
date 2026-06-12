@@ -12,7 +12,7 @@ export class SuitesPage {
   async goto(path: string) {
     await this.page.goto(path);
     await expect(
-      this.page.getByRole("link", { name: /Test Suites/i }),
+      this.page.getByRole("tab", { name: /Test Suites/i }),
     ).toBeVisible();
   }
 

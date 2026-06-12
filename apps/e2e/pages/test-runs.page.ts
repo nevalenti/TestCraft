@@ -11,7 +11,7 @@ export class TestRunsPage {
 
   async goto(projectPath: string) {
     await this.page.goto(projectPath);
-    await this.page.getByRole("link", { name: /Test Runs/i }).click();
+    await this.page.getByRole("tab", { name: /Test Runs/i }).click();
     await expect(
       this.page.getByRole("button", { name: "New Run" }),
     ).toBeVisible();

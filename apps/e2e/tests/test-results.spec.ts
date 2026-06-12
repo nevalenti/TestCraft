@@ -25,8 +25,11 @@ test.describe("Test Results", () => {
     await projects.goto();
     await projects.create(projectName);
     await projects.open(projectName);
-    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
+
+    await page.getByRole("tab", { name: /Test Suites/i }).click();
+    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
 
     const suites = new SuitesPage(page);
     await suites.create("E2E Results Suite");

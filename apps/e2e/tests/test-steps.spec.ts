@@ -22,6 +22,9 @@ test.describe("Test Case Steps", () => {
     await projects.goto();
     await projects.create(projectName);
     await projects.open(projectName);
+    await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
+
+    await page.getByRole("tab", { name: /Test Suites/i }).click();
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
 
     const suites = new SuitesPage(page);

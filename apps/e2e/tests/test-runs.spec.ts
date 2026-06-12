@@ -20,7 +20,7 @@ test.describe("Test Runs tab", () => {
     await projects.goto();
     await projects.create(projectName);
     await projects.open(projectName);
-    await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
+    await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname;
 
     await ctx.close();

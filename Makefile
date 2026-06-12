@@ -1,5 +1,8 @@
-.PHONY: format up down clean migrate seed e2e api api-dotnet web \
-        build load images destroy status deploy
+.PHONY: up down clean \
+        build load images destroy status deploy \
+        api-dotnet api web e2e \
+        migrate seed \
+        format
 
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
@@ -11,33 +14,11 @@ export
 unexport DATABASE_URL
 unexport POSTGRES_EXPORTER_DSN
 
-format:
-	pnpm format
-	dotnet csharpier format .
-
 up:
 	docker compose up -d
 
 down:
 	docker compose down -v
-
-migrate:
-	pnpm --filter testcraft-api run db:migrate
-
-seed:
-	pnpm --filter testcraft-api run db:seed
-
-e2e:
-	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets
-
-api:
-	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
-
-api-dotnet:
-	act push -W .github/workflows/api-dotnet.yml -j build-test --secret-file .secrets
-
-web:
-	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
 
 build:
 	docker build -t $(API_IMAGE) -f apps/Api/Dockerfile .
@@ -59,3 +40,25 @@ deploy: images
 	$(KUBECTL) apply -k .
 	$(KUBECTL) rollout restart deployment/api deployment/web -n testcraft
 	$(KUBECTL) rollout status deployment/api deployment/web -n testcraft --timeout=120s
+
+api-dotnet:
+	act push -W .github/workflows/api-dotnet.yml -j build-test --secret-file .secrets
+
+api:
+	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
+
+web:
+	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
+
+e2e:
+	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets
+
+migrate:
+	pnpm --filter testcraft-api run db:migrate
+
+seed:
+	pnpm --filter testcraft-api run db:seed
+
+format:
+	pnpm format
+	dotnet csharpier format .
