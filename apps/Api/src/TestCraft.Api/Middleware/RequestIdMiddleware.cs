@@ -1,3 +1,5 @@
+using Serilog.Context;
+
 namespace TestCraft.Api.Middleware;
 
 public class RequestIdMiddleware(RequestDelegate next)
@@ -19,7 +21,10 @@ public class RequestIdMiddleware(RequestDelegate next)
             return Task.CompletedTask;
         });
 
-        await next(context);
+        using (LogContext.PushProperty("requestId", requestId))
+        {
+            await next(context);
+        }
     }
 }
 

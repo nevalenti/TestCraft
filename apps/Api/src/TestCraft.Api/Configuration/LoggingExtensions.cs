@@ -1,8 +1,9 @@
 using System.Globalization;
 using System.Security.Claims;
 using Serilog;
+using Serilog.Debugging;
+using Serilog.Enrichers.Span;
 using Serilog.Events;
-using Serilog.Formatting.Json;
 using Serilog.Sinks.Grafana.Loki;
 
 namespace TestCraft.Api.Configuration;
@@ -14,24 +15,32 @@ public static class LoggingExtensions
         ApiOptions apiOptions
     )
     {
+        var environmentName = builder.Environment.EnvironmentName;
+
+        SelfLog.Enable(Console.Error);
+
         builder.Host.UseSerilog(
-            (_, _, loggerConfig) =>
+            (context, _, loggerConfig) =>
             {
                 loggerConfig
                     .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                    .ReadFrom.Configuration(context.Configuration)
                     .Enrich.FromLogContext()
-                    .Enrich.With<PinoLevelEnricher>()
-                    .WriteTo.Console(new JsonFormatter());
+                    .Enrich.WithSpan()
+                    .Enrich.WithProperty("environment", environmentName);
 
                 if (!string.IsNullOrEmpty(apiOptions.LokiUrl))
                 {
                     loggerConfig.WriteTo.GrafanaLoki(
                         apiOptions.LokiUrl,
-                        labels: [new LokiLabel { Key = "app", Value = apiOptions.OtelServiceName }],
-                        handleLogLevelAsLabel: false,
-                        propertiesAsLabels: ["level"]
+                        labels:
+                        [
+                            new LokiLabel { Key = "app", Value = apiOptions.OtelServiceName },
+                            new LokiLabel { Key = "environment", Value = environmentName },
+                        ],
+                        handleLogLevelAsLabel: true
                     );
                 }
 
@@ -43,7 +52,8 @@ public static class LoggingExtensions
                         formatProvider: CultureInfo.InvariantCulture
                     );
                 }
-            }
+            },
+            writeToProviders: true
         );
 
         return builder;

@@ -80,6 +80,8 @@ public static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseUserLogContext();
+
         app.UseSwaggerDocs();
 
         app.MapControllers();
