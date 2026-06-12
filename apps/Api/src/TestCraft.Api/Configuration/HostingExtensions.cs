@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using TestCraft.Api.Errors;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
@@ -22,6 +24,10 @@ public static class HostingExtensions
         builder.Services.AddApplication();
 
         builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
+
+        builder.Services.Configure<KestrelServerOptions>(options =>
+            options.Limits.MaxRequestBodySize = 100_000
+        );
 
         builder.Services.Configure<ForwardedHeadersOptions>(options =>
         {
@@ -57,8 +63,6 @@ public static class HostingExtensions
 
         app.UseHttpRequestMetrics();
 
-        app.UseRequestBodySizeLimit();
-
         app.UseRouting();
 
         app.UseRateLimiter();
@@ -67,7 +71,7 @@ public static class HostingExtensions
 
         app.UseWhen(
             context => ApiPaths.IsVersionedApi(context.Request.Path),
-            branch => branch.UseRequestTimeout()
+            branch => branch.UseRequestTimeouts()
         );
 
         app.UseAuthentication();
