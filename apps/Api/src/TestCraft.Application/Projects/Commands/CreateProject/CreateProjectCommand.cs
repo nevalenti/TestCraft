@@ -2,9 +2,9 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
-using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.Projects.Commands.CreateProject;
 

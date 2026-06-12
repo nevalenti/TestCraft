@@ -2,7 +2,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common;
-using TestCraft.Domain.Errors;
+using TestCraft.Application.Common.Exceptions;
 
 namespace TestCraft.Api.Errors;
 

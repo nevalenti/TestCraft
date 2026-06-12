@@ -2,11 +2,11 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
-using TestCraft.Domain.Errors;
 using TestCraft.Domain.Rules;
 
 namespace TestCraft.Application.TestResults.Commands.CreateTestResult;

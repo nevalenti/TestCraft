@@ -1,10 +1,10 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
-using TestCraft.Domain.Errors;
 
 namespace TestCraft.Application.TestCases.Commands.UpdateTestCase;
 

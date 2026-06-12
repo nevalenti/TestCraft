@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using TestCraft.Domain.Errors;
+using TestCraft.Application.Common.Exceptions;
 
 namespace TestCraft.Infrastructure.Auth;
 

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Domain.Errors;
 
 namespace TestCraft.Infrastructure.Auth;
 

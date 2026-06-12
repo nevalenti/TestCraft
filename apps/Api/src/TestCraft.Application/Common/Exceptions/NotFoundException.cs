@@ -1,4 +1,4 @@
-namespace TestCraft.Domain.Errors;
+namespace TestCraft.Application.Common.Exceptions;
 
 public class NotFoundException : Exception
 {
