@@ -2,9 +2,10 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestRuns;
+using TestCraft.Application.TestRuns.Commands.CreateTestRun;
+using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Pagination;
 
@@ -32,7 +33,7 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRunRequest { Name = "Smoke Run", Environment = "staging" }
+            new CreateTestRunCommand { Name = "Smoke Run", Environment = "staging" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -60,7 +61,7 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRunRequest
+            new CreateTestRunCommand
             {
                 Name = "Completed Run",
                 Environment = "ci",
@@ -104,8 +105,9 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = run.Id,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Completed,
@@ -129,8 +131,9 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = run.Id,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Active,
@@ -146,11 +149,13 @@ public class TestRunsApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
+        var runId = Guid.NewGuid();
 
         var response = await client.PutAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/runs/{Guid.NewGuid()}",
-            new UpdateTestRunRequest
+            $"/api/v1/projects/{project.Id}/runs/{runId}",
+            new UpdateTestRunCommand
             {
+                Id = runId,
                 Name = "Doesn't matter",
                 Environment = "ci",
                 Status = TestRunStatus.Active,
@@ -222,7 +227,7 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/runs",
-            new CreateTestRunRequest { Name = "Nope", Environment = "ci" }
+            new CreateTestRunCommand { Name = "Nope", Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -236,7 +241,7 @@ public class TestRunsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRunRequest { Name = "", Environment = "" }
+            new CreateTestRunCommand { Name = "", Environment = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

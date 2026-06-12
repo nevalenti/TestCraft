@@ -42,7 +42,10 @@ export const testCaseStepsApi = {
     input: UpdateTestCaseStep,
   ) =>
     client
-      .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, input)
+      .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, {
+        ...input,
+        id,
+      })
       .then((response) => response.data),
   bulkReorder: (
     projectId: string,

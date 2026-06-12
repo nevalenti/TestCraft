@@ -2,9 +2,10 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestCases;
+using TestCraft.Application.TestCases.Commands.CreateTestCase;
+using TestCraft.Application.TestCases.Commands.UpdateTestCase;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Pagination;
 
@@ -33,7 +34,7 @@ public class TestCasesApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases",
-            new CreateTestCaseRequest
+            new CreateTestCaseCommand
             {
                 Name = "Successful login",
                 Description = "Verify a user can log in",
@@ -71,7 +72,7 @@ public class TestCasesApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases",
-            new CreateTestCaseRequest { Name = "Default priority case" }
+            new CreateTestCaseCommand { Name = "Default priority case" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -119,8 +120,9 @@ public class TestCasesApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase.Id}",
-            new UpdateTestCaseRequest
+            new UpdateTestCaseCommand
             {
+                Id = testCase.Id,
                 Name = "New Name",
                 Description = "Updated",
                 Priority = TestCasePriority.Critical,
@@ -143,11 +145,13 @@ public class TestCasesApiTests(ApiFactory factory)
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
         var suite = await client.CreateSuiteAsync(project.Id);
+        var caseId = Guid.NewGuid();
 
         var response = await client.PutAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{Guid.NewGuid()}",
-            new UpdateTestCaseRequest
+            $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{caseId}",
+            new UpdateTestCaseCommand
             {
+                Id = caseId,
                 Name = "Doesn't matter",
                 Priority = TestCasePriority.Medium,
             }
@@ -183,7 +187,7 @@ public class TestCasesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/suites/{Guid.NewGuid()}/cases",
-            new CreateTestCaseRequest { Name = "Nope" }
+            new CreateTestCaseCommand { Name = "Nope" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -198,7 +202,7 @@ public class TestCasesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases",
-            new CreateTestCaseRequest { Name = "" }
+            new CreateTestCaseCommand { Name = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

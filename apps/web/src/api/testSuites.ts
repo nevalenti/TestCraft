@@ -29,7 +29,7 @@ export const testSuitesApi = {
       .then((response) => response.data),
   update: (projectId: string, id: string, input: UpdateTestSuite) =>
     client
-      .put<TestSuite>(`${BASE(projectId)}/${id}`, input)
+      .put<TestSuite>(`${BASE(projectId)}/${id}`, { ...input, id })
       .then((response) => response.data),
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),

@@ -41,7 +41,7 @@ export const testCasesApi = {
     input: UpdateTestCase,
   ) =>
     client
-      .put<TestCase>(`${BASE(projectId, suiteId)}/${id}`, input)
+      .put<TestCase>(`${BASE(projectId, suiteId)}/${id}`, { ...input, id })
       .then((response) => response.data),
   delete: (projectId: string, suiteId: string, id: string) =>
     client.delete(`${BASE(projectId, suiteId)}/${id}`),

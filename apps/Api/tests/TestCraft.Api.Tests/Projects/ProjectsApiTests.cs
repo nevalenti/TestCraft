@@ -2,9 +2,10 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.Projects;
+using TestCraft.Application.Projects.Commands.CreateProject;
+using TestCraft.Application.Projects.Commands.UpdateProject;
 using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.Tests.Projects;
@@ -30,7 +31,7 @@ public class ProjectsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = "My Project", Description = "A test project" }
+            new CreateProjectCommand { Name = "My Project", Description = "A test project" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -58,11 +59,11 @@ public class ProjectsApiTests(ApiFactory factory)
 
         await ownerClient.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = "Owner Project" }
+            new CreateProjectCommand { Name = "Owner Project" }
         );
         await otherClient.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = "Other Project" }
+            new CreateProjectCommand { Name = "Other Project" }
         );
 
         var response = await ownerClient.GetAsync("/api/v1/projects");
@@ -81,13 +82,13 @@ public class ProjectsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "Old Name" }
+                new CreateProjectCommand { Name = "Old Name" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{created!.Id}",
-            new UpdateProjectRequest { Name = "New Name" }
+            new UpdateProjectCommand { Id = created.Id, Name = "New Name" }
         );
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -103,7 +104,7 @@ public class ProjectsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "To Delete" }
+                new CreateProjectCommand { Name = "To Delete" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
@@ -123,7 +124,7 @@ public class ProjectsApiTests(ApiFactory factory)
         var created = await (
             await ownerClient.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "Private Project" }
+                new CreateProjectCommand { Name = "Private Project" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
@@ -140,7 +141,7 @@ public class ProjectsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = "Nope" }
+            new CreateProjectCommand { Name = "Nope" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -153,7 +154,7 @@ public class ProjectsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = "" }
+            new CreateProjectCommand { Name = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

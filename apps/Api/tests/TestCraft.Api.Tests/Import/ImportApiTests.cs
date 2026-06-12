@@ -2,11 +2,11 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Commands;
 using TestCraft.Application.Import;
-using TestCraft.Application.Responses;
+using TestCraft.Application.Import.Commands.ImportAllure;
+using TestCraft.Application.Import.Commands.ImportJUnit;
+using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Tests.Import;
@@ -41,7 +41,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/junit",
-            new ImportJUnitRequest
+            new ImportJUnitCommand
             {
                 Xml = JUnitXml,
                 Environment = "ci",
@@ -68,7 +68,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/junit",
-            new ImportJUnitRequest { Xml = "", Environment = "ci" }
+            new ImportJUnitCommand { Xml = "", Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -83,7 +83,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/junit",
-            new ImportJUnitRequest { Xml = JUnitXml, Environment = "" }
+            new ImportJUnitCommand { Xml = JUnitXml, Environment = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -100,7 +100,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await otherClient.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/junit",
-            new ImportJUnitRequest { Xml = JUnitXml, Environment = "ci" }
+            new ImportJUnitCommand { Xml = JUnitXml, Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -114,7 +114,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/import/junit",
-            new ImportJUnitRequest { Xml = JUnitXml, Environment = "ci" }
+            new ImportJUnitCommand { Xml = JUnitXml, Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -128,7 +128,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/allure",
-            new ImportAllureRequest { Results = [], Environment = "ci" }
+            new ImportAllureCommand { Results = [], Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
@@ -143,7 +143,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/allure",
-            new ImportAllureRequest
+            new ImportAllureCommand
             {
                 Environment = "ci",
                 Results =
@@ -165,7 +165,7 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/allure",
-            new ImportAllureRequest
+            new ImportAllureCommand
             {
                 Environment = "ci",
                 Results =

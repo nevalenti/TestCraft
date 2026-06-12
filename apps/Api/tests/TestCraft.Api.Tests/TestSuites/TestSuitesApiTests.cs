@@ -2,9 +2,10 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestSuites;
+using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
+using TestCraft.Application.TestSuites.Commands.UpdateTestSuite;
 using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.Tests.TestSuites;
@@ -31,7 +32,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites",
-            new CreateTestSuiteRequest { Name = "Login Suite", Description = "Covers login flows" }
+            new CreateTestSuiteCommand { Name = "Login Suite", Description = "Covers login flows" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -76,7 +77,12 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}",
-            new UpdateTestSuiteRequest { Name = "New Name", Description = "Updated description" }
+            new UpdateTestSuiteCommand
+            {
+                Id = suite.Id,
+                Name = "New Name",
+                Description = "Updated description",
+            }
         );
 
         updateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -91,10 +97,11 @@ public class TestSuitesApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
+        var suiteId = Guid.NewGuid();
 
         var response = await client.PutAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/suites/{Guid.NewGuid()}",
-            new UpdateTestSuiteRequest { Name = "Doesn't matter" }
+            $"/api/v1/projects/{project.Id}/suites/{suiteId}",
+            new UpdateTestSuiteCommand { Id = suiteId, Name = "Doesn't matter" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -141,7 +148,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/suites",
-            new CreateTestSuiteRequest { Name = "Nope" }
+            new CreateTestSuiteCommand { Name = "Nope" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -155,7 +162,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites",
-            new CreateTestSuiteRequest { Name = "" }
+            new CreateTestSuiteCommand { Name = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

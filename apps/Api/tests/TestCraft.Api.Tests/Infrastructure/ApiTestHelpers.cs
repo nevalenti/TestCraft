@@ -1,8 +1,14 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TestCraft.Api.Requests;
-using TestCraft.Application.Responses;
+using TestCraft.Application.Projects;
+using TestCraft.Application.Projects.Commands.CreateProject;
+using TestCraft.Application.TestCases;
+using TestCraft.Application.TestCases.Commands.CreateTestCase;
+using TestCraft.Application.TestRuns;
+using TestCraft.Application.TestRuns.Commands.CreateTestRun;
+using TestCraft.Application.TestSuites;
+using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Tests.Infrastructure;
@@ -21,7 +27,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectRequest { Name = name }
+            new CreateProjectCommand { Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions))!;
@@ -35,7 +41,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites",
-            new CreateTestSuiteRequest { Name = name }
+            new CreateTestSuiteCommand { Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions))!;
@@ -51,7 +57,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases",
-            new CreateTestCaseRequest { Name = name, Priority = priority }
+            new CreateTestCaseCommand { Name = name, Priority = priority }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions))!;
@@ -67,7 +73,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs",
-            new CreateTestRunRequest
+            new CreateTestRunCommand
             {
                 Name = name,
                 Environment = environment,

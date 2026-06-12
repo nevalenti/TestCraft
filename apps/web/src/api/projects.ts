@@ -25,7 +25,7 @@ export const projectsApi = {
     client.post<Project>(BASE, input).then((response) => response.data),
   update: (id: string, input: UpdateProject) =>
     client
-      .put<Project>(`${BASE}/${id}`, input)
+      .put<Project>(`${BASE}/${id}`, { ...input, id })
       .then((response) => response.data),
   delete: (id: string) => client.delete(`${BASE}/${id}`),
 };

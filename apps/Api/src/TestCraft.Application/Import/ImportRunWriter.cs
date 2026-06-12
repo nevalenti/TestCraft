@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 

@@ -2,9 +2,12 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestResults;
+using TestCraft.Application.TestResults.Commands.CreateTestResult;
+using TestCraft.Application.TestResults.Commands.UpdateTestResult;
+using TestCraft.Application.TestRuns;
+using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Pagination;
 
@@ -46,7 +49,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = testCaseId,
                 Status = TestResultStatus.Passed,
@@ -82,7 +85,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = testCaseId,
                 Status = TestResultStatus.Passed,
@@ -91,7 +94,7 @@ public class TestResultsApiTests(ApiFactory factory)
         );
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = testCaseId,
                 Status = TestResultStatus.Failed,
@@ -119,7 +122,7 @@ public class TestResultsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/runs/{runId}/results",
-                new CreateTestResultRequest
+                new CreateTestResultCommand
                 {
                     TestCaseId = testCaseId,
                     Status = TestResultStatus.Passed,
@@ -130,8 +133,9 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results/{created!.Id}",
-            new UpdateTestResultRequest
+            new UpdateTestResultCommand
             {
+                Id = created!.Id,
                 Status = TestResultStatus.Failed,
                 Notes = "Investigated, found a regression",
             }
@@ -155,7 +159,7 @@ public class TestResultsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/runs/{runId}/results",
-                new CreateTestResultRequest
+                new CreateTestResultCommand
                 {
                     TestCaseId = testCaseId,
                     Status = TestResultStatus.Passed,
@@ -187,8 +191,9 @@ public class TestResultsApiTests(ApiFactory factory)
 
         await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = runId,
                 Name = run!.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Completed,
@@ -196,8 +201,9 @@ public class TestResultsApiTests(ApiFactory factory)
         );
         await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = runId,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Archived,
@@ -206,7 +212,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = testCaseId,
                 Status = TestResultStatus.Passed,
@@ -227,7 +233,7 @@ public class TestResultsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/runs/{runId}/results",
-                new CreateTestResultRequest
+                new CreateTestResultCommand
                 {
                     TestCaseId = testCaseId,
                     Status = TestResultStatus.Passed,
@@ -242,8 +248,9 @@ public class TestResultsApiTests(ApiFactory factory)
 
         await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = runId,
                 Name = run!.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Completed,
@@ -251,8 +258,9 @@ public class TestResultsApiTests(ApiFactory factory)
         );
         await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = runId,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Archived,
@@ -261,7 +269,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results/{created!.Id}",
-            new UpdateTestResultRequest { Status = TestResultStatus.Failed }
+            new UpdateTestResultCommand { Id = created.Id, Status = TestResultStatus.Failed }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -290,7 +298,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = Guid.Empty,
                 Status = TestResultStatus.Passed,
@@ -309,7 +317,7 @@ public class TestResultsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/runs/{Guid.NewGuid()}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = Guid.NewGuid(),
                 Status = TestResultStatus.Passed,

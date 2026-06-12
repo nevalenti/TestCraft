@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.Tests.Infrastructure;
-using TestCraft.Application.Responses;
+using TestCraft.Application.TestCases;
 using TestCraft.Domain.Pagination;
 
 namespace TestCraft.Api.Tests.TestCases;

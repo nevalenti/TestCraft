@@ -1,0 +1,121 @@
+using Asp.Versioning;
+using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TestCraft.Application.TestResults;
+using TestCraft.Application.TestResults.Commands.CreateTestResult;
+using TestCraft.Application.TestResults.Commands.DeleteTestResult;
+using TestCraft.Application.TestResults.Commands.UpdateTestResult;
+using TestCraft.Application.TestResults.Queries.GetTestResultById;
+using TestCraft.Application.TestResults.Queries.GetTestResults;
+using TestCraft.Domain.Pagination;
+
+namespace TestCraft.Api.TestResults;
+
+[Authorize]
+[ApiController]
+[ApiVersion("1.0")]
+[Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/results")]
+public class TestResultsController(ISender sender) : ControllerBase
+{
+    [HttpGet]
+    public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
+        Guid projectId,
+        Guid runId,
+        [FromQuery] GetTestResultsQuery query,
+        CancellationToken cancellationToken
+    ) =>
+        Ok(
+            await sender.Send(
+                query with { ProjectId = projectId, RunId = runId },
+                cancellationToken
+            )
+        );
+
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<TestResultResponse>> GetById(
+        Guid projectId,
+        Guid runId,
+        Guid id,
+        CancellationToken cancellationToken
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetTestResultByIdQuery
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                    Id = id,
+                },
+                cancellationToken
+            )
+        );
+
+    [HttpPost]
+    public async Task<ActionResult<TestResultResponse>> Create(
+        Guid projectId,
+        Guid runId,
+        CreateTestResultCommand command,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await sender.Send(
+            command with { ProjectId = projectId, RunId = runId },
+            cancellationToken
+        );
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new
+            {
+                projectId,
+                runId,
+                id = result.Id,
+            },
+            result
+        );
+    }
+
+    [HttpPut("{id:guid}")]
+    public async Task<ActionResult<TestResultResponse>> Update(
+        Guid projectId,
+        Guid runId,
+        Guid id,
+        UpdateTestResultCommand command,
+        CancellationToken cancellationToken
+    )
+    {
+        if (id != command.Id)
+        {
+            return BadRequest();
+        }
+
+        return Ok(
+            await sender.Send(
+                command with { ProjectId = projectId, RunId = runId },
+                cancellationToken
+            )
+        );
+    }
+
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(
+        Guid projectId,
+        Guid runId,
+        Guid id,
+        CancellationToken cancellationToken
+    )
+    {
+        await sender.Send(
+            new DeleteTestResultCommand
+            {
+                ProjectId = projectId,
+                RunId = runId,
+                Id = id,
+            },
+            cancellationToken
+        );
+
+        return NoContent();
+    }
+}

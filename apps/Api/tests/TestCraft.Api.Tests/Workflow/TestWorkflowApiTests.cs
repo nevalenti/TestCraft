@@ -4,10 +4,23 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using FluentAssertions;
-using TestCraft.Api.Requests;
 using TestCraft.Api.Tests.Infrastructure;
 using TestCraft.Application.Import;
-using TestCraft.Application.Responses;
+using TestCraft.Application.Import.Commands.ImportAllure;
+using TestCraft.Application.Import.Commands.ImportJUnit;
+using TestCraft.Application.Projects;
+using TestCraft.Application.Projects.Commands.CreateProject;
+using TestCraft.Application.TestCases;
+using TestCraft.Application.TestCases.Commands.CreateTestCase;
+using TestCraft.Application.TestCaseSteps;
+using TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
+using TestCraft.Application.TestResults;
+using TestCraft.Application.TestResults.Commands.CreateTestResult;
+using TestCraft.Application.TestRuns;
+using TestCraft.Application.TestRuns.Commands.CreateTestRun;
+using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
+using TestCraft.Application.TestSuites;
+using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Tests.Workflow;
@@ -39,21 +52,21 @@ public class TestWorkflowApiTests(ApiFactory factory)
         var project = await (
             await client.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "Workflow Project" }
+                new CreateProjectCommand { Name = "Workflow Project" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
 
         var suite = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{project!.Id}/suites",
-                new CreateTestSuiteRequest { Name = "Login Suite" }
+                new CreateTestSuiteCommand { Name = "Login Suite" }
             )
         ).Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions);
 
         var testCase = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{project.Id}/suites/{suite!.Id}/cases",
-                new CreateTestCaseRequest
+                new CreateTestCaseCommand
                 {
                     Name = "Successful login",
                     Priority = TestCasePriority.High,
@@ -63,7 +76,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var stepResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase!.Id}/steps",
-            new CreateTestCaseStepRequest
+            new CreateTestCaseStepCommand
             {
                 Order = 1,
                 Action = "Open the login page",
@@ -78,7 +91,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
         var run = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{project.Id}/runs",
-                new CreateTestRunRequest { Name = "Smoke Run", Environment = "staging" }
+                new CreateTestRunCommand { Name = "Smoke Run", Environment = "staging" }
             )
         ).Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
 
@@ -86,7 +99,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var resultResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}/results",
-            new CreateTestResultRequest
+            new CreateTestResultCommand
             {
                 TestCaseId = testCase.Id,
                 Status = TestResultStatus.Passed,
@@ -114,8 +127,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var completeResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = run.Id,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Completed,
@@ -130,8 +144,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var revertResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
-            new UpdateTestRunRequest
+            new UpdateTestRunCommand
             {
+                Id = run.Id,
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Active,
@@ -149,7 +164,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
         var project = await (
             await client.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "Import Project" }
+                new CreateProjectCommand { Name = "Import Project" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
 
@@ -169,7 +184,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project!.Id}/import/junit",
-            new ImportJUnitRequest { Xml = junitXml, Environment = "ci" }
+            new ImportJUnitCommand { Xml = junitXml, Environment = "ci" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -202,13 +217,13 @@ public class TestWorkflowApiTests(ApiFactory factory)
         var project = await (
             await client.PostAsJsonAsync(
                 "/api/v1/projects",
-                new CreateProjectRequest { Name = "Allure Project" }
+                new CreateProjectCommand { Name = "Allure Project" }
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project!.Id}/import/allure",
-            new ImportAllureRequest
+            new ImportAllureCommand
             {
                 Environment = "ci",
                 Results =

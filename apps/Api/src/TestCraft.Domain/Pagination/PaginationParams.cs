@@ -11,4 +11,11 @@ public record PaginationParams
 
     public int Skip => (Page - 1) * PageSize;
     public int Take => PageSize;
+
+    public static PaginationParams Create(int? page, int? pageSize) =>
+        new()
+        {
+            Page = page is > 0 ? page.Value : DefaultPage,
+            PageSize = pageSize is > 0 and <= MaxPageSize ? pageSize.Value : DefaultPageSize,
+        };
 }
