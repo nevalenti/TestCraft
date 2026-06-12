@@ -25,7 +25,7 @@ ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
 RUN pnpm --filter @testcraft/types run build
 RUN pnpm --filter testcraft-web run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 
 RUN rm /etc/nginx/conf.d/default.conf
 
