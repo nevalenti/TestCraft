@@ -19,6 +19,7 @@ namespace TestCraft.Api.TestRuns;
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs")]
 public class TestRunsController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists test runs for a project, optionally filtered by name.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestRunResponse>>> GetAll(
         Guid projectId,
@@ -26,6 +27,7 @@ public class TestRunsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
+    /// <summary>Gets a test run by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TestRunResponse>> GetById(
         Guid projectId,
@@ -39,6 +41,7 @@ public class TestRunsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Gets the result counts (passed/failed/skipped/etc.) for a test run.</summary>
     [HttpGet("{id:guid}/summary")]
     public async Task<ActionResult<TestRunStatusResponse>> GetSummary(
         Guid projectId,
@@ -52,6 +55,7 @@ public class TestRunsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Creates a new test run.</summary>
     [HttpPost]
     public async Task<ActionResult<TestRunResponse>> Create(
         Guid projectId,
@@ -64,6 +68,7 @@ public class TestRunsController(ISender sender) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { projectId, id = run.Id }, run);
     }
 
+    /// <summary>Updates a test run's name, environment, and status.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestRunResponse>> Update(
         Guid projectId,
@@ -80,6 +85,7 @@ public class TestRunsController(ISender sender) : ControllerBase
         return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
     }
 
+    /// <summary>Deletes a test run.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid projectId,

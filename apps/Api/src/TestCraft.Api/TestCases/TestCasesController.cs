@@ -18,6 +18,7 @@ namespace TestCraft.Api.TestCases;
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/suites/{suiteId:guid}/cases")]
 public class TestCasesController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists test cases in a suite, optionally filtered by name.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,
@@ -36,6 +37,7 @@ public class TestCasesController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Gets a test case by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TestCaseResponse>> GetById(
         Guid projectId,
@@ -55,6 +57,7 @@ public class TestCasesController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Creates a new test case in a suite.</summary>
     [HttpPost]
     public async Task<ActionResult<TestCaseResponse>> Create(
         Guid projectId,
@@ -84,6 +87,7 @@ public class TestCasesController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Updates a test case's details.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestCaseResponse>> Update(
         Guid projectId,
@@ -110,6 +114,7 @@ public class TestCasesController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Deletes a test case.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid projectId,

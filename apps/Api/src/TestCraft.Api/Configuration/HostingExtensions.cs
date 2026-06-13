@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Prometheus;
 using TestCraft.Api.Errors;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
@@ -64,9 +65,9 @@ public static class HostingExtensions
 
         app.UseRequestLogging();
 
-        app.UseHttpRequestMetrics();
-
         app.UseRouting();
+
+        app.UseHttpMetrics();
 
         app.UseRateLimiter();
 

@@ -23,14 +23,18 @@ public sealed class ApiOptions
 
     public bool ApplyMigrations { get; init; }
 
+    public string? MetricsToken { get; init; }
+
     public static ApiOptions Bind(IConfiguration configuration)
     {
         var options = new ApiOptions
         {
             KeycloakAuthority = configuration["KEYCLOAK_AUTHORITY"] ?? string.Empty,
             KeycloakAudience = configuration["KEYCLOAK_AUDIENCE"] ?? "testcraft-web",
-            KeycloakRequireHttpsMetadata =
-                configuration["KEYCLOAK_REQUIRE_HTTPS_METADATA"] != "false",
+            KeycloakRequireHttpsMetadata = configuration.GetValue(
+                "KEYCLOAK_REQUIRE_HTTPS_METADATA",
+                defaultValue: true
+            ),
             CorsAllowedOrigins = (configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty).Split(
                 ',',
                 StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
@@ -40,6 +44,7 @@ public sealed class ApiOptions
             SeqUrl = configuration["SEQ_URL"],
             SeqApiKey = configuration["SEQ_API_KEY"],
             ApplyMigrations = configuration.GetValue<bool>("APPLY_MIGRATIONS"),
+            MetricsToken = configuration["METRICS_TOKEN"],
         };
 
         var results = new List<ValidationResult>();

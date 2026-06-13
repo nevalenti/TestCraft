@@ -14,6 +14,7 @@ namespace TestCraft.Api.TestCases;
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/cases")]
 public class ProjectTestCasesController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists test cases across all suites in a project, optionally filtered by name.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,

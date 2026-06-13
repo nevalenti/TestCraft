@@ -21,6 +21,7 @@ namespace TestCraft.Api.TestCaseSteps;
 )]
 public class TestCaseStepsController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists the steps for a test case.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestCaseStepResponse>>> GetAll(
         Guid projectId,
@@ -40,6 +41,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Gets a test case step by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TestCaseStepResponse>> GetById(
         Guid projectId,
@@ -60,6 +62,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Adds a step to a test case.</summary>
     [HttpPost]
     public async Task<ActionResult<TestCaseStepResponse>> Create(
         Guid projectId,
@@ -91,6 +94,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Reorders the steps of a test case.</summary>
     [HttpPut("reorder")]
     public async Task<IActionResult> BulkReorder(
         Guid projectId,
@@ -112,6 +116,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         return NoContent();
     }
 
+    /// <summary>Updates a test case step.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestCaseStepResponse>> Update(
         Guid projectId,
@@ -139,6 +144,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Deletes a test case step.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid projectId,

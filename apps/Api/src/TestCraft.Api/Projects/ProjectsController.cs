@@ -18,18 +18,21 @@ namespace TestCraft.Api.Projects;
 [Route("api/v{version:apiVersion}/projects")]
 public class ProjectsController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists projects owned by the current user.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<ProjectResponse>>> GetAll(
         [FromQuery] GetProjectsQuery query,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query, cancellationToken));
 
+    /// <summary>Gets a project by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ProjectResponse>> GetById(
         Guid id,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(new GetProjectByIdQuery { Id = id }, cancellationToken));
 
+    /// <summary>Creates a new project.</summary>
     [HttpPost]
     public async Task<ActionResult<ProjectResponse>> Create(
         CreateProjectCommand command,
@@ -41,6 +44,7 @@ public class ProjectsController(ISender sender) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = project.Id }, project);
     }
 
+    /// <summary>Updates a project's details.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ProjectResponse>> Update(
         Guid id,
@@ -56,6 +60,7 @@ public class ProjectsController(ISender sender) : ControllerBase
         return Ok(await sender.Send(command, cancellationToken));
     }
 
+    /// <summary>Deletes a project.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

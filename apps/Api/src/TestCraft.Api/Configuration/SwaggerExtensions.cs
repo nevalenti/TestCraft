@@ -28,6 +28,11 @@ public static class SwaggerExtensions
             {
                 [new OpenApiSecuritySchemeReference("bearerAuth", null)] = [],
             });
+
+            options.OperationFilter<AnonymousEndpointsOperationFilter>();
+            options.OperationFilter<ProblemResponsesOperationFilter>();
+
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TestCraft.Api.xml"));
         });
 
         return builder;
@@ -39,7 +44,8 @@ public static class SwaggerExtensions
             app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
         app.UseSwagger(options =>
-            options.RouteTemplate = "api/v1/docs/{documentName}/swagger.json"
+            options.RouteTemplate =
+                $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
         );
         app.UseSwaggerUI(options =>
         {
@@ -50,12 +56,12 @@ public static class SwaggerExtensions
             )
             {
                 options.SwaggerEndpoint(
-                    $"/api/v1/docs/{groupName}/swagger.json",
+                    $"{ApiPaths.DocsPrefix}/{groupName}/swagger.json",
                     $"TestCraft API {groupName}"
                 );
             }
 
-            options.RoutePrefix = "api/v1/docs";
+            options.RoutePrefix = ApiPaths.DocsPrefix.TrimStart('/');
             options.DocumentTitle = "TestCraft API";
         });
 

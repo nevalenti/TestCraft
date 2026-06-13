@@ -18,6 +18,7 @@ namespace TestCraft.Api.TestSuites;
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/suites")]
 public class TestSuitesController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists test suites for a project, optionally filtered by name.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestSuiteResponse>>> GetAll(
         Guid projectId,
@@ -25,6 +26,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
+    /// <summary>Gets a test suite by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TestSuiteResponse>> GetById(
         Guid projectId,
@@ -38,6 +40,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Creates a new test suite.</summary>
     [HttpPost]
     public async Task<ActionResult<TestSuiteResponse>> Create(
         Guid projectId,
@@ -50,6 +53,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
         return CreatedAtAction(nameof(GetById), new { projectId, id = suite.Id }, suite);
     }
 
+    /// <summary>Updates a test suite's details.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestSuiteResponse>> Update(
         Guid projectId,
@@ -66,6 +70,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
         return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
     }
 
+    /// <summary>Deletes a test suite.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid projectId,

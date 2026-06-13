@@ -18,6 +18,7 @@ namespace TestCraft.Api.TestResults;
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/results")]
 public class TestResultsController(ISender sender) : ControllerBase
 {
+    /// <summary>Lists results for a test run.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
         Guid projectId,
@@ -36,6 +37,7 @@ public class TestResultsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Gets a test result by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<TestResultResponse>> GetById(
         Guid projectId,
@@ -55,6 +57,7 @@ public class TestResultsController(ISender sender) : ControllerBase
             )
         );
 
+    /// <summary>Records a test result for a run.</summary>
     [HttpPost]
     public async Task<ActionResult<TestResultResponse>> Create(
         Guid projectId,
@@ -84,6 +87,7 @@ public class TestResultsController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Updates a test result.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestResultResponse>> Update(
         Guid projectId,
@@ -110,6 +114,7 @@ public class TestResultsController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Deletes a test result.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(
         Guid projectId,
