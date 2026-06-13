@@ -1,16 +1,10 @@
 using System.Globalization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Configuration;
 
-/// <summary>
-/// Documents the RFC 7807 <see cref="ProblemResponse"/>/<see cref="ValidationProblemResponse"/>
-/// error responses that <see cref="GlobalExceptionHandler"/> and the rate limiter/timeout
-/// middleware can return, so generated clients see the error contract alongside the happy path.
-/// </summary>
 public sealed class ProblemResponsesOperationFilter : IOperationFilter
 {
     private const string ProblemContentType = "application/problem+json";

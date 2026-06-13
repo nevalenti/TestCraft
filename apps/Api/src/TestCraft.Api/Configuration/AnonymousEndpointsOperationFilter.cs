@@ -4,10 +4,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace TestCraft.Api.Configuration;
 
-/// <summary>
-/// Clears the document-wide bearer auth requirement for endpoints that don't require authorization,
-/// so Swagger UI doesn't prompt for a token on endpoints like health checks.
-/// </summary>
 public sealed class AnonymousEndpointsOperationFilter : IOperationFilter
 {
     public void Apply(OpenApiOperation operation, OperationFilterContext context)

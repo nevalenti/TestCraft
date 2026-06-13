@@ -64,6 +64,18 @@ spec:
                   name: testcraft-secrets
                   key: METRICS_TOKEN
                   optional: true
+            - name: SWAGGER_BASIC_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SWAGGER_BASIC_AUTH_USERNAME
+                  optional: true
+            - name: SWAGGER_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SWAGGER_BASIC_AUTH_PASSWORD
+                  optional: true
             - name: APPLY_MIGRATIONS
               value: "true"
           ports:

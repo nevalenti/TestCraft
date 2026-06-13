@@ -25,6 +25,10 @@ public sealed class ApiOptions
 
     public string? MetricsToken { get; init; }
 
+    public string? SwaggerBasicAuthUsername { get; init; }
+
+    public string? SwaggerBasicAuthPassword { get; init; }
+
     public static ApiOptions Bind(IConfiguration configuration)
     {
         var options = new ApiOptions
@@ -45,6 +49,8 @@ public sealed class ApiOptions
             SeqApiKey = configuration["SEQ_API_KEY"],
             ApplyMigrations = configuration.GetValue<bool>("APPLY_MIGRATIONS"),
             MetricsToken = configuration["METRICS_TOKEN"],
+            SwaggerBasicAuthUsername = configuration["SWAGGER_BASIC_AUTH_USERNAME"],
+            SwaggerBasicAuthPassword = configuration["SWAGGER_BASIC_AUTH_PASSWORD"],
         };
 
         var results = new List<ValidationResult>();
