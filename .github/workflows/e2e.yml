@@ -70,7 +70,7 @@ jobs:
             start-dev --import-realm
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.3.0
           run_install: false
