@@ -1,7 +1,6 @@
 .PHONY: up down clean \
         build load images destroy status deploy \
-        api-dotnet api web e2e \
-        migrate seed \
+        api web e2e \
         format
 
 API_IMAGE = testcraft-api
@@ -38,9 +37,6 @@ deploy: images
 	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
 	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
 
-api-dotnet:
-	act push -W .github/workflows/api-dotnet.yml -j build-test --secret-file .secrets
-
 api:
 	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
 
@@ -49,12 +45,6 @@ web:
 
 e2e:
 	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets
-
-migrate:
-	pnpm --filter testcraft-api run db:migrate
-
-seed:
-	pnpm --filter testcraft-api run db:seed
 
 format:
 	pnpm format
