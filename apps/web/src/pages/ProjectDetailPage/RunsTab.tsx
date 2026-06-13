@@ -109,6 +109,7 @@ export const RunsTab = () => {
               onDelete={() => openDelete(run)}
               to={`/projects/${projectId}/runs/${run.id}`}
               label="test run"
+              cardBg="card-bg-warning"
               accentText="text-warning"
               typeIcon={<BoltIcon className="size-4" />}
             >

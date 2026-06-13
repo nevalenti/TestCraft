@@ -1,4 +1,4 @@
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { ViewModeSkeleton } from "@/components/ui/ViewModeSkeleton";
 
 export const PageSkeleton = () => (
   <div className="flex min-h-0 w-full flex-col">
@@ -13,7 +13,7 @@ export const PageSkeleton = () => (
       </div>
     </div>
     <div className="page-content min-h-0 flex-1 overflow-y-auto">
-      <SkeletonGrid />
+      <ViewModeSkeleton />
     </div>
   </div>
 );

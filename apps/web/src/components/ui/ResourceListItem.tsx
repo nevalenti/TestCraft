@@ -8,6 +8,7 @@ interface ResourceListItemProps {
   onEdit: () => void;
   onDelete: () => void;
   label: string;
+  cardBg?: string;
   accentText?: string;
   typeIcon?: React.ReactNode;
   testId?: string;
@@ -19,6 +20,7 @@ export const ResourceListItem = ({
   onEdit,
   onDelete,
   label,
+  cardBg = "bg-base-100",
   accentText = "text-primary",
   typeIcon,
   testId,
@@ -26,7 +28,10 @@ export const ResourceListItem = ({
 }: ResourceListItemProps) => (
   <div
     data-testid={testId}
-    className="group relative flex items-center gap-3 rounded-lg border border-base-content/20 bg-base-100 px-4 py-3 shadow-sm transition-shadow duration-200 hover:shadow-md"
+    className={cn(
+      "group relative flex items-center gap-3 rounded-lg border border-base-content/20 px-4 py-3 shadow-sm transition-shadow duration-200 hover:shadow-md",
+      cardBg,
+    )}
   >
     {to && (
       <Link

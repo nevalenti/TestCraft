@@ -93,6 +93,7 @@ export const TestSuitePage = () => {
               onDelete={() => openDelete(testCase)}
               to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
               label="test case"
+              cardBg="card-bg-info"
               accentText="text-info"
               typeIcon={<ClipboardDocumentListIcon className="size-4" />}
             >

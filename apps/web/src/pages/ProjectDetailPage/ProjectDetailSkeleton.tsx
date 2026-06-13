@@ -1,4 +1,4 @@
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
+import { ViewModeSkeleton } from "@/components/ui/ViewModeSkeleton";
 
 export const ProjectDetailSkeleton = () => (
   <div className="flex min-h-0 w-full flex-col">
@@ -14,7 +14,7 @@ export const ProjectDetailSkeleton = () => (
       <div className="h-9 w-60 skeleton rounded-xl border border-border" />
     </div>
     <div className="page-content">
-      <SkeletonGrid />
+      <ViewModeSkeleton />
     </div>
   </div>
 );

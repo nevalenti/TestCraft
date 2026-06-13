@@ -91,6 +91,7 @@ export const SuitesTab = () => {
               onDelete={() => openDelete(suite)}
               to={`/projects/${projectId}/suites/${suite.id}`}
               label="test suite"
+              cardBg="card-bg-success"
               accentText="text-success"
               typeIcon={<RectangleGroupIcon className="size-4" />}
             >
