@@ -2,7 +2,6 @@ import {
   ArrowRightStartOnRectangleIcon,
   Bars3Icon,
   ChevronDownIcon,
-  UserCircleIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
@@ -12,10 +11,21 @@ import keycloak from "@/auth/keycloak";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { LogoMark } from "@/layout/LogoMark";
 
+const getInitials = (name: string) =>
+  name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
   const displayName =
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
+  const email = keycloak.tokenParsed?.email;
+  const initials = displayName ? getInitials(displayName) : undefined;
 
   return (
     <>
@@ -40,10 +50,12 @@ export const Header = () => {
             <div
               tabIndex={0}
               role="button"
-              className="btn gap-1.5 btn-ghost btn-sm"
+              className="btn gap-2 pl-1.5 btn-ghost btn-sm"
               aria-label="Account menu"
             >
-              <UserCircleIcon className="size-5" aria-hidden="true" />
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-content">
+                {initials}
+              </span>
               {displayName && (
                 <span className="hidden max-w-32 truncate sm:inline">
                   {displayName}
@@ -54,10 +66,33 @@ export const Header = () => {
                 aria-hidden="true"
               />
             </div>
-            <ul className="dropdown-content menu z-10 mt-2 w-44 rounded-box bg-base-100 p-2 shadow-md">
+            <ul className="dropdown-content menu z-10 mt-2 w-fit max-w-64 min-w-48 rounded-box border border-base-content/20 bg-base-100 p-2 shadow-md">
+              {displayName && (
+                <>
+                  <li className="menu-title">
+                    <div className="flex items-center gap-2.5">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-content">
+                        {initials}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold text-base-content">
+                          {displayName}
+                        </p>
+                        {email && (
+                          <p className="truncate text-xs font-medium text-base-content/80">
+                            {email}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  </li>
+                  <li></li>
+                </>
+              )}
               <li>
                 <ThemeToggle />
               </li>
+              <li></li>
               <li>
                 <button
                   onClick={() =>

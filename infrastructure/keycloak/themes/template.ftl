@@ -18,7 +18,7 @@
         --color-border: oklch(1 0 0 / 0.15);
       }
 
-      [data-theme="emerald"] {
+      [data-theme="light"] {
         --color-border: oklch(0 0 0 / 0.18);
       }
 
@@ -29,10 +29,10 @@
       }
 
       #icon-moon { display: none; }
-      [data-theme="emerald"] #icon-moon { display: block; }
-      [data-theme="emerald"] #icon-sun { display: none; }
+      [data-theme="light"] #icon-moon { display: block; }
+      [data-theme="light"] #icon-sun { display: none; }
 
-      [data-theme="emerald"] .header-stripes {
+      [data-theme="light"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
@@ -71,7 +71,7 @@
     <script>
       const THEME_KEY = 'app-theme';
       const LIGHT = 'dracula';
-      const DARK = 'emerald';
+      const DARK = 'light';
 
       function getCookie(name) {
         const eq = name + '=';
