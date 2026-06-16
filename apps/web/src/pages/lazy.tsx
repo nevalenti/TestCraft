@@ -1,16 +1,8 @@
 import React, { Suspense } from "react";
 
-import { ViewModeSkeleton } from "@/components/ui/ViewModeSkeleton";
-import { PageSkeleton } from "@/layout/PageSkeleton";
-import { DashboardSkeleton } from "@/pages/DashboardPage/DashboardSkeleton";
-import { ProjectDetailSkeleton } from "@/pages/ProjectDetailPage/ProjectDetailSkeleton";
-
-const suspend = (
-  Component: React.ComponentType,
-  fallback: React.ReactNode = <PageSkeleton />,
-) => {
+const suspend = (Component: React.ComponentType) => {
   const Suspended = () => (
-    <Suspense fallback={fallback}>
+    <Suspense fallback={null}>
       <Component />
     </Suspense>
   );
@@ -26,7 +18,6 @@ export const LazyDashboardPage = suspend(
       default: module.DashboardPage,
     })),
   ),
-  <DashboardSkeleton />,
 );
 
 export const LazyProjectsPage = suspend(
@@ -43,7 +34,6 @@ export const LazyProjectDetailPage = suspend(
       default: module.ProjectDetailPage,
     })),
   ),
-  <ProjectDetailSkeleton />,
 );
 
 export const LazyTestSuitePage = suspend(
@@ -76,7 +66,6 @@ export const LazyProjectSuitesPage = suspend(
       default: module.SuitesTab,
     })),
   ),
-  <ViewModeSkeleton />,
 );
 
 export const LazyProjectRunsPage = suspend(
@@ -85,5 +74,4 @@ export const LazyProjectRunsPage = suspend(
       default: module.RunsTab,
     })),
   ),
-  <ViewModeSkeleton />,
 );

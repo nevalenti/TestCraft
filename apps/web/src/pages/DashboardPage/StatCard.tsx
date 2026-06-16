@@ -21,7 +21,7 @@ export const StatCard = ({
       <span className={cn(accent)}>{icon}</span>
     </div>
     {isLoading ? (
-      <div className="h-9 w-16 skeleton rounded" />
+      <span className="loading loading-md loading-spinner text-primary" />
     ) : (
       <p className={cn("font-display text-4xl font-bold", accent)}>{value}</p>
     )}

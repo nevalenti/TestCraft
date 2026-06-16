@@ -14,8 +14,6 @@ import { Modal } from "@/components/ui/Modal";
 import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
-import { SkeletonList } from "@/components/ui/SkeletonList";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -72,7 +70,11 @@ export const TestSuitePage = () => {
 
   const renderTestCases = () => {
     if (isPending)
-      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
+      return (
+        <div className="flex min-h-80 items-center justify-center">
+          <span className="loading loading-lg loading-spinner text-primary" />
+        </div>
+      );
     if (isError) return <ErrorState error={error} />;
     if (testCases?.length === 0)
       return (
@@ -178,9 +180,7 @@ export const TestSuitePage = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="font-display text-2xl font-bold tracking-tight">
-              {suite?.name ?? (
-                <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
-              )}
+              {suite?.name}
             </h1>
             {suite?.source && (
               <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">

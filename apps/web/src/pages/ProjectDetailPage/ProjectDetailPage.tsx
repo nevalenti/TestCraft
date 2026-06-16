@@ -3,8 +3,6 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { ProjectDetailSkeleton } from "@/pages/ProjectDetailPage/ProjectDetailSkeleton";
-
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam("projectId");
   const { data: project, isPending } = useProject(projectId);
@@ -15,7 +13,12 @@ export const ProjectDetailPage = () => {
     { label: project?.name ?? "…" },
   ]);
 
-  if (isPending) return <ProjectDetailSkeleton />;
+  if (isPending)
+    return (
+      <div className="flex size-full items-center justify-center">
+        <span className="loading loading-lg loading-spinner text-primary" />
+      </div>
+    );
 
   if (!project)
     return (

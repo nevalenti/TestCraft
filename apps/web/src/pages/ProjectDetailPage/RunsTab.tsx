@@ -8,8 +8,6 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
-import { SkeletonList } from "@/components/ui/SkeletonList";
 import { SourceFilter } from "@/components/ui/SourceFilter";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -88,7 +86,11 @@ export const RunsTab = () => {
 
   const renderRuns = () => {
     if (isPending)
-      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
+      return (
+        <div className="flex min-h-80 items-center justify-center">
+          <span className="loading loading-lg loading-spinner text-primary" />
+        </div>
+      );
 
     if (runs?.length === 0)
       return (

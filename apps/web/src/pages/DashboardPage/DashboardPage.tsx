@@ -15,7 +15,6 @@ import { ErrorState } from "@/components/ErrorState";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProjects } from "@/hooks/useProjects";
 import { formatDate } from "@/lib/format";
-import { ActiveRunsSkeleton } from "@/pages/DashboardPage/ActiveRunsSkeleton";
 import { StatCard } from "@/pages/DashboardPage/StatCard";
 
 export const DashboardPage = () => {
@@ -60,7 +59,12 @@ export const DashboardPage = () => {
   const isLoadingRuns = projectsPending || runsPending;
 
   const renderActiveRuns = () => {
-    if (isLoadingRuns) return <ActiveRunsSkeleton />;
+    if (isLoadingRuns)
+      return (
+        <div className="flex items-center justify-center py-8">
+          <span className="loading loading-lg loading-spinner text-primary" />
+        </div>
+      );
     if (activeRuns.length === 0)
       return (
         <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">

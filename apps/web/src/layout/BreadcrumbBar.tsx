@@ -6,10 +6,7 @@ export const BreadcrumbBar = () => {
   const breadcrumbs = useBreadcrumbsStore((store) => store.items);
 
   const content = () => {
-    if (breadcrumbs === null)
-      return <div className="h-5 w-28 skeleton rounded" aria-hidden="true" />;
-
-    if (breadcrumbs.length === 0) return null;
+    if (breadcrumbs === null || breadcrumbs.length === 0) return null;
 
     return (
       <nav aria-label="Breadcrumb">

@@ -7,8 +7,6 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
-import { SkeletonList } from "@/components/ui/SkeletonList";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -54,7 +52,11 @@ export const ProjectsPage = () => {
 
   const renderProjects = () => {
     if (isPending)
-      return viewMode === "list" ? <SkeletonList /> : <SkeletonGrid />;
+      return (
+        <div className="flex min-h-80 items-center justify-center">
+          <span className="loading loading-lg loading-spinner text-primary" />
+        </div>
+      );
     if (projects?.length === 0)
       return (
         <EmptyState

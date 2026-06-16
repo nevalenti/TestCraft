@@ -21,7 +21,6 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceActions } from "@/components/ui/ResourceActions";
-import { SkeletonGrid } from "@/components/ui/SkeletonGrid";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -202,7 +201,12 @@ export const TestRunPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   const renderResults = () => {
-    if (isPending) return <SkeletonGrid />;
+    if (isPending)
+      return (
+        <div className="flex min-h-80 items-center justify-center">
+          <span className="loading loading-lg loading-spinner text-primary" />
+        </div>
+      );
     if (isError) return <ErrorState error={error} />;
     if (
       resultsPage?.items.length === 0 &&
@@ -259,9 +263,7 @@ export const TestRunPage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
-            {run?.name ?? (
-              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
-            )}
+            {run?.name}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
             {run?.environment ?? "Track test results for this run"}

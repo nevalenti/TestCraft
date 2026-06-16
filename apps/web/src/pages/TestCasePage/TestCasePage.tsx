@@ -28,7 +28,6 @@ import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
-import { SkeletonCard } from "@/components/ui/SkeletonCard";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
@@ -155,10 +154,8 @@ export const TestCasePage = () => {
   const renderSteps = () => {
     if (isPending)
       return (
-        <div className="space-y-3">
-          {Array.from({ length: 3 }, (_, index) => (
-            <SkeletonCard key={index} />
-          ))}
+        <div className="flex min-h-80 items-center justify-center">
+          <span className="loading loading-lg loading-spinner text-primary" />
         </div>
       );
     if (isError) return <ErrorState error={error} />;
@@ -205,9 +202,7 @@ export const TestCasePage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
-            {testCase?.name ?? (
-              <span className="inline-block h-[0.75em] w-48 skeleton rounded align-middle" />
-            )}
+            {testCase?.name}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
             {testCase?.description ?? "Steps for this test case"}
