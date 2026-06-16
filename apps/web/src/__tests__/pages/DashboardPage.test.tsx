@@ -101,11 +101,13 @@ describe("DashboardPage", () => {
     });
   });
 
-  describe("loading state — shows skeletons", () => {
-    it("renders loading skeleton for stats when projects are pending", () => {
+  describe("loading state — shows spinner", () => {
+    it("renders loading spinner for stats when projects are pending", () => {
       setupMocks({ projectsPending: true });
       render(<DashboardPage />);
-      expect(document.querySelectorAll(".skeleton").length).toBeGreaterThan(0);
+      expect(
+        document.querySelectorAll(".loading-spinner").length,
+      ).toBeGreaterThan(0);
     });
   });
 

@@ -83,8 +83,8 @@ beforeEach(() => {
 });
 
 describe("ProjectsPage", () => {
-  describe("loading state — shows skeleton grid", () => {
-    it("renders the skeleton grid when isPending", () => {
+  describe("loading state — shows spinner", () => {
+    it("renders loading spinner when isPending", () => {
       vi.mocked(useProjects).mockReturnValue({
         data: undefined,
         isPending: true,
@@ -102,7 +102,7 @@ describe("ProjectsPage", () => {
 
       const { container } = render(<ProjectsPage />);
 
-      expect(container.querySelector('[aria-busy="true"]')).toBeInTheDocument();
+      expect(container.querySelector(".loading-spinner")).toBeInTheDocument();
     });
   });
 

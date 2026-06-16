@@ -55,8 +55,8 @@ beforeEach(() => {
 });
 
 describe("ProjectDetailPage", () => {
-  describe("loading state — shows skeleton", () => {
-    it("renders skeleton elements when isPending", () => {
+  describe("loading state — shows spinner", () => {
+    it("renders loading spinner when isPending", () => {
       vi.mocked(useProject).mockReturnValue({
         data: undefined,
         isPending: true,
@@ -64,7 +64,7 @@ describe("ProjectDetailPage", () => {
       } as unknown as ReturnType<typeof useProject>);
       const { container } = render(<ProjectDetailPage />);
 
-      expect(container.querySelector(".skeleton")).toBeInTheDocument();
+      expect(container.querySelector(".loading-spinner")).toBeInTheDocument();
     });
   });
 
