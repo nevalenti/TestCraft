@@ -13,14 +13,7 @@ export const ProjectDetailPage = () => {
     { label: project?.name ?? "…" },
   ]);
 
-  if (isPending)
-    return (
-      <div className="flex size-full items-center justify-center">
-        <span className="loading loading-lg loading-spinner text-primary" />
-      </div>
-    );
-
-  if (!project)
+  if (!isPending && !project)
     return (
       <div className="flex flex-1 items-center justify-center p-8">
         <div className="text-center">
@@ -37,10 +30,10 @@ export const ProjectDetailPage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
-            {project.name}
+            {project?.name}
           </h1>
           <p className="mt-0.5 text-sm text-base-content/60">
-            {project.description ??
+            {project?.description ??
               "Manage test suites and runs for this project"}
           </p>
         </div>
@@ -57,7 +50,7 @@ export const ProjectDetailPage = () => {
             }}
           >
             Test Runs
-            {!!project.runCount && (
+            {!!project?.runCount && (
               <span className="badge min-w-5 rounded-full badge-ghost px-1! badge-sm">
                 {project.runCount}
               </span>
@@ -74,7 +67,7 @@ export const ProjectDetailPage = () => {
             }}
           >
             Test Suites
-            {!!project.suiteCount && (
+            {!!project?.suiteCount && (
               <span className="badge min-w-5 rounded-full badge-ghost px-1! badge-sm">
                 {project.suiteCount}
               </span>

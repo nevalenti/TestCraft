@@ -55,16 +55,21 @@ beforeEach(() => {
 });
 
 describe("ProjectDetailPage", () => {
-  describe("loading state — shows spinner", () => {
-    it("renders loading spinner when isPending", () => {
+  describe("loading state — renders page shell immediately", () => {
+    it("renders the tab links while project is loading", () => {
       vi.mocked(useProject).mockReturnValue({
         data: undefined,
         isPending: true,
         isError: false,
       } as unknown as ReturnType<typeof useProject>);
-      const { container } = render(<ProjectDetailPage />);
+      render(<ProjectDetailPage />);
 
-      expect(container.querySelector(".loading-spinner")).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /test runs/i }),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("link", { name: /test suites/i }),
+      ).toBeInTheDocument();
     });
   });
 

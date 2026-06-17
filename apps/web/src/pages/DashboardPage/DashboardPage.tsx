@@ -43,7 +43,9 @@ export const DashboardPage = () => {
         (sum, result) => sum + (result.data?.total ?? 0),
         0,
       ),
-      runsPending: results.some((result) => result.isPending),
+      runsPending:
+        results.length !== (projects ?? []).length ||
+        results.some((result) => result.isPending),
     }),
   });
 
@@ -51,20 +53,14 @@ export const DashboardPage = () => {
 
   if (isError) return <ErrorState error={error} />;
 
+  const isLoading = projectsPending || runsPending;
+
   const totalSuites = (projects ?? []).reduce(
     (sum, project) => sum + (project.suiteCount ?? 0),
     0,
   );
-  const isLoadingStats = projectsPending;
-  const isLoadingRuns = projectsPending || runsPending;
 
   const renderActiveRuns = () => {
-    if (isLoadingRuns)
-      return (
-        <div className="flex items-center justify-center py-8">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
-      );
     if (activeRuns.length === 0)
       return (
         <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
@@ -140,36 +136,41 @@ export const DashboardPage = () => {
       </header>
 
       <section className="page-content flex flex-col gap-6">
-        <div className="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-3">
-          <StatCard
-            label="Projects"
-            value={projects?.length ?? 0}
-            icon={<FolderIcon className="size-5" />}
-            isLoading={isLoadingStats}
-            accent="text-primary"
-          />
-          <StatCard
-            label="Test Runs"
-            value={totalRuns}
-            icon={<BoltIcon className="size-5" />}
-            isLoading={isLoadingRuns}
-            accent="text-warning"
-          />
-          <StatCard
-            label="Test Suites"
-            value={totalSuites}
-            icon={<ClipboardDocumentListIcon className="size-5" />}
-            isLoading={isLoadingStats}
-            accent="text-info"
-          />
-        </div>
+        {isLoading ? (
+          <div className="flex min-h-80 items-center justify-center">
+            <span className="loading loading-lg loading-spinner text-primary" />
+          </div>
+        ) : (
+          <>
+            <div className="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-3">
+              <StatCard
+                label="Projects"
+                value={projects?.length ?? 0}
+                icon={<FolderIcon className="size-5" />}
+                accent="text-primary"
+              />
+              <StatCard
+                label="Test Runs"
+                value={totalRuns}
+                icon={<BoltIcon className="size-5" />}
+                accent="text-warning"
+              />
+              <StatCard
+                label="Test Suites"
+                value={totalSuites}
+                icon={<ClipboardDocumentListIcon className="size-5" />}
+                accent="text-info"
+              />
+            </div>
 
-        <div className="flex flex-col">
-          <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
-            Active Runs
-          </h2>
-          {renderActiveRuns()}
-        </div>
+            <div className="flex flex-col">
+              <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
+                Active Runs
+              </h2>
+              {renderActiveRuns()}
+            </div>
+          </>
+        )}
       </section>
     </div>
   );

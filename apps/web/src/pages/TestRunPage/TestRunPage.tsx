@@ -76,7 +76,10 @@ export const TestRunPage = () => {
   const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
-  const { data: runSummary } = useTestRunSummary(projectId, runId);
+  const { data: runSummary, isPending: isSummaryPending } = useTestRunSummary(
+    projectId,
+    runId,
+  );
   const {
     data: resultsPage,
     isPending,
@@ -201,7 +204,7 @@ export const TestRunPage = () => {
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
   const renderResults = () => {
-    if (isPending)
+    if (isPending || isSummaryPending)
       return (
         <div className="flex min-h-80 items-center justify-center">
           <span className="loading loading-lg loading-spinner text-primary" />
