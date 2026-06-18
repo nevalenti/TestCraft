@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,7 @@ public class UpdateTestSuiteCommandValidator : AbstractValidator<UpdateTestSuite
     }
 }
 
-public class UpdateTestSuiteCommandHandler(IApplicationDbContext context)
+public class UpdateTestSuiteCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<UpdateTestSuiteCommand, TestSuiteResponse>
 {
     public async Task<TestSuiteResponse> Handle(
@@ -43,15 +44,6 @@ public class UpdateTestSuiteCommandHandler(IApplicationDbContext context)
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new TestSuiteResponse
-        {
-            Id = suite.Id,
-            ProjectId = suite.ProjectId,
-            Name = suite.Name,
-            Description = suite.Description,
-            Source = suite.Source,
-            CreatedAt = suite.CreatedAt,
-            UpdatedAt = suite.UpdatedAt,
-        };
+        return mapper.Map<TestSuiteResponse>(suite);
     }
 }

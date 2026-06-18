@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
@@ -16,7 +18,7 @@ public record GetTestCaseStepsQuery
     public int? PageSize { get; init; }
 }
 
-public class GetTestCaseStepsQueryHandler(IApplicationDbContext context)
+public class GetTestCaseStepsQueryHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<GetTestCaseStepsQuery, Paginated<TestCaseStepResponse>>
 {
     public async Task<Paginated<TestCaseStepResponse>> Handle(
@@ -34,7 +36,7 @@ public class GetTestCaseStepsQueryHandler(IApplicationDbContext context)
             .OrderBy(s => s.Order)
             .Skip(pagination.Skip)
             .Take(pagination.Take)
-            .Select(TestCaseStepResponse.Projection)
+            .ProjectTo<TestCaseStepResponse>(mapper.ConfigurationProvider)
             .ToListAsync(cancellationToken);
 
         return new Paginated<TestCaseStepResponse>

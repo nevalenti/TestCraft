@@ -240,7 +240,7 @@ export const TestRunPage = () => {
           <div className="flex gap-2">
             {debouncedSearch && (
               <button
-                className="btn btn-outline btn-sm"
+                className="btn btn-ghost btn-sm"
                 onClick={() => setSearch("")}
               >
                 Clear search

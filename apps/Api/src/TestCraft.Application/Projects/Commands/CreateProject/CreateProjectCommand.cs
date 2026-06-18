@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,7 +25,8 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
 public class CreateProjectCommandHandler(
     IApplicationDbContext context,
     ICurrentUser currentUser,
-    IDbExceptionClassifier dbExceptionClassifier
+    IDbExceptionClassifier dbExceptionClassifier,
+    IMapper mapper
 ) : IRequestHandler<CreateProjectCommand, ProjectResponse>
 {
     public async Task<ProjectResponse> Handle(
@@ -50,15 +52,6 @@ public class CreateProjectCommandHandler(
             throw new DomainException("A project with this name already exists");
         }
 
-        return new ProjectResponse
-        {
-            Id = project.Id,
-            Name = project.Name,
-            Description = project.Description,
-            CreatedAt = project.CreatedAt,
-            UpdatedAt = project.UpdatedAt,
-            SuiteCount = 0,
-            RunCount = 0,
-        };
+        return mapper.Map<ProjectResponse>(project);
     }
 }

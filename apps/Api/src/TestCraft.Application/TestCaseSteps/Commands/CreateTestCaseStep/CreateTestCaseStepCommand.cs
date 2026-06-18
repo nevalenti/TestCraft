@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using TestCraft.Application.Common.Interfaces;
@@ -25,7 +26,7 @@ public class CreateTestCaseStepCommandValidator : AbstractValidator<CreateTestCa
     }
 }
 
-public class CreateTestCaseStepCommandHandler(IApplicationDbContext context)
+public class CreateTestCaseStepCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<CreateTestCaseStepCommand, TestCaseStepResponse>
 {
     public async Task<TestCaseStepResponse> Handle(
@@ -44,15 +45,6 @@ public class CreateTestCaseStepCommandHandler(IApplicationDbContext context)
         context.TestCaseSteps.Add(step);
         await context.SaveChangesAsync(cancellationToken);
 
-        return new TestCaseStepResponse
-        {
-            Id = step.Id,
-            TestCaseId = step.TestCaseId,
-            Order = step.Order,
-            Action = step.Action,
-            ExpectedResult = step.ExpectedResult,
-            CreatedAt = step.CreatedAt,
-            UpdatedAt = step.UpdatedAt,
-        };
+        return mapper.Map<TestCaseStepResponse>(step);
     }
 }

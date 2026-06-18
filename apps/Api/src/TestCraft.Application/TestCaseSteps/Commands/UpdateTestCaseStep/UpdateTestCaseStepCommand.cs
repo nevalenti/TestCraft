@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -27,7 +28,7 @@ public class UpdateTestCaseStepCommandValidator : AbstractValidator<UpdateTestCa
     }
 }
 
-public class UpdateTestCaseStepCommandHandler(IApplicationDbContext context)
+public class UpdateTestCaseStepCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<UpdateTestCaseStepCommand, TestCaseStepResponse>
 {
     public async Task<TestCaseStepResponse> Handle(
@@ -47,15 +48,6 @@ public class UpdateTestCaseStepCommandHandler(IApplicationDbContext context)
 
         await context.SaveChangesAsync(cancellationToken);
 
-        return new TestCaseStepResponse
-        {
-            Id = step.Id,
-            TestCaseId = step.TestCaseId,
-            Order = step.Order,
-            Action = step.Action,
-            ExpectedResult = step.ExpectedResult,
-            CreatedAt = step.CreatedAt,
-            UpdatedAt = step.UpdatedAt,
-        };
+        return mapper.Map<TestCaseStepResponse>(step);
     }
 }

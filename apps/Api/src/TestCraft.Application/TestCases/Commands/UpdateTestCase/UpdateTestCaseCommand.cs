@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +30,7 @@ public class UpdateTestCaseCommandValidator : AbstractValidator<UpdateTestCaseCo
     }
 }
 
-public class UpdateTestCaseCommandHandler(IApplicationDbContext context)
+public class UpdateTestCaseCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<UpdateTestCaseCommand, TestCaseResponse>
 {
     public async Task<TestCaseResponse> Handle(
@@ -50,7 +52,7 @@ public class UpdateTestCaseCommandHandler(IApplicationDbContext context)
 
         return await context
             .TestCases.Where(c => c.Id == testCase.Id)
-            .Select(TestCaseResponse.Projection)
+            .ProjectTo<TestCaseResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
     }
 }

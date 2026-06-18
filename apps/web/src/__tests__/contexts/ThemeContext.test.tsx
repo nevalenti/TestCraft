@@ -19,7 +19,7 @@ const TestConsumer = () => {
 
   return (
     <>
-      <span data-testid="state">{isDark ? "emerald" : "dracula"}</span>
+      <span data-testid="state">{isDark ? "dracula" : "emerald"}</span>
       <button onClick={toggleTheme}>toggle</button>
     </>
   );
@@ -29,8 +29,8 @@ beforeEach(clearThemeCookie);
 afterEach(clearThemeCookie);
 
 describe("ThemeProvider", () => {
-  describe("ThemeProvider — on initial render with no cookie — defaults to light theme", () => {
-    it("exposes isDark as false", () => {
+  describe("ThemeProvider — on initial render with no cookie — defaults to dark theme", () => {
+    it("exposes isDark as true", () => {
       render(
         <ThemeProvider>
           <TestConsumer />
@@ -39,7 +39,7 @@ describe("ThemeProvider", () => {
       expect(screen.getByTestId("state")).toHaveTextContent("dracula");
     });
 
-    it("sets data-theme to the light value on the document element", () => {
+    it("sets data-theme to the dark value on the document element", () => {
       render(
         <ThemeProvider>
           <TestConsumer />
@@ -49,8 +49,8 @@ describe("ThemeProvider", () => {
     });
   });
 
-  describe("ThemeProvider — when toggleTheme is called — switches to dark theme", () => {
-    it("updates isDark to true", async () => {
+  describe("ThemeProvider — when toggleTheme is called — switches to light theme", () => {
+    it("updates isDark to false", async () => {
       render(
         <ThemeProvider>
           <TestConsumer />
@@ -60,7 +60,7 @@ describe("ThemeProvider", () => {
       expect(screen.getByTestId("state")).toHaveTextContent("emerald");
     });
 
-    it("updates the data-theme attribute to the dark value", async () => {
+    it("updates the data-theme attribute to the light value", async () => {
       render(
         <ThemeProvider>
           <TestConsumer />
@@ -71,8 +71,8 @@ describe("ThemeProvider", () => {
     });
   });
 
-  describe("ThemeProvider — when toggled twice — returns to light theme", () => {
-    it("isDark is false again", async () => {
+  describe("ThemeProvider — when toggled twice — returns to dark theme", () => {
+    it("isDark is true again", async () => {
       render(
         <ThemeProvider>
           <TestConsumer />

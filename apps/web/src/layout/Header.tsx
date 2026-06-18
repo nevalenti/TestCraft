@@ -90,10 +90,6 @@ export const Header = () => {
                 </>
               )}
               <li>
-                <ThemeToggle />
-              </li>
-              <li></li>
-              <li>
                 <button
                   onClick={() =>
                     keycloak.logout({
@@ -110,6 +106,7 @@ export const Header = () => {
               </li>
             </ul>
           </div>
+          <ThemeToggle />
           <label
             htmlFor="mobile-nav-drawer"
             className="btn btn-square btn-ghost btn-sm lg:hidden"

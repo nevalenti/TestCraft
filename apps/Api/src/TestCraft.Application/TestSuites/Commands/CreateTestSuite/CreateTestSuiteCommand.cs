@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using TestCraft.Application.Common.Interfaces;
@@ -22,7 +23,7 @@ public class CreateTestSuiteCommandValidator : AbstractValidator<CreateTestSuite
     }
 }
 
-public class CreateTestSuiteCommandHandler(IApplicationDbContext context)
+public class CreateTestSuiteCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<CreateTestSuiteCommand, TestSuiteResponse>
 {
     public async Task<TestSuiteResponse> Handle(
@@ -40,15 +41,6 @@ public class CreateTestSuiteCommandHandler(IApplicationDbContext context)
         context.TestSuites.Add(suite);
         await context.SaveChangesAsync(cancellationToken);
 
-        return new TestSuiteResponse
-        {
-            Id = suite.Id,
-            ProjectId = suite.ProjectId,
-            Name = suite.Name,
-            Description = suite.Description,
-            Source = suite.Source,
-            CreatedAt = suite.CreatedAt,
-            UpdatedAt = suite.UpdatedAt,
-        };
+        return mapper.Map<TestSuiteResponse>(suite);
     }
 }

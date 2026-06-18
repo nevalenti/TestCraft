@@ -1,3 +1,4 @@
+using AutoMapper;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,6 +10,7 @@ namespace TestCraft.Application.Import.Consumers;
 
 public partial class ImportJUnitRequestedConsumer(
     IApplicationDbContext dbContext,
+    IMapper mapper,
     ILogger<ImportJUnitRequestedConsumer> logger
 ) : IConsumer<ImportJUnitRequested>
 {
@@ -38,6 +40,7 @@ public partial class ImportJUnitRequestedConsumer(
 
             var run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
+                mapper,
                 message.ProjectId,
                 message.Name ?? runName,
                 message.Environment,

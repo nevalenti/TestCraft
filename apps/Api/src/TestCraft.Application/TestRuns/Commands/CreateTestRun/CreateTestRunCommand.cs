@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MediatR;
 using TestCraft.Application.Common.Interfaces;
@@ -25,7 +26,7 @@ public class CreateTestRunCommandValidator : AbstractValidator<CreateTestRunComm
     }
 }
 
-public class CreateTestRunCommandHandler(IApplicationDbContext context)
+public class CreateTestRunCommandHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<CreateTestRunCommand, TestRunResponse>
 {
     public async Task<TestRunResponse> Handle(
@@ -44,17 +45,6 @@ public class CreateTestRunCommandHandler(IApplicationDbContext context)
         context.TestRuns.Add(run);
         await context.SaveChangesAsync(cancellationToken);
 
-        return new TestRunResponse
-        {
-            Id = run.Id,
-            ProjectId = run.ProjectId,
-            Name = run.Name,
-            Environment = run.Environment,
-            Status = run.Status,
-            Source = run.Source,
-            ExecutedById = run.ExecutedById,
-            CreatedAt = run.CreatedAt,
-            UpdatedAt = run.UpdatedAt,
-        };
+        return mapper.Map<TestRunResponse>(run);
     }
 }

@@ -16,21 +16,23 @@ describe("ThemeToggle", () => {
     });
   });
 
-  describe("initial state — starts in light mode", () => {
-    it("label offers to switch to dark mode", () => {
+  describe("initial state — starts in dark mode", () => {
+    it("label offers to switch to light mode", () => {
       renderWithTheme(<ThemeToggle />);
       expect(
-        screen.getByRole("button", { name: "Dark mode" }),
+        screen.getByRole("button", { name: /switch to light mode/i }),
       ).toBeInTheDocument();
     });
   });
 
-  describe("when the toggle is clicked — switches to dark mode", () => {
-    it("label changes to offer switching back to light mode", async () => {
+  describe("when the toggle is clicked — switches to light mode", () => {
+    it("label changes to offer switching back to dark mode", async () => {
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(screen.getByRole("button", { name: "Dark mode" }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /switch to light mode/i }),
+      );
       expect(
-        screen.getByRole("button", { name: "Light mode" }),
+        screen.getByRole("button", { name: /switch to dark mode/i }),
       ).toBeInTheDocument();
     });
 
@@ -40,10 +42,12 @@ describe("ThemeToggle", () => {
       vi.spyOn(
         await import("@/contexts/ThemeContext"),
         "useTheme",
-      ).mockReturnValue({ isDark: false, toggleTheme });
+      ).mockReturnValue({ isDark: true, toggleTheme });
 
       renderWithTheme(<ThemeToggle />);
-      await userEvent.click(screen.getByRole("button", { name: "Dark mode" }));
+      await userEvent.click(
+        screen.getByRole("button", { name: /switch to light mode/i }),
+      );
       expect(toggleTheme).toHaveBeenCalledOnce();
     });
   });

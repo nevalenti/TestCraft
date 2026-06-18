@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -28,8 +30,11 @@ public class UpdateTestResultCommandValidator : AbstractValidator<UpdateTestResu
     }
 }
 
-public class UpdateTestResultCommandHandler(IApplicationDbContext context, ICacheService cache)
-    : IRequestHandler<UpdateTestResultCommand, TestResultResponse>
+public class UpdateTestResultCommandHandler(
+    IApplicationDbContext context,
+    ICacheService cache,
+    IMapper mapper
+) : IRequestHandler<UpdateTestResultCommand, TestResultResponse>
 {
     public async Task<TestResultResponse> Handle(
         UpdateTestResultCommand request,
@@ -60,7 +65,7 @@ public class UpdateTestResultCommandHandler(IApplicationDbContext context, ICach
 
         var summary = await context
             .TestResults.Where(r => r.Id == result.Id)
-            .Select(TestResultResponse.Projection)
+            .ProjectTo<TestResultResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
 
         await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);

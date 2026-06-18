@@ -24,13 +24,13 @@ export const useTheme = (): ThemeContextValue => {
 };
 
 const THEME_KEY = "app-theme";
-const LIGHT = "dracula";
-const DARK = "emerald";
+const LIGHT = "emerald";
+const DARK = "dracula";
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);
 
-  return stored === LIGHT || stored === DARK ? stored : LIGHT;
+  return stored === LIGHT || stored === DARK ? stored : DARK;
 };
 
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {

@@ -1,5 +1,3 @@
-using System.Linq.Expressions;
-using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import;
@@ -13,16 +11,4 @@ public record ImportJobResponse
     public string? Error { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
-
-    internal static readonly Expression<Func<ImportJob, ImportJobResponse>> Projection =
-        j => new ImportJobResponse
-        {
-            Id = j.Id,
-            ProjectId = j.ProjectId,
-            Status = j.Status,
-            TestRunId = j.TestRunId,
-            Error = j.Error,
-            CreatedAt = j.CreatedAt,
-            UpdatedAt = j.UpdatedAt,
-        };
 }

@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
@@ -13,7 +15,7 @@ public record GetTestCaseStepByIdQuery : IRequest<TestCaseStepResponse>, IProjec
     public required Guid Id { get; init; }
 }
 
-public class GetTestCaseStepByIdQueryHandler(IApplicationDbContext context)
+public class GetTestCaseStepByIdQueryHandler(IApplicationDbContext context, IMapper mapper)
     : IRequestHandler<GetTestCaseStepByIdQuery, TestCaseStepResponse>
 {
     public async Task<TestCaseStepResponse> Handle(
@@ -22,7 +24,7 @@ public class GetTestCaseStepByIdQueryHandler(IApplicationDbContext context)
     ) =>
         await context
             .TestCaseSteps.Where(s => s.Id == request.Id && s.TestCaseId == request.CaseId)
-            .Select(TestCaseStepResponse.Projection)
+            .ProjectTo<TestCaseStepResponse>(mapper.ConfigurationProvider)
             .FirstOrDefaultAsync(cancellationToken)
         ?? throw new NotFoundException();
 }

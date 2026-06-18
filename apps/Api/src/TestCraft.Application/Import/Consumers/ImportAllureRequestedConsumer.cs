@@ -1,3 +1,4 @@
+using AutoMapper;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace TestCraft.Application.Import.Consumers;
 
 public partial class ImportAllureRequestedConsumer(
     IApplicationDbContext dbContext,
+    IMapper mapper,
     ILogger<ImportAllureRequestedConsumer> logger
 ) : IConsumer<ImportAllureRequested>
 {
@@ -39,6 +41,7 @@ public partial class ImportAllureRequestedConsumer(
 
             var run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
+                mapper,
                 message.ProjectId,
                 message.Name ?? ImportAllureCommand.DefaultRunName,
                 message.Environment,

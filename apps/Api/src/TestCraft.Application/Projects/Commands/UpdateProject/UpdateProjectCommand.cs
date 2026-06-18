@@ -1,3 +1,5 @@
+using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +28,8 @@ public class UpdateProjectCommandValidator : AbstractValidator<UpdateProjectComm
 
 public class UpdateProjectCommandHandler(
     IApplicationDbContext context,
-    IDbExceptionClassifier dbExceptionClassifier
+    IDbExceptionClassifier dbExceptionClassifier,
+    IMapper mapper
 ) : IRequestHandler<UpdateProjectCommand, ProjectResponse>
 {
     public async Task<ProjectResponse> Handle(
@@ -52,7 +55,7 @@ public class UpdateProjectCommandHandler(
 
         return await context
             .Projects.Where(p => p.Id == project.Id)
-            .Select(ProjectResponse.Projection)
+            .ProjectTo<ProjectResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
     }
 }

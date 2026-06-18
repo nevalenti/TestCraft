@@ -1,3 +1,4 @@
+using AutoMapper;
 using FluentValidation;
 using MassTransit;
 using MediatR;
@@ -38,7 +39,8 @@ public class ImportJUnitCommandValidator : AbstractValidator<ImportJUnitCommand>
 public class ImportJUnitCommandHandler(
     IApplicationDbContext context,
     ICurrentUser currentUser,
-    IPublishEndpoint publishEndpoint
+    IPublishEndpoint publishEndpoint,
+    IMapper mapper
 ) : IRequestHandler<ImportJUnitCommand, ImportJobResponse>
 {
     public async Task<ImportJobResponse> Handle(
@@ -70,15 +72,6 @@ public class ImportJUnitCommandHandler(
             cancellationToken
         );
 
-        return new ImportJobResponse
-        {
-            Id = job.Id,
-            ProjectId = job.ProjectId,
-            Status = job.Status,
-            TestRunId = job.TestRunId,
-            Error = job.Error,
-            CreatedAt = job.CreatedAt,
-            UpdatedAt = job.UpdatedAt,
-        };
+        return mapper.Map<ImportJobResponse>(job);
     }
 }
