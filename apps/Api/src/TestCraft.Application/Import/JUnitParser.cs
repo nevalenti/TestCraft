@@ -97,16 +97,13 @@ public static class JUnitParser
         if (messageAttr is not null)
         {
             var text = messageAttr.Value.Trim();
-
-            return text.Length > 0 ? text : null;
+            if (text.Length > 0)
+            {
+                return text;
+            }
         }
 
-        if (element.HasAttributes)
-        {
-            return null;
-        }
-
-        var raw = element.Value;
+        var raw = element.Value.Trim();
 
         return string.IsNullOrEmpty(raw) ? null : raw;
     }
