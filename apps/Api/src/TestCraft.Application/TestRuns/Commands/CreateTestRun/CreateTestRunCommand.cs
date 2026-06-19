@@ -13,7 +13,6 @@ public record CreateTestRunCommand : IRequest<TestRunResponse>, IProjectScopedRe
     public Guid ProjectId { get; init; }
     public required string Name { get; init; }
     public required string Environment { get; init; }
-    public TestRunStatus? Status { get; init; }
 }
 
 public class CreateTestRunCommandValidator : AbstractValidator<CreateTestRunCommand>
@@ -22,7 +21,6 @@ public class CreateTestRunCommandValidator : AbstractValidator<CreateTestRunComm
     {
         RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
         RuleFor(x => x.Environment).NotEmpty().MaximumLength(255);
-        RuleFor(x => x.Status).IsInEnum().When(x => x.Status is not null);
     }
 }
 
@@ -39,7 +37,7 @@ public class CreateTestRunCommandHandler(IApplicationDbContext context, IMapper 
             ProjectId = request.ProjectId,
             Name = request.Name,
             Environment = request.Environment,
-            Status = request.Status ?? TestRunStatus.Active,
+            Status = TestRunStatus.Active,
         };
 
         context.TestRuns.Add(run);
