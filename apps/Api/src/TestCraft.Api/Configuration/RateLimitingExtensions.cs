@@ -23,8 +23,13 @@ public static class RateLimitingExtensions
                         return RateLimitPartition.GetNoLimiter("unrestricted");
                     }
 
+                    var partitionKey =
+                        httpContext.User.FindFirst("sub")?.Value
+                        ?? httpContext.Connection.RemoteIpAddress?.ToString()
+                        ?? "anonymous";
+
                     return RateLimitPartition.GetFixedWindowLimiter(
-                        "api-v1",
+                        partitionKey,
                         _ => new FixedWindowRateLimiterOptions
                         {
                             PermitLimit = 200,
