@@ -19,6 +19,7 @@ internal static class ImportRunWriter
         IReadOnlyList<ParsedTestCase> cases,
         Guid userId,
         string? source,
+        ImportJob job,
         CancellationToken cancellationToken
     )
     {
@@ -51,6 +52,10 @@ internal static class ImportRunWriter
             source,
             cancellationToken
         );
+
+        job.Status = ImportJobStatus.Completed;
+        job.TestRunId = run.Id;
+        await context.SaveChangesAsync(cancellationToken);
 
         await transaction.CommitAsync(cancellationToken);
 

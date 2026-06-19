@@ -39,7 +39,7 @@ public partial class ImportAllureRequestedConsumer(
         {
             var cases = AllureParser.Parse(message.Results);
 
-            var run = await ImportRunWriter.CreateRunWithResultsAsync(
+            await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
                 mapper,
                 message.ProjectId,
@@ -49,11 +49,9 @@ public partial class ImportAllureRequestedConsumer(
                 cases,
                 message.UserId,
                 message.Source?.ToLowerInvariant(),
+                job,
                 cancellationToken
             );
-
-            job.Status = ImportJobStatus.Completed;
-            job.TestRunId = run.Id;
         }
         catch (Exception ex)
         {
@@ -61,9 +59,8 @@ public partial class ImportAllureRequestedConsumer(
 
             job.Status = ImportJobStatus.Failed;
             job.Error = ex.Message;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
-
-        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Import job {JobId} not found")]

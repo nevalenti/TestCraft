@@ -38,7 +38,7 @@ public partial class ImportJUnitRequestedConsumer(
         {
             var (runName, cases) = JUnitParser.Parse(message.Xml);
 
-            var run = await ImportRunWriter.CreateRunWithResultsAsync(
+            await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
                 mapper,
                 message.ProjectId,
@@ -48,11 +48,9 @@ public partial class ImportJUnitRequestedConsumer(
                 cases,
                 message.UserId,
                 message.Source?.ToLowerInvariant(),
+                job,
                 cancellationToken
             );
-
-            job.Status = ImportJobStatus.Completed;
-            job.TestRunId = run.Id;
         }
         catch (Exception ex)
         {
@@ -60,9 +58,8 @@ public partial class ImportJUnitRequestedConsumer(
 
             job.Status = ImportJobStatus.Failed;
             job.Error = ex.Message;
+            await dbContext.SaveChangesAsync(cancellationToken);
         }
-
-        await dbContext.SaveChangesAsync(cancellationToken);
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Import job {JobId} not found")]
