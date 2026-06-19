@@ -16,5 +16,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
     <PackageReference Include="Npgsql" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="Minio" />
+    <PackageReference Include="MailKit" />
   </ItemGroup>
 </Project>

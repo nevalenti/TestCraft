@@ -39,14 +39,14 @@ export const ProjectsPage = () => {
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }, { label: "Projects" }]);
 
+  if (isError) return <ErrorState error={error} />;
+
   const handleCreate = (input: CreateProject) =>
     createProject.mutate(input, { onSuccess: close });
   const handleUpdate = (id: string) => (input: UpdateProject) =>
     updateProject.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteProject.mutate(id, { onSuccess: close });
-
-  if (isError) return <ErrorState error={error} />;
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 

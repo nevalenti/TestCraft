@@ -13,65 +13,92 @@ const suspend = (Component: React.ComponentType) => {
 };
 
 export const LazyDashboardPage = suspend(
-  React.lazy(() =>
-    import("./DashboardPage/DashboardPage").then((module) => ({
-      default: module.DashboardPage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./DashboardPage/DashboardPage");
+    return { default: module.DashboardPage };
+  }),
 );
 
 export const LazyProjectsPage = suspend(
-  React.lazy(() =>
-    import("./ProjectsPage/ProjectsPage").then((module) => ({
-      default: module.ProjectsPage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./ProjectsPage/ProjectsPage");
+    return { default: module.ProjectsPage };
+  }),
 );
 
 export const LazyProjectDetailPage = suspend(
-  React.lazy(() =>
-    import("./ProjectDetailPage/ProjectDetailPage").then((module) => ({
-      default: module.ProjectDetailPage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/ProjectDetailPage");
+    return { default: module.ProjectDetailPage };
+  }),
 );
 
 export const LazyTestSuitePage = suspend(
-  React.lazy(() =>
-    import("./TestSuitePage/TestSuitePage").then((module) => ({
-      default: module.TestSuitePage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./TestSuitePage/TestSuitePage");
+    return { default: module.TestSuitePage };
+  }),
 );
 
 export const LazyTestCasePage = suspend(
-  React.lazy(() =>
-    import("./TestCasePage/TestCasePage").then((module) => ({
-      default: module.TestCasePage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./TestCasePage/TestCasePage");
+    return { default: module.TestCasePage };
+  }),
 );
 
 export const LazyTestRunPage = suspend(
-  React.lazy(() =>
-    import("./TestRunPage/TestRunPage").then((module) => ({
-      default: module.TestRunPage,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./TestRunPage/TestRunPage");
+    return { default: module.TestRunPage };
+  }),
 );
 
 export const LazyProjectSuitesPage = suspend(
-  React.lazy(() =>
-    import("./ProjectDetailPage/SuitesTab").then((module) => ({
-      default: module.SuitesTab,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/SuitesTab");
+    return { default: module.SuitesTab };
+  }),
 );
 
 export const LazyProjectRunsPage = suspend(
-  React.lazy(() =>
-    import("./ProjectDetailPage/RunsTab").then((module) => ({
-      default: module.RunsTab,
-    })),
-  ),
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/RunsTab");
+    return { default: module.RunsTab };
+  }),
+);
+
+export const LazyProjectAnalyticsPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/AnalyticsTab");
+    return { default: module.AnalyticsTab };
+  }),
+);
+
+export const LazyTestPlansPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./TestPlansPage/TestPlansPage");
+    return { default: module.TestPlansPage };
+  }),
+);
+
+export const LazyTestPlanPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./TestPlansPage/TestPlanPage");
+    return { default: module.TestPlanPage };
+  }),
+);
+
+export const LazyProjectLabelsPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/LabelsTab");
+    return { default: module.LabelsTab };
+  }),
+);
+
+export const LazySharePage = suspend(
+  React.lazy(async () => {
+    const module = await import("./SharePage/SharePage");
+    return { default: module.SharePage };
+  }),
 );

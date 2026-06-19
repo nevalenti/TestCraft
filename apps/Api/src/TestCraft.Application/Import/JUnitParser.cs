@@ -59,6 +59,8 @@ public static class JUnitParser
                 var suiteName = ResolveSuiteName(suiteNameFromAttr, testcase);
                 var (status, notes) = ResolveStatus(testcase);
 
+                var durationMs = ParseDurationMs(testcase.Attribute("time")?.Value);
+
                 cases.Add(
                     new ParsedTestCase
                     {
@@ -66,6 +68,7 @@ public static class JUnitParser
                         CaseName = caseName,
                         Status = status,
                         Notes = notes,
+                        DurationMs = durationMs,
                         Steps = ParseSteps(caseName),
                     }
                 );
@@ -125,6 +128,22 @@ public static class JUnitParser
                 ExpectedResult = caseName[(idx + Separator.Length)..],
             },
         ];
+    }
+
+    private static long? ParseDurationMs(string? timeStr)
+    {
+        if (string.IsNullOrEmpty(timeStr))
+            return null;
+        if (
+            double.TryParse(
+                timeStr,
+                System.Globalization.NumberStyles.Any,
+                System.Globalization.CultureInfo.InvariantCulture,
+                out var seconds
+            )
+        )
+            return (long)(seconds * 1000);
+        return null;
     }
 
     private static string? StrVal(string? value) => string.IsNullOrEmpty(value) ? null : value;

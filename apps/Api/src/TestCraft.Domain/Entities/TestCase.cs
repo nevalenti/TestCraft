@@ -17,4 +17,6 @@ public class TestCase : IAuditableEntity
     public TestSuite? Suite { get; set; }
     public ICollection<TestCaseStep> Steps { get; set; } = [];
     public ICollection<TestResult> TestResults { get; set; } = [];
+    public ICollection<TestCaseLabel> TestCaseLabels { get; set; } = [];
+    public ICollection<TestPlanCase> TestPlanCases { get; set; } = [];
 }

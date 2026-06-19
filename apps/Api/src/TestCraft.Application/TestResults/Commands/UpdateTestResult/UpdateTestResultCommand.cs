@@ -19,6 +19,7 @@ public record UpdateTestResultCommand : IRequest<TestResultResponse>, IProjectSc
     public required Guid Id { get; init; }
     public required TestResultStatus Status { get; init; }
     public string? Notes { get; init; }
+    public DefectType? DefectType { get; init; }
 }
 
 public class UpdateTestResultCommandValidator : AbstractValidator<UpdateTestResultCommand>
@@ -33,7 +34,8 @@ public class UpdateTestResultCommandValidator : AbstractValidator<UpdateTestResu
 public class UpdateTestResultCommandHandler(
     IApplicationDbContext context,
     ICacheService cache,
-    IMapper mapper
+    IMapper mapper,
+    ITestRunNotifier notifier
 ) : IRequestHandler<UpdateTestResultCommand, TestResultResponse>
 {
     public async Task<TestResultResponse> Handle(
@@ -60,6 +62,7 @@ public class UpdateTestResultCommandHandler(
 
         result.Status = request.Status;
         result.Notes = request.Notes;
+        result.DefectType = request.DefectType;
 
         await context.SaveChangesAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
@@ -68,6 +71,8 @@ public class UpdateTestResultCommandHandler(
             .TestResults.Where(r => r.Id == result.Id)
             .ProjectTo<TestResultResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
+
+        await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
 
         return summary;
     }

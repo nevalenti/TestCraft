@@ -6,6 +6,8 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+const isPublicRoute = () => location.pathname.startsWith("/share/");
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [ready, setReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -16,17 +18,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     initialized.current = true;
 
-    keycloak
-      .init({
-        onLoad: "login-required",
-        pkceMethod: "S256",
-        checkLoginIframe: false,
-      })
-      .then(() => setReady(true))
-      .catch((error_) => {
+    (async () => {
+      try {
+        await keycloak.init({
+          onLoad: isPublicRoute() ? "check-sso" : "login-required",
+          pkceMethod: "S256",
+          checkLoginIframe: false,
+        });
+        setReady(true);
+      } catch (error_) {
         console.error("Keycloak init failed:", error_);
         setError(String(error_));
-      });
+      }
+    })();
   }, []);
 
   if (error) {

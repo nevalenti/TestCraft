@@ -15,40 +15,51 @@ const BASE = (projectId: string, runId: string) =>
   `projects/${projectId}/runs/${runId}/results`;
 
 export const testResultsApi = {
-  getAll: (
+  getAll: async (
     projectId: string,
     runId: string,
     status?: TestResultStatus,
     search?: string,
     page = 1,
-  ) =>
-    client
-      .get<Paginated<TestResult>>(BASE(projectId, runId), {
+  ) => {
+    const { data } = await client.get<Paginated<TestResult>>(
+      BASE(projectId, runId),
+      {
         params: {
           page,
           pageSize: RESULTS_PAGE_SIZE,
-          ...(status === undefined ? {} : { status }),
-          ...(search ? { search } : {}),
+          ...(status !== undefined && { status }),
+          ...(search && { search }),
         },
-      })
-      .then((response) => response.data),
-  getById: (projectId: string, runId: string, id: string) =>
-    client
-      .get<TestResult>(`${BASE(projectId, runId)}/${id}`)
-      .then((response) => response.data),
-  create: (projectId: string, runId: string, input: CreateTestResult) =>
-    client
-      .post<TestResult>(BASE(projectId, runId), input)
-      .then((response) => response.data),
-  update: (
+      },
+    );
+    return data;
+  },
+  getById: async (projectId: string, runId: string, id: string) => {
+    const { data } = await client.get<TestResult>(
+      `${BASE(projectId, runId)}/${id}`,
+    );
+    return data;
+  },
+  create: async (projectId: string, runId: string, input: CreateTestResult) => {
+    const { data } = await client.post<TestResult>(
+      BASE(projectId, runId),
+      input,
+    );
+    return data;
+  },
+  update: async (
     projectId: string,
     runId: string,
     id: string,
     input: UpdateTestResult,
-  ) =>
-    client
-      .put<TestResult>(`${BASE(projectId, runId)}/${id}`, { ...input, id })
-      .then((response) => response.data),
+  ) => {
+    const { data } = await client.put<TestResult>(
+      `${BASE(projectId, runId)}/${id}`,
+      { ...input, id },
+    );
+    return data;
+  },
   delete: (projectId: string, runId: string, id: string) =>
     client.delete(`${BASE(projectId, runId)}/${id}`),
 };

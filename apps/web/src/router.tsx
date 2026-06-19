@@ -9,11 +9,16 @@ import { RootError } from "@/components/RootError";
 import AppLayout from "@/layout/AppLayout";
 import {
   LazyDashboardPage,
+  LazyProjectAnalyticsPage,
   LazyProjectDetailPage,
+  LazyProjectLabelsPage,
   LazyProjectRunsPage,
   LazyProjectsPage,
   LazyProjectSuitesPage,
+  LazySharePage,
   LazyTestCasePage,
+  LazyTestPlanPage,
+  LazyTestPlansPage,
   LazyTestRunPage,
   LazyTestSuitePage,
 } from "@/pages/lazy";
@@ -67,6 +72,18 @@ const projectRunsRoute = createRoute({
   component: LazyProjectRunsPage,
 });
 
+const projectAnalyticsRoute = createRoute({
+  getParentRoute: () => projectDetailRoute,
+  path: "analytics",
+  component: LazyProjectAnalyticsPage,
+});
+
+const projectLabelsRoute = createRoute({
+  getParentRoute: () => projectDetailRoute,
+  path: "labels",
+  component: LazyProjectLabelsPage,
+});
+
 const testSuiteRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/projects/$projectId/suites/$suiteId",
@@ -85,6 +102,24 @@ const testRunRoute = createRoute({
   component: LazyTestRunPage,
 });
 
+const testPlansRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/projects/$projectId/plans",
+  component: LazyTestPlansPage,
+});
+
+const testPlanRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/projects/$projectId/plans/$planId",
+  component: LazyTestPlanPage,
+});
+
+const shareRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/share/$token",
+  component: LazySharePage,
+});
+
 const routeTree = rootRoute.addChildren([
   indexRoute,
   projectsRoute,
@@ -92,10 +127,15 @@ const routeTree = rootRoute.addChildren([
     projectDetailIndexRoute,
     projectSuitesRoute,
     projectRunsRoute,
+    projectAnalyticsRoute,
+    projectLabelsRoute,
   ]),
   testSuiteRoute,
   testCaseRoute,
   testRunRoute,
+  testPlansRoute,
+  testPlanRoute,
+  shareRoute,
 ]);
 
 export const router = createRouter({ routeTree });

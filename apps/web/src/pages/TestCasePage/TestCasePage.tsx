@@ -27,6 +27,7 @@ import { useMemo, useRef, useState } from "react";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LabelBadge } from "@/components/ui/LabelBadge";
 import { Modal } from "@/components/ui/Modal";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useModal } from "@/hooks/useModal";
@@ -41,6 +42,7 @@ import {
   useUpdateTestCaseStep,
 } from "@/hooks/useTestCaseSteps";
 import { useTestSuite } from "@/hooks/useTestSuites";
+import { LabelSelect } from "@/pages/TestCasePage/LabelSelect";
 import { StepDragPreview } from "@/pages/TestCasePage/StepDragPreview";
 import { StepForm } from "@/pages/TestCasePage/StepForm";
 import { StepRow } from "@/pages/TestCasePage/StepRow";
@@ -207,6 +209,19 @@ export const TestCasePage = () => {
           <p className="mt-0.5 text-sm text-base-content/60">
             {testCase?.description ?? "Steps for this test case"}
           </p>
+          {testCase && (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {(testCase.labels ?? []).map((label) => (
+                <LabelBadge key={label.id} label={label} />
+              ))}
+              <LabelSelect
+                projectId={projectId}
+                suiteId={suiteId}
+                caseId={caseId}
+                assigned={testCase.labels ?? []}
+              />
+            </div>
+          )}
         </div>
       </header>
 

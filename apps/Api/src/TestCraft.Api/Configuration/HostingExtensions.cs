@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Prometheus;
 using TestCraft.Api.Errors;
+using TestCraft.Api.Hubs;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure;
 
 namespace TestCraft.Api.Configuration;
@@ -41,6 +43,9 @@ public static class HostingExtensions
             options.KnownIPNetworks.Clear();
             options.KnownProxies.Clear();
         });
+
+        builder.Services.AddSignalR();
+        builder.Services.AddScoped<ITestRunNotifier, SignalRTestRunNotifier>();
 
         return builder
             .AddSerilogLogging(apiOptions)
@@ -86,6 +91,7 @@ public static class HostingExtensions
         app.UseSwaggerDocs();
 
         app.MapControllers();
+        app.MapHub<TestRunHub>("/hubs/test-run");
 
         app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
 

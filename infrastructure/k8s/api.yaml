@@ -76,6 +76,24 @@ spec:
                   name: testcraft-secrets
                   key: SWAGGER_BASIC_AUTH_PASSWORD
                   optional: true
+            - name: MINIO_ENDPOINT
+              value: minio:9000
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: MINIO_ROOT_USER
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: MINIO_ROOT_PASSWORD
+            - name: MINIO_BUCKET
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: MINIO_BUCKET
+                  optional: true
             - name: APPLY_MIGRATIONS
               value: "true"
           ports:

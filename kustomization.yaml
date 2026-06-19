@@ -14,6 +14,7 @@ resources:
   - infrastructure/k8s/prometheus.yaml
   - infrastructure/k8s/exporters.yaml
   - infrastructure/k8s/grafana.yaml
+  - infrastructure/k8s/minio.yaml
   - infrastructure/k8s/api.yaml
   - infrastructure/k8s/web.yaml
   - infrastructure/k8s/gateway.yaml

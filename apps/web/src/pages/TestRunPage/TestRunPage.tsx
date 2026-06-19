@@ -1,4 +1,6 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PaperClipIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, ShareIcon } from "@heroicons/react/24/solid";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   createColumnHelper,
   getCoreRowModel,
@@ -15,6 +17,7 @@ import {
 } from "@testcraft/types";
 import { useEffect, useMemo, useState } from "react";
 
+import { queryKeys } from "@/api/queryKeys";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -27,6 +30,7 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { useSignalR } from "@/hooks/useSignalR";
 import {
   useCreateTestResult,
   useDeleteTestResult,
@@ -36,8 +40,11 @@ import {
 import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
 import { RESULTS_PAGE_SIZE, statusOptions } from "@/lib/constants";
 import { formatDateTime } from "@/lib/format";
+import { AttachmentModal } from "@/pages/TestRunPage/AttachmentModal";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
+import { DefectTypeBadge } from "@/pages/TestRunPage/DefectTypeBadge";
 import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
+import { ShareModal } from "@/pages/TestRunPage/ShareModal";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
 
 type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
@@ -56,6 +63,13 @@ const SUMMARY_KEY: Record<string, SummaryCountKey> = {
   Skipped: "skipped",
 };
 
+function formatDuration(ms?: number | null): string {
+  if (ms === undefined || ms === null) return "—";
+  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
+
+  return `${ms}ms`;
+}
+
 const columnHelper = createColumnHelper<TestResult>();
 
 export const TestRunPage = () => {
@@ -63,6 +77,10 @@ export const TestRunPage = () => {
   const runId = useRequiredParam("runId");
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestResult>();
+  const [shareOpen, setShareOpen] = useState(false);
+  const [attachmentResult, setAttachmentResult] = useState<TestResult | null>(
+    null,
+  );
   const [statusFilter, setStatusFilter] = useState<TestResultStatus | null>(
     null,
   );
@@ -73,6 +91,7 @@ export const TestRunPage = () => {
     pageSize: RESULTS_PAGE_SIZE,
   });
 
+  const queryClient = useQueryClient();
   const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
@@ -95,6 +114,38 @@ export const TestRunPage = () => {
   const createResult = useCreateTestResult(projectId, runId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
+
+  useSignalR(runId, {
+    ResultAdded: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testResults.all(projectId, runId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
+      });
+    },
+    ResultUpdated: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testResults.all(projectId, runId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
+      });
+    },
+    ResultDeleted: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testResults.all(projectId, runId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.summary(projectId, runId),
+      });
+    },
+    RunStatusChanged: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.detail(projectId, runId),
+      });
+    },
+  });
 
   useEffect(() => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -139,7 +190,15 @@ export const TestRunPage = () => {
       }),
       columnHelper.accessor("status", {
         header: "Status",
-        cell: (info) => <StatusBadge status={info.getValue()} />,
+        cell: (info) => (
+          <div className="flex flex-col gap-1">
+            <StatusBadge status={info.getValue()} />
+            {info.getValue() === TestResultStatus.Failed &&
+              info.row.original.defectType && (
+                <DefectTypeBadge type={info.row.original.defectType} />
+              )}
+          </div>
+        ),
       }),
       columnHelper.accessor("notes", {
         header: "Notes",
@@ -159,6 +218,15 @@ export const TestRunPage = () => {
           );
         },
       }),
+      columnHelper.accessor("durationMs", {
+        header: "Duration",
+        enableSorting: true,
+        cell: (info) => (
+          <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
+            {formatDuration(info.getValue())}
+          </span>
+        ),
+      }),
       columnHelper.accessor("executedAt", {
         header: "Executed",
         cell: (info) => (
@@ -172,6 +240,13 @@ export const TestRunPage = () => {
         header: "",
         cell: ({ row }) => (
           <div className="flex justify-end gap-0.5 opacity-100 transition-opacity focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+            <button
+              className="btn btn-ghost btn-xs"
+              onClick={() => setAttachmentResult(row.original)}
+              aria-label="Manage attachments"
+            >
+              <PaperClipIcon className="size-3.5" />
+            </button>
             <ResourceActions
               onEdit={() => openEdit(row.original)}
               onDelete={() => openDelete(row.original)}
@@ -272,6 +347,14 @@ export const TestRunPage = () => {
             {run?.environment ?? "Track test results for this run"}
           </p>
         </div>
+        <button
+          className="btn gap-1.5 btn-ghost btn-sm"
+          onClick={() => setShareOpen(true)}
+          aria-label="Share this run"
+        >
+          <ShareIcon className="size-4" />
+          Share
+        </button>
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
@@ -362,6 +445,8 @@ export const TestRunPage = () => {
             defaultValues={{
               status: modal.item.status,
               notes: modal.item.notes ?? "",
+              durationMs: modal.item.durationMs,
+              defectType: modal.item.defectType,
             }}
             onSubmit={handleUpdate(modal.item.id)}
             onCancel={close}
@@ -378,6 +463,20 @@ export const TestRunPage = () => {
           deleteItem ? `Delete result for "${deleteItem.testCaseName}"?` : ""
         }
         isLoading={deleteResult.isPending}
+      />
+      <ShareModal
+        isOpen={shareOpen}
+        onClose={() => setShareOpen(false)}
+        projectId={projectId}
+        runId={runId}
+      />
+      <AttachmentModal
+        isOpen={attachmentResult !== null}
+        onClose={() => setAttachmentResult(null)}
+        projectId={projectId}
+        runId={runId}
+        resultId={attachmentResult?.id ?? ""}
+        testCaseName={attachmentResult?.testCaseName ?? ""}
       />
     </div>
   );

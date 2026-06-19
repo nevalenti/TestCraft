@@ -56,7 +56,7 @@ export const useUpdateTestCaseStep = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateTestCaseStep) =>
+    mutationFn: ({ id, ...input }: UpdateTestCaseStep & { id: string }) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
     onSuccess: (_, { id }) => {
       notify("Step updated");

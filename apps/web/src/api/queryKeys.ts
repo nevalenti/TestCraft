@@ -3,6 +3,52 @@ export const queryKeys = {
     all: ["projects"] as const,
     detail: (id: string) => ["projects", id] as const,
   },
+  labels: {
+    all: (projectId: string) => ["projects", projectId, "labels"] as const,
+  },
+  testPlans: {
+    all: (projectId: string) => ["projects", projectId, "plans"] as const,
+    detail: (projectId: string, planId: string) =>
+      ["projects", projectId, "plans", planId] as const,
+    cases: (projectId: string, planId: string) =>
+      ["projects", projectId, "plans", planId, "cases"] as const,
+  },
+  analytics: {
+    trend: (projectId: string, limit: number) =>
+      ["projects", projectId, "analytics", "trend", limit] as const,
+    suiteBreakdown: (projectId: string, runId: string) =>
+      ["projects", projectId, "analytics", "suite-breakdown", runId] as const,
+    flakyTests: (projectId: string, minRuns: number) =>
+      ["projects", projectId, "analytics", "flaky", minRuns] as const,
+    runComparison: (projectId: string, runAId: string, runBId: string) =>
+      ["projects", projectId, "analytics", "compare", runAId, runBId] as const,
+  },
+  apiTokens: {
+    all: (projectId: string) => ["projects", projectId, "tokens"] as const,
+  },
+  attachments: {
+    all: (projectId: string, runId: string, resultId: string) =>
+      [
+        "projects",
+        projectId,
+        "runs",
+        runId,
+        "results",
+        resultId,
+        "attachments",
+      ] as const,
+  },
+  shareTokens: {
+    all: (projectId: string, runId: string) =>
+      ["projects", projectId, "runs", runId, "share"] as const,
+    byToken: (token: string) => ["share", token] as const,
+  },
+  notifications: {
+    webhooks: (projectId: string) =>
+      ["projects", projectId, "notifications", "webhooks"] as const,
+    emails: (projectId: string) =>
+      ["projects", projectId, "notifications", "emails"] as const,
+  },
   testSuites: {
     all: (projectId: string) => ["projects", projectId, "suites"] as const,
     detail: (projectId: string, id: string) =>

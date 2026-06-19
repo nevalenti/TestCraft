@@ -18,4 +18,5 @@ public class TestRun : IAuditableEntity
 
     public Project? Project { get; set; }
     public ICollection<TestResult> TestResults { get; set; } = [];
+    public ICollection<ShareToken> ShareTokens { get; set; } = [];
 }

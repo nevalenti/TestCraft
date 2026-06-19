@@ -15,5 +15,6 @@ public record ParsedTestCase
     public required string CaseName { get; init; }
     public required TestResultStatus Status { get; init; }
     public string? Notes { get; init; }
+    public long? DurationMs { get; init; }
     public IReadOnlyList<ParsedStep>? Steps { get; init; }
 }

@@ -1,10 +1,21 @@
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 
-export const formatDate = (value: string | Date): string =>
-  format(new Date(value), "MMM d, yyyy");
+const toDate = (value: unknown): Date | null => {
+  if (value == null || value === "") return null;
+  const d =
+    typeof value === "string" ? parseISO(value) : new Date(value as never);
+  return isValid(d) ? d : null;
+};
 
-export const formatDateTime = (value: string | Date): string =>
-  format(new Date(value), "MMM d, yyyy, h:mm a");
+export const formatDate = (value: unknown): string => {
+  const d = toDate(value);
+  return d ? format(d, "MMM d, yyyy") : "—";
+};
+
+export const formatDateTime = (value: unknown): string => {
+  const d = toDate(value);
+  return d ? format(d, "MMM d, yyyy, h:mm a") : "—";
+};
 
 export const toDatetimeLocal = (iso: string): string =>
-  format(new Date(iso), "yyyy-MM-dd'T'HH:mm");
+  format(parseISO(iso), "yyyy-MM-dd'T'HH:mm");

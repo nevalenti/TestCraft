@@ -2,10 +2,10 @@ import { CheckCircleIcon } from "@heroicons/react/24/solid";
 import type { AllureResultItem } from "@testcraft/types";
 import { useState } from "react";
 
-import { FileDropZone } from "@/components/ui/FileDropZone";
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
 import { cn } from "@/lib/cn";
+import { FileDropZone } from "@/pages/ProjectDetailPage/FileDropZone";
 
 type ImportData =
   | { type: "junit"; xml: string; environment: string; name?: string }

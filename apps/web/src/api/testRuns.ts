@@ -14,30 +14,35 @@ import { PAGE_SIZE } from "@/lib/constants";
 const BASE = (projectId: string) => `projects/${projectId}/runs`;
 
 export const testRunsApi = {
-  getAll: (projectId: string, search?: string) =>
-    client
-      .get<Paginated<TestRun>>(BASE(projectId), {
-        params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
-      })
-      .then((response) => response.data),
-  getById: (projectId: string, id: string) =>
-    client
-      .get<TestRun>(`${BASE(projectId)}/${id}`)
-      .then((response) => response.data),
-  create: (projectId: string, input: CreateTestRun) =>
-    client
-      .post<TestRun>(BASE(projectId), input)
-      .then((response) => response.data),
-  update: (projectId: string, id: string, input: UpdateTestRun) =>
-    client
-      .put<TestRun>(`${BASE(projectId)}/${id}`, { ...input, id })
-      .then((response) => response.data),
+  getAll: async (projectId: string, search?: string) => {
+    const { data } = await client.get<Paginated<TestRun>>(BASE(projectId), {
+      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    });
+    return data;
+  },
+  getById: async (projectId: string, id: string) => {
+    const { data } = await client.get<TestRun>(`${BASE(projectId)}/${id}`);
+    return data;
+  },
+  create: async (projectId: string, input: CreateTestRun) => {
+    const { data } = await client.post<TestRun>(BASE(projectId), input);
+    return data;
+  },
+  update: async (projectId: string, id: string, input: UpdateTestRun) => {
+    const { data } = await client.put<TestRun>(`${BASE(projectId)}/${id}`, {
+      ...input,
+      id,
+    });
+    return data;
+  },
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
-  getSummary: (projectId: string, id: string) =>
-    client
-      .get<TestRunSummary>(`${BASE(projectId)}/${id}/summary`)
-      .then((response) => response.data),
+  getSummary: async (projectId: string, id: string) => {
+    const { data } = await client.get<TestRunSummary>(
+      `${BASE(projectId)}/${id}/summary`,
+    );
+    return data;
+  },
 };
 
 export const testRunQueries = {

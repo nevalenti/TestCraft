@@ -13,6 +13,7 @@ public record GetTestCasesQuery : IRequest<Paginated<TestCaseResponse>>, IProjec
     public Guid ProjectId { get; init; }
     public Guid SuiteId { get; init; }
     public string? Search { get; init; }
+    public Guid? LabelId { get; init; }
     public int? Page { get; init; }
     public int? PageSize { get; init; }
 }
@@ -30,6 +31,13 @@ public class GetTestCasesQueryHandler(IApplicationDbContext context, IMapper map
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             query = query.Where(c => EF.Functions.ILike(c.Name, $"%{request.Search}%"));
+        }
+
+        if (request.LabelId.HasValue)
+        {
+            query = query.Where(c =>
+                c.TestCaseLabels.Any(tcl => tcl.LabelId == request.LabelId.Value)
+            );
         }
 
         var pagination = PaginationParams.Create(request.Page, request.PageSize);

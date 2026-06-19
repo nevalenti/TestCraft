@@ -27,9 +27,22 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
         builder.Property(r => r.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
         builder.Property(r => r.DeletedAt).HasColumnName("deleted_at");
 
+        builder.Property(r => r.DurationMs).HasColumnName("duration_ms");
+        builder
+            .Property(r => r.DefectType)
+            .HasColumnName("defect_type")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
         builder.HasIndex(r => r.TestRunId);
         builder.HasIndex(r => r.Status);
         builder.HasIndex(r => r.ExecutedAt);
+
+        builder
+            .HasMany(r => r.Attachments)
+            .WithOne(a => a.TestResult)
+            .HasForeignKey(a => a.TestResultId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasQueryFilter(r => !r.IsDeleted);
     }

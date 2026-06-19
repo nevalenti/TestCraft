@@ -35,7 +35,7 @@ export const useUpdateProject = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateProject) =>
+    mutationFn: ({ id, ...input }: UpdateProject & { id: string }) =>
       projectsApi.update(id, input),
     onSuccess: (_, { id }) => {
       notify("Project updated");

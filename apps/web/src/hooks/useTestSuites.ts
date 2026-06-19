@@ -42,7 +42,7 @@ export const useUpdateTestSuite = (projectId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: { id: string } & UpdateTestSuite) =>
+    mutationFn: ({ id, ...input }: UpdateTestSuite & { id: string }) =>
       testSuitesApi.update(projectId, id, input),
     onSuccess: (_, { id }) => {
       notify("Suite updated");

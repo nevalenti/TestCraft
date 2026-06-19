@@ -15,38 +15,54 @@ const BASE = (projectId: string, suiteId: string, caseId: string) =>
   `projects/${projectId}/suites/${suiteId}/cases/${caseId}/steps`;
 
 export const testCaseStepsApi = {
-  getAll: (projectId: string, suiteId: string, caseId: string) =>
-    client
-      .get<Paginated<TestCaseStep>>(BASE(projectId, suiteId, caseId), {
+  getAll: async (projectId: string, suiteId: string, caseId: string) => {
+    const { data } = await client.get<Paginated<TestCaseStep>>(
+      BASE(projectId, suiteId, caseId),
+      {
         params: { pageSize: PAGE_SIZE },
-      })
-      .then((response) => response.data),
-  getById: (projectId: string, suiteId: string, caseId: string, id: string) =>
-    client
-      .get<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`)
-      .then((response) => response.data),
-  create: (
+      },
+    );
+    return data;
+  },
+  getById: async (
+    projectId: string,
+    suiteId: string,
+    caseId: string,
+    id: string,
+  ) => {
+    const { data } = await client.get<TestCaseStep>(
+      `${BASE(projectId, suiteId, caseId)}/${id}`,
+    );
+    return data;
+  },
+  create: async (
     projectId: string,
     suiteId: string,
     caseId: string,
     input: CreateTestCaseStep,
-  ) =>
-    client
-      .post<TestCaseStep>(BASE(projectId, suiteId, caseId), input)
-      .then((response) => response.data),
-  update: (
+  ) => {
+    const { data } = await client.post<TestCaseStep>(
+      BASE(projectId, suiteId, caseId),
+      input,
+    );
+    return data;
+  },
+  update: async (
     projectId: string,
     suiteId: string,
     caseId: string,
     id: string,
     input: UpdateTestCaseStep,
-  ) =>
-    client
-      .put<TestCaseStep>(`${BASE(projectId, suiteId, caseId)}/${id}`, {
+  ) => {
+    const { data } = await client.put<TestCaseStep>(
+      `${BASE(projectId, suiteId, caseId)}/${id}`,
+      {
         ...input,
         id,
-      })
-      .then((response) => response.data),
+      },
+    );
+    return data;
+  },
   bulkReorder: (
     projectId: string,
     suiteId: string,

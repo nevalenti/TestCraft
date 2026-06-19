@@ -14,6 +14,7 @@ public record GetTestCasesByProjectQuery
 {
     public Guid ProjectId { get; init; }
     public string? Search { get; init; }
+    public Guid? LabelId { get; init; }
     public int? Page { get; init; }
     public int? PageSize { get; init; }
 }
@@ -31,6 +32,13 @@ public class GetTestCasesByProjectQueryHandler(IApplicationDbContext context, IM
         if (!string.IsNullOrWhiteSpace(request.Search))
         {
             query = query.Where(c => EF.Functions.ILike(c.Name, $"%{request.Search}%"));
+        }
+
+        if (request.LabelId.HasValue)
+        {
+            query = query.Where(c =>
+                c.TestCaseLabels.Any(tcl => tcl.LabelId == request.LabelId.Value)
+            );
         }
 
         var pagination = PaginationParams.Create(request.Page, request.PageSize);

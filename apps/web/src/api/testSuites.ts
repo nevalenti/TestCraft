@@ -13,24 +13,27 @@ import { PAGE_SIZE } from "@/lib/constants";
 const BASE = (projectId: string) => `projects/${projectId}/suites`;
 
 export const testSuitesApi = {
-  getAll: (projectId: string, search?: string) =>
-    client
-      .get<Paginated<TestSuite>>(BASE(projectId), {
-        params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
-      })
-      .then((response) => response.data),
-  getById: (projectId: string, id: string) =>
-    client
-      .get<TestSuite>(`${BASE(projectId)}/${id}`)
-      .then((response) => response.data),
-  create: (projectId: string, input: CreateTestSuite) =>
-    client
-      .post<TestSuite>(BASE(projectId), input)
-      .then((response) => response.data),
-  update: (projectId: string, id: string, input: UpdateTestSuite) =>
-    client
-      .put<TestSuite>(`${BASE(projectId)}/${id}`, { ...input, id })
-      .then((response) => response.data),
+  getAll: async (projectId: string, search?: string) => {
+    const { data } = await client.get<Paginated<TestSuite>>(BASE(projectId), {
+      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    });
+    return data;
+  },
+  getById: async (projectId: string, id: string) => {
+    const { data } = await client.get<TestSuite>(`${BASE(projectId)}/${id}`);
+    return data;
+  },
+  create: async (projectId: string, input: CreateTestSuite) => {
+    const { data } = await client.post<TestSuite>(BASE(projectId), input);
+    return data;
+  },
+  update: async (projectId: string, id: string, input: UpdateTestSuite) => {
+    const { data } = await client.put<TestSuite>(`${BASE(projectId)}/${id}`, {
+      ...input,
+      id,
+    });
+    return data;
+  },
   delete: (projectId: string, id: string) =>
     client.delete(`${BASE(projectId)}/${id}`),
 };

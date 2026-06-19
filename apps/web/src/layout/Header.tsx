@@ -93,7 +93,7 @@ export const Header = () => {
                 <button
                   onClick={() =>
                     keycloak.logout({
-                      redirectUri: globalThis.location.origin + "/",
+                      redirectUri: location.origin + "/",
                     })
                   }
                 >

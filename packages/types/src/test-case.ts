@@ -1,4 +1,5 @@
 import type { TestCasePriority } from "./enums.js";
+import type { Label } from "./label.js";
 
 export interface TestCase {
   id: string;
@@ -7,6 +8,7 @@ export interface TestCase {
   description?: string;
   priority: TestCasePriority;
   stepCount: number;
+  labels?: Label[];
   createdAt: string;
   updatedAt?: string;
 }

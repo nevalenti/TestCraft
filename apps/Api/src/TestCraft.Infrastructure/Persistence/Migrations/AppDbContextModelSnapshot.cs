@@ -22,6 +22,157 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.ApiToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<bool>("IsRevoked")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_revoked");
+
+                    b.Property<DateTimeOffset?>("LastUsedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("last_used_at");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)")
+                        .HasColumnName("token_hash");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.ToTable("api_tokens", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.Attachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("content_type");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("file_name");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint")
+                        .HasColumnName("size_bytes");
+
+                    b.Property<string>("StorageKey")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("storage_key");
+
+                    b.Property<Guid>("TestResultId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("test_result_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestResultId");
+
+                    b.ToTable("attachments", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.EmailSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Events")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("events");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("email_subscriptions", (string)null);
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.ImportJob", b =>
                 {
                     b.Property<Guid>("Id")
@@ -72,6 +223,44 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.HasIndex("TestRunId");
 
                     b.ToTable("import_jobs", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.Label", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId", "Name")
+                        .IsUnique();
+
+                    b.ToTable("labels", (string)null);
                 });
 
             modelBuilder.Entity("TestCraft.Domain.Entities.Project", b =>
@@ -126,6 +315,48 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("projects", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.ShareToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<Guid>("CreatedById")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by_id");
+
+                    b.Property<DateTimeOffset?>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("expires_at");
+
+                    b.Property<Guid>("TestRunId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("test_run_id");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("token");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TestRunId");
+
+                    b.HasIndex("Token")
+                        .IsUnique();
+
+                    b.ToTable("share_tokens", (string)null);
                 });
 
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCase", b =>
@@ -186,6 +417,23 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.ToTable("test_cases", (string)null);
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestCaseLabel", b =>
+                {
+                    b.Property<Guid>("TestCaseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("test_case_id");
+
+                    b.Property<Guid>("LabelId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("label_id");
+
+                    b.HasKey("TestCaseId", "LabelId");
+
+                    b.HasIndex("LabelId");
+
+                    b.ToTable("test_case_labels", (string)null);
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCaseStep", b =>
                 {
                     b.Property<Guid>("Id")
@@ -241,7 +489,7 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.ToTable("test_case_steps", (string)null);
                 });
 
-            modelBuilder.Entity("TestCraft.Domain.Entities.TestResult", b =>
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestPlan", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -258,6 +506,87 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("test_plans", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestPlanCase", b =>
+                {
+                    b.Property<Guid>("TestPlanId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("test_plan_id");
+
+                    b.Property<Guid>("TestCaseId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("test_case_id");
+
+                    b.Property<int>("Order")
+                        .HasColumnType("integer")
+                        .HasColumnName("order");
+
+                    b.HasKey("TestPlanId", "TestCaseId");
+
+                    b.HasIndex("TestCaseId");
+
+                    b.ToTable("test_plan_cases", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestResult", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("DefectType")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("defect_type");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<long?>("DurationMs")
+                        .HasColumnType("bigint")
+                        .HasColumnName("duration_ms");
 
                     b.Property<DateTimeOffset>("ExecutedAt")
                         .HasColumnType("timestamp with time zone")
@@ -429,6 +758,86 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.ToTable("test_suites", (string)null);
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.WebhookSubscription", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("Events")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("events");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<string>("Secret")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("secret");
+
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)")
+                        .HasColumnName("url");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("webhook_subscriptions", (string)null);
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.ApiToken", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("ApiTokens")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.Attachment", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.TestResult", "TestResult")
+                        .WithMany("Attachments")
+                        .HasForeignKey("TestResultId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestResult");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.EmailSubscription", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("EmailSubscriptions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.ImportJob", b =>
                 {
                     b.HasOne("TestCraft.Domain.Entities.Project", null)
@@ -443,6 +852,28 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.Label", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("Labels")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.ShareToken", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.TestRun", "TestRun")
+                        .WithMany("ShareTokens")
+                        .HasForeignKey("TestRunId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestRun");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCase", b =>
                 {
                     b.HasOne("TestCraft.Domain.Entities.TestSuite", "Suite")
@@ -454,6 +885,25 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.Navigation("Suite");
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestCaseLabel", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Label", "Label")
+                        .WithMany("TestCaseLabels")
+                        .HasForeignKey("LabelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TestCraft.Domain.Entities.TestCase", "TestCase")
+                        .WithMany("TestCaseLabels")
+                        .HasForeignKey("TestCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Label");
+
+                    b.Navigation("TestCase");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCaseStep", b =>
                 {
                     b.HasOne("TestCraft.Domain.Entities.TestCase", "TestCase")
@@ -463,6 +913,36 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("TestCase");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestPlan", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("TestPlans")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestPlanCase", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.TestCase", "TestCase")
+                        .WithMany("TestPlanCases")
+                        .HasForeignKey("TestCaseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("TestCraft.Domain.Entities.TestPlan", "TestPlan")
+                        .WithMany("TestPlanCases")
+                        .HasForeignKey("TestPlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("TestCase");
+
+                    b.Navigation("TestPlan");
                 });
 
             modelBuilder.Entity("TestCraft.Domain.Entities.TestResult", b =>
@@ -506,22 +986,64 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.WebhookSubscription", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("WebhookSubscriptions")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.Label", b =>
+                {
+                    b.Navigation("TestCaseLabels");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.Project", b =>
                 {
+                    b.Navigation("ApiTokens");
+
+                    b.Navigation("EmailSubscriptions");
+
+                    b.Navigation("Labels");
+
+                    b.Navigation("TestPlans");
+
                     b.Navigation("TestRuns");
 
                     b.Navigation("TestSuites");
+
+                    b.Navigation("WebhookSubscriptions");
                 });
 
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCase", b =>
                 {
                     b.Navigation("Steps");
 
+                    b.Navigation("TestCaseLabels");
+
+                    b.Navigation("TestPlanCases");
+
                     b.Navigation("TestResults");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestPlan", b =>
+                {
+                    b.Navigation("TestPlanCases");
+                });
+
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestResult", b =>
+                {
+                    b.Navigation("Attachments");
                 });
 
             modelBuilder.Entity("TestCraft.Domain.Entities.TestRun", b =>
                 {
+                    b.Navigation("ShareTokens");
+
                     b.Navigation("TestResults");
                 });
 

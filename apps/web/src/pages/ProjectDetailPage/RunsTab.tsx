@@ -1,4 +1,8 @@
-import { ArrowUpTrayIcon, BoltIcon, PlusIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowUpTrayIcon,
+  PlayCircleIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
 import { useState } from "react";
 
@@ -8,7 +12,6 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { SourceFilter } from "@/components/ui/SourceFilter";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
@@ -25,6 +28,7 @@ import { formatDate } from "@/lib/format";
 import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
 import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
+import { SourceFilter } from "@/pages/ProjectDetailPage/SourceFilter";
 import { useViewModeStore } from "@/stores/viewMode";
 
 export const RunsTab = () => {
@@ -76,7 +80,7 @@ export const RunsTab = () => {
   const allRuns = runs ?? [];
   const sources = [
     ...new Set(allRuns.map((r) => r.source).filter(Boolean) as string[]),
-  ].toSorted();
+  ].toSorted((a, b) => a.localeCompare(b));
   const sourceCounts = Object.fromEntries(
     sources.map((src) => [src, allRuns.filter((r) => r.source === src).length]),
   );
@@ -113,7 +117,7 @@ export const RunsTab = () => {
               label="test run"
               cardBg="card-bg-warning"
               accentText="text-warning"
-              typeIcon={<BoltIcon className="size-4" />}
+              typeIcon={<PlayCircleIcon className="size-4" />}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold">
@@ -151,7 +155,7 @@ export const RunsTab = () => {
             label="test run"
             cardBg="card-bg-warning"
             accentText="text-warning"
-            typeIcon={<BoltIcon className="size-3.5" />}
+            typeIcon={<PlayCircleIcon className="size-3.5" />}
           >
             <div className="flex flex-col gap-1.5">
               <span className="line-clamp-2 text-base leading-snug font-semibold">

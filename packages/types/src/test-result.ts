@@ -1,4 +1,4 @@
-import type { TestResultStatus } from "./enums.js";
+import type { DefectType, TestResultStatus } from "./enums.js";
 
 export interface TestResult {
   id: string;
@@ -8,6 +8,8 @@ export interface TestResult {
   testCaseName: string;
   status: TestResultStatus;
   notes?: string;
+  durationMs?: number;
+  defectType?: DefectType;
   executedAt: string;
   executedById?: string;
   createdAt: string;
@@ -18,10 +20,14 @@ export interface CreateTestResult {
   testCaseId: string;
   status: TestResultStatus;
   notes?: string;
+  durationMs?: number;
+  defectType?: DefectType;
   executedAt: string;
 }
 
 export interface UpdateTestResult {
   status: TestResultStatus;
   notes?: string;
+  durationMs?: number;
+  defectType?: DefectType;
 }

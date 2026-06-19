@@ -11,6 +11,7 @@ const client = axios.create({
   },
 });
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 client.interceptors.request.use(async (config) => {
   if (keycloak.authenticated) {
     try {
@@ -24,6 +25,7 @@ client.interceptors.request.use(async (config) => {
   return config;
 });
 
+// eslint-disable-next-line unicorn/no-top-level-side-effects
 client.interceptors.response.use(
   (response) => response,
   (error) => {

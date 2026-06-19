@@ -11,6 +11,8 @@ public record TestResultResponse
     public required string TestCaseName { get; init; }
     public required TestResultStatus Status { get; init; }
     public string? Notes { get; init; }
+    public long? DurationMs { get; init; }
+    public DefectType? DefectType { get; init; }
     public required DateTimeOffset ExecutedAt { get; init; }
     public Guid? ExecutedById { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }

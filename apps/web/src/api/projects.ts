@@ -13,20 +13,27 @@ import { PAGE_SIZE } from "@/lib/constants";
 const BASE = "projects";
 
 export const projectsApi = {
-  getAll: (search?: string) =>
-    client
-      .get<Paginated<Project>>(BASE, {
-        params: { pageSize: PAGE_SIZE, ...(search ? { search } : {}) },
-      })
-      .then((response) => response.data),
-  getById: (id: string) =>
-    client.get<Project>(`${BASE}/${id}`).then((response) => response.data),
-  create: (input: CreateProject) =>
-    client.post<Project>(BASE, input).then((response) => response.data),
-  update: (id: string, input: UpdateProject) =>
-    client
-      .put<Project>(`${BASE}/${id}`, { ...input, id })
-      .then((response) => response.data),
+  getAll: async (search?: string) => {
+    const { data } = await client.get<Paginated<Project>>(BASE, {
+      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    });
+    return data;
+  },
+  getById: async (id: string) => {
+    const { data } = await client.get<Project>(`${BASE}/${id}`);
+    return data;
+  },
+  create: async (input: CreateProject) => {
+    const { data } = await client.post<Project>(BASE, input);
+    return data;
+  },
+  update: async (id: string, input: UpdateProject) => {
+    const { data } = await client.put<Project>(`${BASE}/${id}`, {
+      ...input,
+      id,
+    });
+    return data;
+  },
   delete: (id: string) => client.delete(`${BASE}/${id}`),
 };
 

@@ -19,4 +19,6 @@ public record AllureResultItem
     public string? Status { get; init; }
     public AllureStatusDetails? StatusDetails { get; init; }
     public IReadOnlyList<AllureLabel>? Labels { get; init; }
+    public long? Start { get; init; }
+    public long? Stop { get; init; }
 }

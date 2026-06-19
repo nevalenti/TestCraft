@@ -1,0 +1,83 @@
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Enums;
+
+namespace TestCraft.Application.Analytics.Queries.GetRunComparison;
+
+public record GetRunComparisonQuery : IRequest<RunComparison>, IProjectScopedRequest
+{
+    public Guid ProjectId { get; init; }
+    public required Guid RunAId { get; init; }
+    public required Guid RunBId { get; init; }
+}
+
+public class GetRunComparisonQueryHandler(IApplicationDbContext context)
+    : IRequestHandler<GetRunComparisonQuery, RunComparison>
+{
+    public async Task<RunComparison> Handle(
+        GetRunComparisonQuery request,
+        CancellationToken cancellationToken
+    )
+    {
+        var runA =
+            await context.TestRuns.FirstOrDefaultAsync(
+                r => r.Id == request.RunAId && r.ProjectId == request.ProjectId,
+                cancellationToken
+            ) ?? throw new NotFoundException("Run A not found");
+
+        var runB =
+            await context.TestRuns.FirstOrDefaultAsync(
+                r => r.Id == request.RunBId && r.ProjectId == request.ProjectId,
+                cancellationToken
+            ) ?? throw new NotFoundException("Run B not found");
+
+        var resultsA = await context
+            .TestResults.Where(r => r.TestRunId == request.RunAId && !r.IsDeleted)
+            .Select(r => new { r.TestCaseId, r.Status })
+            .ToListAsync(cancellationToken);
+
+        var resultsB = await context
+            .TestResults.Where(r => r.TestRunId == request.RunBId && !r.IsDeleted)
+            .Select(r => new { r.TestCaseId, r.Status })
+            .ToListAsync(cancellationToken);
+
+        var mapA = resultsA.ToDictionary(r => r.TestCaseId, r => r.Status);
+        var mapB = resultsB.ToDictionary(r => r.TestCaseId, r => r.Status);
+
+        var allCaseIds = mapA.Keys.Union(mapB.Keys).ToList();
+
+        var caseNames = await context
+            .TestCases.Where(tc => allCaseIds.Contains(tc.Id))
+            .Select(tc => new { tc.Id, tc.Name })
+            .ToDictionaryAsync(tc => tc.Id, tc => tc.Name, cancellationToken);
+
+        var rows = allCaseIds
+            .Select(caseId =>
+            {
+                mapA.TryGetValue(caseId, out var statusA);
+                mapB.TryGetValue(caseId, out var statusB);
+                caseNames.TryGetValue(caseId, out var caseName);
+
+                var isRegression =
+                    statusA == TestResultStatus.Passed && statusB == TestResultStatus.Failed;
+                var isFix =
+                    statusA == TestResultStatus.Failed && statusB == TestResultStatus.Passed;
+
+                return new ComparisonRow(
+                    caseId,
+                    caseName ?? caseId.ToString(),
+                    mapA.ContainsKey(caseId) ? statusA.ToString() : null,
+                    mapB.ContainsKey(caseId) ? statusB.ToString() : null,
+                    isRegression,
+                    isFix
+                );
+            })
+            .OrderBy(r => r.TestCaseName)
+            .ToList();
+
+        return new RunComparison(runA.Name, runB.Name, rows);
+    }
+}

@@ -20,6 +20,8 @@ public record CreateTestResultCommand : IRequest<TestResultResponse>, IProjectSc
     public required Guid TestCaseId { get; init; }
     public required TestResultStatus Status { get; init; }
     public string? Notes { get; init; }
+    public long? DurationMs { get; init; }
+    public DefectType? DefectType { get; init; }
     public required DateTimeOffset ExecutedAt { get; init; }
 }
 
@@ -37,7 +39,8 @@ public class CreateTestResultCommandHandler(
     IApplicationDbContext context,
     ICacheService cache,
     ICurrentUser currentUser,
-    IMapper mapper
+    IMapper mapper,
+    ITestRunNotifier notifier
 ) : IRequestHandler<CreateTestResultCommand, TestResultResponse>
 {
     public async Task<TestResultResponse> Handle(
@@ -62,6 +65,8 @@ public class CreateTestResultCommandHandler(
             TestCaseId = request.TestCaseId,
             Status = request.Status,
             Notes = request.Notes,
+            DurationMs = request.DurationMs,
+            DefectType = request.DefectType,
             ExecutedAt = request.ExecutedAt,
             ExecutedById = currentUser.UserId,
         };
@@ -75,6 +80,7 @@ public class CreateTestResultCommandHandler(
             .FirstAsync(cancellationToken);
 
         await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
+        await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
 
         return summary;
     }

@@ -21,7 +21,7 @@ const extractMessage = (error: unknown): string | undefined => {
 export const ErrorState = ({
   error,
   message,
-  onRetry = () => globalThis.location.reload(),
+  onRetry = () => location.reload(),
 }: Props) => {
   const displayMessage =
     message ??

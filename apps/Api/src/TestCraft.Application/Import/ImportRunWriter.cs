@@ -239,6 +239,7 @@ internal static class ImportRunWriter
                     TestCaseId = caseMap[key],
                     Status = parsedCase.Status,
                     Notes = parsedCase.Notes,
+                    DurationMs = parsedCase.DurationMs,
                     ExecutedAt = now,
                     ExecutedById = userId,
                 }

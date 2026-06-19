@@ -11,6 +11,11 @@ public static class AllureParser
         for (var i = 0; i < results.Count; i++)
         {
             var result = results[i];
+            long? durationMs =
+                result.Start is not null && result.Stop is not null
+                    ? result.Stop.Value - result.Start.Value
+                    : null;
+
             cases.Add(
                 new ParsedTestCase
                 {
@@ -20,6 +25,7 @@ public static class AllureParser
                     CaseName = result.Name ?? result.FullName ?? $"Unknown ({i + 1})",
                     Status = ResolveStatus(result.Status),
                     Notes = result.StatusDetails?.Message,
+                    DurationMs = durationMs,
                 }
             );
         }

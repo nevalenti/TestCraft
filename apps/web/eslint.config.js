@@ -86,6 +86,8 @@ export default defineConfig([
     files: ["**/*.test.{ts,tsx}"],
     rules: {
       "unicorn/no-document-cookie": "off",
+      "unicorn/no-top-level-assignment-in-function": "off",
+      "unicorn/no-this-outside-of-class": "off",
     },
   },
 ]);

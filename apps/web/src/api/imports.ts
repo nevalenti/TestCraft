@@ -5,18 +5,24 @@ import client from "@/api/client";
 const BASE = (projectId: string) => `projects/${projectId}/import`;
 
 export const importsApi = {
-  junit: (
+  junit: async (
     projectId: string,
     input: { xml: string; environment: string; name?: string },
-  ) =>
-    client
-      .post<TestRun>(`${BASE(projectId)}/junit`, input)
-      .then((response) => response.data),
-  allure: (
+  ) => {
+    const { data } = await client.post<TestRun>(
+      `${BASE(projectId)}/junit`,
+      input,
+    );
+    return data;
+  },
+  allure: async (
     projectId: string,
     input: { results: AllureResultItem[]; environment: string; name?: string },
-  ) =>
-    client
-      .post<TestRun>(`${BASE(projectId)}/allure`, input)
-      .then((response) => response.data),
+  ) => {
+    const { data } = await client.post<TestRun>(
+      `${BASE(projectId)}/allure`,
+      input,
+    );
+    return data;
+  },
 };

@@ -26,7 +26,31 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasQueryFilter(p => !p.IsDeleted);
 
         builder.HasMany(p => p.TestSuites).WithOne(s => s.Project).HasForeignKey(s => s.ProjectId);
-
         builder.HasMany(p => p.TestRuns).WithOne(r => r.Project).HasForeignKey(r => r.ProjectId);
+        builder
+            .HasMany(p => p.Labels)
+            .WithOne(l => l.Project)
+            .HasForeignKey(l => l.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.TestPlans)
+            .WithOne(tp => tp.Project)
+            .HasForeignKey(tp => tp.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.ApiTokens)
+            .WithOne(t => t.Project)
+            .HasForeignKey(t => t.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.WebhookSubscriptions)
+            .WithOne(w => w.Project)
+            .HasForeignKey(w => w.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.EmailSubscriptions)
+            .WithOne(e => e.Project)
+            .HasForeignKey(e => e.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -15,6 +15,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
     public DbSet<TestRun> TestRuns => Set<TestRun>();
     public DbSet<TestResult> TestResults => Set<TestResult>();
     public DbSet<ImportJob> ImportJobs => Set<ImportJob>();
+    public DbSet<Label> Labels => Set<Label>();
+    public DbSet<TestCaseLabel> TestCaseLabels => Set<TestCaseLabel>();
+    public DbSet<TestPlan> TestPlans => Set<TestPlan>();
+    public DbSet<TestPlanCase> TestPlanCases => Set<TestPlanCase>();
+    public DbSet<ApiToken> ApiTokens => Set<ApiToken>();
+    public DbSet<Attachment> Attachments => Set<Attachment>();
+    public DbSet<ShareToken> ShareTokens => Set<ShareToken>();
+    public DbSet<WebhookSubscription> WebhookSubscriptions => Set<WebhookSubscription>();
+    public DbSet<EmailSubscription> EmailSubscriptions => Set<EmailSubscription>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

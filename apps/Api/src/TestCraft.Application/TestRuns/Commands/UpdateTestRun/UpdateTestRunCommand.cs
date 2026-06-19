@@ -1,12 +1,14 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using FluentValidation;
+using MassTransit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Notifications.Contracts;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Rules;
 
@@ -34,7 +36,8 @@ public class UpdateTestRunCommandValidator : AbstractValidator<UpdateTestRunComm
 public class UpdateTestRunCommandHandler(
     IApplicationDbContext context,
     ICacheService cache,
-    IMapper mapper
+    IMapper mapper,
+    IPublishEndpoint publishEndpoint
 ) : IRequestHandler<UpdateTestRunCommand, TestRunResponse>
 {
     public async Task<TestRunResponse> Handle(
@@ -55,12 +58,28 @@ public class UpdateTestRunCommandHandler(
             );
         }
 
+        var oldStatus = run.Status;
+
         run.Name = request.Name;
         run.Environment = request.Environment;
         run.Status = request.Status;
 
         await context.SaveChangesAsync(cancellationToken);
         await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
+
+        if (oldStatus != request.Status)
+        {
+            await publishEndpoint.Publish(
+                new RunStatusChanged(
+                    run.Id,
+                    run.ProjectId,
+                    run.Name,
+                    request.Status.ToString(),
+                    oldStatus.ToString()
+                ),
+                cancellationToken
+            );
+        }
 
         var summary = await context
             .TestRuns.Where(r => r.Id == run.Id)

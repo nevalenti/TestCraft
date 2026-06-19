@@ -1,6 +1,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type CreateTestResult, TestResultStatus } from "@testcraft/types";
-import { useForm } from "react-hook-form";
+import {
+  type CreateTestResult,
+  DefectType,
+  TestResultStatus,
+} from "@testcraft/types";
+import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
@@ -12,10 +16,24 @@ import { cn } from "@/lib/cn";
 import { statusOptions } from "@/lib/constants";
 import { toDatetimeLocal } from "@/lib/format";
 
+const defectTypeOptions = [
+  { value: DefectType.ProductBug, label: "Product Bug" },
+  { value: DefectType.AutomationBug, label: "Automation Bug" },
+  { value: DefectType.EnvironmentIssue, label: "Environment Issue" },
+  { value: DefectType.ToInvestigate, label: "To Investigate" },
+];
+
 const schema = z.object({
   testCaseId: z.string().min(1, "Select a test case"),
   status: z.nativeEnum(TestResultStatus),
   notes: z.string(),
+  durationMs: z.coerce
+    .number()
+    .int()
+    .nonnegative()
+    .optional()
+    .or(z.literal("")),
+  defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
   executedAt: z.string().min(1, "Executed at is required"),
 });
 
@@ -39,6 +57,7 @@ export const CreateResultForm = ({
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -46,9 +65,12 @@ export const CreateResultForm = ({
       testCaseId: "",
       status: TestResultStatus.Passed,
       notes: "",
+      durationMs: "",
       executedAt: toDatetimeLocal(new Date().toISOString()),
     },
   });
+
+  const status = useWatch({ control, name: "status" });
 
   let defaultOptionText: string;
 
@@ -63,6 +85,11 @@ export const CreateResultForm = ({
           testCaseId: data.testCaseId,
           status: data.status,
           notes: data.notes || undefined,
+          durationMs: data.durationMs === "" ? undefined : data.durationMs,
+          defectType:
+            data.status === TestResultStatus.Failed && data.defectType !== ""
+              ? data.defectType
+              : undefined,
           executedAt: new Date(data.executedAt).toISOString(),
         }),
       )}
@@ -107,6 +134,39 @@ export const CreateResultForm = ({
             </option>
           ))}
         </select>
+      </FormField>
+      {status === TestResultStatus.Failed && (
+        <FormField
+          label="Defect Type"
+          htmlFor="result-defect-type"
+          error={errors.defectType?.message}
+        >
+          <select
+            id="result-defect-type"
+            className="select-bordered select w-full"
+            {...register("defectType")}
+          >
+            <option value="">Select defect type (optional)</option>
+            {defectTypeOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </FormField>
+      )}
+      <FormField
+        label="Duration (ms)"
+        htmlFor="result-duration"
+        error={errors.durationMs?.message}
+      >
+        <FormInput
+          id="result-duration"
+          type="number"
+          placeholder="e.g. 1500 (optional)"
+          min={0}
+          {...register("durationMs")}
+        />
       </FormField>
       <FormField
         label="Executed At"

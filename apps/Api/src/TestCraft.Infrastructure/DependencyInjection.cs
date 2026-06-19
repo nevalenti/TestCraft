@@ -2,12 +2,16 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Minio;
 using TestCraft.Application.Caching;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Auth;
 using TestCraft.Infrastructure.Caching;
 using TestCraft.Infrastructure.Configuration;
+using TestCraft.Infrastructure.Email;
+using TestCraft.Infrastructure.Notifications;
 using TestCraft.Infrastructure.Persistence;
+using TestCraft.Infrastructure.Storage;
 
 namespace TestCraft.Infrastructure;
 
@@ -19,6 +23,8 @@ public static class DependencyInjection
     )
     {
         var options = InfrastructureOptions.Bind(configuration);
+
+        services.AddSingleton(options);
 
         services.AddDbContext<AppDbContext>(dbOptions =>
             dbOptions.UseNpgsql(
@@ -63,6 +69,36 @@ public static class DependencyInjection
                 busConfig.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
             }
         });
+
+        if (
+            !string.IsNullOrEmpty(options.MinioAccessKey)
+            && !string.IsNullOrEmpty(options.MinioSecretKey)
+        )
+        {
+            services.AddSingleton<IMinioClient>(
+                new MinioClient()
+                    .WithEndpoint(options.MinioEndpoint)
+                    .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
+                    .WithSSL(options.MinioUseSsl)
+                    .Build()
+            );
+            services.AddScoped<IStorageService, MinioStorageService>();
+        }
+        else
+        {
+            services.AddScoped<IStorageService, NoOpStorageService>();
+        }
+        services.AddScoped<IEmailService, MailKitEmailService>();
+        services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
+        services.AddSingleton<IApiTokenHasher, ApiTokenHasher>();
+
+        services.AddHttpClient(
+            "notifications",
+            client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(10);
+            }
+        );
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
