@@ -54,19 +54,14 @@ public class TestRunsApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Create_WithStatus_SetsStatus()
+    public async Task Create_AlwaysStartsAsActive()
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRunCommand
-            {
-                Name = "Completed Run",
-                Environment = "ci",
-                Status = TestRunStatus.Completed,
-            }
+            new CreateTestRunCommand { Name = "Some Run", Environment = "ci" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -74,7 +69,7 @@ public class TestRunsApiTests(ApiFactory factory)
         var created = await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
             ApiTestHelpers.JsonOptions
         );
-        created!.Status.Should().Be(TestRunStatus.Completed);
+        created!.Status.Should().Be(TestRunStatus.Active);
     }
 
     [Fact]
@@ -127,7 +122,18 @@ public class TestRunsApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
-        var run = await client.CreateRunAsync(project.Id, status: TestRunStatus.Completed);
+        var run = await client.CreateRunAsync(project.Id);
+
+        await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}",
+            new UpdateTestRunCommand
+            {
+                Id = run.Id,
+                Name = run.Name,
+                Environment = run.Environment,
+                Status = TestRunStatus.Completed,
+            }
+        );
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",

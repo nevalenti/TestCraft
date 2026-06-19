@@ -62,13 +62,12 @@ public class UpdateTestResultCommandHandler(
         result.Notes = request.Notes;
 
         await context.SaveChangesAsync(cancellationToken);
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
         var summary = await context
             .TestResults.Where(r => r.Id == result.Id)
             .ProjectTo<TestResultResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
-
-        await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
         return summary;
     }

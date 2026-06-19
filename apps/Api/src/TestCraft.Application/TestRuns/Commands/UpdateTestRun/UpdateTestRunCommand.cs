@@ -60,13 +60,12 @@ public class UpdateTestRunCommandHandler(
         run.Status = request.Status;
 
         await context.SaveChangesAsync(cancellationToken);
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
 
         var summary = await context
             .TestRuns.Where(r => r.Id == run.Id)
             .ProjectTo<TestRunResponse>(mapper.ConfigurationProvider)
             .FirstAsync(cancellationToken);
-
-        await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
 
         return summary;
     }

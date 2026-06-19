@@ -68,18 +68,12 @@ internal static class ApiTestHelpers
         this HttpClient client,
         Guid projectId,
         string name = "Run",
-        string environment = "staging",
-        TestRunStatus? status = null
+        string environment = "staging"
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs",
-            new CreateTestRunCommand
-            {
-                Name = name,
-                Environment = environment,
-                Status = status,
-            }
+            new CreateTestRunCommand { Name = name, Environment = environment }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
