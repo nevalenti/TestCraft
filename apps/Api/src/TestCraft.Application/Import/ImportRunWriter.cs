@@ -222,20 +222,16 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        var dedupedCases = new Dictionary<(Guid SuiteId, string Name), ParsedTestCase>();
-        foreach (var parsedCase in cases)
-        {
-            var suiteId = suiteMap[parsedCase.SuiteName];
-            dedupedCases[(suiteId, parsedCase.CaseName)] = parsedCase;
-        }
-
-        if (dedupedCases.Count == 0)
+        if (cases.Count == 0)
         {
             return;
         }
 
-        foreach (var (key, parsedCase) in dedupedCases)
+        foreach (var parsedCase in cases)
         {
+            var suiteId = suiteMap[parsedCase.SuiteName];
+            var key = (suiteId, parsedCase.CaseName);
+
             context.TestResults.Add(
                 new TestResult
                 {
