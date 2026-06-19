@@ -1,3 +1,4 @@
+using System.Xml;
 using System.Xml.Linq;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Domain.Enums;
@@ -14,7 +15,9 @@ public static class JUnitParser
         XDocument doc;
         try
         {
-            doc = XDocument.Parse(xml);
+            var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Prohibit };
+            using var reader = XmlReader.Create(new StringReader(xml), settings);
+            doc = XDocument.Load(reader);
         }
         catch (Exception)
         {
