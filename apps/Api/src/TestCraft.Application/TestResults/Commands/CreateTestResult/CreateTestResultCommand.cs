@@ -47,7 +47,7 @@ public class CreateTestResultCommandHandler(
     {
         var run =
             await context.TestRuns.FirstOrDefaultAsync(
-                r => r.Id == request.RunId,
+                r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
                 cancellationToken
             ) ?? throw new NotFoundException();
 
