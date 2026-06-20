@@ -1,10 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
 import type { SharedRunResponse, ShareToken } from "@testcraft/types";
-import axios from "axios";
 
 import client from "@/api/client";
 import { queryKeys } from "@/api/queryKeys";
-import { env } from "@/lib/env";
 
 const BASE = (projectId: string, runId: string) =>
   `projects/${projectId}/runs/${runId}/share`;
@@ -28,9 +26,7 @@ export const shareTokensApi = {
   revoke: (projectId: string, runId: string, id: string) =>
     client.delete(`${BASE(projectId, runId)}/${id}`),
   getByToken: async (token: string) => {
-    const { data } = await axios.get<SharedRunResponse>(
-      `${env.VITE_API_URL}/share/${token}`,
-    );
+    const { data } = await client.get<SharedRunResponse>(`share/${token}`);
     return data;
   },
 };

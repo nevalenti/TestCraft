@@ -2,6 +2,7 @@ import {
   createRootRoute,
   createRoute,
   createRouter,
+  Outlet,
   redirect,
 } from "@tanstack/react-router";
 
@@ -25,25 +26,32 @@ import {
 import { NotFound } from "@/pages/NotFound";
 
 const rootRoute = createRootRoute({
-  component: AppLayout,
+  component: Outlet,
   notFoundComponent: NotFound,
   errorComponent: RootError,
 });
 
-const indexRoute = createRoute({
+// Pathless layout route — wraps all authenticated pages in AppLayout
+const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
+  id: "app",
+  component: AppLayout,
+});
+
+const indexRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
   path: "/",
   component: LazyDashboardPage,
 });
 
 const projectsRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects",
   component: LazyProjectsPage,
 });
 
 const projectDetailRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId",
   component: LazyProjectDetailPage,
 });
@@ -85,35 +93,36 @@ const projectLabelsRoute = createRoute({
 });
 
 const testSuiteRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/suites/$suiteId",
   component: LazyTestSuitePage,
 });
 
 const testCaseRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/suites/$suiteId/cases/$caseId",
   component: LazyTestCasePage,
 });
 
 const testRunRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/runs/$runId",
   component: LazyTestRunPage,
 });
 
 const testPlansRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/plans",
   component: LazyTestPlansPage,
 });
 
 const testPlanRoute = createRoute({
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/plans/$planId",
   component: LazyTestPlanPage,
 });
 
+// Public share page — renders without AppLayout chrome
 const shareRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/share/$token",
@@ -121,20 +130,22 @@ const shareRoute = createRoute({
 });
 
 const routeTree = rootRoute.addChildren([
-  indexRoute,
-  projectsRoute,
-  projectDetailRoute.addChildren([
-    projectDetailIndexRoute,
-    projectSuitesRoute,
-    projectRunsRoute,
-    projectAnalyticsRoute,
-    projectLabelsRoute,
+  appLayoutRoute.addChildren([
+    indexRoute,
+    projectsRoute,
+    projectDetailRoute.addChildren([
+      projectDetailIndexRoute,
+      projectSuitesRoute,
+      projectRunsRoute,
+      projectAnalyticsRoute,
+      projectLabelsRoute,
+    ]),
+    testSuiteRoute,
+    testCaseRoute,
+    testRunRoute,
+    testPlansRoute,
+    testPlanRoute,
   ]),
-  testSuiteRoute,
-  testCaseRoute,
-  testRunRoute,
-  testPlansRoute,
-  testPlanRoute,
   shareRoute,
 ]);
 

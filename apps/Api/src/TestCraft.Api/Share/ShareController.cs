@@ -76,7 +76,7 @@ public class ShareController(ISender sender) : ControllerBase
 
 [AllowAnonymous]
 [ApiController]
-[Route("share")]
+[Route("api/v1/share")]
 public class PublicShareController(ISender sender) : ControllerBase
 {
     /// <summary>Returns a shared test run view without authentication.</summary>
