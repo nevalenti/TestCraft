@@ -4,12 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestRuns;
-using TestCraft.Application.TestRuns.Commands.CreateTestRun;
-using TestCraft.Application.TestRuns.Commands.DeleteTestRun;
-using TestCraft.Application.TestRuns.Commands.UpdateTestRun;
-using TestCraft.Application.TestRuns.Queries.GetTestRunById;
-using TestCraft.Application.TestRuns.Queries.GetTestRuns;
-using TestCraft.Application.TestRuns.Queries.GetTestRunSummary;
 
 namespace TestCraft.Api.TestRuns;
 
@@ -23,7 +17,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Paginated<TestRunResponse>>> GetAll(
         Guid projectId,
-        [FromQuery] GetTestRunsQuery query,
+        [FromQuery] GetTestRuns.Query query,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
@@ -36,21 +30,21 @@ public class TestRunsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetTestRunByIdQuery { ProjectId = projectId, Id = id },
+                new GetTestRunById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
 
     /// <summary>Gets the result counts (passed/failed/skipped/etc.) for a test run.</summary>
     [HttpGet("{id:guid}/summary")]
-    public async Task<ActionResult<TestRunStatusResponse>> GetSummary(
+    public async Task<ActionResult<GetTestRunSummary.Response>> GetSummary(
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
     ) =>
         Ok(
             await sender.Send(
-                new GetTestRunSummaryQuery { ProjectId = projectId, Id = id },
+                new GetTestRunSummary.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
@@ -59,7 +53,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TestRunResponse>> Create(
         Guid projectId,
-        CreateTestRunCommand command,
+        CreateTestRun.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -73,7 +67,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestRunResponse>> Update(
         Guid projectId,
         Guid id,
-        UpdateTestRunCommand command,
+        UpdateTestRun.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -94,7 +88,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestRunCommand { ProjectId = projectId, Id = id },
+            new DeleteTestRun.Command { ProjectId = projectId, Id = id },
             cancellationToken
         );
 

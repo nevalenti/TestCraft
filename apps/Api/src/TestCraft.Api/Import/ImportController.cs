@@ -3,9 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Import;
-using TestCraft.Application.Import.Commands.ImportAllure;
-using TestCraft.Application.Import.Commands.ImportJUnit;
-using TestCraft.Application.Import.Queries.GetImportJobById;
 
 namespace TestCraft.Api.Import;
 
@@ -25,7 +22,7 @@ public class ImportController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetImportJobByIdQuery { ProjectId = projectId, Id = id },
+                new GetImportJobById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
@@ -34,7 +31,7 @@ public class ImportController(ISender sender) : ControllerBase
     [HttpPost("junit")]
     public async Task<ActionResult<ImportJobResponse>> ImportJUnit(
         Guid projectId,
-        ImportJUnitCommand command,
+        ImportJUnit.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -47,7 +44,7 @@ public class ImportController(ISender sender) : ControllerBase
     [HttpPost("allure")]
     public async Task<ActionResult<ImportJobResponse>> ImportAllure(
         Guid projectId,
-        ImportAllureCommand command,
+        ImportAllure.Command command,
         CancellationToken cancellationToken
     )
     {

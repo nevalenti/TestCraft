@@ -1,9 +1,7 @@
-using AutoMapper;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Application.Import.Commands.ImportAllure;
 using TestCraft.Application.Import.Contracts;
 using TestCraft.Domain.Enums;
 
@@ -11,7 +9,6 @@ namespace TestCraft.Application.Import.Consumers;
 
 public partial class ImportAllureRequestedConsumer(
     IApplicationDbContext dbContext,
-    IMapper mapper,
     ILogger<ImportAllureRequestedConsumer> logger
 ) : IConsumer<ImportAllureRequested>
 {
@@ -41,9 +38,8 @@ public partial class ImportAllureRequestedConsumer(
 
             await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
-                mapper,
                 message.ProjectId,
-                message.Name ?? ImportAllureCommand.DefaultRunName,
+                message.Name ?? ImportAllure.Command.DefaultRunName,
                 message.Environment,
                 TestRunStatus.Completed,
                 cases,

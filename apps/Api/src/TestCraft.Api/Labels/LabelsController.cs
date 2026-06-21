@@ -3,12 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Labels;
-using TestCraft.Application.Labels.Commands.AddTestCaseLabel;
-using TestCraft.Application.Labels.Commands.CreateLabel;
-using TestCraft.Application.Labels.Commands.DeleteLabel;
-using TestCraft.Application.Labels.Commands.RemoveTestCaseLabel;
-using TestCraft.Application.Labels.Commands.UpdateLabel;
-using TestCraft.Application.Labels.Queries.GetLabels;
 
 namespace TestCraft.Api.Labels;
 
@@ -23,13 +17,13 @@ public class LabelsController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<LabelResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetLabelsQuery { ProjectId = projectId }, cancellationToken));
+    ) => Ok(await sender.Send(new GetLabels.Query { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Creates a label.</summary>
     [HttpPost]
     public async Task<ActionResult<LabelResponse>> Create(
         Guid projectId,
-        CreateLabelCommand command,
+        CreateLabel.Command command,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
 
@@ -38,7 +32,7 @@ public class LabelsController(ISender sender) : ControllerBase
     public async Task<ActionResult<LabelResponse>> Update(
         Guid projectId,
         Guid id,
-        UpdateLabelCommand command,
+        UpdateLabel.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -59,7 +53,7 @@ public class LabelsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteLabelCommand { ProjectId = projectId, Id = id },
+            new DeleteLabel.Command { ProjectId = projectId, Id = id },
             cancellationToken
         );
 
@@ -83,7 +77,7 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new AddTestCaseLabelCommand
+            new AddTestCaseLabel.Command
             {
                 ProjectId = projectId,
                 TestCaseId = caseId,
@@ -105,7 +99,7 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new RemoveTestCaseLabelCommand
+            new RemoveTestCaseLabel.Command
             {
                 ProjectId = projectId,
                 TestCaseId = caseId,

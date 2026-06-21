@@ -3,15 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.TestPlans;
-using TestCraft.Application.TestPlans.Commands.AddCaseToPlan;
-using TestCraft.Application.TestPlans.Commands.CreateRunFromPlan;
-using TestCraft.Application.TestPlans.Commands.CreateTestPlan;
-using TestCraft.Application.TestPlans.Commands.DeleteTestPlan;
-using TestCraft.Application.TestPlans.Commands.RemoveCaseFromPlan;
-using TestCraft.Application.TestPlans.Commands.ReorderPlanCases;
-using TestCraft.Application.TestPlans.Commands.UpdateTestPlan;
-using TestCraft.Application.TestPlans.Queries.GetTestPlanById;
-using TestCraft.Application.TestPlans.Queries.GetTestPlans;
 using TestCraft.Application.TestRuns;
 
 namespace TestCraft.Api.TestPlans;
@@ -27,18 +18,18 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<TestPlanResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetTestPlansQuery { ProjectId = projectId }, cancellationToken));
+    ) => Ok(await sender.Send(new GetTestPlans.Query { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Gets a test plan by ID.</summary>
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TestPlanResponse>> GetById(
+    public async Task<ActionResult<TestPlanDetailResponse>> GetById(
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
     ) =>
         Ok(
             await sender.Send(
-                new GetTestPlanByIdQuery { ProjectId = projectId, Id = id },
+                new GetTestPlanById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
@@ -47,7 +38,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TestPlanResponse>> Create(
         Guid projectId,
-        CreateTestPlanCommand command,
+        CreateTestPlan.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -61,7 +52,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestPlanResponse>> Update(
         Guid projectId,
         Guid id,
-        UpdateTestPlanCommand command,
+        UpdateTestPlan.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -82,7 +73,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestPlanCommand { ProjectId = projectId, Id = id },
+            new DeleteTestPlan.Command { ProjectId = projectId, Id = id },
             cancellationToken
         );
 
@@ -94,7 +85,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<IActionResult> AddCase(
         Guid projectId,
         Guid id,
-        AddCaseToPlanCommand command,
+        AddCaseToPlan.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -120,7 +111,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new RemoveCaseFromPlanCommand
+            new RemoveCaseFromPlan.Command
             {
                 ProjectId = projectId,
                 TestPlanId = id,
@@ -137,7 +128,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<IActionResult> ReorderCases(
         Guid projectId,
         Guid id,
-        ReorderPlanCasesCommand command,
+        ReorderPlanCases.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -158,7 +149,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestRunResponse>> CreateRun(
         Guid projectId,
         Guid id,
-        CreateRunFromPlanCommand command,
+        CreateRunFromPlan.Command command,
         CancellationToken cancellationToken
     )
     {

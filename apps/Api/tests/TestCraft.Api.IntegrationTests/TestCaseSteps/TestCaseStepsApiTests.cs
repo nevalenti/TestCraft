@@ -5,9 +5,6 @@ using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCaseSteps;
-using TestCraft.Application.TestCaseSteps.Commands.BulkReorderSteps;
-using TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
-using TestCraft.Application.TestCaseSteps.Commands.UpdateTestCaseStep;
 
 namespace TestCraft.Api.IntegrationTests.TestCaseSteps;
 
@@ -46,7 +43,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-            new CreateTestCaseStepCommand
+            new CreateTestCaseStep.Command
             {
                 Order = 1,
                 Action = "Open the login page",
@@ -77,7 +74,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-            new CreateTestCaseStepCommand
+            new CreateTestCaseStep.Command
             {
                 Order = 1,
                 Action = "Open the login page",
@@ -86,7 +83,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         );
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-            new CreateTestCaseStepCommand
+            new CreateTestCaseStep.Command
             {
                 Order = 2,
                 Action = "Enter credentials",
@@ -112,7 +109,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-                new CreateTestCaseStepCommand
+                new CreateTestCaseStep.Command
                 {
                     Order = 1,
                     Action = "Open the login page",
@@ -123,7 +120,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{created!.Id}",
-            new UpdateTestCaseStepCommand
+            new UpdateTestCaseStep.Command
             {
                 Id = created!.Id,
                 Order = 1,
@@ -148,7 +145,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var created = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-                new CreateTestCaseStepCommand
+                new CreateTestCaseStep.Command
                 {
                     Order = 1,
                     Action = "Open the login page",
@@ -177,7 +174,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var first = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-                new CreateTestCaseStepCommand
+                new CreateTestCaseStep.Command
                 {
                     Order = 1,
                     Action = "First action",
@@ -189,7 +186,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var second = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-                new CreateTestCaseStepCommand
+                new CreateTestCaseStep.Command
                 {
                     Order = 2,
                     Action = "Second action",
@@ -200,12 +197,12 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/reorder",
-            new BulkReorderStepsCommand
+            new BulkReorderSteps.Command
             {
                 Steps =
                 [
-                    new ReorderStepInput { Id = first!.Id, Order = 2 },
-                    new ReorderStepInput { Id = second!.Id, Order = 1 },
+                    new BulkReorderSteps.StepOrder { Id = first!.Id, Order = 2 },
+                    new BulkReorderSteps.StepOrder { Id = second!.Id, Order = 1 },
                 ],
             }
         );
@@ -236,7 +233,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var step = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-                new CreateTestCaseStepCommand
+                new CreateTestCaseStep.Command
                 {
                     Order = 1,
                     Action = "Action",
@@ -247,12 +244,12 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/reorder",
-            new BulkReorderStepsCommand
+            new BulkReorderSteps.Command
             {
                 Steps =
                 [
-                    new ReorderStepInput { Id = step!.Id, Order = 1 },
-                    new ReorderStepInput { Id = step.Id, Order = 2 },
+                    new BulkReorderSteps.StepOrder { Id = step!.Id, Order = 1 },
+                    new BulkReorderSteps.StepOrder { Id = step.Id, Order = 2 },
                 ],
             }
         );
@@ -269,9 +266,9 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/reorder",
-            new BulkReorderStepsCommand
+            new BulkReorderSteps.Command
             {
-                Steps = [new ReorderStepInput { Id = Guid.NewGuid(), Order = 1 }],
+                Steps = [new BulkReorderSteps.StepOrder { Id = Guid.NewGuid(), Order = 1 }],
             }
         );
 
@@ -288,7 +285,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{stepId}",
-            new UpdateTestCaseStepCommand
+            new UpdateTestCaseStep.Command
             {
                 Id = stepId,
                 Order = 1,
@@ -309,7 +306,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps",
-            new CreateTestCaseStepCommand
+            new CreateTestCaseStep.Command
             {
                 Order = 0,
                 Action = "",
@@ -328,7 +325,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/suites/{Guid.NewGuid()}/cases/{Guid.NewGuid()}/steps",
-            new CreateTestCaseStepCommand
+            new CreateTestCaseStep.Command
             {
                 Order = 1,
                 Action = "Action",

@@ -3,9 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.ApiTokens;
-using TestCraft.Application.ApiTokens.Commands.CreateApiToken;
-using TestCraft.Application.ApiTokens.Commands.RevokeApiToken;
-using TestCraft.Application.ApiTokens.Queries.GetApiTokens;
 
 namespace TestCraft.Api.ApiTokens;
 
@@ -20,13 +17,13 @@ public class ApiTokensController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<ApiTokenResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetApiTokensQuery { ProjectId = projectId }, cancellationToken));
+    ) => Ok(await sender.Send(new GetApiTokens.Query { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Creates a new API token. The raw token is returned once — store it securely.</summary>
     [HttpPost]
     public async Task<ActionResult<CreateApiTokenResponse>> Create(
         Guid projectId,
-        CreateApiTokenCommand command,
+        CreateApiToken.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -44,7 +41,7 @@ public class ApiTokensController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new RevokeApiTokenCommand { ProjectId = projectId, Id = id },
+            new RevokeApiToken.Command { ProjectId = projectId, Id = id },
             cancellationToken
         );
 

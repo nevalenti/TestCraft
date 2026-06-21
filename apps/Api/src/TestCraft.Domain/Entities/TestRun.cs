@@ -4,6 +4,13 @@ namespace TestCraft.Domain.Entities;
 
 public class TestRun : IAuditableEntity
 {
+    private static readonly Dictionary<TestRunStatus, int> StatusOrder = new()
+    {
+        [TestRunStatus.Active] = 0,
+        [TestRunStatus.Completed] = 1,
+        [TestRunStatus.Archived] = 2,
+    };
+
     public Guid Id { get; set; }
     public required string Name { get; set; }
     public required string Environment { get; set; }
@@ -19,4 +26,8 @@ public class TestRun : IAuditableEntity
     public Project? Project { get; set; }
     public ICollection<TestResult> TestResults { get; set; } = [];
     public ICollection<ShareToken> ShareTokens { get; set; } = [];
+
+    public bool CanTransitionTo(TestRunStatus to) => StatusOrder[to] >= StatusOrder[Status];
+
+    public bool CanAddResult() => Status != TestRunStatus.Archived;
 }

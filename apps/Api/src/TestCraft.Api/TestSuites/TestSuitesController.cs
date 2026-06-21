@@ -4,11 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestSuites;
-using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
-using TestCraft.Application.TestSuites.Commands.DeleteTestSuite;
-using TestCraft.Application.TestSuites.Commands.UpdateTestSuite;
-using TestCraft.Application.TestSuites.Queries.GetTestSuiteById;
-using TestCraft.Application.TestSuites.Queries.GetTestSuites;
 
 namespace TestCraft.Api.TestSuites;
 
@@ -22,7 +17,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Paginated<TestSuiteResponse>>> GetAll(
         Guid projectId,
-        [FromQuery] GetTestSuitesQuery query,
+        [FromQuery] GetTestSuites.Query query,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
@@ -35,7 +30,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetTestSuiteByIdQuery { ProjectId = projectId, Id = id },
+                new GetTestSuiteById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
@@ -44,7 +39,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpPost]
     public async Task<ActionResult<TestSuiteResponse>> Create(
         Guid projectId,
-        CreateTestSuiteCommand command,
+        CreateTestSuite.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -58,7 +53,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestSuiteResponse>> Update(
         Guid projectId,
         Guid id,
-        UpdateTestSuiteCommand command,
+        UpdateTestSuite.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -79,7 +74,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestSuiteCommand { ProjectId = projectId, Id = id },
+            new DeleteTestSuite.Command { ProjectId = projectId, Id = id },
             cancellationToken
         );
 

@@ -5,8 +5,6 @@ using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestSuites;
-using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
-using TestCraft.Application.TestSuites.Commands.UpdateTestSuite;
 
 namespace TestCraft.Api.IntegrationTests.TestSuites;
 
@@ -32,7 +30,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var createResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites",
-            new CreateTestSuiteCommand { Name = "Login Suite", Description = "Covers login flows" }
+            new CreateTestSuite.Command { Name = "Login Suite", Description = "Covers login flows" }
         );
 
         createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
@@ -77,7 +75,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var updateResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}",
-            new UpdateTestSuiteCommand
+            new UpdateTestSuite.Command
             {
                 Id = suite.Id,
                 Name = "New Name",
@@ -101,7 +99,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suiteId}",
-            new UpdateTestSuiteCommand { Id = suiteId, Name = "Doesn't matter" }
+            new UpdateTestSuite.Command { Id = suiteId, Name = "Doesn't matter" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -148,7 +146,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{Guid.NewGuid()}/suites",
-            new CreateTestSuiteCommand { Name = "Nope" }
+            new CreateTestSuite.Command { Name = "Nope" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
@@ -162,7 +160,7 @@ public class TestSuitesApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites",
-            new CreateTestSuiteCommand { Name = "" }
+            new CreateTestSuite.Command { Name = "" }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);

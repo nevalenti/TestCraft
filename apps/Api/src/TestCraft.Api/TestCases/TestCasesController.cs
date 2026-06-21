@@ -4,11 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCases;
-using TestCraft.Application.TestCases.Commands.CreateTestCase;
-using TestCraft.Application.TestCases.Commands.DeleteTestCase;
-using TestCraft.Application.TestCases.Commands.UpdateTestCase;
-using TestCraft.Application.TestCases.Queries.GetTestCaseById;
-using TestCraft.Application.TestCases.Queries.GetTestCases;
 
 namespace TestCraft.Api.TestCases;
 
@@ -23,7 +18,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,
         Guid suiteId,
-        [FromQuery] GetTestCasesQuery query,
+        [FromQuery] GetTestCases.Query query,
         CancellationToken cancellationToken
     ) =>
         Ok(
@@ -47,7 +42,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetTestCaseByIdQuery
+                new GetTestCaseById.Query
                 {
                     ProjectId = projectId,
                     SuiteId = suiteId,
@@ -62,7 +57,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestCaseResponse>> Create(
         Guid projectId,
         Guid suiteId,
-        CreateTestCaseCommand command,
+        CreateTestCase.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -93,7 +88,7 @@ public class TestCasesController(ISender sender) : ControllerBase
         Guid projectId,
         Guid suiteId,
         Guid id,
-        UpdateTestCaseCommand command,
+        UpdateTestCase.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -124,7 +119,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestCaseCommand
+            new DeleteTestCase.Command
             {
                 ProjectId = projectId,
                 SuiteId = suiteId,

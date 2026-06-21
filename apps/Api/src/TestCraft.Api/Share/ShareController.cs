@@ -3,10 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.ShareTokens;
-using TestCraft.Application.ShareTokens.Commands.CreateShareToken;
-using TestCraft.Application.ShareTokens.Commands.RevokeShareToken;
-using TestCraft.Application.ShareTokens.Queries.GetRunByShareToken;
-using TestCraft.Application.ShareTokens.Queries.GetShareTokens;
 
 namespace TestCraft.Api.Share;
 
@@ -21,7 +17,7 @@ public class ShareController(ISender sender) : ControllerBase
     public async Task<ActionResult<ShareTokenResponse>> Create(
         Guid projectId,
         Guid runId,
-        CreateShareTokenCommand command,
+        CreateShareToken.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -46,7 +42,7 @@ public class ShareController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetShareTokensQuery { ProjectId = projectId, RunId = runId },
+                new GetShareTokens.Query { ProjectId = projectId, RunId = runId },
                 cancellationToken
             )
         );
@@ -61,7 +57,7 @@ public class ShareController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new RevokeShareTokenCommand
+            new RevokeShareToken.Command
             {
                 ProjectId = projectId,
                 RunId = runId,
@@ -84,5 +80,5 @@ public class PublicShareController(ISender sender) : ControllerBase
     public async Task<ActionResult<SharedRunResponse>> GetByToken(
         string token,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetRunByShareTokenQuery(token), cancellationToken));
+    ) => Ok(await sender.Send(new GetRunByShareToken.Query(token), cancellationToken));
 }

@@ -4,11 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestResults;
-using TestCraft.Application.TestResults.Commands.CreateTestResult;
-using TestCraft.Application.TestResults.Commands.DeleteTestResult;
-using TestCraft.Application.TestResults.Commands.UpdateTestResult;
-using TestCraft.Application.TestResults.Queries.GetTestResultById;
-using TestCraft.Application.TestResults.Queries.GetTestResults;
 
 namespace TestCraft.Api.TestResults;
 
@@ -23,7 +18,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
         Guid projectId,
         Guid runId,
-        [FromQuery] GetTestResultsQuery query,
+        [FromQuery] GetTestResults.Query query,
         CancellationToken cancellationToken
     ) =>
         Ok(
@@ -47,7 +42,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetTestResultByIdQuery
+                new GetTestResultById.Query
                 {
                     ProjectId = projectId,
                     RunId = runId,
@@ -62,7 +57,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     public async Task<ActionResult<TestResultResponse>> Create(
         Guid projectId,
         Guid runId,
-        CreateTestResultCommand command,
+        CreateTestResult.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -93,7 +88,7 @@ public class TestResultsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid runId,
         Guid id,
-        UpdateTestResultCommand command,
+        UpdateTestResult.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -124,7 +119,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestResultCommand
+            new DeleteTestResult.Command
             {
                 ProjectId = projectId,
                 RunId = runId,

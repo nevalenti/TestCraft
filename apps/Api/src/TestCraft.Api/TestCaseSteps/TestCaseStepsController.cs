@@ -4,12 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCaseSteps;
-using TestCraft.Application.TestCaseSteps.Commands.BulkReorderSteps;
-using TestCraft.Application.TestCaseSteps.Commands.CreateTestCaseStep;
-using TestCraft.Application.TestCaseSteps.Commands.DeleteTestCaseStep;
-using TestCraft.Application.TestCaseSteps.Commands.UpdateTestCaseStep;
-using TestCraft.Application.TestCaseSteps.Queries.GetTestCaseStepById;
-using TestCraft.Application.TestCaseSteps.Queries.GetTestCaseSteps;
 
 namespace TestCraft.Api.TestCaseSteps;
 
@@ -27,7 +21,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid suiteId,
         Guid caseId,
-        [FromQuery] GetTestCaseStepsQuery query,
+        [FromQuery] GetTestCaseSteps.Query query,
         CancellationToken cancellationToken
     ) =>
         Ok(
@@ -52,7 +46,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetTestCaseStepByIdQuery
+                new GetTestCaseStepById.Query
                 {
                     ProjectId = projectId,
                     CaseId = caseId,
@@ -68,7 +62,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid suiteId,
         Guid caseId,
-        CreateTestCaseStepCommand command,
+        CreateTestCaseStep.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -100,7 +94,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid suiteId,
         Guid caseId,
-        BulkReorderStepsCommand command,
+        BulkReorderSteps.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -123,7 +117,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid suiteId,
         Guid caseId,
         Guid id,
-        UpdateTestCaseStepCommand command,
+        UpdateTestCaseStep.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -155,7 +149,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteTestCaseStepCommand
+            new DeleteTestCaseStep.Command
             {
                 ProjectId = projectId,
                 CaseId = caseId,

@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestCases;
-using TestCraft.Application.TestCases.Queries.GetTestCasesByProject;
 
 namespace TestCraft.Api.TestCases;
 
@@ -18,7 +17,7 @@ public class ProjectTestCasesController(ISender sender) : ControllerBase
     [HttpGet]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,
-        [FromQuery] GetTestCasesByProjectQuery query,
+        [FromQuery] GetTestCasesByProject.Query query,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 }

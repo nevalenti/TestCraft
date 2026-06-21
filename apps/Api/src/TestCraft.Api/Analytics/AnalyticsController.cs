@@ -3,10 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Analytics;
-using TestCraft.Application.Analytics.Queries.GetFlakyTests;
-using TestCraft.Application.Analytics.Queries.GetRunComparison;
-using TestCraft.Application.Analytics.Queries.GetRunTrend;
-using TestCraft.Application.Analytics.Queries.GetSuiteBreakdown;
 
 namespace TestCraft.Api.Analytics;
 
@@ -25,7 +21,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetRunTrendQuery { ProjectId = projectId, Limit = limit },
+                new GetRunTrend.Query { ProjectId = projectId, Limit = limit },
                 cancellationToken
             )
         );
@@ -39,7 +35,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetSuiteBreakdownQuery { ProjectId = projectId, RunId = runId },
+                new GetSuiteBreakdown.Query { ProjectId = projectId, RunId = runId },
                 cancellationToken
             )
         );
@@ -53,7 +49,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetFlakyTestsQuery { ProjectId = projectId, MinRuns = minRuns },
+                new GetFlakyTests.Query { ProjectId = projectId, MinRuns = minRuns },
                 cancellationToken
             )
         );
@@ -68,7 +64,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetRunComparisonQuery
+                new GetRunComparison.Query
                 {
                     ProjectId = projectId,
                     RunAId = runAId,

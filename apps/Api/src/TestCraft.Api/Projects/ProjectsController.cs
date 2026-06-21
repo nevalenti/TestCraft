@@ -4,11 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Projects;
-using TestCraft.Application.Projects.Commands.CreateProject;
-using TestCraft.Application.Projects.Commands.DeleteProject;
-using TestCraft.Application.Projects.Commands.UpdateProject;
-using TestCraft.Application.Projects.Queries.GetProjectById;
-using TestCraft.Application.Projects.Queries.GetProjects;
 
 namespace TestCraft.Api.Projects;
 
@@ -21,7 +16,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     /// <summary>Lists projects owned by the current user.</summary>
     [HttpGet]
     public async Task<ActionResult<Paginated<ProjectResponse>>> GetAll(
-        [FromQuery] GetProjectsQuery query,
+        [FromQuery] GetProjects.Query query,
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(query, cancellationToken));
 
@@ -30,12 +25,12 @@ public class ProjectsController(ISender sender) : ControllerBase
     public async Task<ActionResult<ProjectResponse>> GetById(
         Guid id,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetProjectByIdQuery { Id = id }, cancellationToken));
+    ) => Ok(await sender.Send(new GetProjectById.Query { Id = id }, cancellationToken));
 
     /// <summary>Creates a new project.</summary>
     [HttpPost]
     public async Task<ActionResult<ProjectResponse>> Create(
-        CreateProjectCommand command,
+        CreateProject.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -48,7 +43,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<ProjectResponse>> Update(
         Guid id,
-        UpdateProjectCommand command,
+        UpdateProject.Command command,
         CancellationToken cancellationToken
     )
     {
@@ -64,7 +59,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        await sender.Send(new DeleteProjectCommand { Id = id }, cancellationToken);
+        await sender.Send(new DeleteProject.Command { Id = id }, cancellationToken);
 
         return NoContent();
     }

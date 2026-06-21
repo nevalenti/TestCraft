@@ -1,4 +1,3 @@
-using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.TestRuns;
@@ -11,7 +10,6 @@ internal static class ImportRunWriter
 {
     public static async Task<TestRunResponse> CreateRunWithResultsAsync(
         IApplicationDbContext context,
-        IMapper mapper,
         Guid projectId,
         string name,
         string environment,
@@ -59,7 +57,18 @@ internal static class ImportRunWriter
 
         await transaction.CommitAsync(cancellationToken);
 
-        return mapper.Map<TestRunResponse>(run);
+        return new TestRunResponse
+        {
+            Id = run.Id,
+            ProjectId = run.ProjectId,
+            Name = run.Name,
+            Environment = run.Environment,
+            Status = run.Status,
+            Source = run.Source,
+            ExecutedById = run.ExecutedById,
+            CreatedAt = run.CreatedAt,
+            UpdatedAt = run.UpdatedAt,
+        };
     }
 
     private static async Task InsertResultsAsync(

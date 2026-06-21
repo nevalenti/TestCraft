@@ -3,10 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Attachments;
-using TestCraft.Application.Attachments.Commands.DeleteAttachment;
-using TestCraft.Application.Attachments.Commands.UploadAttachment;
-using TestCraft.Application.Attachments.Queries.GetAttachmentDownloadUrl;
-using TestCraft.Application.Attachments.Queries.GetAttachments;
 
 namespace TestCraft.Api.Attachments;
 
@@ -28,7 +24,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
     ) =>
         Ok(
             await sender.Send(
-                new GetAttachmentsQuery
+                new GetAttachments.Query
                 {
                     ProjectId = projectId,
                     RunId = runId,
@@ -52,7 +48,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
         await using var stream = file.OpenReadStream();
 
         var result = await sender.Send(
-            new UploadAttachmentCommand
+            new UploadAttachment.Command
             {
                 ProjectId = projectId,
                 RunId = runId,
@@ -79,7 +75,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
     )
     {
         var response = await sender.Send(
-            new GetAttachmentDownloadUrlQuery
+            new GetAttachmentDownloadUrl.Query
             {
                 ProjectId = projectId,
                 RunId = runId,
@@ -103,7 +99,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
     )
     {
         await sender.Send(
-            new DeleteAttachmentCommand
+            new DeleteAttachment.Command
             {
                 ProjectId = projectId,
                 RunId = runId,

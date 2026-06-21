@@ -3,13 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TestCraft.Application.Import;
 using TestCraft.Application.Projects;
-using TestCraft.Application.Projects.Commands.CreateProject;
 using TestCraft.Application.TestCases;
-using TestCraft.Application.TestCases.Commands.CreateTestCase;
 using TestCraft.Application.TestRuns;
-using TestCraft.Application.TestRuns.Commands.CreateTestRun;
 using TestCraft.Application.TestSuites;
-using TestCraft.Application.TestSuites.Commands.CreateTestSuite;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;
@@ -28,7 +24,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             "/api/v1/projects",
-            new CreateProjectCommand { Name = name }
+            new CreateProject.Command { Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions))!;
@@ -42,7 +38,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites",
-            new CreateTestSuiteCommand { Name = name }
+            new CreateTestSuite.Command { Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions))!;
@@ -58,7 +54,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases",
-            new CreateTestCaseCommand { Name = name, Priority = priority }
+            new CreateTestCase.Command { Name = name, Priority = priority }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions))!;
@@ -73,7 +69,7 @@ internal static class ApiTestHelpers
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs",
-            new CreateTestRunCommand { Name = name, Environment = environment }
+            new CreateTestRun.Command { Name = name, Environment = environment }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
