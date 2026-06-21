@@ -18,6 +18,7 @@ export default defineConfig({
   use: {
     baseURL: process.env.E2E_BASE_URL,
     trace: "on-first-retry",
+    screenshot: "on",
   },
   projects: [
     {

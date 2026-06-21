@@ -51,7 +51,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          - 5432:5432
+          - 5433:5432
 
     steps:
       - name: Checkout
@@ -108,7 +108,7 @@ jobs:
           E2E_BASE_URL: http://localhost:3000
           E2E_USERNAME: e2e@testcraft.dev
           E2E_PASSWORD: e2e
-          DATABASE_URL: postgresql://e2e:e2e@localhost:5432/testcraft_e2e
+          DATABASE_URL: postgresql://e2e:e2e@localhost:5433/testcraft_e2e
           KEYCLOAK_AUTHORITY: http://localhost:8080/realms/testcraft
           KEYCLOAK_AUDIENCE: testcraft-web
           KEYCLOAK_REQUIRE_HTTPS_METADATA: "false"
@@ -132,6 +132,7 @@ jobs:
           junit-xml: apps/e2e/e2e-results/junit.xml
           run-name: "#${{ github.run_id }} e2e (${{ github.ref_name }})"
           source: e2e
+          screenshots-dir: apps/e2e/test-results
 
       - name: Upload Playwright report
         if: always()

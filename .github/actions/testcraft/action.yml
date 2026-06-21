@@ -26,6 +26,9 @@ inputs:
   source:
     description: Source tag for test suites (e.g. api, web, e2e)
     required: false
+  screenshots-dir:
+    description: Path to Playwright test-results directory — when set, PNG screenshots are uploaded as attachments to failed results
+    required: false
 
 runs:
   using: node20
