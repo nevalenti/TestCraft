@@ -54,15 +54,7 @@ public class TestPlansController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestPlan.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
     /// <summary>Deletes a test plan.</summary>
     [HttpDelete("{id:guid}")]

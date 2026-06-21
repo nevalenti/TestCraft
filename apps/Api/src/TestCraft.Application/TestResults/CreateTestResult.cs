@@ -69,10 +69,7 @@ public static class CreateTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            if (!run.CanAddResult())
-            {
-                throw new DomainException($"Cannot modify results in a {run.Status} test run");
-            }
+            run.EnsureCanAddResult();
 
             var result = new TestResult
             {

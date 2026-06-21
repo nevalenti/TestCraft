@@ -34,15 +34,7 @@ public class LabelsController(ISender sender) : ControllerBase
         Guid id,
         UpdateLabel.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
     /// <summary>Deletes a label.</summary>
     [HttpDelete("{id:guid}")]

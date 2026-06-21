@@ -24,15 +24,15 @@ public static class GetSuiteBreakdown
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestResults.Where(r => r.TestRunId == request.RunId && !r.IsDeleted)
+                .TestResults.Where(r => r.TestRunId == request.RunId)
                 .Join(
-                    context.TestCases.Where(tc => !tc.IsDeleted),
+                    context.TestCases,
                     r => r.TestCaseId,
                     tc => tc.Id,
                     (r, tc) => new { r.Status, tc.SuiteId }
                 )
                 .Join(
-                    context.TestSuites.Where(s => !s.IsDeleted),
+                    context.TestSuites,
                     x => x.SuiteId,
                     s => s.Id,
                     (x, s) => new { x.Status, SuiteName = s.Name }

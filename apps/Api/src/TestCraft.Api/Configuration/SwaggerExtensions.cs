@@ -4,7 +4,6 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Configuration;
 
@@ -71,7 +70,7 @@ public static class SwaggerExtensions
 
                             context.Response.Headers.WWWAuthenticate =
                                 "Basic realm=\"TestCraft API Docs\", charset=\"UTF-8\"";
-                            await ProblemWriter.WriteAsync(context, Problems.Unauthorized());
+                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
                         }
                     );
 

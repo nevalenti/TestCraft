@@ -40,15 +40,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid id,
         UpdateWebhookSubscription.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
     /// <summary>Deletes a webhook subscription.</summary>
     [HttpDelete("webhooks/{id:guid}")]
@@ -94,15 +86,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid id,
         UpdateEmailSubscription.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
     /// <summary>Deletes an email subscription.</summary>
     [HttpDelete("emails/{id:guid}")]

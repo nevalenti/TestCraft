@@ -15,7 +15,7 @@ public static class UpdateTestCase
     {
         public Guid ProjectId { get; init; }
         public Guid SuiteId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Name { get; init; }
         public string? Description { get; init; }
         public required TestCasePriority Priority { get; init; }
@@ -45,9 +45,7 @@ public static class UpdateTestCase
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            testCase.Name = request.Name;
-            testCase.Description = request.Description;
-            testCase.Priority = request.Priority;
+            testCase.Update(request.Name, request.Description, request.Priority);
 
             await context.SaveChangesAsync(cancellationToken);
 

@@ -12,7 +12,7 @@ public static class UpdateTestSuite
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         public Guid ProjectId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Name { get; init; }
         public string? Description { get; init; }
     }
@@ -40,8 +40,7 @@ public static class UpdateTestSuite
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            suite.Name = request.Name;
-            suite.Description = request.Description;
+            suite.Update(request.Name, request.Description);
 
             await context.SaveChangesAsync(cancellationToken);
 

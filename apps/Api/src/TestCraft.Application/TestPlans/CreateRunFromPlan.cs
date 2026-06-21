@@ -44,9 +44,7 @@ public static class CreateRunFromPlan
                 ) ?? throw new NotFoundException();
 
             var cases = await context
-                .TestPlanCases.Where(tpc =>
-                    tpc.TestPlanId == plan.Id && tpc.TestCase != null && !tpc.TestCase.IsDeleted
-                )
+                .TestPlanCases.Where(tpc => tpc.TestPlanId == plan.Id && tpc.TestCase != null)
                 .OrderBy(tpc => tpc.Order)
                 .Select(tpc => tpc.TestCaseId)
                 .ToListAsync(cancellationToken);
@@ -57,7 +55,6 @@ public static class CreateRunFromPlan
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Environment = request.Environment,
-                Status = TestRunStatus.Active,
                 ExecutedById = currentUser.UserId,
             };
 

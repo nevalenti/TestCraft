@@ -15,7 +15,7 @@ public static class UpdateTestResult
     {
         public Guid ProjectId { get; init; }
         public Guid RunId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required TestResultStatus Status { get; init; }
         public string? Notes { get; init; }
         public DefectType? DefectType { get; init; }
@@ -47,10 +47,7 @@ public static class UpdateTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            if (!run.CanAddResult())
-            {
-                throw new DomainException($"Cannot modify results in a {run.Status} test run");
-            }
+            run.EnsureCanAddResult();
 
             var result =
                 await context.TestResults.FirstOrDefaultAsync(
@@ -58,9 +55,7 @@ public static class UpdateTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            result.Status = request.Status;
-            result.Notes = request.Notes;
-            result.DefectType = request.DefectType;
+            result.Update(request.Status, request.Notes, request.DefectType);
 
             await context.SaveChangesAsync(cancellationToken);
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);

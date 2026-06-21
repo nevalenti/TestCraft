@@ -1,0 +1,202 @@
+using System.Net;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using FluentAssertions;
+using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Notifications;
+
+namespace TestCraft.Api.IntegrationTests.Notifications;
+
+[Collection(ApiCollection.Name)]
+public class NotificationsApiTests(ApiFactory factory)
+{
+    private HttpClient CreateClient(Guid userId)
+    {
+        var client = factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            userId.ToString()
+        );
+
+        return client;
+    }
+
+    [Fact]
+    public async Task CreateWebhook_Then_GetAll_ReturnsSubscription()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/notifications/webhooks",
+            new CreateWebhookSubscription.Command
+            {
+                ProjectId = Guid.Empty,
+                Url = "https://example.com/hook",
+                Events = ["run.completed"],
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var created = await response.Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        created!.Url.Should().Be("https://example.com/hook");
+        created.IsActive.Should().BeTrue();
+
+        var listResponse = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/notifications/webhooks"
+        );
+        var webhooks = await listResponse.Content.ReadFromJsonAsync<
+            IReadOnlyList<WebhookSubscriptionResponse>
+        >(ApiTestHelpers.JsonOptions);
+
+        webhooks.Should().ContainSingle(w => w.Id == created.Id);
+    }
+
+    [Fact]
+    public async Task DeleteWebhook_RemovesSubscription()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var created = await (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/notifications/webhooks",
+                new CreateWebhookSubscription.Command
+                {
+                    ProjectId = Guid.Empty,
+                    Url = "https://example.com/hook",
+                    Events = ["run.completed"],
+                }
+            )
+        ).Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(ApiTestHelpers.JsonOptions);
+
+        var deleteResponse = await client.DeleteAsync(
+            $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}"
+        );
+        deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var webhooks = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/notifications/webhooks")
+        ).Content.ReadFromJsonAsync<IReadOnlyList<WebhookSubscriptionResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
+        webhooks.Should().NotContain(w => w.Id == created.Id);
+    }
+
+    [Fact]
+    public async Task CreateWebhook_InvalidUrl_ReturnsValidationProblem()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/notifications/webhooks",
+            new CreateWebhookSubscription.Command
+            {
+                ProjectId = Guid.Empty,
+                Url = "not-a-url",
+                Events = ["run.completed"],
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task CreateEmail_Then_GetAll_ReturnsSubscription()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/notifications/emails",
+            new CreateEmailSubscription.Command
+            {
+                ProjectId = Guid.Empty,
+                Email = "ci@example.com",
+                Events = ["run.completed"],
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var created = await response.Content.ReadFromJsonAsync<EmailSubscriptionResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        created!.Email.Should().Be("ci@example.com");
+
+        var emails = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/notifications/emails")
+        ).Content.ReadFromJsonAsync<IReadOnlyList<EmailSubscriptionResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
+        emails.Should().ContainSingle(e => e.Id == created.Id);
+    }
+
+    [Fact]
+    public async Task DeleteEmail_RemovesSubscription()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var created = await (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/notifications/emails",
+                new CreateEmailSubscription.Command
+                {
+                    ProjectId = Guid.Empty,
+                    Email = "delete-me@example.com",
+                    Events = ["run.completed"],
+                }
+            )
+        ).Content.ReadFromJsonAsync<EmailSubscriptionResponse>(ApiTestHelpers.JsonOptions);
+
+        await client.DeleteAsync(
+            $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}"
+        );
+
+        var emails = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/notifications/emails")
+        ).Content.ReadFromJsonAsync<IReadOnlyList<EmailSubscriptionResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
+        emails.Should().NotContain(e => e.Id == created.Id);
+    }
+
+    [Fact]
+    public async Task CreateEmail_InvalidEmail_ReturnsValidationProblem()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/notifications/emails",
+            new CreateEmailSubscription.Command
+            {
+                ProjectId = Guid.Empty,
+                Email = "not-an-email",
+                Events = ["run.completed"],
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [Fact]
+    public async Task GetWebhooks_OtherUsersProject_ReturnsNotFound()
+    {
+        var owner = CreateClient(Guid.NewGuid());
+        var other = CreateClient(Guid.NewGuid());
+
+        var project = await owner.CreateProjectAsync();
+
+        var response = await other.GetAsync(
+            $"/api/v1/projects/{project.Id}/notifications/webhooks"
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+}

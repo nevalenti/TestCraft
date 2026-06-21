@@ -29,12 +29,21 @@ public static class GetFlakyTests
         public async Task<IReadOnlyList<FlakyTestStat>> Handle(
             Query request,
             CancellationToken cancellationToken
-        ) =>
-            await context
+        )
+        {
+            var rows = await context
                 .TestResults.Where(r =>
-                    !r.IsDeleted && r.TestRun != null && r.TestRun.ProjectId == request.ProjectId
+                    r.TestRun != null && r.TestRun.ProjectId == request.ProjectId
                 )
-                .GroupBy(r => new { r.TestCaseId, r.TestCase!.Name })
+                .Select(r => new
+                {
+                    r.TestCaseId,
+                    TestCaseName = r.TestCase!.Name,
+                    r.Status,
+                })
+                .ToListAsync(cancellationToken);
+
+            return rows.GroupBy(r => new { r.TestCaseId, r.TestCaseName })
                 .Where(g =>
                     g.Count() >= request.MinRuns
                     && g.Any(r => r.Status == TestResultStatus.Passed)
@@ -42,7 +51,7 @@ public static class GetFlakyTests
                 )
                 .Select(g => new FlakyTestStat(
                     g.Key.TestCaseId,
-                    g.Key.Name,
+                    g.Key.TestCaseName,
                     g.Count(),
                     g.Count(r => r.Status == TestResultStatus.Passed),
                     g.Count(r => r.Status == TestResultStatus.Failed),
@@ -52,6 +61,7 @@ public static class GetFlakyTests
                     )
                 ))
                 .OrderByDescending(s => s.FlakRate)
-                .ToListAsync(cancellationToken);
+                .ToList();
+        }
     }
 }

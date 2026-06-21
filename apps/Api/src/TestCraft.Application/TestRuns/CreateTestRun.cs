@@ -3,22 +3,8 @@ using MediatR;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
-using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestRuns;
-
-public record TestRunResponse
-{
-    public required Guid Id { get; init; }
-    public required Guid ProjectId { get; init; }
-    public required string Name { get; init; }
-    public required string Environment { get; init; }
-    public required TestRunStatus Status { get; init; }
-    public string? Source { get; init; }
-    public Guid? ExecutedById { get; init; }
-    public required DateTimeOffset CreatedAt { get; init; }
-    public required DateTimeOffset UpdatedAt { get; init; }
-}
 
 public static class CreateTestRun
 {
@@ -51,7 +37,6 @@ public static class CreateTestRun
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Environment = request.Environment,
-                Status = TestRunStatus.Active,
             };
 
             context.TestRuns.Add(run);

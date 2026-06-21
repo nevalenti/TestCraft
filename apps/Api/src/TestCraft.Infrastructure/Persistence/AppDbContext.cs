@@ -1,10 +1,12 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Events;
 
 namespace TestCraft.Infrastructure.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options)
+public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher publisher)
     : DbContext(options),
         IApplicationDbContext
 {
@@ -30,17 +32,17 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 
-    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ApplyAuditTimestamps();
-
-        return base.SaveChangesAsync(cancellationToken);
+        var result = await base.SaveChangesAsync(cancellationToken);
+        await DispatchDomainEventsAsync(cancellationToken);
+        return result;
     }
 
     public override int SaveChanges()
     {
         ApplyAuditTimestamps();
-
         return base.SaveChanges();
     }
 
@@ -58,6 +60,19 @@ public class AppDbContext(DbContextOptions<AppDbContext> options)
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = now;
                     break;
+            }
+        }
+    }
+
+    private async Task DispatchDomainEventsAsync(CancellationToken ct)
+    {
+        var entities = ChangeTracker.Entries<IHasDomainEvents>().Select(e => e.Entity).ToList();
+
+        foreach (var entity in entities)
+        {
+            foreach (var domainEvent in entity.PopDomainEvents())
+            {
+                await publisher.Publish(domainEvent, ct);
             }
         }
     }

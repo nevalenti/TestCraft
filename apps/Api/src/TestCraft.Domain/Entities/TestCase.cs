@@ -19,4 +19,11 @@ public class TestCase : IAuditableEntity
     public ICollection<TestResult> TestResults { get; set; } = [];
     public ICollection<TestCaseLabel> TestCaseLabels { get; set; } = [];
     public ICollection<TestPlanCase> TestPlanCases { get; set; } = [];
+
+    public void Update(string name, string? description, TestCasePriority priority)
+    {
+        Name = name;
+        Description = description;
+        Priority = priority;
+    }
 }

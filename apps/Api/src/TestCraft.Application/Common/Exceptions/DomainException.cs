@@ -1,12 +1,1 @@
-namespace TestCraft.Application.Common.Exceptions;
-
-public class DomainException : Exception
-{
-    public DomainException() { }
-
-    public DomainException(string message)
-        : base(message) { }
-
-    public DomainException(string message, Exception innerException)
-        : base(message, innerException) { }
-}
+global using DomainException = TestCraft.Domain.Exceptions.DomainException;

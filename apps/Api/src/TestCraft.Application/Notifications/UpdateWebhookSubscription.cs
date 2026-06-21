@@ -13,7 +13,7 @@ public static class UpdateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         public required Guid ProjectId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Url { get; init; }
         public string? Secret { get; init; }
         public required IReadOnlyList<string> Events { get; init; }

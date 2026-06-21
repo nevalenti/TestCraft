@@ -72,7 +72,7 @@ public class SystemController(ApiOptions apiOptions, AppDbContext dbContext) : C
             return Unauthorized();
         }
 
-        using var stream = new MemoryStream();
+        await using var stream = new MemoryStream();
         await Metrics.DefaultRegistry.CollectAndExportAsTextAsync(
             stream,
             HttpContext.RequestAborted

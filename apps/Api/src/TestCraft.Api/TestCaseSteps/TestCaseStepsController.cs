@@ -119,24 +119,18 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestCaseStep.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(
+    ) =>
+        Ok(
             await sender.Send(
                 command with
                 {
                     ProjectId = projectId,
                     CaseId = caseId,
+                    Id = id,
                 },
                 cancellationToken
             )
         );
-    }
 
     /// <summary>Deletes a test case step.</summary>
     [HttpDelete("{id:guid}")]

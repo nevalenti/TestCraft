@@ -12,7 +12,7 @@ public static class UpdateTestPlan
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
         public Guid ProjectId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required string Name { get; init; }
         public string? Description { get; init; }
     }

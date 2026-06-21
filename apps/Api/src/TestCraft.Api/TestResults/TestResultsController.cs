@@ -90,24 +90,18 @@ public class TestResultsController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestResult.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(
+    ) =>
+        Ok(
             await sender.Send(
                 command with
                 {
                     ProjectId = projectId,
                     RunId = runId,
+                    Id = id,
                 },
                 cancellationToken
             )
         );
-    }
 
     /// <summary>Deletes a test result.</summary>
     [HttpDelete("{id:guid}")]

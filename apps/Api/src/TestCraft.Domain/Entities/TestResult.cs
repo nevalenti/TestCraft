@@ -21,4 +21,11 @@ public class TestResult : IAuditableEntity
     public TestRun? TestRun { get; set; }
     public TestCase? TestCase { get; set; }
     public ICollection<Attachment> Attachments { get; set; } = [];
+
+    public void Update(TestResultStatus status, string? notes, DefectType? defectType)
+    {
+        Status = status;
+        Notes = notes;
+        DefectType = defectType;
+    }
 }

@@ -45,12 +45,12 @@ public static class GetRunComparison
                 ) ?? throw new NotFoundException("Run B not found");
 
             var resultsA = await context
-                .TestResults.Where(r => r.TestRunId == request.RunAId && !r.IsDeleted)
+                .TestResults.Where(r => r.TestRunId == request.RunAId)
                 .Select(r => new { r.TestCaseId, r.Status })
                 .ToListAsync(cancellationToken);
 
             var resultsB = await context
-                .TestResults.Where(r => r.TestRunId == request.RunBId && !r.IsDeleted)
+                .TestResults.Where(r => r.TestRunId == request.RunBId)
                 .Select(r => new { r.TestCaseId, r.Status })
                 .ToListAsync(cancellationToken);
 

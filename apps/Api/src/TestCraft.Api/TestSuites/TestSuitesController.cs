@@ -55,15 +55,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestSuite.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
     /// <summary>Deletes a test suite.</summary>
     [HttpDelete("{id:guid}")]

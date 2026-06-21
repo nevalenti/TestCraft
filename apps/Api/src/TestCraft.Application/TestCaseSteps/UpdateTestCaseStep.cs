@@ -13,7 +13,7 @@ public static class UpdateTestCaseStep
     {
         public Guid ProjectId { get; init; }
         public Guid CaseId { get; init; }
-        public required Guid Id { get; init; }
+        public Guid Id { get; init; }
         public required int Order { get; init; }
         public required string Action { get; init; }
         public required string ExpectedResult { get; init; }

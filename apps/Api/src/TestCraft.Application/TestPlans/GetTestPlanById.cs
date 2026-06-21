@@ -32,9 +32,7 @@ public static class GetTestPlanById
                         ProjectId = p.ProjectId,
                         CreatedAt = p.CreatedAt,
                         Cases = p
-                            .TestPlanCases.Where(tpc =>
-                                tpc.TestCase != null && !tpc.TestCase.IsDeleted
-                            )
+                            .TestPlanCases.Where(tpc => tpc.TestCase != null)
                             .OrderBy(tpc => tpc.Order)
                             .Select(tpc => new TestPlanCaseResponse
                             {

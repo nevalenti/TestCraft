@@ -32,10 +32,12 @@ internal static class ImportRunWriter
             ProjectId = projectId,
             Name = name,
             Environment = environment,
-            Status = status,
             Source = source,
             ExecutedById = userId,
         };
+
+        if (status != TestRunStatus.Active)
+            run.TransitionTo(status);
 
         context.TestRuns.Add(run);
         await context.SaveChangesAsync(cancellationToken);

@@ -2,8 +2,10 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TestCraft.Application.Import;
+using TestCraft.Application.Labels;
 using TestCraft.Application.Projects;
 using TestCraft.Application.TestCases;
+using TestCraft.Application.TestPlans;
 using TestCraft.Application.TestRuns;
 using TestCraft.Application.TestSuites;
 using TestCraft.Domain.Enums;
@@ -84,6 +86,35 @@ internal static class ApiTestHelpers
         var response = await client.GetAsync($"/api/v1/projects/{projectId}/runs/{runId}");
 
         return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
+    }
+
+    public static async Task<LabelResponse> CreateLabelAsync(
+        this HttpClient client,
+        Guid projectId,
+        string name = "Bug",
+        string color = "#FF0000"
+    )
+    {
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/labels",
+            new CreateLabel.Command { Name = name, Color = color }
+        );
+
+        return (await response.Content.ReadFromJsonAsync<LabelResponse>(JsonOptions))!;
+    }
+
+    public static async Task<TestPlanResponse> CreatePlanAsync(
+        this HttpClient client,
+        Guid projectId,
+        string name = "Plan"
+    )
+    {
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/plans",
+            new CreateTestPlan.Command { Name = name }
+        );
+
+        return (await response.Content.ReadFromJsonAsync<TestPlanResponse>(JsonOptions))!;
     }
 
     public static async Task<ImportJobResponse> WaitForImportJobAsync(

@@ -14,4 +14,10 @@ public class TestSuite : IAuditableEntity
 
     public Project? Project { get; set; }
     public ICollection<TestCase> TestCases { get; set; } = [];
+
+    public void Update(string name, string? description)
+    {
+        Name = name;
+        Description = description;
+    }
 }

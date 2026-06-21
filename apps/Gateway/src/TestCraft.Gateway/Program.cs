@@ -10,38 +10,34 @@ var app = builder.Build();
 app.UseHttpsRedirection();
 
 app.Use(
-    (context, next) =>
+    async (context, next) =>
     {
         var path = context.Request.Path.Value ?? string.Empty;
 
-        switch (path)
+        string? redirect = path switch
         {
-            case "/keycloak":
-                var host = context.Request.Host.Host;
-                context.Response.Redirect(
-                    $"https://{host}:8443/",
-                    permanent: true
-                );
-                return Task.CompletedTask;
-            case "/grafana":
-                context.Response.Redirect("/grafana/", permanent: true);
-                return Task.CompletedTask;
-            case "/seq":
-                context.Response.Redirect("/seq/", permanent: true);
-                return Task.CompletedTask;
+            "/keycloak" => $"https://{context.Request.Host.Host}:8443/",
+            "/grafana" => "/grafana/",
+            "/seq" => "/seq/",
+            _ => null,
+        };
+
+        if (redirect is not null)
+        {
+            context.Response.Redirect(redirect, permanent: true);
+            return;
         }
 
-        var isHidden =
+        if (
             path.StartsWith("/.", StringComparison.Ordinal)
-            && !path.StartsWith("/.well-known", StringComparison.Ordinal);
-
-        if (isHidden)
+            && !path.StartsWith("/.well-known", StringComparison.Ordinal)
+        )
         {
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
+            return;
         }
 
-        return next(context);
+        await next();
     }
 );
 

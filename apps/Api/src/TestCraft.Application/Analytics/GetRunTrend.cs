@@ -43,18 +43,10 @@ public static class GetRunTrend
                     r.Id,
                     r.Name,
                     r.CreatedAt,
-                    Passed = r.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Passed && !tr.IsDeleted
-                    ),
-                    Failed = r.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Failed && !tr.IsDeleted
-                    ),
-                    Blocked = r.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Blocked && !tr.IsDeleted
-                    ),
-                    Skipped = r.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Skipped && !tr.IsDeleted
-                    ),
+                    Passed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Passed),
+                    Failed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Failed),
+                    Blocked = r.TestResults.Count(tr => tr.Status == TestResultStatus.Blocked),
+                    Skipped = r.TestResults.Count(tr => tr.Status == TestResultStatus.Skipped),
                 })
                 .ToListAsync(cancellationToken);
 

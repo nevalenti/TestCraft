@@ -31,7 +31,6 @@ const rootRoute = createRootRoute({
   errorComponent: RootError,
 });
 
-// Pathless layout route — wraps all authenticated pages in AppLayout
 const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
   id: "app",
@@ -122,7 +121,6 @@ const testPlanRoute = createRoute({
   component: LazyTestPlanPage,
 });
 
-// Public share page — renders without AppLayout chrome
 const shareRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/share/$token",

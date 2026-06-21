@@ -45,15 +45,7 @@ public class ProjectsController(ISender sender) : ControllerBase
         Guid id,
         UpdateProject.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        if (id != command.Id)
-        {
-            return BadRequest();
-        }
-
-        return Ok(await sender.Send(command, cancellationToken));
-    }
+    ) => Ok(await sender.Send(command with { Id = id }, cancellationToken));
 
     /// <summary>Deletes a project.</summary>
     [HttpDelete("{id:guid}")]
