@@ -19,7 +19,7 @@ const App = () => (
   <AuthProvider>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <RouterProvider router={router} />
+        <RouterProvider router={router} context={{ queryClient }} />
       </ThemeProvider>
       {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
     </QueryClientProvider>

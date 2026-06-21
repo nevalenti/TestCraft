@@ -15,6 +15,8 @@ public static class SwaggerExtensions
         builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
         builder.Services.AddSwaggerGen(options =>
         {
+            options.CustomSchemaIds(type => (type.FullName ?? type.Name).Replace("+", "."));
+
             options.AddSecurityDefinition(
                 "bearerAuth",
                 new OpenApiSecurityScheme

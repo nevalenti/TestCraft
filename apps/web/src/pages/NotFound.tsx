@@ -7,7 +7,7 @@ export const NotFound = () => {
   useBreadcrumbs([]);
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4">
+    <div className="flex h-screen items-center justify-center px-4">
       <div className="text-center">
         <div className="relative mb-8">
           <h1 className="text-[160px] leading-none font-black text-base-content/15 select-none">

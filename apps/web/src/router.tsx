@@ -1,11 +1,19 @@
+import type { QueryClient } from "@tanstack/react-query";
 import {
-  createRootRoute,
+  createRootRouteWithContext,
   createRoute,
   createRouter,
   Outlet,
   redirect,
 } from "@tanstack/react-router";
 
+import { projectQueries } from "@/api/projects";
+import { testCaseQueries } from "@/api/testCases";
+import { testCaseStepQueries } from "@/api/testCaseSteps";
+import { testPlanQueries } from "@/api/testPlans";
+import { testResultQueries } from "@/api/testResults";
+import { testRunQueries } from "@/api/testRuns";
+import { testSuiteQueries } from "@/api/testSuites";
 import { RootError } from "@/components/RootError";
 import AppLayout from "@/layout/AppLayout";
 import {
@@ -25,7 +33,11 @@ import {
 } from "@/pages/lazy";
 import { NotFound } from "@/pages/NotFound";
 
-const rootRoute = createRootRoute({
+interface RouterContext {
+  queryClient: QueryClient;
+}
+
+const rootRoute = createRootRouteWithContext<RouterContext>()({
   component: Outlet,
   notFoundComponent: NotFound,
   errorComponent: RootError,
@@ -53,6 +65,10 @@ const projectDetailRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId",
   component: LazyProjectDetailPage,
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(
+      projectQueries.detail(params.projectId),
+    ),
 });
 
 const projectDetailIndexRoute = createRoute({
@@ -71,12 +87,16 @@ const projectSuitesRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
   path: "suites",
   component: LazyProjectSuitesPage,
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(testSuiteQueries.all(params.projectId)),
 });
 
 const projectRunsRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
   path: "runs",
   component: LazyProjectRunsPage,
+  loader: ({ context, params }) =>
+    context.queryClient.ensureQueryData(testRunQueries.all(params.projectId)),
 });
 
 const projectAnalyticsRoute = createRoute({
@@ -95,30 +115,97 @@ const testSuiteRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/suites/$suiteId",
   component: LazyTestSuitePage,
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        projectQueries.detail(params.projectId),
+      ),
+      context.queryClient.ensureQueryData(
+        testSuiteQueries.detail(params.projectId, params.suiteId),
+      ),
+      context.queryClient.ensureQueryData(
+        testCaseQueries.all(params.projectId, params.suiteId),
+      ),
+    ]),
 });
 
 const testCaseRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/suites/$suiteId/cases/$caseId",
   component: LazyTestCasePage,
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        projectQueries.detail(params.projectId),
+      ),
+      context.queryClient.ensureQueryData(
+        testSuiteQueries.detail(params.projectId, params.suiteId),
+      ),
+      context.queryClient.ensureQueryData(
+        testCaseQueries.detail(params.projectId, params.suiteId, params.caseId),
+      ),
+      context.queryClient.ensureQueryData(
+        testCaseStepQueries.all(
+          params.projectId,
+          params.suiteId,
+          params.caseId,
+        ),
+      ),
+    ]),
 });
 
 const testRunRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/runs/$runId",
   component: LazyTestRunPage,
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        projectQueries.detail(params.projectId),
+      ),
+      context.queryClient.ensureQueryData(
+        testRunQueries.detail(params.projectId, params.runId),
+      ),
+      context.queryClient.ensureQueryData(
+        testRunQueries.summary(params.projectId, params.runId),
+      ),
+      context.queryClient.ensureQueryData(
+        testResultQueries.all(params.projectId, params.runId),
+      ),
+    ]),
 });
 
 const testPlansRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/plans",
   component: LazyTestPlansPage,
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        projectQueries.detail(params.projectId),
+      ),
+      context.queryClient.ensureQueryData(
+        testPlanQueries.all(params.projectId),
+      ),
+    ]),
 });
 
 const testPlanRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
   path: "/projects/$projectId/plans/$planId",
   component: LazyTestPlanPage,
+  loader: ({ context, params }) =>
+    Promise.all([
+      context.queryClient.ensureQueryData(
+        projectQueries.detail(params.projectId),
+      ),
+      context.queryClient.ensureQueryData(
+        testPlanQueries.detail(params.projectId, params.planId),
+      ),
+      context.queryClient.ensureQueryData(
+        testPlanQueries.cases(params.projectId, params.planId),
+      ),
+    ]),
 });
 
 const shareRoute = createRoute({
@@ -147,4 +234,7 @@ const routeTree = rootRoute.addChildren([
   shareRoute,
 ]);
 
-export const router = createRouter({ routeTree });
+export const router = createRouter({
+  routeTree,
+  context: { queryClient: undefined! },
+});
