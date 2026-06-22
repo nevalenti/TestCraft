@@ -29,21 +29,21 @@ export const ResourceListItem = ({
   <div
     data-testid={testId}
     className={cn(
-      "group relative flex items-center gap-3 rounded-lg border border-base-content/20 px-4 py-3 shadow-sm transition-shadow duration-200 hover:shadow-md",
+      "group relative flex items-center gap-3 rounded-xl border border-base-content/15 px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md",
       cardBg,
     )}
   >
     {to && (
       <Link
         to={to}
-        className="absolute inset-0 rounded-lg"
+        className="absolute inset-0 rounded-xl"
         aria-label={`Open ${label}`}
       />
     )}
     {typeIcon && (
       <span
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-md bg-base-200",
+          "flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-content/[0.07]",
           accentText,
         )}
       >

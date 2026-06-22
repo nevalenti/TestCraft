@@ -16,29 +16,45 @@
 
 @layer utilities {
   .card-bg-info {
-    background-color: oklch(
-      from var(--color-info) l c h / var(--card-bg-alpha, 0.2)
-    );
+    background-color: oklch(from var(--color-info) l c h / 0.06);
+    border-color: oklch(from var(--color-info) l c h / 0.25);
   }
   .card-bg-warning {
-    background-color: oklch(
-      from var(--color-warning) l c h / var(--card-bg-alpha, 0.2)
-    );
+    background-color: oklch(from var(--color-warning) l c h / 0.06);
+    border-color: oklch(from var(--color-warning) l c h / 0.25);
   }
   .card-bg-success {
-    background-color: oklch(
-      from var(--color-success) l c h / var(--card-bg-alpha, 0.2)
-    );
+    background-color: oklch(from var(--color-success) l c h / 0.06);
+    border-color: oklch(from var(--color-success) l c h / 0.25);
   }
   .card-bg-error {
-    background-color: oklch(
-      from var(--color-error) l c h / var(--card-bg-alpha, 0.2)
-    );
+    background-color: oklch(from var(--color-error) l c h / 0.06);
+    border-color: oklch(from var(--color-error) l c h / 0.25);
   }
   .card-bg-primary {
-    background-color: oklch(
-      from var(--color-primary) l c h / var(--card-bg-alpha, 0.2)
-    );
+    background-color: oklch(from var(--color-primary) l c h / 0.06);
+    border-color: oklch(from var(--color-primary) l c h / 0.25);
+  }
+
+  [data-theme="emerald"] .card-bg-info {
+    background-color: oklch(from var(--color-info) l c h / 0.1);
+    border-color: oklch(from var(--color-info) l c h / 0.45);
+  }
+  [data-theme="emerald"] .card-bg-warning {
+    background-color: oklch(from var(--color-warning) l c h / 0.1);
+    border-color: oklch(from var(--color-warning) l c h / 0.45);
+  }
+  [data-theme="emerald"] .card-bg-success {
+    background-color: oklch(from var(--color-success) l c h / 0.1);
+    border-color: oklch(from var(--color-success) l c h / 0.45);
+  }
+  [data-theme="emerald"] .card-bg-error {
+    background-color: oklch(from var(--color-error) l c h / 0.1);
+    border-color: oklch(from var(--color-error) l c h / 0.45);
+  }
+  [data-theme="emerald"] .card-bg-primary {
+    background-color: oklch(from var(--color-primary) l c h / 0.1);
+    border-color: oklch(from var(--color-primary) l c h / 0.45);
   }
 
   .font-display {

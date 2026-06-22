@@ -9,6 +9,7 @@ import { useState } from "react";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LabelBadge } from "@/components/ui/LabelBadge";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
@@ -112,6 +113,18 @@ export const TestSuitePage = () => {
                 </p>
               </div>
               <div className="hidden shrink-0 items-center gap-2 sm:flex">
+                {(testCase.labels ?? []).length > 0 && (
+                  <div className="flex items-center gap-1">
+                    {testCase.labels!.slice(0, 2).map((label) => (
+                      <LabelBadge key={label.id} label={label} />
+                    ))}
+                    {testCase.labels!.length > 2 && (
+                      <span className="text-[11px] font-medium text-base-content/40">
+                        +{testCase.labels!.length - 2}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {testCase.stepCount > 0 && (
                   <span className="text-[11px] text-base-content/50">
                     {testCase.stepCount} step
@@ -154,6 +167,18 @@ export const TestSuitePage = () => {
                 )}
               </p>
             </div>
+            {(testCase.labels ?? []).length > 0 && (
+              <div className="mt-2.5 flex flex-wrap items-center gap-1">
+                {testCase.labels!.slice(0, 3).map((label) => (
+                  <LabelBadge key={label.id} label={label} />
+                ))}
+                {testCase.labels!.length > 3 && (
+                  <span className="text-[11px] font-medium text-base-content/40">
+                    +{testCase.labels!.length - 3}
+                  </span>
+                )}
+              </div>
+            )}
             <div className="mt-3 flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <PriorityBadge priority={testCase.priority} />

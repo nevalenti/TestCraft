@@ -62,8 +62,12 @@ export const useAddTestCaseLabel = (
     mutationFn: (labelId: string) =>
       labelsApi.addToCase(projectId, caseId, labelId),
     onSuccess: () => {
+      notify("Label added");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.detail(projectId, suiteId, caseId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.all(projectId, suiteId),
       });
     },
   });
@@ -80,8 +84,12 @@ export const useRemoveTestCaseLabel = (
     mutationFn: (labelId: string) =>
       labelsApi.removeFromCase(projectId, caseId, labelId),
     onSuccess: () => {
+      notify("Label removed");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.detail(projectId, suiteId, caseId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.all(projectId, suiteId),
       });
     },
   });

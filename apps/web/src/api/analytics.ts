@@ -39,7 +39,7 @@ export const analyticsApi = {
   ) => {
     const { data } = await client.get<RunComparison>(
       `${BASE(projectId)}/runs/compare`,
-      { params: { runA: runAId, runB: runBId } },
+      { params: { runAId, runBId } },
     );
     return data;
   },

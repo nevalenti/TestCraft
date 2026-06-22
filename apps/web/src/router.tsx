@@ -17,8 +17,12 @@ import { testSuiteQueries } from "@/api/testSuites";
 import { RootError } from "@/components/RootError";
 import AppLayout from "@/layout/AppLayout";
 import {
+  LazyAnalyticsComparisonTab,
+  LazyAnalyticsFlakyTab,
+  LazyAnalyticsSuiteTab,
+  LazyAnalyticsTrendTab,
   LazyDashboardPage,
-  LazyProjectAnalyticsPage,
+  LazyProjectAnalyticsLayout,
   LazyProjectDetailPage,
   LazyProjectLabelsPage,
   LazyProjectRunsPage,
@@ -102,7 +106,43 @@ const projectRunsRoute = createRoute({
 const projectAnalyticsRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
   path: "analytics",
-  component: LazyProjectAnalyticsPage,
+  component: LazyProjectAnalyticsLayout,
+});
+
+const projectAnalyticsIndexRoute = createRoute({
+  getParentRoute: () => projectAnalyticsRoute,
+  path: "/",
+  beforeLoad: ({ params }) => {
+    throw redirect({
+      to: "/projects/$projectId/analytics/trend",
+      params,
+      replace: true,
+    });
+  },
+});
+
+const projectAnalyticsTrendRoute = createRoute({
+  getParentRoute: () => projectAnalyticsRoute,
+  path: "trend",
+  component: LazyAnalyticsTrendTab,
+});
+
+const projectAnalyticsFlakyRoute = createRoute({
+  getParentRoute: () => projectAnalyticsRoute,
+  path: "flaky",
+  component: LazyAnalyticsFlakyTab,
+});
+
+const projectAnalyticsSuiteRoute = createRoute({
+  getParentRoute: () => projectAnalyticsRoute,
+  path: "suite",
+  component: LazyAnalyticsSuiteTab,
+});
+
+const projectAnalyticsComparisonRoute = createRoute({
+  getParentRoute: () => projectAnalyticsRoute,
+  path: "comparison",
+  component: LazyAnalyticsComparisonTab,
 });
 
 const projectLabelsRoute = createRoute({
@@ -214,17 +254,27 @@ const shareRoute = createRoute({
   component: LazySharePage,
 });
 
+const analyticsRouteTree = projectAnalyticsRoute.addChildren([
+  projectAnalyticsIndexRoute,
+  projectAnalyticsTrendRoute,
+  projectAnalyticsFlakyRoute,
+  projectAnalyticsSuiteRoute,
+  projectAnalyticsComparisonRoute,
+]);
+
+const projectDetailRouteTree = projectDetailRoute.addChildren([
+  projectDetailIndexRoute,
+  projectSuitesRoute,
+  projectRunsRoute,
+  analyticsRouteTree,
+  projectLabelsRoute,
+]);
+
 const routeTree = rootRoute.addChildren([
   appLayoutRoute.addChildren([
     indexRoute,
     projectsRoute,
-    projectDetailRoute.addChildren([
-      projectDetailIndexRoute,
-      projectSuitesRoute,
-      projectRunsRoute,
-      projectAnalyticsRoute,
-      projectLabelsRoute,
-    ]),
+    projectDetailRouteTree,
     testSuiteRoute,
     testCaseRoute,
     testRunRoute,

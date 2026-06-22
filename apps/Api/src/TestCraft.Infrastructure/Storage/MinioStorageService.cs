@@ -45,13 +45,26 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
         CancellationToken cancellationToken = default
     )
     {
-        // SDK limitation: PresignedGetObjectAsync does not accept CancellationToken
-        return await minio.PresignedGetObjectAsync(
+        var url = await minio.PresignedGetObjectAsync(
             new PresignedGetObjectArgs()
                 .WithBucket(options.MinioBucket)
                 .WithObject(key)
                 .WithExpiry((int)expiry.TotalSeconds)
         );
+
+        if (!string.IsNullOrEmpty(options.MinioPublicEndpoint))
+        {
+            var scheme = options.MinioUseSsl ? "https" : "http";
+            var publicBase = new Uri($"{scheme}://{options.MinioPublicEndpoint}");
+            url = new UriBuilder(url)
+            {
+                Host = publicBase.Host,
+                Port = publicBase.Port,
+                Scheme = publicBase.Scheme,
+            }.Uri.ToString();
+        }
+
+        return url;
     }
 
     private async Task EnsureBucketAsync(CancellationToken cancellationToken)
@@ -73,7 +86,6 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
         }
         catch (MinioException)
         {
-            // Bucket was created by a concurrent request — verify it now exists before rethrowing
             if (
                 !await minio.BucketExistsAsync(
                     new BucketExistsArgs().WithBucket(options.MinioBucket),

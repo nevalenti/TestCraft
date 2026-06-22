@@ -13,6 +13,7 @@ public sealed class InfrastructureOptions
     public string? RabbitMqUrl { get; init; }
 
     public string MinioEndpoint { get; init; } = "localhost:9000";
+    public string MinioPublicEndpoint { get; init; } = string.Empty;
     public string MinioAccessKey { get; init; } = string.Empty;
     public string MinioSecretKey { get; init; } = string.Empty;
     public string MinioBucket { get; init; } = "testcraft";
@@ -32,6 +33,7 @@ public sealed class InfrastructureOptions
             RedisUrl = configuration["REDIS_URL"],
             RabbitMqUrl = configuration["RABBITMQ_URL"],
             MinioEndpoint = configuration["MINIO_ENDPOINT"] ?? "localhost:9000",
+            MinioPublicEndpoint = configuration["MINIO_PUBLIC_ENDPOINT"] ?? string.Empty,
             MinioAccessKey = configuration["MINIO_ACCESS_KEY"] ?? string.Empty,
             MinioSecretKey = configuration["MINIO_SECRET_KEY"] ?? string.Empty,
             MinioBucket = configuration["MINIO_BUCKET"] ?? "testcraft",

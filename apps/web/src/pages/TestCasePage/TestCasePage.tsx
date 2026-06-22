@@ -201,7 +201,7 @@ export const TestCasePage = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header flex items-center justify-between gap-4">
+      <header className="page-header flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight">
             {testCase?.name}
@@ -223,18 +223,16 @@ export const TestCasePage = () => {
             </div>
           )}
         </div>
+        <button
+          className="btn shrink-0 btn-sm btn-primary"
+          onClick={openCreate}
+        >
+          <PlusIcon className="size-4" aria-hidden="true" />
+          Add Step
+        </button>
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
-        <div className="mb-4 flex justify-end">
-          <button
-            className="btn shrink-0 btn-sm btn-primary"
-            onClick={openCreate}
-          >
-            <PlusIcon className="size-4" aria-hidden="true" />
-            Add Step
-          </button>
-        </div>
         <div className="min-h-80">{renderSteps()}</div>
       </section>
 

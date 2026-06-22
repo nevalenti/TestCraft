@@ -68,10 +68,38 @@ export const LazyProjectRunsPage = suspend(
   }),
 );
 
-export const LazyProjectAnalyticsPage = suspend(
+export const LazyProjectAnalyticsLayout = suspend(
   React.lazy(async () => {
-    const module = await import("./ProjectDetailPage/AnalyticsTab");
-    return { default: module.AnalyticsTab };
+    const module = await import("./ProjectDetailPage/AnalyticsLayout");
+    return { default: module.AnalyticsLayout };
+  }),
+);
+
+export const LazyAnalyticsTrendTab = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/AnalyticsTrendTab");
+    return { default: module.AnalyticsTrendTab };
+  }),
+);
+
+export const LazyAnalyticsFlakyTab = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/AnalyticsFlakyTab");
+    return { default: module.AnalyticsFlakyTab };
+  }),
+);
+
+export const LazyAnalyticsSuiteTab = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/AnalyticsSuiteTab");
+    return { default: module.AnalyticsSuiteTab };
+  }),
+);
+
+export const LazyAnalyticsComparisonTab = suspend(
+  React.lazy(async () => {
+    const module = await import("./ProjectDetailPage/AnalyticsComparisonTab");
+    return { default: module.AnalyticsComparisonTab };
   }),
 );
 

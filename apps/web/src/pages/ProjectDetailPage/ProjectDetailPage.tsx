@@ -88,10 +88,11 @@ export const ProjectDetailPage = () => {
               )}
             </Link>
             <Link
-              to="/projects/$projectId/analytics"
+              to="/projects/$projectId/analytics/trend"
               params={{ projectId }}
               role="tab"
               className="tab gap-2 leading-none font-semibold"
+              activeOptions={{ exact: false }}
               activeProps={{
                 className:
                   "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",

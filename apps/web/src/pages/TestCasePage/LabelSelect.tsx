@@ -1,8 +1,11 @@
-import { CheckIcon, TagIcon } from "@heroicons/react/24/solid";
+import {
+  CheckIcon,
+  PencilSquareIcon,
+  TagIcon,
+} from "@heroicons/react/24/solid";
 import type { Label } from "@testcraft/types";
 import { useRef, useState } from "react";
 
-import { LabelBadge } from "@/components/ui/LabelBadge";
 import {
   useAddTestCaseLabel,
   useLabels,
@@ -30,6 +33,7 @@ export const LabelSelect = ({
 
   const assignedIds = new Set(assigned.map((l) => l.id));
   const isPending = add.isPending || remove.isPending;
+  const hasLabels = assigned.length > 0;
 
   const toggle = (label: Label) => {
     if (isPending) return;
@@ -42,15 +46,26 @@ export const LabelSelect = ({
 
   return (
     <div ref={ref} className="relative">
-      <button
-        type="button"
-        className="btn gap-1 text-base-content/50 btn-ghost btn-xs hover:text-base-content"
-        onClick={() => setOpen((v) => !v)}
-        aria-label="Manage labels"
-      >
-        <TagIcon className="size-3.5" />
-        Add label
-      </button>
+      {hasLabels ? (
+        <button
+          type="button"
+          className="btn text-base-content/30 btn-ghost btn-xs hover:text-base-content/70"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Manage labels"
+        >
+          <PencilSquareIcon className="size-3" />
+        </button>
+      ) : (
+        <button
+          type="button"
+          className="flex items-center gap-1.5 rounded-md border border-dashed border-base-content/20 px-2 py-1 text-[11px] font-medium text-base-content/40 transition-colors hover:border-base-content/40 hover:text-base-content/70"
+          onClick={() => setOpen((v) => !v)}
+          aria-label="Add labels"
+        >
+          <TagIcon className="size-3" />
+          Add label
+        </button>
+      )}
 
       {open && (
         <>
@@ -59,32 +74,56 @@ export const LabelSelect = ({
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute top-full left-0 z-20 mt-1 w-52 rounded-lg border border-border bg-base-100 p-1 shadow-lg">
-            {!allLabels || allLabels.length === 0 ? (
-              <p className="px-3 py-2 text-xs text-base-content/50">
-                No labels yet — create some in the Labels tab
+          <div className="absolute top-full left-0 z-20 mt-1.5 w-56 overflow-hidden rounded-xl border border-border bg-base-100 shadow-xl">
+            <div className="border-b border-border px-3 py-2">
+              <p className="text-[11px] font-semibold tracking-wide text-base-content/40 uppercase">
+                Labels
               </p>
+            </div>
+            {!allLabels || allLabels.length === 0 ? (
+              <div className="px-3 py-4 text-center">
+                <TagIcon className="mx-auto mb-1.5 size-5 text-base-content/20" />
+                <p className="text-xs font-medium text-base-content/40">
+                  No labels yet
+                </p>
+                <p className="mt-0.5 text-[11px] text-base-content/30">
+                  Create labels in the Labels tab
+                </p>
+              </div>
             ) : (
-              allLabels.map((label) => {
-                const isAssigned = assignedIds.has(label.id);
+              <div className="p-1">
+                {allLabels.map((label) => {
+                  const isAssigned = assignedIds.has(label.id);
 
-                return (
-                  <button
-                    key={label.id}
-                    type="button"
-                    disabled={isPending}
-                    onClick={() => toggle(label)}
-                    className="flex w-full items-center gap-2 rounded-md px-3 py-1.5 text-left text-sm transition-colors hover:bg-base-200 disabled:opacity-50"
-                  >
-                    <span className="flex size-4 shrink-0 items-center justify-center">
+                  return (
+                    <button
+                      key={label.id}
+                      type="button"
+                      disabled={isPending}
+                      onClick={() => toggle(label)}
+                      className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-1.5 text-left transition-colors hover:bg-base-200 disabled:opacity-50"
+                    >
+                      <span className="flex size-4 shrink-0 items-center justify-center">
+                        {isAssigned ? (
+                          <CheckIcon className="size-3.5 text-success" />
+                        ) : (
+                          <span
+                            className="size-2 rounded-full"
+                            style={{ backgroundColor: label.color }}
+                          />
+                        )}
+                      </span>
+                      <span className="flex-1 text-sm">{label.name}</span>
                       {isAssigned && (
-                        <CheckIcon className="size-3.5 text-success" />
+                        <span
+                          className="size-2 rounded-full"
+                          style={{ backgroundColor: label.color }}
+                        />
                       )}
-                    </span>
-                    <LabelBadge label={label} />
-                  </button>
-                );
-              })
+                    </button>
+                  );
+                })}
+              </div>
             )}
           </div>
         </>

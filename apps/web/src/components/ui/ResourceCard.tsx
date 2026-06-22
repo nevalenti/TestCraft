@@ -29,24 +29,22 @@ export const ResourceCard = ({
   <div
     data-testid={testId}
     className={cn(
-      "relative group overflow-hidden rounded-lg border border-base-content/20 shadow-md transition-shadow duration-200 hover:shadow-xl motion-safe:transition-all motion-safe:hover:-translate-y-0.5",
+      "group relative overflow-hidden rounded-xl border border-base-content/15 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-px",
       cardBg,
     )}
   >
     {to && (
       <Link
         to={to}
-        className="absolute inset-0 rounded-lg"
+        className="absolute inset-0 rounded-xl"
         aria-label={`Open ${label}`}
       />
     )}
     <div className="flex min-h-[120px] flex-col justify-between p-4 pr-10">
       {typeIcon && (
-        <div
-          className={cn("mb-3 flex items-center gap-1.5 font-bold", accentText)}
-        >
-          {typeIcon}
-          <span className="text-[11px] tracking-[0.08em] uppercase">
+        <div className="mb-3 flex items-center gap-1.5">
+          <span className={accentText}>{typeIcon}</span>
+          <span className="text-[11px] font-semibold tracking-[0.08em] text-base-content/40 uppercase">
             {label}
           </span>
         </div>
