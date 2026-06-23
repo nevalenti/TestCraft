@@ -164,7 +164,7 @@ export const LabelsTab = () => {
         </div>
       );
     return (
-      <div className="overflow-hidden rounded-lg border border-border">
+      <div className="overflow-hidden rounded-xl border border-border">
         <table className="table table-sm">
           <thead>
             <tr className="text-xs text-base-content/60">

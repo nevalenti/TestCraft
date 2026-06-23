@@ -1,8 +1,11 @@
 import {
   ArrowRightIcon,
   BoltIcon,
+  CheckCircleIcon,
   ClipboardDocumentListIcon,
+  ClockIcon,
   FolderIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/solid";
 import { useQueries } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
@@ -14,7 +17,7 @@ import { testRunQueries } from "@/api/testRuns";
 import { ErrorState } from "@/components/ErrorState";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProjects } from "@/hooks/useProjects";
-import { formatDate } from "@/lib/format";
+import { formatDateTime } from "@/lib/format";
 import { StatCard } from "@/pages/DashboardPage/StatCard";
 
 export const DashboardPage = () => {
@@ -30,23 +33,57 @@ export const DashboardPage = () => {
     [projects],
   );
 
-  const { activeRuns, totalRuns, runsPending } = useQueries({
-    queries: (projects ?? []).map((project) => testRunQueries.all(project.id)),
-    combine: (results) => ({
-      activeRuns: results
-        .flatMap((result) => result.data?.items ?? [])
-        .filter((run) => run.status === TestRunStatus.Active)
-        .toSorted((itemA, itemB) =>
-          compareDesc(new Date(itemA.createdAt), new Date(itemB.createdAt)),
-        ),
-      totalRuns: results.reduce(
-        (sum, result) => sum + (result.data?.total ?? 0),
-        0,
-      ),
-      runsPending:
-        results.length !== (projects ?? []).length ||
-        results.some((result) => result.isPending),
-    }),
+  const { activeRuns, recentlyCompletedRuns, totalRuns, runsPending } =
+    useQueries({
+      queries: (projects ?? []).map((project) => ({
+        ...testRunQueries.all(project.id),
+        refetchInterval: 5000,
+        refetchIntervalInBackground: true,
+        staleTime: 5000,
+      })),
+      combine: (results) => {
+        const allRuns = results.flatMap((result) => result.data?.items ?? []);
+        return {
+          activeRuns: allRuns
+            .filter((run) => run.status === TestRunStatus.Active)
+            .toSorted((a, b) =>
+              compareDesc(new Date(a.createdAt), new Date(b.createdAt)),
+            )
+            .slice(0, 5),
+          recentlyCompletedRuns: allRuns
+            .filter((run) => run.status === TestRunStatus.Completed)
+            .toSorted((a, b) =>
+              compareDesc(
+                new Date(a.updatedAt ?? a.createdAt),
+                new Date(b.updatedAt ?? b.createdAt),
+              ),
+            )
+            .slice(0, 5),
+          totalRuns: results.reduce(
+            (sum, result) => sum + (result.data?.total ?? 0),
+            0,
+          ),
+          runsPending:
+            results.length !== (projects ?? []).length ||
+            results.some((result) => result.isPending),
+        };
+      },
+    });
+
+  const completedRunSummaries = useQueries({
+    queries: recentlyCompletedRuns.map((run) =>
+      testRunQueries.summary(run.projectId, run.id),
+    ),
+    combine: (results) =>
+      new Map(recentlyCompletedRuns.map((run, i) => [run.id, results[i].data])),
+  });
+
+  const activeRunSummaries = useQueries({
+    queries: activeRuns.map((run) =>
+      testRunQueries.summary(run.projectId, run.id),
+    ),
+    combine: (results) =>
+      new Map(activeRuns.map((run, i) => [run.id, results[i].data])),
   });
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
@@ -60,23 +97,23 @@ export const DashboardPage = () => {
     0,
   );
 
-  const renderActiveRuns = () => {
-    if (activeRuns.length === 0)
+  const renderRecentlyCompleted = () => {
+    if (recentlyCompletedRuns.length === 0)
       return (
-        <div className="rounded-lg border border-border bg-base-100 px-6 py-16 text-center">
+        <div className="rounded-xl border border-border bg-base-100 px-6 py-16 text-center">
           <p className="mb-1 text-sm font-semibold text-base-content/60">
-            No active runs
+            No completed runs
           </p>
           <p className="text-xs text-base-content/40">
-            Start a test run from any project to track results here.
+            Completed test runs will appear here.
           </p>
         </div>
       );
 
     return (
-      <div className="rounded-lg border border-border bg-base-100 shadow-sm">
-        <ul className="divide-y divide-border">
-          {activeRuns.map((run) => {
+      <div className="overflow-hidden rounded-xl border border-border bg-base-100 shadow-sm">
+        <ul className="divide-y divide-base-content/8">
+          {recentlyCompletedRuns.map((run) => {
             const project = projectMap.get(run.projectId);
 
             return (
@@ -84,10 +121,14 @@ export const DashboardPage = () => {
                 <Link
                   to="/projects/$projectId/runs/$runId"
                   params={{ projectId: run.projectId, runId: run.id }}
-                  className="group flex items-center justify-between gap-4 px-5 py-3.5 transition-colors hover:bg-base-200/50"
+                  className="group flex items-center justify-between gap-4 px-5 py-2.5 transition-colors hover:bg-base-200/50"
                 >
                   <div className="flex min-w-0 items-center gap-3">
-                    <BoltIcon className="size-4 shrink-0 text-warning" />
+                    {(completedRunSummaries.get(run.id)?.failed ?? 0) > 0 ? (
+                      <XCircleIcon className="size-4 shrink-0 text-error" />
+                    ) : (
+                      <CheckCircleIcon className="size-4 shrink-0 text-success" />
+                    )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-semibold">
                         {run.name}
@@ -101,7 +142,66 @@ export const DashboardPage = () => {
                         {" · "}
                         {run.environment}
                         {" · "}
-                        {formatDate(run.createdAt)}
+                        {formatDateTime(run.updatedAt ?? run.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <ArrowRightIcon className="size-4 shrink-0 text-base-content/30 transition-transform motion-safe:group-hover:translate-x-0.5" />
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
+    );
+  };
+
+  const renderActiveRuns = () => {
+    if (activeRuns.length === 0)
+      return (
+        <div className="rounded-xl border border-border bg-base-100 px-6 py-16 text-center">
+          <p className="mb-1 text-sm font-semibold text-base-content/60">
+            No active runs
+          </p>
+          <p className="text-xs text-base-content/40">
+            Start a test run from any project to track results here.
+          </p>
+        </div>
+      );
+
+    return (
+      <div className="overflow-hidden rounded-xl border border-border bg-base-100 shadow-sm">
+        <ul className="divide-y divide-base-content/8">
+          {activeRuns.map((run) => {
+            const project = projectMap.get(run.projectId);
+
+            return (
+              <li key={run.id}>
+                <Link
+                  to="/projects/$projectId/runs/$runId"
+                  params={{ projectId: run.projectId, runId: run.id }}
+                  className="group flex items-center justify-between gap-4 px-5 py-2.5 transition-colors hover:bg-base-200/50"
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    {(activeRunSummaries.get(run.id)?.total ?? 0) === 0 ? (
+                      <ClockIcon className="size-4 shrink-0 text-base-content/30" />
+                    ) : (
+                      <BoltIcon className="size-4 shrink-0 text-warning" />
+                    )}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-semibold">
+                        {run.name}
+                      </p>
+                      <p className="truncate text-xs text-base-content/50">
+                        {project && (
+                          <span className="font-medium text-base-content/65">
+                            {project.name}
+                          </span>
+                        )}
+                        {" · "}
+                        {run.environment}
+                        {" · "}
+                        {formatDateTime(run.createdAt)}
                       </p>
                     </div>
                   </div>
@@ -168,6 +268,13 @@ export const DashboardPage = () => {
                 Active Runs
               </h2>
               {renderActiveRuns()}
+            </div>
+
+            <div className="flex flex-col">
+              <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
+                Recently Completed
+              </h2>
+              {renderRecentlyCompleted()}
             </div>
           </>
         )}

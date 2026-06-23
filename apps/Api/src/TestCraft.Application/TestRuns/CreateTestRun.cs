@@ -13,6 +13,7 @@ public static class CreateTestRun
         public Guid ProjectId { get; init; }
         public required string Name { get; init; }
         public required string Environment { get; init; }
+        public string? Source { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -21,6 +22,7 @@ public static class CreateTestRun
         {
             RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
             RuleFor(x => x.Environment).NotEmpty().MaximumLength(255);
+            RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
         }
     }
 
@@ -37,6 +39,7 @@ public static class CreateTestRun
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Environment = request.Environment,
+                Source = request.Source?.ToLowerInvariant(),
             };
 
             context.TestRuns.Add(run);

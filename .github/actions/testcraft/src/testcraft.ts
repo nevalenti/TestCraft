@@ -15,6 +15,23 @@ interface TestResultSummary {
   status: string;
 }
 
+export const createRun = async (
+  apiUrl: string,
+  projectId: string,
+  token: string,
+  name: string,
+  environment: string,
+  source?: string,
+): Promise<{ id: string }> => {
+  const response = await fetch(`${apiUrl}/api/v1/projects/${projectId}/runs`, {
+    method: "POST",
+    headers: { ...authHeaders(token), "Content-Type": "application/json" },
+    body: JSON.stringify({ name, environment, source }),
+  });
+  await assertOk(response, "Failed to create run");
+  return (await response.json()) as { id: string };
+};
+
 export const importResults = async (
   apiUrl: string,
   projectId: string,
@@ -22,13 +39,14 @@ export const importResults = async (
   name: string,
   xml: string,
   source?: string,
+  runId?: string,
 ): Promise<ImportJobResponse> => {
   const response = await fetch(
     `${apiUrl}/api/v1/projects/${projectId}/import/junit`,
     {
       method: "POST",
       headers: { ...authHeaders(token), "Content-Type": "application/json" },
-      body: JSON.stringify({ xml, environment: "ci", name, source }),
+      body: JSON.stringify({ xml, environment: "ci", name, source, runId }),
     },
   );
   await assertOk(response, "Import failed");

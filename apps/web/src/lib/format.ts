@@ -14,7 +14,7 @@ export const formatDate = (value: unknown): string => {
 
 export const formatDateTime = (value: unknown): string => {
   const d = toDate(value);
-  return d ? format(d, "MMM d, yyyy, h:mm a") : "—";
+  return d ? format(d, "MMM d, yyyy, h:mm:ss a") : "—";
 };
 
 export const toDatetimeLocal = (iso: string): string =>

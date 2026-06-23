@@ -101,6 +101,20 @@ jobs:
       - name: Wait for Keycloak
         run: timeout 120 sh -c 'until curl -sf http://localhost:9000/health/ready > /dev/null 2>&1; do sleep 3; done'
 
+      - name: Start TestCraft run
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/testcraft
+        with:
+          command: start
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          project-name: TestCraft
+          run-name: "#${{ github.run_id }} e2e (${{ github.ref_name }})"
+          source: e2e
+
       - name: Run e2e tests
         run: pnpm --filter testcraft-e2e run e2e
         env:

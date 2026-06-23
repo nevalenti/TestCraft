@@ -14,7 +14,7 @@ export const EmptyState = ({
   icon,
 }: EmptyStateProps) => (
   <div className="flex flex-col items-center justify-center py-20 text-center select-none">
-    <div className="mb-5 flex size-14 items-center justify-center rounded-xl border border-border/60 bg-base-200 text-base-content/40 shadow-sm">
+    <div className="mb-5 flex size-14 items-center justify-center rounded-xl border border-base-content/10 bg-base-200 text-base-content/40 shadow-sm">
       {icon ?? <InboxIcon className="size-6" />}
     </div>
     <p className="text-sm font-semibold tracking-tight text-base-content/80">

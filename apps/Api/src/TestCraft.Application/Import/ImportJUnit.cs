@@ -18,6 +18,7 @@ public static class ImportJUnit
         public required string Environment { get; init; }
         public string? Name { get; init; }
         public string? Source { get; init; }
+        public Guid? RunId { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -67,6 +68,7 @@ public static class ImportJUnit
                     Environment = request.Environment,
                     Name = request.Name,
                     Source = request.Source,
+                    RunId = request.RunId,
                     UserId = currentUser.UserId,
                 },
                 cancellationToken

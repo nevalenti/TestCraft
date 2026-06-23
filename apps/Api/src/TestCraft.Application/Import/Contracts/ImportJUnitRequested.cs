@@ -8,5 +8,6 @@ public record ImportJUnitRequested
     public required string Environment { get; init; }
     public string? Name { get; init; }
     public string? Source { get; init; }
+    public Guid? RunId { get; init; }
     public required Guid UserId { get; init; }
 }

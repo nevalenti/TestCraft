@@ -15,11 +15,11 @@
       :root {
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-        --color-border: oklch(1 0 0 / 0.15);
+        --color-border: oklch(1 0 0 / 0.25);
       }
 
       [data-theme="emerald"] {
-        --color-border: oklch(0 0 0 / 0.18);
+        --color-border: oklch(0 0 0 / 0.28);
       }
 
       html {

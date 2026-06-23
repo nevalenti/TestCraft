@@ -52,19 +52,22 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
                 .WithExpiry((int)expiry.TotalSeconds)
         );
 
-        if (!string.IsNullOrEmpty(options.MinioPublicEndpoint))
+        if (string.IsNullOrEmpty(options.MinioPublicEndpoint))
         {
-            var scheme = options.MinioUseSsl ? "https" : "http";
-            var publicBase = new Uri($"{scheme}://{options.MinioPublicEndpoint}");
-            url = new UriBuilder(url)
-            {
-                Host = publicBase.Host,
-                Port = publicBase.Port,
-                Scheme = publicBase.Scheme,
-            }.Uri.ToString();
+            return url;
         }
 
-        return url;
+        var scheme = options.MinioUseSsl ? "https" : "http";
+        var publicBase = new Uri($"{scheme}://{options.MinioPublicEndpoint}");
+        var uriBuilder = new UriBuilder(url)
+        {
+            Host = publicBase.Host,
+            Port = publicBase.Port,
+            Scheme = publicBase.Scheme,
+        };
+        if (publicBase.AbsolutePath is { Length: > 1 } prefix)
+            uriBuilder.Path = prefix.TrimEnd('/') + uriBuilder.Path;
+        return uriBuilder.Uri.ToString();
     }
 
     private async Task EnsureBucketAsync(CancellationToken cancellationToken)

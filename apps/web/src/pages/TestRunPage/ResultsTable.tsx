@@ -19,7 +19,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
 
   return (
     <>
-      <div className="overflow-x-auto rounded-lg border border-border shadow-sm">
+      <div className="overflow-x-auto rounded-xl border border-border shadow-sm">
         <table className="table table-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (

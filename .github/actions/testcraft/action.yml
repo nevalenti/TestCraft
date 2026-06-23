@@ -2,6 +2,10 @@ name: Import results to TestCraft
 description: Authenticates with Keycloak and uploads a JUnit XML report to TestCraft
 
 inputs:
+  command:
+    description: "'start' creates an Active run before tests; 'import' (default) imports results after tests"
+    required: false
+    default: import
   username:
     description: TestCraft service account username
     required: false
@@ -15,8 +19,8 @@ inputs:
     description: TestCraft project name to import results into
     required: true
   junit-xml:
-    description: Path to the JUnit XML report file
-    required: true
+    description: Path to the JUnit XML report file (required when command is import)
+    required: false
   run-name:
     description: Display name for the imported test run
     required: true
@@ -29,6 +33,10 @@ inputs:
   screenshots-dir:
     description: Path to Playwright test-results directory — when set, PNG screenshots are uploaded as attachments to failed results
     required: false
+
+outputs:
+  run-id:
+    description: ID of the TestCraft run that was created or updated
 
 runs:
   using: node20

@@ -73,6 +73,62 @@ internal static class ImportRunWriter
         };
     }
 
+    public static async Task<TestRunResponse> AppendResultsToRunAsync(
+        IApplicationDbContext context,
+        Guid projectId,
+        Guid runId,
+        IReadOnlyList<ParsedTestCase> cases,
+        Guid userId,
+        string? source,
+        ImportJob job,
+        CancellationToken cancellationToken
+    )
+    {
+        await using var transaction = await context.Database.BeginTransactionAsync(
+            cancellationToken
+        );
+
+        var run =
+            await context.TestRuns.FirstOrDefaultAsync(
+                r => r.Id == runId && r.ProjectId == projectId,
+                cancellationToken
+            )
+            ?? throw new InvalidOperationException($"Run {runId} not found in project {projectId}");
+
+        var now = DateTimeOffset.UtcNow;
+
+        await InsertResultsAsync(
+            context,
+            projectId,
+            run.Id,
+            cases,
+            now,
+            userId,
+            source,
+            cancellationToken
+        );
+
+        run.TransitionTo(TestRunStatus.Completed);
+        job.Status = ImportJobStatus.Completed;
+        job.TestRunId = run.Id;
+        await context.SaveChangesAsync(cancellationToken);
+
+        await transaction.CommitAsync(cancellationToken);
+
+        return new TestRunResponse
+        {
+            Id = run.Id,
+            ProjectId = run.ProjectId,
+            Name = run.Name,
+            Environment = run.Environment,
+            Status = run.Status,
+            Source = run.Source,
+            ExecutedById = run.ExecutedById,
+            CreatedAt = run.CreatedAt,
+            UpdatedAt = run.UpdatedAt,
+        };
+    }
+
     private static async Task InsertResultsAsync(
         IApplicationDbContext context,
         Guid projectId,

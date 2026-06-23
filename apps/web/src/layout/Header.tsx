@@ -1,6 +1,5 @@
 import {
   ArrowRightStartOnRectangleIcon,
-  Bars3Icon,
   ChevronDownIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
@@ -107,13 +106,13 @@ export const Header = () => {
             </ul>
           </div>
           <ThemeToggle />
-          <label
-            htmlFor="mobile-nav-drawer"
-            className="btn btn-square btn-ghost btn-sm lg:hidden"
-            aria-label="Open menu"
-          >
-            <Bars3Icon className="size-5" aria-hidden="true" />
-          </label>
+          {/* <label */}
+          {/*   htmlFor="mobile-nav-drawer" */}
+          {/*   className="btn btn-square btn-ghost btn-sm lg:hidden" */}
+          {/*   aria-label="Open menu" */}
+          {/* > */}
+          {/*   <Bars3Icon className="size-5" aria-hidden="true" /> */}
+          {/* </label> */}
         </div>
       </nav>
 

@@ -94,6 +94,12 @@ spec:
                   name: testcraft-secrets
                   key: MINIO_BUCKET
                   optional: true
+            - name: MINIO_PUBLIC_ENDPOINT
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: MINIO_PUBLIC_ENDPOINT
+                  optional: true
             - name: APPLY_MIGRATIONS
               value: "true"
           ports:

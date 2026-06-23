@@ -36,18 +36,34 @@ public partial class ImportJUnitRequestedConsumer(
         {
             var (runName, cases) = JUnitParser.Parse(message.Xml);
 
-            await ImportRunWriter.CreateRunWithResultsAsync(
-                dbContext,
-                message.ProjectId,
-                message.Name ?? runName,
-                message.Environment,
-                TestRunStatus.Completed,
-                cases,
-                message.UserId,
-                message.Source?.ToLowerInvariant(),
-                job,
-                cancellationToken
-            );
+            if (message.RunId.HasValue)
+            {
+                await ImportRunWriter.AppendResultsToRunAsync(
+                    dbContext,
+                    message.ProjectId,
+                    message.RunId.Value,
+                    cases,
+                    message.UserId,
+                    message.Source?.ToLowerInvariant(),
+                    job,
+                    cancellationToken
+                );
+            }
+            else
+            {
+                await ImportRunWriter.CreateRunWithResultsAsync(
+                    dbContext,
+                    message.ProjectId,
+                    message.Name ?? runName,
+                    message.Environment,
+                    TestRunStatus.Completed,
+                    cases,
+                    message.UserId,
+                    message.Source?.ToLowerInvariant(),
+                    job,
+                    cancellationToken
+                );
+            }
         }
         catch (Exception ex)
         {

@@ -135,7 +135,7 @@ function Stat({
   className?: string;
 }) {
   return (
-    <div className="rounded-lg border border-border bg-base-100 p-4 text-center">
+    <div className="rounded-xl border border-border bg-base-100 p-4 text-center">
       <p className={`text-2xl font-bold tabular-nums ${className}`}>{value}</p>
       <p className="mt-0.5 text-xs text-base-content/50">{label}</p>
     </div>
