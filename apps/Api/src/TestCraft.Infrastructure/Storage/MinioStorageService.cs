@@ -9,6 +9,19 @@ namespace TestCraft.Infrastructure.Storage;
 public class MinioStorageService(IMinioClient minio, InfrastructureOptions options)
     : IStorageService
 {
+    // Presigned URLs must be signed with the host the browser uses, not the
+    // internal cluster host. A separate client scoped to the public endpoint ensures
+    // the HMAC signature matches when the browser hits the URL directly.
+    private readonly IMinioClient _presigningClient = string.IsNullOrEmpty(
+        options.MinioPublicEndpoint
+    )
+        ? minio
+        : new MinioClient()
+            .WithEndpoint(options.MinioPublicEndpoint)
+            .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
+            .WithSSL(options.MinioUseSsl)
+            .Build();
+
     public async Task<string> UploadAsync(
         string key,
         Stream content,
@@ -45,29 +58,12 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
         CancellationToken cancellationToken = default
     )
     {
-        var url = await minio.PresignedGetObjectAsync(
+        return await _presigningClient.PresignedGetObjectAsync(
             new PresignedGetObjectArgs()
                 .WithBucket(options.MinioBucket)
                 .WithObject(key)
                 .WithExpiry((int)expiry.TotalSeconds)
         );
-
-        if (string.IsNullOrEmpty(options.MinioPublicEndpoint))
-        {
-            return url;
-        }
-
-        var scheme = options.MinioUseSsl ? "https" : "http";
-        var publicBase = new Uri($"{scheme}://{options.MinioPublicEndpoint}");
-        var uriBuilder = new UriBuilder(url)
-        {
-            Host = publicBase.Host,
-            Port = publicBase.Port,
-            Scheme = publicBase.Scheme,
-        };
-        if (publicBase.AbsolutePath is { Length: > 1 } prefix)
-            uriBuilder.Path = prefix.TrimEnd('/') + uriBuilder.Path;
-        return uriBuilder.Uri.ToString();
     }
 
     private async Task EnsureBucketAsync(CancellationToken cancellationToken)
