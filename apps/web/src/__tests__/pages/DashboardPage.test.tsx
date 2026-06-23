@@ -66,6 +66,7 @@ const setupMocks = ({
   projects = [makeProject("proj-1", "Alpha")],
   projectsPending = false,
   activeRuns = [] as ReturnType<typeof makeRun>[],
+  recentlyCompletedRuns = [] as ReturnType<typeof makeRun>[],
   runsPending = false,
 } = {}) => {
   vi.mocked(useProjects).mockReturnValue({
@@ -74,10 +75,31 @@ const setupMocks = ({
     isError: false,
   } as unknown as ReturnType<typeof useProjects>);
 
-  vi.mocked(useQueries).mockReturnValue({
-    activeRuns,
-    runsPending,
-  } as unknown as ReturnType<typeof useQueries>);
+  vi.mocked(useQueries).mockImplementation(
+    (options: Parameters<typeof useQueries>[0]) => {
+      let probe: unknown;
+      try {
+        probe = (options as { combine?: (r: unknown[]) => unknown }).combine?.(
+          [],
+        );
+      } catch {
+        probe = null;
+      }
+      if (
+        probe !== null &&
+        typeof probe === "object" &&
+        "activeRuns" in probe
+      ) {
+        return {
+          activeRuns,
+          recentlyCompletedRuns,
+          totalRuns: activeRuns.length + recentlyCompletedRuns.length,
+          runsPending,
+        } as unknown as ReturnType<typeof useQueries>;
+      }
+      return new Map() as unknown as ReturnType<typeof useQueries>;
+    },
+  );
 };
 
 describe("DashboardPage", () => {

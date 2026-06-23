@@ -1,5 +1,5 @@
 import { HubConnectionBuilder } from "@microsoft/signalr";
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 import keycloak from "@/auth/keycloak";
 import { env } from "@/lib/env";
@@ -8,6 +8,12 @@ export function useSignalR(
   runId: string | undefined,
   handlers: Record<string, (data: unknown) => void>,
 ) {
+  const handlersRef = useRef(handlers);
+
+  useLayoutEffect(() => {
+    handlersRef.current = handlers;
+  });
+
   useEffect(() => {
     if (!runId) return;
 
@@ -18,8 +24,8 @@ export function useSignalR(
       .withAutomaticReconnect()
       .build();
 
-    for (const [event, handler] of Object.entries(handlers)) {
-      connection.on(event, handler);
+    for (const event of Object.keys(handlersRef.current)) {
+      connection.on(event, (data) => handlersRef.current[event]?.(data));
     }
 
     (async () => {

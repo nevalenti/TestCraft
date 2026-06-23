@@ -1,8 +1,6 @@
-import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { PlusIcon, ShareIcon } from "@heroicons/react/24/solid";
 import { useQueryClient } from "@tanstack/react-query";
 import {
-  createColumnHelper,
   getCoreRowModel,
   getSortedRowModel,
   type PaginationState,
@@ -21,10 +19,7 @@ import { queryKeys } from "@/api/queryKeys";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
-import { ResourceActions } from "@/components/ui/ResourceActions";
-import { StatusBadge } from "@/components/ui/StatusBadge";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
@@ -38,39 +33,14 @@ import {
   useUpdateTestResult,
 } from "@/hooks/useTestResults";
 import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
-import { RESULTS_PAGE_SIZE, statusOptions } from "@/lib/constants";
-import { formatDateTime } from "@/lib/format";
+import { RESULTS_PAGE_SIZE } from "@/lib/constants";
 import { AttachmentModal } from "@/pages/TestRunPage/AttachmentModal";
+import { createColumns } from "@/pages/TestRunPage/columns";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
-import { DefectTypeBadge } from "@/pages/TestRunPage/DefectTypeBadge";
 import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
+import { RunSummaryBar } from "@/pages/TestRunPage/RunSummaryBar";
 import { ShareModal } from "@/pages/TestRunPage/ShareModal";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
-
-type SummaryCountKey = "passed" | "failed" | "blocked" | "skipped";
-
-const passRateClass = (rate: number) => {
-  if (rate >= 80) return "text-success";
-  if (rate >= 50) return "text-warning";
-
-  return "text-error";
-};
-
-const SUMMARY_KEY: Record<string, SummaryCountKey> = {
-  Passed: "passed",
-  Failed: "failed",
-  Blocked: "blocked",
-  Skipped: "skipped",
-};
-
-function formatDuration(ms?: number | null): string {
-  if (ms === undefined || ms === null) return "—";
-  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-
-  return `${ms}ms`;
-}
-
-const columnHelper = createColumnHelper<TestResult>();
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
@@ -166,97 +136,12 @@ export const TestRunPage = () => {
   ]);
 
   const columns = useMemo(
-    () => [
-      columnHelper.display({
-        id: "index",
-        header: "#",
-        cell: ({ row, table }) => {
-          const { pageIndex, pageSize } = table.getState().pagination;
-
-          return (
-            <span className="text-xs text-base-content/40 tabular-nums">
-              {pageIndex * pageSize + row.index + 1}
-            </span>
-          );
-        },
+    () =>
+      createColumns({
+        onEdit: openEdit,
+        onDelete: openDelete,
+        onAttachment: setAttachmentResult,
       }),
-      columnHelper.accessor("testCaseName", {
-        header: "Test Case",
-        cell: (info) => (
-          <span className="line-clamp-1 text-sm font-medium">
-            {info.getValue()}
-          </span>
-        ),
-      }),
-      columnHelper.accessor("status", {
-        header: "Status",
-        cell: (info) => (
-          <div className="flex flex-col gap-1">
-            <StatusBadge status={info.getValue()} />
-            {info.getValue() === TestResultStatus.Failed &&
-              info.row.original.defectType && (
-                <DefectTypeBadge type={info.row.original.defectType} />
-              )}
-          </div>
-        ),
-      }),
-      columnHelper.accessor("notes", {
-        header: "Notes",
-        enableSorting: false,
-        cell: (info) => {
-          const value = info.getValue();
-
-          return value ? (
-            <div
-              className="max-w-[200px] cursor-default truncate text-sm text-base-content/60"
-              title={value}
-            >
-              {value}
-            </div>
-          ) : (
-            <span className="text-sm text-base-content/30 italic">—</span>
-          );
-        },
-      }),
-      columnHelper.accessor("durationMs", {
-        header: "Duration",
-        enableSorting: true,
-        cell: (info) => (
-          <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
-            {formatDuration(info.getValue())}
-          </span>
-        ),
-      }),
-      columnHelper.accessor("executedAt", {
-        header: "Executed",
-        cell: (info) => (
-          <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
-            {formatDateTime(info.getValue())}
-          </span>
-        ),
-      }),
-      columnHelper.display({
-        id: "actions",
-        header: "",
-        cell: ({ row }) => (
-          <div className="flex justify-end gap-0.5 opacity-100 transition-opacity focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
-            <button
-              className="btn btn-ghost btn-xs"
-              onClick={() => setAttachmentResult(row.original)}
-              aria-label="Manage attachments"
-            >
-              <PaperClipIcon className="size-3.5" />
-            </button>
-            <ResourceActions
-              onEdit={() => openEdit(row.original)}
-              onDelete={() => openDelete(row.original)}
-              label="result"
-              size="xs"
-            />
-          </div>
-        ),
-      }),
-    ],
     [openEdit, openDelete],
   );
 
@@ -359,68 +244,15 @@ export const TestRunPage = () => {
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         {runSummary && runSummary.total > 0 && (
-          <ListToolbar
+          <RunSummaryBar
+            runSummary={runSummary}
+            statusFilter={statusFilter}
+            onStatusFilter={setStatusFilter}
             search={search}
             onSearch={setSearch}
-            placeholder="Search test cases…"
-          >
-            <button className="btn btn-sm btn-primary" onClick={openCreate}>
-              <PlusIcon className="size-4" aria-hidden="true" />
-              Add Result
-            </button>
-          </ListToolbar>
+            onAdd={openCreate}
+          />
         )}
-
-        {runSummary && runSummary.total > 0 && (
-          <div className="mb-4 flex flex-wrap gap-2">
-            {statusFilter !== null && (
-              <button
-                onClick={() => setStatusFilter(null)}
-                className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-base-200"
-              >
-                All results
-              </button>
-            )}
-            {statusOptions.map(({ value }) => {
-              const count = runSummary[SUMMARY_KEY[value]];
-
-              return count > 0 ? (
-                <button
-                  key={value}
-                  onClick={() =>
-                    setStatusFilter(statusFilter === value ? null : value)
-                  }
-                  className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
-                    statusFilter === value
-                      ? "border-base-content/40 bg-base-200 shadow-sm"
-                      : "border-border bg-base-100 hover:bg-base-200"
-                  }`}
-                >
-                  <StatusBadge status={value} />
-                  <span className="text-sm font-bold text-base-content/75 tabular-nums">
-                    {count}
-                  </span>
-                </button>
-              ) : null;
-            })}
-          </div>
-        )}
-
-        {runSummary && runSummary.total > 0 && (
-          <p className="mb-4 px-3 text-sm text-base-content/60">
-            <span className="font-semibold text-base-content">
-              {runSummary.total}
-            </span>{" "}
-            result{runSummary.total === 1 ? "" : "s"} ·{" "}
-            <span
-              className={`font-semibold ${passRateClass(runSummary.passRate)}`}
-            >
-              {runSummary.passRate}%
-            </span>{" "}
-            pass rate
-          </p>
-        )}
-
         <div className="min-h-80">{renderResults()}</div>
       </section>
 
