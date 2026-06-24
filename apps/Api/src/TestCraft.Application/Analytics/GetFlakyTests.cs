@@ -35,32 +35,31 @@ public static class GetFlakyTests
                 .TestResults.Where(r =>
                     r.TestRun != null && r.TestRun.ProjectId == request.ProjectId
                 )
-                .Select(r => new
-                {
-                    r.TestCaseId,
-                    TestCaseName = r.TestCase!.Name,
-                    r.Status,
-                })
-                .ToListAsync(cancellationToken);
-
-            return rows.GroupBy(r => new { r.TestCaseId, r.TestCaseName })
+                .GroupBy(r => new { r.TestCaseId, TestCaseName = r.TestCase!.Name })
                 .Where(g =>
                     g.Count() >= request.MinRuns
                     && g.Any(r => r.Status == TestResultStatus.Passed)
                     && g.Any(r => r.Status == TestResultStatus.Failed)
                 )
-                .Select(g => new FlakyTestStat(
+                .Select(g => new
+                {
                     g.Key.TestCaseId,
                     g.Key.TestCaseName,
-                    g.Count(),
-                    g.Count(r => r.Status == TestResultStatus.Passed),
-                    g.Count(r => r.Status == TestResultStatus.Failed),
-                    Math.Round(
-                        (double)g.Count(r => r.Status == TestResultStatus.Failed) / g.Count() * 100,
-                        1
-                    )
+                    TotalRuns = g.Count(),
+                    PassCount = g.Count(r => r.Status == TestResultStatus.Passed),
+                    FailCount = g.Count(r => r.Status == TestResultStatus.Failed),
+                })
+                .OrderByDescending(s => (double)s.FailCount / s.TotalRuns)
+                .ToListAsync(cancellationToken);
+
+            return rows.Select(s => new FlakyTestStat(
+                    s.TestCaseId,
+                    s.TestCaseName,
+                    s.TotalRuns,
+                    s.PassCount,
+                    s.FailCount,
+                    Math.Round((double)s.FailCount / s.TotalRuns * 100, 1)
                 ))
-                .OrderByDescending(s => s.FlakRate)
                 .ToList();
         }
     }
