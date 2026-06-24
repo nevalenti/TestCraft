@@ -26,4 +26,6 @@ export const sharedUnicornRules = {
   "unicorn/filename-case": "off",
   "unicorn/no-nested-ternary": "off",
   "unicorn/no-array-callback-reference": "off",
+  "unicorn/name-replacements": "off",
+  "unicorn/default-export-style": "off",
 };
