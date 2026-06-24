@@ -27,7 +27,7 @@ export class LabelsPage {
     await expect(
       this.page.getByRole("heading", { name: "New Label" }),
     ).toBeVisible();
-    await this.page.locator("#label-name").fill(name);
+    await this.dialog.locator("#label-name").fill(name);
     await this.dialog.getByRole("button", { name: "Create" }).click();
     await expect(this.getLabelRow(name)).toBeVisible({ timeout: 10_000 });
   }
@@ -46,7 +46,7 @@ export class LabelsPage {
     await expect(
       this.page.getByRole("heading", { name: "Edit Label" }),
     ).toBeVisible();
-    await this.page.locator("#label-name").fill(newName);
+    await this.dialog.locator("#label-name").fill(newName);
     await this.dialog.getByRole("button", { name: "Save" }).click();
     await expect(this.dialog).not.toBeVisible();
     await expect(this.getLabelRow(newName)).toBeVisible({ timeout: 10_000 });

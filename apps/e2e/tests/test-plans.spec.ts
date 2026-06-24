@@ -46,8 +46,8 @@ test.describe("Test Plans", () => {
     await testPlansPage.goto(plansPath);
   });
 
-  test("renders test plans page", async ({ page }) => {
-    await expect(page.getByRole("button", { name: "New Plan" })).toBeVisible();
+  test("renders test plans page", async ({ testPlansPage }) => {
+    await expect(testPlansPage.createButton).toBeVisible();
   });
 
   test("opens and closes the create plan dialog", async ({

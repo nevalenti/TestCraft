@@ -6,12 +6,12 @@ export class TestPlansPage {
   async goto(plansPath: string) {
     await this.page.goto(plansPath);
     await expect(
-      this.page.getByRole("button", { name: "New Plan" }),
+      this.page.getByRole("button", { name: "New Plan" }).first(),
     ).toBeVisible();
   }
 
   get createButton() {
-    return this.page.getByRole("button", { name: "New Plan" });
+    return this.page.getByRole("button", { name: "New Plan" }).first();
   }
 
   get dialog() {
