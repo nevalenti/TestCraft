@@ -52,25 +52,6 @@ public class TestRunsApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Create_AlwaysStartsAsActive()
-    {
-        var client = CreateClient(Guid.NewGuid());
-        var project = await client.CreateProjectAsync();
-
-        var createResponse = await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/runs",
-            new CreateTestRun.Command { Name = "Some Run", Environment = "ci" }
-        );
-
-        createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-
-        var created = await createResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-            ApiTestHelpers.JsonOptions
-        );
-        created!.Status.Should().Be(TestRunStatus.Active);
-    }
-
-    [Fact]
     public async Task GetAll_FiltersBySearch()
     {
         var client = CreateClient(Guid.NewGuid());
@@ -207,6 +188,36 @@ public class TestRunsApiTests(ApiFactory factory)
         summary.Blocked.Should().Be(0);
         summary.Skipped.Should().Be(0);
         summary.PassRate.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task GetSummary_WithMixedResults_ComputesCountsAndPassRate()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var case1 = await client.CreateCaseAsync(project.Id, suite.Id, "Passes");
+        var case2 = await client.CreateCaseAsync(project.Id, suite.Id, "Fails");
+        var case3 = await client.CreateCaseAsync(project.Id, suite.Id, "Blocked");
+        var run = await client.CreateRunAsync(project.Id);
+
+        await client.CreateResultAsync(project.Id, run.Id, case1.Id, TestResultStatus.Passed);
+        await client.CreateResultAsync(project.Id, run.Id, case2.Id, TestResultStatus.Failed);
+        await client.CreateResultAsync(project.Id, run.Id, case3.Id, TestResultStatus.Blocked);
+
+        var response = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/summary"
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var summary = await response.Content.ReadFromJsonAsync<GetTestRunSummary.Response>(
+            ApiTestHelpers.JsonOptions
+        );
+        summary!.Total.Should().Be(3);
+        summary.Passed.Should().Be(1);
+        summary.Failed.Should().Be(1);
+        summary.Blocked.Should().Be(1);
+        summary.PassRate.Should().Be(33);
     }
 
     [Fact]

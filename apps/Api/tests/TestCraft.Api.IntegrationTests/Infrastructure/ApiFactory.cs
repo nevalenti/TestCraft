@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;
@@ -39,6 +41,11 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     {
         builder.UseEnvironment("Testing");
 
+        builder.ConfigureLogging(logging =>
+        {
+            logging.ClearProviders();
+        });
+
         builder.ConfigureServices(services =>
         {
             services.PostConfigure<AuthenticationOptions>(options =>
@@ -54,6 +61,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                     TestAuthHandler.SchemeName,
                     _ => { }
                 );
+
+            services.AddScoped<IStorageService, FakeStorageService>();
         });
     }
 

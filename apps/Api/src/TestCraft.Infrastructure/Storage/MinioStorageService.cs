@@ -9,9 +9,6 @@ namespace TestCraft.Infrastructure.Storage;
 public class MinioStorageService(IMinioClient minio, InfrastructureOptions options)
     : IStorageService
 {
-    // Presigned URLs must be signed with the host the browser uses, not the
-    // internal cluster host. A separate client scoped to the public endpoint ensures
-    // the HMAC signature matches when the browser hits the URL directly.
     private readonly IMinioClient _presigningClient = string.IsNullOrEmpty(
         options.MinioPublicEndpoint
     )

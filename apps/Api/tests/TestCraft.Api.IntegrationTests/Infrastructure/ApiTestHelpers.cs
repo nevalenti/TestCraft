@@ -6,6 +6,7 @@ using TestCraft.Application.Labels;
 using TestCraft.Application.Projects;
 using TestCraft.Application.TestCases;
 using TestCraft.Application.TestPlans;
+using TestCraft.Application.TestResults;
 using TestCraft.Application.TestRuns;
 using TestCraft.Application.TestSuites;
 using TestCraft.Domain.Enums;
@@ -115,6 +116,27 @@ internal static class ApiTestHelpers
         );
 
         return (await response.Content.ReadFromJsonAsync<TestPlanResponse>(JsonOptions))!;
+    }
+
+    public static async Task<TestResultResponse> CreateResultAsync(
+        this HttpClient client,
+        Guid projectId,
+        Guid runId,
+        Guid testCaseId,
+        TestResultStatus status = TestResultStatus.Passed
+    )
+    {
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/runs/{runId}/results",
+            new CreateTestResult.Command
+            {
+                TestCaseId = testCaseId,
+                Status = status,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+
+        return (await response.Content.ReadFromJsonAsync<TestResultResponse>(JsonOptions))!;
     }
 
     public static async Task<ImportJobResponse> WaitForImportJobAsync(

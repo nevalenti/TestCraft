@@ -87,5 +87,21 @@ test.describe("Test Runs tab", () => {
     await expect(
       page.getByRole("button", { name: "Add Result" }),
     ).toBeVisible();
+
+    await page.goBack();
+    await testRunsPage.delete(name);
+  });
+
+  test("shows validation error when creating with empty name", async ({
+    testRunsPage,
+    page,
+  }) => {
+    await testRunsPage.createButton.click();
+    await expect(testRunsPage.dialog).toBeVisible();
+
+    await page.getByLabel("Environment").fill("staging");
+    await testRunsPage.dialog.getByRole("button", { name: "Save" }).click();
+
+    await expect(testRunsPage.dialog).toBeVisible();
   });
 });

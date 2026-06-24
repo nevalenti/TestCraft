@@ -1,8 +1,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Import;
@@ -19,11 +17,6 @@ namespace TestCraft.Api.IntegrationTests.Workflow;
 [Collection(ApiCollection.Name)]
 public class TestWorkflowApiTests(ApiFactory factory)
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        Converters = { new JsonStringEnumConverter() },
-    };
-
     private HttpClient CreateClient()
     {
         var client = factory.CreateClient();
@@ -45,14 +38,14 @@ public class TestWorkflowApiTests(ApiFactory factory)
                 "/api/v1/projects",
                 new CreateProject.Command { Name = "Workflow Project" }
             )
-        ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<ProjectResponse>(ApiTestHelpers.JsonOptions);
 
         var suite = await (
             await client.PostAsJsonAsync(
                 $"/api/v1/projects/{project!.Id}/suites",
                 new CreateTestSuite.Command { Name = "Login Suite" }
             )
-        ).Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<TestSuiteResponse>(ApiTestHelpers.JsonOptions);
 
         var testCase = await (
             await client.PostAsJsonAsync(
@@ -63,7 +56,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
                     Priority = TestCasePriority.High,
                 }
             )
-        ).Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<TestCaseResponse>(ApiTestHelpers.JsonOptions);
 
         var stepResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase!.Id}/steps",
@@ -76,7 +69,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         stepResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-        var step = await stepResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>(JsonOptions);
+        var step = await stepResponse.Content.ReadFromJsonAsync<TestCaseStepResponse>(
+            ApiTestHelpers.JsonOptions
+        );
         step!.TestCaseId.Should().Be(testCase.Id);
 
         var run = await (
@@ -84,7 +79,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/runs",
                 new CreateTestRun.Command { Name = "Smoke Run", Environment = "staging" }
             )
-        ).Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<TestRunResponse>(ApiTestHelpers.JsonOptions);
 
         run!.Status.Should().Be(TestRunStatus.Active);
 
@@ -100,7 +95,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         resultResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var result = await resultResponse.Content.ReadFromJsonAsync<TestResultResponse>(
-            JsonOptions
+            ApiTestHelpers.JsonOptions
         );
         result!.TestCaseName.Should().Be("Successful login");
 
@@ -110,7 +105,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
         summaryResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var summary = await summaryResponse.Content.ReadFromJsonAsync<GetTestRunSummary.Response>(
-            JsonOptions
+            ApiTestHelpers.JsonOptions
         );
         summary!.Total.Should().Be(1);
         summary.Passed.Should().Be(1);
@@ -129,7 +124,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         completeResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var completed = await completeResponse.Content.ReadFromJsonAsync<TestRunResponse>(
-            JsonOptions
+            ApiTestHelpers.JsonOptions
         );
         completed!.Status.Should().Be(TestRunStatus.Completed);
 
@@ -157,7 +152,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
                 "/api/v1/projects",
                 new CreateProject.Command { Name = "Import Project" }
             )
-        ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<ProjectResponse>(ApiTestHelpers.JsonOptions);
 
         const string junitXml = """
             <testsuites name="My Suite Run">
@@ -179,7 +174,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Accepted);
-        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(JsonOptions);
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(
+            ApiTestHelpers.JsonOptions
+        );
 
         var completedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
         completedJob.Status.Should().Be(ImportJobStatus.Completed);
@@ -191,7 +188,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var summary = await (
             await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
-        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(JsonOptions);
+        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(ApiTestHelpers.JsonOptions);
 
         summary!.Total.Should().Be(3);
         summary.Passed.Should().Be(1);
@@ -215,7 +212,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
                 "/api/v1/projects",
                 new CreateProject.Command { Name = "Allure Project" }
             )
-        ).Content.ReadFromJsonAsync<ProjectResponse>(JsonOptions);
+        ).Content.ReadFromJsonAsync<ProjectResponse>(ApiTestHelpers.JsonOptions);
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project!.Id}/import/allure",
@@ -242,7 +239,9 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.Accepted);
-        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(JsonOptions);
+        var job = await response.Content.ReadFromJsonAsync<ImportJobResponse>(
+            ApiTestHelpers.JsonOptions
+        );
 
         var completedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
         completedJob.Status.Should().Be(ImportJobStatus.Completed);
@@ -253,7 +252,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
 
         var summary = await (
             await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
-        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(JsonOptions);
+        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(ApiTestHelpers.JsonOptions);
 
         summary!.Total.Should().Be(2);
         summary.Passed.Should().Be(1);

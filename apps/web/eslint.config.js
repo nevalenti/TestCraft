@@ -85,6 +85,7 @@ export default defineConfig([
   {
     files: ["**/*.test.{ts,tsx}"],
     rules: {
+      "@typescript-eslint/no-explicit-any": "off",
       "unicorn/no-document-cookie": "off",
       "unicorn/no-top-level-assignment-in-function": "off",
       "unicorn/no-this-outside-of-class": "off",
