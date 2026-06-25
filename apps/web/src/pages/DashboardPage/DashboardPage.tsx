@@ -100,11 +100,11 @@ export const DashboardPage = () => {
   const renderRecentlyCompleted = () => {
     if (recentlyCompletedRuns.length === 0)
       return (
-        <div className="rounded-xl border border-border bg-base-100 px-6 py-16 text-center">
-          <p className="mb-1 text-sm font-semibold text-base-content/60">
+        <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center">
+          <p className="mb-1 text-sm font-medium text-base-content/50">
             No completed runs
           </p>
-          <p className="text-xs text-base-content/40">
+          <p className="text-xs text-base-content/35">
             Completed test runs will appear here.
           </p>
         </div>
@@ -159,11 +159,11 @@ export const DashboardPage = () => {
   const renderActiveRuns = () => {
     if (activeRuns.length === 0)
       return (
-        <div className="rounded-xl border border-border bg-base-100 px-6 py-16 text-center">
-          <p className="mb-1 text-sm font-semibold text-base-content/60">
+        <div className="rounded-xl border border-dashed border-border px-6 py-12 text-center">
+          <p className="mb-1 text-sm font-medium text-base-content/50">
             No active runs
           </p>
-          <p className="text-xs text-base-content/40">
+          <p className="text-xs text-base-content/35">
             Start a test run from any project to track results here.
           </p>
         </div>
@@ -222,16 +222,17 @@ export const DashboardPage = () => {
           <h1 className="font-display text-2xl font-bold tracking-tight">
             Overview
           </h1>
-          <p className="mt-0.5 text-sm text-base-content/60">
+          <p className="mt-0.5 text-sm text-base-content/55">
             Cross-project status at a glance
           </p>
         </div>
         <Link
           to="/projects"
-          className="btn btn-square rounded-xl text-primary shadow-sm btn-lg btn-neutral"
-          aria-label="Projects"
+          className="btn gap-1.5 btn-sm btn-primary"
+          aria-label="View all projects"
         >
-          <FolderIcon className="size-6" />
+          <FolderIcon className="size-4" />
+          <span className="hidden sm:inline">Projects</span>
         </Link>
       </header>
 
@@ -242,36 +243,39 @@ export const DashboardPage = () => {
           </div>
         ) : (
           <>
-            <div className="grid shrink-0 grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid shrink-0 grid-cols-1 gap-3 sm:grid-cols-3">
               <StatCard
                 label="Projects"
                 value={projects?.length ?? 0}
-                icon={<FolderIcon className="size-5" />}
+                icon={<FolderIcon className="size-4" />}
                 accent="text-primary"
+                iconBg="bg-primary/12"
               />
               <StatCard
                 label="Test Runs"
                 value={totalRuns}
-                icon={<BoltIcon className="size-5" />}
+                icon={<BoltIcon className="size-4" />}
                 accent="text-warning"
+                iconBg="bg-warning/12"
               />
               <StatCard
                 label="Test Suites"
                 value={totalSuites}
-                icon={<ClipboardDocumentListIcon className="size-5" />}
+                icon={<ClipboardDocumentListIcon className="size-4" />}
                 accent="text-info"
+                iconBg="bg-info/12"
               />
             </div>
 
-            <div className="flex flex-col">
-              <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xs font-semibold tracking-widest text-base-content/40 uppercase">
                 Active Runs
               </h2>
               {renderActiveRuns()}
             </div>
 
-            <div className="flex flex-col">
-              <h2 className="mb-3 text-[11px] font-semibold tracking-widest text-base-content/50 uppercase">
+            <div className="flex flex-col gap-3">
+              <h2 className="text-xs font-semibold tracking-widest text-base-content/40 uppercase">
                 Recently Completed
               </h2>
               {renderRecentlyCompleted()}

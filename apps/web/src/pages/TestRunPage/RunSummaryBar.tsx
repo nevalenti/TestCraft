@@ -50,11 +50,11 @@ export const RunSummaryBar = ({
       </button>
     </ListToolbar>
 
-    <div className="mb-4 flex flex-wrap gap-2">
+    <div className="mb-3 flex flex-wrap gap-1.5">
       {statusFilter !== null && (
         <button
           onClick={() => onStatusFilter(null)}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-base-200"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content"
         >
           All results
         </button>
@@ -70,14 +70,14 @@ export const RunSummaryBar = ({
                 statusFilter === value ? null : (value as TestResultStatus),
               )
             }
-            className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors ${
+            className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all ${
               statusFilter === value
-                ? "border-base-content/40 bg-base-200 shadow-sm"
+                ? "border-base-content/25 bg-base-200 shadow-sm"
                 : "border-border bg-base-100 hover:bg-base-200"
             }`}
           >
             <StatusBadge status={value} />
-            <span className="text-sm font-bold text-base-content/75 tabular-nums">
+            <span className="font-bold text-base-content/70 tabular-nums">
               {count}
             </span>
           </button>
@@ -85,7 +85,7 @@ export const RunSummaryBar = ({
       })}
     </div>
 
-    <p className="mb-4 px-3 text-sm text-base-content/60">
+    <p className="mb-4 px-1 text-sm text-base-content/55">
       <span className="font-semibold text-base-content">
         {runSummary.total}
       </span>{" "}

@@ -10,18 +10,18 @@ export const BreadcrumbBar = () => {
 
     return (
       <nav aria-label="Breadcrumb">
-        <ol className="flex items-center gap-1.5">
+        <ol className="flex items-center gap-1">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
 
             return (
               <li
                 key={item.href ?? item.label}
-                className="flex items-center gap-1.5"
+                className="flex items-center gap-1"
               >
                 {index > 0 && (
                   <span
-                    className="text-xs text-base-content/40 select-none"
+                    className="text-[10px] text-base-content/25 select-none"
                     aria-hidden="true"
                   >
                     /
@@ -32,7 +32,7 @@ export const BreadcrumbBar = () => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     to={item.href as any}
                     title={item.label}
-                    className="flex max-w-48 items-center truncate text-xs font-medium text-base-content/65 transition-colors hover:text-base-content"
+                    className="flex max-w-48 items-center truncate text-[11px] font-medium text-base-content/50 transition-colors hover:text-base-content/80"
                   >
                     {item.label}
                   </Link>
@@ -40,8 +40,8 @@ export const BreadcrumbBar = () => {
                   <span
                     aria-current={isLast ? "page" : undefined}
                     title={item.label}
-                    className={`max-w-64 truncate text-xs font-semibold ${
-                      isLast ? "text-base-content" : "text-base-content/80"
+                    className={`max-w-64 truncate text-[11px] font-semibold ${
+                      isLast ? "text-base-content/80" : "text-base-content/60"
                     }`}
                   >
                     {item.label}
@@ -56,7 +56,7 @@ export const BreadcrumbBar = () => {
   };
 
   return (
-    <div className="flex h-9 shrink-0 items-center border-b border-border bg-base-100 px-4 sm:px-6 lg:px-8">
+    <div className="flex h-8 shrink-0 items-center border-b border-border bg-base-200/50 px-4 sm:px-6 lg:px-8">
       {content()}
     </div>
   );

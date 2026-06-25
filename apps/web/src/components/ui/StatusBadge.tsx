@@ -14,22 +14,22 @@ const config: Record<
 > = {
   [TestResultStatus.Passed]: {
     label: "Passed",
-    cls: "badge-success",
+    cls: "bg-success/12 text-success border-success/25",
     icon: <CheckIcon className="size-3" />,
   },
   [TestResultStatus.Failed]: {
     label: "Failed",
-    cls: "badge-error",
+    cls: "bg-error/12 text-error border-error/25",
     icon: <XMarkIcon className="size-3" />,
   },
   [TestResultStatus.Blocked]: {
     label: "Blocked",
-    cls: "badge-warning",
+    cls: "bg-warning/12 text-warning border-warning/25",
     icon: <NoSymbolIcon className="size-3" />,
   },
   [TestResultStatus.Skipped]: {
     label: "Skipped",
-    cls: "badge-neutral",
+    cls: "bg-base-content/6 text-base-content/55 border-base-content/15",
     icon: <MinusIcon className="size-3" />,
   },
 };
@@ -38,7 +38,12 @@ export const StatusBadge = ({ status }: { status: TestResultStatus }) => {
   const { label, cls, icon } = config[status];
 
   return (
-    <span className={cn("badge badge-sm gap-1 font-medium", cls)}>
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold",
+        cls,
+      )}
+    >
       {icon}
       {label}
     </span>

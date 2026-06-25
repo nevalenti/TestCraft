@@ -8,30 +8,34 @@ export const ViewToggle = () => {
   const setViewMode = useViewModeStore((state) => state.setViewMode);
 
   return (
-    <div className="join">
+    <div className="flex items-center gap-0.5 rounded-lg bg-base-200 p-0.5">
       <button
         type="button"
         className={cn(
-          "btn join-item btn-sm",
-          viewMode === "grid" && "btn-active",
+          "flex size-7 items-center justify-center rounded-md transition-all",
+          viewMode === "grid"
+            ? "bg-base-100 text-base-content shadow-sm"
+            : "text-base-content/40 hover:text-base-content/70",
         )}
         onClick={() => setViewMode("grid")}
         aria-label="Grid view"
         aria-pressed={viewMode === "grid"}
       >
-        <Squares2X2Icon className="size-4" />
+        <Squares2X2Icon className="size-3.5" />
       </button>
       <button
         type="button"
         className={cn(
-          "btn join-item btn-sm",
-          viewMode === "list" && "btn-active",
+          "flex size-7 items-center justify-center rounded-md transition-all",
+          viewMode === "list"
+            ? "bg-base-100 text-base-content shadow-sm"
+            : "text-base-content/40 hover:text-base-content/70",
         )}
         onClick={() => setViewMode("list")}
         aria-label="List view"
         aria-pressed={viewMode === "list"}
       >
-        <ListBulletIcon className="size-4" />
+        <ListBulletIcon className="size-3.5" />
       </button>
     </div>
   );

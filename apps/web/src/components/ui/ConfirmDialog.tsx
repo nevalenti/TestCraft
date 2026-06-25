@@ -20,14 +20,20 @@ export const ConfirmDialog = ({
   isLoading,
 }: ConfirmDialogProps) => (
   <Modal isOpen={isOpen} onClose={onClose} title={title}>
-    <p className="mb-6 text-base-content/80">{description}</p>
+    <p className="mb-5 text-sm leading-relaxed text-base-content/70">
+      {description}
+    </p>
     <div className="flex justify-end gap-2">
-      <button type="button" className="btn btn-sm" onClick={onClose}>
+      <button
+        type="button"
+        className="btn text-base-content/60 btn-ghost btn-sm"
+        onClick={onClose}
+      >
         Cancel
       </button>
       <button
         type="button"
-        className="btn btn-sm btn-error"
+        className="btn min-w-16 btn-sm btn-error"
         onClick={onConfirm}
         disabled={isLoading}
       >

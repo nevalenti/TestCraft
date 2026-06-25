@@ -23,7 +23,10 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
         <table className="table table-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="text-xs text-base-content/60">
+              <tr
+                key={headerGroup.id}
+                className="border-b border-border text-[11px] font-semibold tracking-wider text-base-content/45 uppercase"
+              >
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
@@ -34,13 +37,13 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
                         : ""
                     }
                   >
-                    <span className="inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1.5">
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
                       )}
                       {header.column.getCanSort() && (
-                        <span className="text-base-content/30">
+                        <span className="text-base-content/25">
                           {getSortIcon(header.column.getIsSorted())}
                         </span>
                       )}
@@ -55,7 +58,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
               <tr
                 key={row.id}
                 data-testid="result-row"
-                className="group transition-colors hover:bg-base-200/50"
+                className="group border-b border-border/60 transition-colors last:border-b-0 hover:bg-base-200/50"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>
@@ -70,14 +73,14 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
 
       {pageCount > 1 && (
         <div className="mt-4 flex items-center justify-between gap-4">
-          <span className="px-3 text-sm text-base-content/60">
+          <span className="px-1 text-sm text-base-content/50">
             Page{" "}
             <span className="font-semibold text-base-content">
               {pageIndex + 1}
             </span>{" "}
             of {pageCount}
           </span>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             <button
               className="btn btn-square btn-ghost btn-sm"
               onClick={() => table.previousPage()}

@@ -29,7 +29,7 @@ export const ResourceCard = ({
   <div
     data-testid={testId}
     className={cn(
-      "group relative overflow-hidden rounded-xl border border-base-content/15 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-px",
+      "group relative overflow-hidden rounded-xl border shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md",
       cardBg,
     )}
   >
@@ -40,18 +40,18 @@ export const ResourceCard = ({
         aria-label={`Open ${label}`}
       />
     )}
-    <div className="flex min-h-[120px] flex-col justify-between p-4 pr-10">
+    <div className="flex min-h-[116px] flex-col justify-between p-4 pr-10">
       {typeIcon && (
         <div className="mb-3 flex items-center gap-1.5">
           <span className={accentText}>{typeIcon}</span>
-          <span className="text-[11px] font-semibold tracking-[0.08em] text-base-content/40 uppercase">
+          <span className="text-[10px] font-semibold tracking-[0.1em] text-base-content/38 uppercase">
             {label}
           </span>
         </div>
       )}
       {children}
     </div>
-    <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1 opacity-100 transition-all duration-150 focus-within:translate-x-0 focus-within:opacity-100 sm:translate-x-2 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
+    <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-0.5 opacity-100 transition-all duration-150 focus-within:translate-x-0 focus-within:opacity-100 sm:translate-x-1 sm:opacity-0 sm:group-hover:translate-x-0 sm:group-hover:opacity-100">
       <ResourceActions
         onEdit={onEdit}
         onDelete={onDelete}

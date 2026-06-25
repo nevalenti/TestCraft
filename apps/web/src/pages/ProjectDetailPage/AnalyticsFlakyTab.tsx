@@ -34,7 +34,7 @@ export const AnalyticsFlakyTab = () => {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-10">
       <div className="flex flex-wrap gap-2">
         <div className="flex items-center gap-2 rounded-lg border border-error/20 bg-error/8 px-3 py-2">
           <span className="text-lg font-bold text-error tabular-nums">

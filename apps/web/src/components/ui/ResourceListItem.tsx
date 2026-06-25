@@ -29,7 +29,7 @@ export const ResourceListItem = ({
   <div
     data-testid={testId}
     className={cn(
-      "group relative flex items-center gap-3 rounded-xl border border-base-content/15 px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md",
+      "group relative flex items-center gap-3 rounded-xl border px-4 py-3 shadow-sm transition-all duration-150 hover:shadow-md",
       cardBg,
     )}
   >
@@ -43,7 +43,7 @@ export const ResourceListItem = ({
     {typeIcon && (
       <span
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-content/[0.07]",
+          "flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-content/[0.06]",
           accentText,
         )}
       >
@@ -53,7 +53,7 @@ export const ResourceListItem = ({
     <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
       {children}
     </div>
-    <div className="relative z-10 flex shrink-0 items-center gap-1 opacity-100 transition-all duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+    <div className="relative z-10 flex shrink-0 items-center gap-0.5 opacity-100 transition-all duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
       <ResourceActions
         onEdit={onEdit}
         onDelete={onDelete}

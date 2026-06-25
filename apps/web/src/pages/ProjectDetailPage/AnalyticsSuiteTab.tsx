@@ -88,7 +88,7 @@ export const AnalyticsSuiteTab = () => {
   const selectedRun = runs?.find((r) => r.id === suiteRunId);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-10">
       <div className="flex items-center gap-3">
         <div className="flex-1">
           <label

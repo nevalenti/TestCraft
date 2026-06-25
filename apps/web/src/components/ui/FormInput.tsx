@@ -1,5 +1,7 @@
 import type React from "react";
 
+import { cn } from "@/lib/cn";
+
 interface FormInputProps extends React.ComponentPropsWithRef<"input"> {
   hasError?: boolean;
 }
@@ -8,11 +10,13 @@ export const FormInput = ({
   hasError,
   className,
   ...props
-}: FormInputProps) => {
-  const base = "input-bordered input w-full bg-base-200";
-  const cls = [base, hasError && "input-error", className]
-    .filter(Boolean)
-    .join(" ");
-
-  return <input className={cls} {...props} />;
-};
+}: FormInputProps) => (
+  <input
+    className={cn(
+      "input input-bordered w-full bg-base-200/60",
+      hasError && "input-error",
+      className,
+    )}
+    {...props}
+  />
+);

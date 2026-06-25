@@ -13,6 +13,10 @@ import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 import { ProjectSettingsModal } from "@/pages/ProjectDetailPage/ProjectSettingsModal";
 
+const NAV_BASE =
+  "flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/50 transition-colors hover:text-base-content/80";
+const NAV_ACTIVE = "!border-primary !text-base-content";
+
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam("projectId");
   const { data: project, isPending } = useProject(projectId);
@@ -38,90 +42,85 @@ export const ProjectDetailPage = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header flex items-center justify-between gap-4">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {project?.name}
-          </h1>
-          <p className="mt-0.5 text-sm text-base-content/60">
-            {project?.description ??
-              "Manage test suites and runs for this project"}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div role="tablist" className="tabs-box tabs tabs-sm">
-            <Link
-              to="/projects/$projectId/runs"
-              params={{ projectId }}
-              role="tab"
-              className="tab gap-2 leading-none font-semibold"
-              activeProps={{
-                className:
-                  "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
-              }}
-            >
-              <PlayCircleIcon className="size-4" />
-              Test Runs
-              {!!project?.runCount && (
-                <span className="badge min-w-5 rounded-full badge-ghost px-1! badge-sm">
-                  {project.runCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/projects/$projectId/suites"
-              params={{ projectId }}
-              role="tab"
-              className="tab gap-2 leading-none font-semibold"
-              activeProps={{
-                className:
-                  "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
-              }}
-            >
-              <RectangleStackIcon className="size-4" />
-              Test Suites
-              {!!project?.suiteCount && (
-                <span className="badge min-w-5 rounded-full badge-ghost px-1! badge-sm">
-                  {project.suiteCount}
-                </span>
-              )}
-            </Link>
-            <Link
-              to="/projects/$projectId/analytics/trend"
-              params={{ projectId }}
-              role="tab"
-              className="tab gap-2 leading-none font-semibold"
-              activeOptions={{ exact: false }}
-              activeProps={{
-                className:
-                  "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
-              }}
-            >
-              <ChartBarIcon className="size-4" />
-              Analytics
-            </Link>
-            <Link
-              to="/projects/$projectId/labels"
-              params={{ projectId }}
-              role="tab"
-              className="tab gap-2 leading-none font-semibold"
-              activeProps={{
-                className:
-                  "tab tab-active gap-2 font-semibold leading-none [--tab-bg:var(--color-neutral)] text-neutral-content",
-              }}
-            >
-              <TagIcon className="size-4" />
-              Labels
-            </Link>
+      <header className="page-header">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display text-2xl font-bold tracking-tight">
+              {project?.name}
+            </h1>
+            <p className="mt-0.5 text-sm text-base-content/55">
+              {project?.description ??
+                "Manage test suites and runs for this project"}
+            </p>
           </div>
           <button
-            className="btn btn-square btn-ghost btn-sm"
+            className="btn mt-0.5 btn-square shrink-0 text-base-content/50 btn-ghost btn-sm hover:text-base-content"
             onClick={() => setSettingsOpen(true)}
             aria-label="Project settings"
           >
-            <Cog6ToothIcon className="size-5" />
+            <Cog6ToothIcon className="size-4" />
           </button>
+        </div>
+
+        <div
+          className="-mb-px flex items-end gap-5 overflow-x-auto"
+          role="tablist"
+          aria-label="Project sections"
+        >
+          <Link
+            to="/projects/$projectId/runs"
+            params={{ projectId }}
+            role="tab"
+            className={NAV_BASE}
+            activeProps={{ className: NAV_ACTIVE }}
+          >
+            <PlayCircleIcon className="size-3.5 shrink-0" aria-hidden="true" />
+            Test Runs
+            {!!project?.runCount && (
+              <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/60 tabular-nums">
+                {project.runCount}
+              </span>
+            )}
+          </Link>
+          <Link
+            to="/projects/$projectId/suites"
+            params={{ projectId }}
+            role="tab"
+            className={NAV_BASE}
+            activeProps={{ className: NAV_ACTIVE }}
+          >
+            <RectangleStackIcon
+              className="size-3.5 shrink-0"
+              aria-hidden="true"
+            />
+            Test Suites
+            {!!project?.suiteCount && (
+              <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/60 tabular-nums">
+                {project.suiteCount}
+              </span>
+            )}
+          </Link>
+          <Link
+            to="/projects/$projectId/analytics/trend"
+            params={{ projectId }}
+            role="tab"
+            className={NAV_BASE}
+            activeOptions={{ exact: false }}
+            activeProps={{ className: NAV_ACTIVE }}
+          >
+            <ChartBarIcon className="size-3.5 shrink-0" aria-hidden="true" />
+            Analytics
+          </Link>
+          <Link
+            to="/projects/$projectId/labels"
+            params={{ projectId }}
+            role="tab"
+            className={NAV_BASE}
+            activeProps={{ className: NAV_ACTIVE }}
+          >
+            <TagIcon className="size-3.5 shrink-0" aria-hidden="true" />
+            Labels
+          </Link>
         </div>
       </header>
 

@@ -30,11 +30,13 @@ export const ErrorState = ({
 
   return (
     <div className="flex flex-1 items-center justify-center p-8">
-      <div className="text-center">
-        <p className="mb-2 font-semibold text-error">Failed to load</p>
-        <p className="mb-4 text-sm text-base-content/60">{displayMessage}</p>
+      <div className="max-w-xs text-center">
+        <p className="mb-1.5 text-sm font-semibold text-error">
+          Failed to load
+        </p>
+        <p className="mb-5 text-sm text-base-content/55">{displayMessage}</p>
         <button
-          className="btn rounded-full btn-sm btn-primary"
+          className="btn border border-border btn-ghost btn-sm"
           onClick={onRetry}
         >
           <ArrowPathIcon className="size-4" />

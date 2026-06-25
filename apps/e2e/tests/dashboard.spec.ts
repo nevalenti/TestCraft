@@ -7,14 +7,15 @@ test.describe("Dashboard", () => {
   });
 
   test("renders stat cards", async ({ page }) => {
+    const section = page.locator("section");
     await expect(
-      page.locator("span").filter({ hasText: /^Projects$/ }),
+      section.locator("span").filter({ hasText: /^Projects$/ }),
     ).toBeVisible();
     await expect(
-      page.locator("span").filter({ hasText: /^Test Runs$/ }),
+      section.locator("span").filter({ hasText: /^Test Runs$/ }),
     ).toBeVisible();
     await expect(
-      page.locator("span").filter({ hasText: /^Test Suites$/ }),
+      section.locator("span").filter({ hasText: /^Test Suites$/ }),
     ).toBeVisible();
   });
 

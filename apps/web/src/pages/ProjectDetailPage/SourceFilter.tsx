@@ -16,13 +16,13 @@ export const SourceFilter = ({
   if (sources.length === 0) return null;
 
   return (
-    <div className="mb-4 flex flex-wrap gap-2">
+    <div className="mb-4 flex flex-wrap gap-1.5">
       {value !== null && (
         <button
           onClick={() => onChange(null)}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-3 py-1.5 text-xs font-medium transition-colors hover:bg-base-200"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content"
         >
-          All suites
+          All
         </button>
       )}
       {sources.map((source) => (
@@ -30,16 +30,14 @@ export const SourceFilter = ({
           key={source}
           onClick={() => onChange(value === source ? null : source)}
           className={cn(
-            "flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm transition-colors",
+            "flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all",
             value === source
-              ? "border-base-content/40 bg-base-200 shadow-sm"
-              : "border-border bg-base-100 hover:bg-base-200",
+              ? "border-base-content/25 bg-base-200 shadow-sm text-base-content"
+              : "border-border bg-base-100 text-base-content/65 hover:bg-base-200 hover:text-base-content",
           )}
         >
-          <span className="text-sm font-medium text-base-content/75">
-            {source}
-          </span>
-          <span className="text-sm font-bold text-base-content/75 tabular-nums">
+          <span>{source}</span>
+          <span className="font-bold text-base-content/55 tabular-nums">
             {counts[source]}
           </span>
         </button>

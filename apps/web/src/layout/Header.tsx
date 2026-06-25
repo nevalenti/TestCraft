@@ -28,7 +28,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-200 px-4 sm:px-6 lg:px-8">
+      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-100 px-4 sm:px-6 lg:px-8">
         <div className="flex min-w-0 flex-1 items-center">
           <Link
             to="/"
@@ -36,7 +36,7 @@ export const Header = () => {
           >
             <LogoMark />
             <span
-              className="text-[16px] font-extrabold tracking-tight"
+              className="text-[15px] font-extrabold tracking-tight"
               style={{ fontFamily: "var(--font-display)" }}
             >
               TestCraft
@@ -44,33 +44,34 @@ export const Header = () => {
           </Link>
         </div>
 
-        <div className="flex shrink-0 items-center gap-3">
+        <div className="flex shrink-0 items-center gap-2">
+          <ThemeToggle />
           <div className="dropdown dropdown-end">
             <div
               tabIndex={0}
               role="button"
-              className="btn gap-2 pl-1.5 btn-ghost btn-sm"
+              className="btn gap-2 pl-2 btn-ghost btn-sm"
               aria-label="Account menu"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-primary-content">
+              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-content">
                 {initials}
               </span>
               {displayName && (
-                <span className="hidden max-w-32 truncate sm:inline">
+                <span className="hidden max-w-32 truncate text-sm sm:inline">
                   {displayName}
                 </span>
               )}
               <ChevronDownIcon
-                className="size-3.5 opacity-50"
+                className="size-3 opacity-40"
                 aria-hidden="true"
               />
             </div>
-            <ul className="dropdown-content menu z-10 mt-2 w-fit max-w-64 min-w-48 rounded-box border border-base-content/20 bg-base-100 p-2 shadow-md">
+            <ul className="dropdown-content menu z-10 mt-2 w-fit max-w-64 min-w-52 rounded-xl border border-border bg-base-100 p-1.5 shadow-lg">
               {displayName && (
                 <>
-                  <li className="menu-title">
+                  <li className="p-2">
                     <div className="flex items-center gap-2.5">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-primary-content">
+                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content">
                         {initials}
                       </span>
                       <div className="min-w-0">
@@ -78,14 +79,16 @@ export const Header = () => {
                           {displayName}
                         </p>
                         {email && (
-                          <p className="truncate text-xs font-medium text-base-content/80">
+                          <p className="truncate text-xs text-base-content/55">
                             {email}
                           </p>
                         )}
                       </div>
                     </div>
                   </li>
-                  <li></li>
+                  <li>
+                    <hr className="my-1 border-border" />
+                  </li>
                 </>
               )}
               <li>
@@ -95,6 +98,7 @@ export const Header = () => {
                       redirectUri: location.origin + "/",
                     })
                   }
+                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content"
                 >
                   <ArrowRightStartOnRectangleIcon
                     className="size-4"
@@ -105,14 +109,6 @@ export const Header = () => {
               </li>
             </ul>
           </div>
-          <ThemeToggle />
-          {/* <label */}
-          {/*   htmlFor="mobile-nav-drawer" */}
-          {/*   className="btn btn-square btn-ghost btn-sm lg:hidden" */}
-          {/*   aria-label="Open menu" */}
-          {/* > */}
-          {/*   <Bars3Icon className="size-5" aria-hidden="true" /> */}
-          {/* </label> */}
         </div>
       </nav>
 

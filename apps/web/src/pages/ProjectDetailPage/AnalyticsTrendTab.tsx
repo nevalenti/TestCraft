@@ -136,7 +136,7 @@ export const AnalyticsTrendTab = () => {
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-10">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
           <p className="text-xs text-base-content/50">Latest Pass Rate</p>

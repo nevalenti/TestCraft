@@ -44,17 +44,19 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
 
   return (
     <dialog ref={ref} className="modal" onClose={handleClose}>
-      <div className="modal-box">
-        <button
-          type="button"
-          className="btn absolute top-2 right-2 btn-circle btn-ghost btn-sm"
-          onClick={onClose}
-          aria-label="Close dialog"
-        >
-          <XMarkIcon className="size-4" aria-hidden="true" />
-        </button>
-        <h3 className="mb-4 text-lg font-bold">{title}</h3>
-        {isOpen ? children : cachedChildren}
+      <div className="modal-box max-w-md p-0">
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <h3 className="text-base font-semibold text-base-content">{title}</h3>
+          <button
+            type="button"
+            className="flex size-7 items-center justify-center rounded-lg text-base-content/40 transition-colors hover:bg-base-200 hover:text-base-content"
+            onClick={onClose}
+            aria-label="Close dialog"
+          >
+            <XMarkIcon className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+        <div className="px-5 py-4">{isOpen ? children : cachedChildren}</div>
       </div>
       <form method="dialog" className="modal-backdrop">
         <button onClick={onClose}>close</button>

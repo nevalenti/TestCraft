@@ -56,7 +56,7 @@ export const AnalyticsComparisonTab = () => {
   const canCompare = runA && runB && runA !== runB;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-10">
       {/* Selectors */}
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-36 flex-1">
