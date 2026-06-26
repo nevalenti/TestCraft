@@ -1,0 +1,10 @@
+apiVersion: v2
+name: testcraft
+description: TestCraft full-stack application
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+annotations:
+  artifacthub.io/preInstall: |
+    Requires cert-manager >= 1.13 to be installed in the cluster.
+    Install: kubectl apply -f https://github.com/cert-manager/cert-manager/releases/latest/download/cert-manager.yaml

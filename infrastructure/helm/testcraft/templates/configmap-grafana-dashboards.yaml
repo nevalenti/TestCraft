@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-provisioning-dashboards
+  namespace: {{ .Release.Namespace }}
+data:
+  dashboards.yaml: |
+{{ .Files.Get "files/grafana-dashboards.yaml" | indent 4 }}
+  api-logs.json: |
+{{ .Files.Get "files/api-logs.json" | indent 4 }}
+  api-http.json: |
+{{ .Files.Get "files/api-http.json" | indent 4 }}
+  redis-metrics.json: |
+{{ .Files.Get "files/redis-metrics.json" | indent 4 }}
+  postgres-metrics.json: |
+{{ .Files.Get "files/postgres-metrics.json" | indent 4 }}
+  rabbitmq-metrics.json: |
+{{ .Files.Get "files/rabbitmq-metrics.json" | indent 4 }}

@@ -1,0 +1,51 @@
+images:
+  api:
+    repository: testcraft-api
+    tag: latest
+    pullPolicy: IfNotPresent
+  web:
+    repository: testcraft-web
+    tag: latest
+    pullPolicy: IfNotPresent
+  gateway:
+    repository: testcraft-gateway
+    tag: latest
+    pullPolicy: IfNotPresent
+
+tls:
+  dnsNames:
+    - testcraft.dev
+
+keycloak:
+  hostname: https://testcraft.dev:8443
+
+storage:
+  postgres: 5Gi
+  rabbitmq: 1Gi
+  loki: 5Gi
+  seq: 5Gi
+  prometheus: 10Gi
+  grafana: 1Gi
+  keycloak: 1Gi
+  minio: 10Gi
+
+secrets:
+  postgresUser: ""
+  postgresPassword: ""
+  postgresDb: ""
+  postgresExporterDsn: ""
+  rabbitmqUser: ""
+  rabbitmqPassword: ""
+  corsAllowedOrigins: ""
+  metricsToken: ""
+  swaggerBasicAuthUsername: ""
+  swaggerBasicAuthPassword: ""
+  minioRootUser: ""
+  minioRootPassword: ""
+  minioBucket: ""
+  minioPublicEndpoint: ""
+  grafanaAdminPassword: ""
+  keycloakAdmin: ""
+  keycloakAdminPassword: ""
+  githubClientId: ""
+  githubClientSecret: ""

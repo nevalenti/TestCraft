@@ -1,8 +1,20 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio-pvc
+  namespace: {{ .Release.Namespace }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.storage.minio}}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: minio
-  namespace: testcraft
+  namespace: {{ .Release.Namespace }}
 spec:
   replicas: 1
   selector:
@@ -61,22 +73,10 @@ spec:
             claimName: minio-pvc
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: minio-pvc
-  namespace: testcraft
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 10Gi
----
-apiVersion: v1
 kind: Service
 metadata:
   name: minio
-  namespace: testcraft
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     app: minio

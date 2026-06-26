@@ -44,7 +44,7 @@ export const createColumns = ({
   columnHelper.accessor("status", {
     header: "Status",
     cell: (info) => (
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col items-start gap-1">
         <StatusBadge status={info.getValue()} />
         {info.getValue() === TestResultStatus.Failed &&
           info.row.original.defectType && (

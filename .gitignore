@@ -32,6 +32,7 @@ obj/
 *.user
 
 infrastructure/gateway/tls/
+infrastructure/helm/testcraft/values.secrets.yaml
 
 **/.terraform/
 *.tfstate

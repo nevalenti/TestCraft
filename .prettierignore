@@ -4,3 +4,5 @@ dist/
 apps/api/src/generated/
 
 pnpm-lock.yaml
+
+helm/

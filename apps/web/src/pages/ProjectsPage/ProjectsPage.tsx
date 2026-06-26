@@ -97,6 +97,7 @@ export const ProjectsPage = () => {
             Manage and organise your testing projects
           </p>
         </div>
+        <ViewToggle />
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
@@ -105,7 +106,6 @@ export const ProjectsPage = () => {
           onSearch={setSearch}
           placeholder="Search projects…"
         >
-          <ViewToggle />
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Project

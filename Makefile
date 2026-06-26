@@ -1,5 +1,5 @@
 .PHONY: up down clean \
-        build load images destroy status deploy \
+        build load images deploy destroy status \
         api web e2e \
         format
 
@@ -7,6 +7,7 @@ API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
 GATEWAY_IMAGE = testcraft-gateway
 KUBECTL = sudo k3s kubectl
+HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
 
 up:
 	docker compose up -d
@@ -26,16 +27,16 @@ load:
 
 images: build load
 
+deploy: images
+	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --create-namespace --values infrastructure/helm/testcraft/values.secrets.yaml
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
+
 destroy:
 	$(KUBECTL) delete namespace testcraft --ignore-not-found
 
 status:
 	$(KUBECTL) get all -n testcraft
-
-deploy: images
-	$(KUBECTL) apply -k .
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
 
 api:
 	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets

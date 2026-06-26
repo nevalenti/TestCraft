@@ -1,0 +1,46 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: testcraft-selfsigned
+  namespace: {{ .Release.Namespace }}
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: testcraft-ca
+  namespace: {{ .Release.Namespace }}
+spec:
+  isCA: true
+  secretName: testcraft-ca-tls
+  commonName: testcraft-ca
+  issuerRef:
+    name: testcraft-selfsigned
+    kind: Issuer
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: testcraft-ca-issuer
+  namespace: {{ .Release.Namespace }}
+spec:
+  ca:
+    secretName: testcraft-ca-tls
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: testcraft-tls
+  namespace: {{ .Release.Namespace }}
+spec:
+  secretName: testcraft-tls
+  issuerRef:
+    name: testcraft-ca-issuer
+    kind: Issuer
+  dnsNames:
+    {{- range .Values.tls.dnsNames }}
+    - {{ . | quote }}
+    {{- end }}
+  duration: 8760h
+  renewBefore: 720h

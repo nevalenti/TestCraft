@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: keycloak-dracula-theme
+  namespace: {{ .Release.Namespace }}
+data:
+  theme.properties: |
+{{ .Files.Get "files/theme.properties" | indent 4 }}
+  template.ftl: |
+{{ .Files.Get "files/template.ftl" | indent 4 }}
+  login.ftl: |
+{{ .Files.Get "files/login.ftl" | indent 4 }}
+  register.ftl: |
+{{ .Files.Get "files/register.ftl" | indent 4 }}
+  error.ftl: |
+{{ .Files.Get "files/error.ftl" | indent 4 }}
+  login-verify-email.ftl: |
+{{ .Files.Get "files/login-verify-email.ftl" | indent 4 }}

@@ -8,6 +8,9 @@ namespace TestCraft.Api.Configuration;
 
 public static partial class DatabaseMigrationExtensions
 {
+    private const int MaxMigrationRetries = 5;
+    private static readonly TimeSpan MigrationTimeout = TimeSpan.FromMinutes(10);
+
     public static async Task MigrateDatabaseAsync(this WebApplication app)
     {
         var apiOptions = app.Services.GetRequiredService<ApiOptions>();
@@ -23,8 +26,10 @@ public static partial class DatabaseMigrationExtensions
             .AddRetry(
                 new RetryStrategyOptions
                 {
-                    ShouldHandle = new PredicateBuilder().Handle<NpgsqlException>(),
-                    MaxRetryAttempts = 5,
+                    ShouldHandle = args => new ValueTask<bool>(
+                        args.Outcome.Exception is NpgsqlException or TimeoutException
+                    ),
+                    MaxRetryAttempts = MaxMigrationRetries,
                     Delay = TimeSpan.FromSeconds(5),
                     BackoffType = DelayBackoffType.Constant,
                     OnRetry = args =>
@@ -32,7 +37,8 @@ public static partial class DatabaseMigrationExtensions
                         LogMigrationRetry(
                             app.Logger,
                             args.Outcome.Exception,
-                            args.AttemptNumber + 1
+                            args.AttemptNumber + 1,
+                            MaxMigrationRetries
                         );
                         return ValueTask.CompletedTask;
                     },
@@ -40,18 +46,21 @@ public static partial class DatabaseMigrationExtensions
             )
             .Build();
 
-        await pipeline.ExecuteAsync(async cancellationToken =>
-            await dbContext.Database.MigrateAsync(cancellationToken)
+        using var cts = new CancellationTokenSource(MigrationTimeout);
+        await pipeline.ExecuteAsync(
+            async cancellationToken => await dbContext.Database.MigrateAsync(cancellationToken),
+            cts.Token
         );
     }
 
     [LoggerMessage(
         Level = LogLevel.Warning,
-        Message = "Database not ready (attempt {Attempt}/6), retrying in 5s"
+        Message = "Database not ready (attempt {Attempt}/{MaxAttempts}), retrying in 5s"
     )]
     private static partial void LogMigrationRetry(
         ILogger logger,
         Exception? exception,
-        int attempt
+        int attempt,
+        int maxAttempts
     );
 }

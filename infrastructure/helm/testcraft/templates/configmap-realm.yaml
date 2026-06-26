@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: realm
+  namespace: {{ .Release.Namespace }}
+data:
+  testcraft-realm.json: |
+{{ .Files.Get "files/realm.json" | indent 4 }}

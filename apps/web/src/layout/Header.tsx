@@ -98,7 +98,7 @@ export const Header = () => {
                       redirectUri: location.origin + "/",
                     })
                   }
-                  className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-sm text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content"
+                  className="gap-2 text-sm text-base-content/70"
                 >
                   <ArrowRightStartOnRectangleIcon
                     className="size-4"
