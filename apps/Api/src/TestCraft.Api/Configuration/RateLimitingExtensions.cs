@@ -18,6 +18,9 @@ public static class RateLimitingExtensions
                     if (
                         !builder.Environment.IsProduction()
                         || !ApiPaths.IsVersionedApi(httpContext.Request.Path)
+                        || httpContext
+                            .Request.Headers.UserAgent.ToString()
+                            .StartsWith("TestCraft-GitHub-Actions/", StringComparison.Ordinal)
                     )
                     {
                         return RateLimitPartition.GetNoLimiter("unrestricted");
