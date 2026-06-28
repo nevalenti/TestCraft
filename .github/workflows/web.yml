@@ -100,7 +100,7 @@ jobs:
       - name: Upload test report
         if: always()
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-test-results
           path: apps/web/test-results
@@ -108,7 +108,7 @@ jobs:
 
       - name: Upload build artifact
         continue-on-error: true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: web-dist
           path: apps/web/dist
