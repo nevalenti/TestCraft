@@ -9,6 +9,7 @@ import { useRef } from "react";
 
 import keycloak from "@/auth/keycloak";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { useAvatarUrl } from "@/hooks/useAccount";
 import { LogoMark } from "@/layout/LogoMark";
 
 const getInitials = (name: string) =>
@@ -27,6 +28,7 @@ export const Header = () => {
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
   const email = keycloak.tokenParsed?.email;
   const initials = displayName ? getInitials(displayName) : undefined;
+  const { data: avatarData } = useAvatarUrl();
 
   return (
     <>
@@ -55,9 +57,17 @@ export const Header = () => {
               className="btn gap-2 pl-2 btn-ghost btn-sm"
               aria-label="Account menu"
             >
-              <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-content">
-                {initials}
-              </span>
+              {avatarData?.url ? (
+                <img
+                  src={avatarData.url}
+                  alt="Avatar"
+                  className="size-6 shrink-0 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-content">
+                  {initials}
+                </span>
+              )}
               {displayName && (
                 <span className="hidden max-w-32 truncate text-sm sm:inline">
                   {displayName}
@@ -73,12 +83,23 @@ export const Header = () => {
                 <>
                   <li>
                     <button
-                      onClick={() => navigate({ to: "/account" })}
+                      onClick={() => {
+                        navigate({ to: "/account" });
+                        (document.activeElement as HTMLElement)?.blur();
+                      }}
                       className="group flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-base-200/60"
                     >
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content ring-2 ring-primary/20">
-                        {initials}
-                      </span>
+                      {avatarData?.url ? (
+                        <img
+                          src={avatarData.url}
+                          alt="Avatar"
+                          className="size-9 shrink-0 rounded-full object-cover ring-2 ring-primary/20"
+                        />
+                      ) : (
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content ring-2 ring-primary/20">
+                          {initials}
+                        </span>
+                      )}
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-sm leading-tight font-semibold text-base-content">
                           {displayName}

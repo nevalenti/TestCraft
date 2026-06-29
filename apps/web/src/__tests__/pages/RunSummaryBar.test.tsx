@@ -155,7 +155,6 @@ describe("RunSummaryBar", () => {
           {...defaultProps}
         />,
       );
-      // The summary paragraph contains "1 result · 100% pass rate"
       expect(screen.getByText(/result ·/)).toBeInTheDocument();
       expect(screen.queryByText(/results ·/)).not.toBeInTheDocument();
     });

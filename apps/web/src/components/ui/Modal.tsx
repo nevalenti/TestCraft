@@ -11,8 +11,7 @@ interface ModalProps {
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const ref = useRef<HTMLDialogElement>(null);
   const isProgrammatic = useRef(false);
-  const [cachedChildren, setCachedChildren] =
-    useState<React.ReactNode>(children);
+  const [cachedChildren, setCachedChildren] = useState<React.ReactNode>(null);
 
   if (isOpen && cachedChildren !== children) {
     setCachedChildren(children);

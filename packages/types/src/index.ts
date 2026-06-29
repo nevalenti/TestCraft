@@ -12,3 +12,4 @@ export * from "./test-plan.js";
 export * from "./test-result.js";
 export * from "./test-run.js";
 export * from "./test-suite.js";
+export * from "./user-profile.js";

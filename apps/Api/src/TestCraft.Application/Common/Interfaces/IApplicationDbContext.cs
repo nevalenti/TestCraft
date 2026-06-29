@@ -22,6 +22,7 @@ public interface IApplicationDbContext
     DbSet<ShareToken> ShareTokens { get; }
     DbSet<WebhookSubscription> WebhookSubscriptions { get; }
     DbSet<EmailSubscription> EmailSubscriptions { get; }
+    DbSet<UserProfile> UserProfiles { get; }
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

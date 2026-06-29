@@ -1,9 +1,12 @@
 import {
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
+  CameraIcon,
 } from "@heroicons/react/24/solid";
+import { useRef } from "react";
 
 import keycloak from "@/auth/keycloak";
+import { useAvatarUrl, useUploadAvatar } from "@/hooks/useAccount";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { env } from "@/lib/env";
 
@@ -27,18 +30,63 @@ export const AccountPage = () => {
   const lastName = token?.family_name as string | undefined;
   const initials = displayName ? getInitials(displayName) : "?";
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { data: avatarData } = useAvatarUrl();
+  const { mutate: uploadAvatar, isPending } = useUploadAvatar();
+
   useBreadcrumbs([{ label: "Account", href: "/account" }]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    uploadAvatar(file);
+    e.target.value = "";
+  };
 
   return (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
       <div className="mx-auto w-full max-w-md px-4 py-10 sm:px-6 sm:py-14">
         <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-lg">
           <div className="flex flex-col items-center px-8 py-10 text-center">
-            <span className="flex size-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-content">
-              {initials}
-            </span>
+            <div className="group relative">
+              {avatarData?.url ? (
+                <img
+                  src={avatarData.url}
+                  alt="Avatar"
+                  className="size-20 rounded-full object-cover"
+                />
+              ) : (
+                <span className="flex size-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-content">
+                  {initials}
+                </span>
+              )}
+
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 disabled:cursor-not-allowed"
+                aria-label="Change avatar"
+              >
+                {isPending ? (
+                  <span className="loading loading-sm loading-spinner text-white" />
+                ) : (
+                  <CameraIcon className="size-6 text-white" />
+                )}
+              </button>
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/gif"
+              className="hidden"
+              onChange={handleFileChange}
+            />
           </div>
+
           <hr className="border-border" />
+
           <dl className="divide-y divide-border">
             {[
               { label: "First Name", value: firstName ?? "—" },
@@ -60,7 +108,6 @@ export const AccountPage = () => {
 
           <hr className="border-border" />
 
-          {/* Actions */}
           <div className="flex items-center justify-between px-8 py-5">
             <a
               href={keycloakAccountUrl}

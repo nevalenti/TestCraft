@@ -26,6 +26,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
     public DbSet<ShareToken> ShareTokens => Set<ShareToken>();
     public DbSet<WebhookSubscription> WebhookSubscriptions => Set<WebhookSubscription>();
     public DbSet<EmailSubscription> EmailSubscriptions => Set<EmailSubscription>();
+    public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
