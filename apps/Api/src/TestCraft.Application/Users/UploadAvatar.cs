@@ -43,9 +43,9 @@ public static class UploadAvatar
                 {
                     await storage.DeleteAsync(profile.AvatarKey, cancellationToken);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // best-effort deletion of old avatar
+                    _ = ex;
                 }
             }
 

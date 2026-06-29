@@ -1,21 +1,21 @@
 import { PlusIcon, ShareIcon } from "@heroicons/react/24/solid";
-import { useQueryClient } from "@tanstack/react-query";
 import {
   getCoreRowModel,
   getSortedRowModel,
   type PaginationState,
   type SortingState,
+  type Table,
   useReactTable,
 } from "@tanstack/react-table";
 import {
   type CreateTestResult,
+  type Paginated,
   type TestResult,
   TestResultStatus,
   type UpdateTestResult,
 } from "@testcraft/types";
 import { useEffect, useMemo, useState } from "react";
 
-import { queryKeys } from "@/api/queryKeys";
 import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -25,13 +25,13 @@ import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useSignalR } from "@/hooks/useSignalR";
 import {
   useCreateTestResult,
   useDeleteTestResult,
   useTestResults,
   useUpdateTestResult,
 } from "@/hooks/useTestResults";
+import { useTestRunRealtime } from "@/hooks/useTestRunRealtime";
 import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
 import { RESULTS_PAGE_SIZE } from "@/lib/constants";
 import { AttachmentModal } from "@/pages/TestRunPage/AttachmentModal";
@@ -41,6 +41,89 @@ import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
 import { RunSummaryBar } from "@/pages/TestRunPage/RunSummaryBar";
 import { ShareModal } from "@/pages/TestRunPage/ShareModal";
 import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
+
+interface ResultsContentProps {
+  isPending: boolean;
+  isSummaryPending: boolean;
+  isError: boolean;
+  error: unknown;
+  resultsPage: Paginated<TestResult> | undefined;
+  statusFilter: TestResultStatus | null;
+  debouncedSearch: string;
+  openCreate: () => void;
+  onClearSearch: () => void;
+  onClearFilter: () => void;
+  table: Table<TestResult>;
+  pageCount: number;
+}
+
+const ResultsContent = ({
+  isPending,
+  isSummaryPending,
+  isError,
+  error,
+  resultsPage,
+  statusFilter,
+  debouncedSearch,
+  openCreate,
+  onClearSearch,
+  onClearFilter,
+  table,
+  pageCount,
+}: ResultsContentProps) => {
+  if (isPending || isSummaryPending)
+    return (
+      <div className="flex min-h-80 items-center justify-center">
+        <span className="loading loading-lg loading-spinner text-primary" />
+      </div>
+    );
+
+  if (isError) return <ErrorState error={error} />;
+
+  if (
+    resultsPage?.items.length === 0 &&
+    statusFilter === null &&
+    !debouncedSearch
+  )
+    return (
+      <EmptyState
+        title="No results recorded"
+        description="Add results to track the outcome of each test case in this run."
+        action={
+          <button
+            className="btn gap-1.5 btn-sm btn-primary"
+            onClick={openCreate}
+          >
+            <PlusIcon className="size-4" aria-hidden="true" />
+            Add Result
+          </button>
+        }
+      />
+    );
+
+  if (resultsPage?.items.length === 0)
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-center">
+        <p className="mb-2 text-sm font-semibold text-base-content/60">
+          No results match
+        </p>
+        <div className="flex gap-2">
+          {debouncedSearch && (
+            <button className="btn btn-ghost btn-sm" onClick={onClearSearch}>
+              Clear search
+            </button>
+          )}
+          {statusFilter !== null && (
+            <button className="btn btn-outline btn-sm" onClick={onClearFilter}>
+              Clear filter
+            </button>
+          )}
+        </div>
+      </div>
+    );
+
+  return <ResultsTable table={table} pageCount={pageCount} />;
+};
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam("projectId");
@@ -61,7 +144,6 @@ export const TestRunPage = () => {
     pageSize: RESULTS_PAGE_SIZE,
   });
 
-  const queryClient = useQueryClient();
   const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
@@ -85,37 +167,7 @@ export const TestRunPage = () => {
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
 
-  useSignalR(runId, {
-    ResultAdded: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testResults.all(projectId, runId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.summary(projectId, runId),
-      });
-    },
-    ResultUpdated: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testResults.all(projectId, runId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.summary(projectId, runId),
-      });
-    },
-    ResultDeleted: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testResults.all(projectId, runId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.summary(projectId, runId),
-      });
-    },
-    RunStatusChanged: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.detail(projectId, runId),
-      });
-    },
-  });
+  useTestRunRealtime(projectId, runId);
 
   useEffect(() => {
     setPagination((prev) => ({ ...prev, pageIndex: 0 }));
@@ -163,64 +215,6 @@ export const TestRunPage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
-  const renderResults = () => {
-    if (isPending || isSummaryPending)
-      return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
-      );
-    if (isError) return <ErrorState error={error} />;
-    if (
-      resultsPage?.items.length === 0 &&
-      statusFilter === null &&
-      !debouncedSearch
-    )
-      return (
-        <EmptyState
-          title="No results recorded"
-          description="Add results to track the outcome of each test case in this run."
-          action={
-            <button
-              className="btn gap-1.5 btn-sm btn-primary"
-              onClick={openCreate}
-            >
-              <PlusIcon className="size-4" aria-hidden="true" />
-              Add Result
-            </button>
-          }
-        />
-      );
-    if (resultsPage?.items.length === 0)
-      return (
-        <div className="flex flex-col items-center justify-center py-16 text-center">
-          <p className="mb-2 text-sm font-semibold text-base-content/60">
-            No results match
-          </p>
-          <div className="flex gap-2">
-            {debouncedSearch && (
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={() => setSearch("")}
-              >
-                Clear search
-              </button>
-            )}
-            {statusFilter !== null && (
-              <button
-                className="btn btn-outline btn-sm"
-                onClick={() => setStatusFilter(null)}
-              >
-                Clear filter
-              </button>
-            )}
-          </div>
-        </div>
-      );
-
-    return <ResultsTable table={table} pageCount={pageCount} />;
-  };
-
   return (
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
@@ -253,7 +247,22 @@ export const TestRunPage = () => {
             onAdd={openCreate}
           />
         )}
-        <div className="min-h-80">{renderResults()}</div>
+        <div className="min-h-80">
+          <ResultsContent
+            isPending={isPending}
+            isSummaryPending={isSummaryPending}
+            isError={isError}
+            error={error}
+            resultsPage={resultsPage}
+            statusFilter={statusFilter}
+            debouncedSearch={debouncedSearch}
+            openCreate={openCreate}
+            onClearSearch={() => setSearch("")}
+            onClearFilter={() => setStatusFilter(null)}
+            table={table}
+            pageCount={pageCount}
+          />
+        </div>
       </section>
 
       <Modal

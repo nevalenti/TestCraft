@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { LabelBadge } from "@/components/ui/LabelBadge";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
+import { PriorityBadge } from "@/components/ui/PriorityBadge";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { ResourceListItem } from "@/components/ui/ResourceListItem";
 import { ViewToggle } from "@/components/ui/ViewToggle";
@@ -28,7 +29,6 @@ import {
 } from "@/hooks/useTestCases";
 import { useTestSuite } from "@/hooks/useTestSuites";
 import { formatDate } from "@/lib/format";
-import { PriorityBadge } from "@/pages/TestSuitePage/PriorityBadge";
 import { TestCaseForm } from "@/pages/TestSuitePage/TestCaseForm";
 import { useViewModeStore } from "@/stores/viewMode";
 

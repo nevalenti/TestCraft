@@ -2,10 +2,10 @@ import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { createColumnHelper } from "@tanstack/react-table";
 import { type TestResult, TestResultStatus } from "@testcraft/types";
 
+import { DefectTypeBadge } from "@/components/ui/DefectTypeBadge";
 import { ResourceActions } from "@/components/ui/ResourceActions";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { formatDateTime, formatDuration } from "@/lib/format";
-import { DefectTypeBadge } from "@/pages/TestRunPage/DefectTypeBadge";
 
 const columnHelper = createColumnHelper<TestResult>();
 

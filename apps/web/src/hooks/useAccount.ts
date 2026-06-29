@@ -7,7 +7,7 @@ export const useAvatarUrl = () =>
   useQuery({
     queryKey: queryKeys.account.avatarUrl,
     queryFn: () => accountApi.getAvatarUrl(),
-    staleTime: 55 * 60 * 1000, // presigned URLs expire after 60 min
+    staleTime: 55 * 60 * 1000,
   });
 
 export const useUploadAvatar = () => {

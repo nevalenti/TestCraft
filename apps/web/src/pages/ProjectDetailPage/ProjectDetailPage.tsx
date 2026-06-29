@@ -8,6 +8,7 @@ import {
 import { Link, Outlet } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { ErrorState } from "@/components/ErrorState";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
@@ -30,14 +31,11 @@ export const ProjectDetailPage = () => {
 
   if (!isPending && !project)
     return (
-      <div className="flex flex-1 items-center justify-center p-8">
-        <div className="text-center">
-          <p className="mb-2 font-semibold text-error">Project not found</p>
-          <p className="mb-4 text-sm text-base-content/60">
-            This project may have been deleted or does not exist.
-          </p>
-        </div>
-      </div>
+      <ErrorState
+        title="Project not found"
+        message="This project may have been deleted or does not exist."
+        onRetry={() => history.back()}
+      />
     );
 
   return (

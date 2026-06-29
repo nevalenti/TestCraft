@@ -17,6 +17,7 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceCard } from "@/components/ui/ResourceCard";
 import { ResourceListItem } from "@/components/ui/ResourceListItem";
+import { RunStatusBadge } from "@/components/ui/RunStatusBadge";
 import { ViewToggle } from "@/components/ui/ViewToggle";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useModal } from "@/hooks/useModal";
@@ -32,7 +33,6 @@ import {
 import { formatDate } from "@/lib/format";
 import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
 import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
-import { RunStatusBadge } from "@/pages/ProjectDetailPage/RunStatusBadge";
 import { SourceFilter } from "@/pages/ProjectDetailPage/SourceFilter";
 import { useViewModeStore } from "@/stores/viewMode";
 

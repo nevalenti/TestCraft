@@ -7,6 +7,7 @@ interface ApiProblem {
 }
 
 interface Props {
+  title?: string;
   error?: unknown;
   message?: string;
   onRetry?: () => void;
@@ -19,6 +20,7 @@ const extractMessage = (error: unknown): string | undefined => {
 };
 
 export const ErrorState = ({
+  title = "Failed to load",
   error,
   message,
   onRetry = () => location.reload(),
@@ -31,9 +33,7 @@ export const ErrorState = ({
   return (
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="max-w-xs text-center">
-        <p className="mb-1.5 text-sm font-semibold text-error">
-          Failed to load
-        </p>
+        <p className="mb-1.5 text-sm font-semibold text-error">{title}</p>
         <p className="mb-5 text-sm text-base-content/55">{displayMessage}</p>
         <button
           className="btn border border-border btn-ghost btn-sm"

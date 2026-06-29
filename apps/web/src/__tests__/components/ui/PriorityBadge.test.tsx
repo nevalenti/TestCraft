@@ -2,7 +2,7 @@ import { TestCasePriority } from "@testcraft/types";
 import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 
-import { PriorityBadge } from "@/pages/TestSuitePage/PriorityBadge";
+import { PriorityBadge } from "@/components/ui/PriorityBadge";
 
 describe("PriorityBadge", () => {
   describe("PriorityBadge — given undefined priority — renders nothing", () => {
