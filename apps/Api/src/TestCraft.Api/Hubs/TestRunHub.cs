@@ -1,16 +1,43 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Api.Extensions;
+using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Api.Hubs;
 
-public class TestRunHub : Hub
+[Authorize]
+public class TestRunHub(IApplicationDbContext db) : Hub
 {
     public async Task JoinRun(string runId)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"run:{runId}");
+        if (!Guid.TryParse(runId, out var runGuid) || !TryGetUserId(out var userId))
+        {
+            return;
+        }
+
+        var hasAccess = await db.Projects.AnyAsync(p =>
+            p.UserId == userId && db.TestRuns.Any(r => r.Id == runGuid && r.ProjectId == p.Id)
+        );
+
+        if (!hasAccess)
+        {
+            return;
+        }
+
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"run:{runGuid}");
     }
 
     public async Task LeaveRun(string runId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{runId}");
+        if (!Guid.TryParse(runId, out var runGuid))
+        {
+            return;
+        }
+
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{runGuid}");
     }
+
+    private bool TryGetUserId(out Guid userId) =>
+        Guid.TryParse(Context.User?.GetUserId(), out userId);
 }

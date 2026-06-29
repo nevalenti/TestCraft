@@ -7,6 +7,8 @@ public sealed class ApiOptions
     [Required]
     public string KeycloakAuthority { get; init; } = string.Empty;
 
+    public string? KeycloakIssuer { get; init; }
+
     public string KeycloakAudience { get; init; } = "testcraft-web";
 
     public bool KeycloakRequireHttpsMetadata { get; init; } = true;
@@ -34,6 +36,7 @@ public sealed class ApiOptions
         var options = new ApiOptions
         {
             KeycloakAuthority = configuration["KEYCLOAK_AUTHORITY"] ?? string.Empty,
+            KeycloakIssuer = configuration["KEYCLOAK_ISSUER"],
             KeycloakAudience = configuration["KEYCLOAK_AUDIENCE"] ?? "testcraft-web",
             KeycloakRequireHttpsMetadata = configuration.GetValue(
                 "KEYCLOAK_REQUIRE_HTTPS_METADATA",

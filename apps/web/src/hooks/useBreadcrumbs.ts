@@ -8,6 +8,6 @@ export const useBreadcrumbs = (items: BreadcrumbItem[]) => {
   const serialized = JSON.stringify(items);
 
   useLayoutEffect(() => {
-    set(JSON.parse(serialized) as BreadcrumbItem[]);
+    set(items);
   }, [serialized, set]);
 };

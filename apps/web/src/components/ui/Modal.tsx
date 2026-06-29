@@ -11,13 +11,11 @@ interface ModalProps {
 export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
   const ref = useRef<HTMLDialogElement>(null);
   const isProgrammatic = useRef(false);
+  const [cachedChildren, setCachedChildren] =
+    useState<React.ReactNode>(children);
 
-  const [cachedChildren, setCachedChildren] = useState<React.ReactNode>(null);
-  const [prevIsOpen, setPrevIsOpen] = useState(false);
-
-  if (isOpen !== prevIsOpen) {
-    setPrevIsOpen(isOpen);
-    if (isOpen) setCachedChildren(children);
+  if (isOpen && cachedChildren !== children) {
+    setCachedChildren(children);
   }
 
   useLayoutEffect(() => {

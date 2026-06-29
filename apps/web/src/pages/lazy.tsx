@@ -130,3 +130,10 @@ export const LazySharePage = suspend(
     return { default: module.SharePage };
   }),
 );
+
+export const LazyAccountPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./AccountPage/AccountPage");
+    return { default: module.AccountPage };
+  }),
+);

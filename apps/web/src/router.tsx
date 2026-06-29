@@ -17,6 +17,7 @@ import { testSuiteQueries } from "@/api/testSuites";
 import { RootError } from "@/components/RootError";
 import AppLayout from "@/layout/AppLayout";
 import {
+  LazyAccountPage,
   LazyAnalyticsComparisonTab,
   LazyAnalyticsFlakyTab,
   LazyAnalyticsSuiteTab,
@@ -248,6 +249,12 @@ const testPlanRoute = createRoute({
     ]),
 });
 
+const accountRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: "/account",
+  component: LazyAccountPage,
+});
+
 const shareRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/share/$token",
@@ -280,6 +287,7 @@ const routeTree = rootRoute.addChildren([
     testRunRoute,
     testPlansRoute,
     testPlanRoute,
+    accountRoute,
   ]),
   shareRoute,
 ]);

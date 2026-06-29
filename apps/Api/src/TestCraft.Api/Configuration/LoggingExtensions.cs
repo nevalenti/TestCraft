@@ -1,10 +1,10 @@
 using System.Globalization;
-using System.Security.Claims;
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
+using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Configuration;
 
@@ -106,14 +106,13 @@ public static class LoggingExtensions
             return;
         }
 
-        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+        var userId = user.GetUserId();
         if (userId is not null)
         {
             diagnosticContext.Set("userId", userId);
         }
 
-        var username =
-            user.FindFirstValue("preferred_username") ?? user.FindFirstValue(ClaimTypes.Name);
+        var username = user.GetUsername();
         if (username is not null)
         {
             diagnosticContext.Set("username", username);

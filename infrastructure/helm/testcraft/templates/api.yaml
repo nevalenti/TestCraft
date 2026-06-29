@@ -55,6 +55,8 @@ spec:
               value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@rabbitmq:5672"
             - name: KEYCLOAK_AUTHORITY
               value: http://keycloak:8080/realms/testcraft
+            - name: KEYCLOAK_ISSUER
+              value: https://testcraft.dev:8443/realms/testcraft
             - name: KEYCLOAK_AUDIENCE
               value: testcraft-web
             - name: KEYCLOAK_REQUIRE_HTTPS_METADATA

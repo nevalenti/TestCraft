@@ -1,9 +1,10 @@
 import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
+  ChevronRightIcon,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { useRef } from "react";
 
 import keycloak from "@/auth/keycloak";
@@ -21,6 +22,7 @@ const getInitials = (name: string) =>
 
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
   const displayName =
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
   const email = keycloak.tokenParsed?.email;
@@ -66,28 +68,35 @@ export const Header = () => {
                 aria-hidden="true"
               />
             </div>
-            <ul className="dropdown-content menu z-10 mt-2 w-fit max-w-64 min-w-52 rounded-xl border border-border bg-base-100 p-1.5 shadow-lg">
+            <ul className="dropdown-content z-10 mt-2 w-64 overflow-hidden rounded-2xl border border-border bg-base-100 shadow-xl">
               {displayName && (
                 <>
-                  <li className="p-2">
-                    <div className="flex items-center gap-2.5">
-                      <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content">
+                  <li>
+                    <button
+                      onClick={() => navigate({ to: "/account" })}
+                      className="group flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-base-200/60"
+                    >
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content ring-2 ring-primary/20">
                         {initials}
                       </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-base-content">
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm leading-tight font-semibold text-base-content">
                           {displayName}
                         </p>
                         {email && (
-                          <p className="truncate text-xs text-base-content/55">
+                          <p className="mt-0.5 truncate text-xs text-base-content/50">
                             {email}
                           </p>
                         )}
                       </div>
-                    </div>
+                      <ChevronRightIcon
+                        className="size-3.5 shrink-0 text-base-content/25 transition-transform motion-safe:group-hover:translate-x-0.5"
+                        aria-hidden="true"
+                      />
+                    </button>
                   </li>
-                  <li>
-                    <hr className="my-1 border-border" />
+                  <li aria-hidden="true">
+                    <hr className="border-border" />
                   </li>
                 </>
               )}
@@ -98,7 +107,7 @@ export const Header = () => {
                       redirectUri: location.origin + "/",
                     })
                   }
-                  className="gap-2 text-sm text-base-content/70"
+                  className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-sm text-base-content/55 transition-colors hover:bg-error/8 hover:text-error"
                 >
                   <ArrowRightStartOnRectangleIcon
                     className="size-4"

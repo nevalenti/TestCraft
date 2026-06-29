@@ -1,11 +1,16 @@
 import {
   ArrowUpTrayIcon,
+  CheckCircleIcon,
   PlayCircleIcon,
   PlusIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/solid";
+import { useQueries } from "@tanstack/react-query";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
+import { TestRunStatus } from "@testcraft/types";
 import { useState } from "react";
 
+import { testRunQueries } from "@/api/testRuns";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
@@ -77,6 +82,28 @@ export const RunsTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const completedRuns = (runs ?? []).filter(
+    (r) => r.status === TestRunStatus.Completed,
+  );
+  const summaryMap = useQueries({
+    queries: completedRuns.map((r) => testRunQueries.summary(projectId, r.id)),
+    combine: (results) =>
+      new Map(completedRuns.map((r, i) => [r.id, results[i].data])),
+  });
+
+  const getRunIcon = (run: TestRun, size: "sm" | "xs") => {
+    const cls = size === "sm" ? "size-4" : "size-3.5";
+    if (run.status === TestRunStatus.Completed) {
+      const summary = summaryMap.get(run.id);
+      return (summary?.failed ?? 0) > 0 ? (
+        <XCircleIcon className={`${cls} text-error`} />
+      ) : (
+        <CheckCircleIcon className={`${cls} text-success`} />
+      );
+    }
+    return <PlayCircleIcon className={cls} />;
+  };
+
   const allRuns = runs ?? [];
   const sources = [
     ...new Set(allRuns.map((r) => r.source).filter(Boolean) as string[]),
@@ -117,7 +144,7 @@ export const RunsTab = () => {
               label="test run"
               cardBg="card-bg-warning"
               accentText="text-warning"
-              typeIcon={<PlayCircleIcon className="size-4" />}
+              typeIcon={getRunIcon(run, "sm")}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold">
@@ -155,7 +182,7 @@ export const RunsTab = () => {
             label="test run"
             cardBg="card-bg-warning"
             accentText="text-warning"
-            typeIcon={<PlayCircleIcon className="size-3.5" />}
+            typeIcon={getRunIcon(run, "xs")}
           >
             <div className="flex flex-col gap-1.5">
               <span className="line-clamp-2 text-base leading-snug font-semibold">

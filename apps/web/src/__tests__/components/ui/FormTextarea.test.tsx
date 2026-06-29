@@ -49,9 +49,9 @@ describe("FormTextarea", () => {
 
   describe("given a custom className — merges with base classes", () => {
     it("includes the custom class alongside base classes", () => {
-      render(<FormTextarea className="my-custom" />);
+      render(<FormTextarea className="font-bold" />);
       const textarea = screen.getByRole("textbox");
-      expect(textarea.className).toContain("my-custom");
+      expect(textarea.className).toContain("font-bold");
       expect(textarea.className).toContain("textarea");
     });
   });

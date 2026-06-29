@@ -29,7 +29,8 @@ public static class AuthenticationExtensions
                         RequireHttps = apiOptions.KeycloakRequireHttpsMetadata,
                     }
                 );
-                options.TokenValidationParameters.ValidateIssuer = false;
+                options.TokenValidationParameters.ValidIssuer =
+                    apiOptions.KeycloakIssuer ?? apiOptions.KeycloakAuthority;
 
                 options.Events = new JwtBearerEvents
                 {

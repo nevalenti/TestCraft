@@ -8,8 +8,11 @@ public class RequestIdMiddleware(RequestDelegate next)
 
     public async Task InvokeAsync(HttpContext context)
     {
+        var incoming = context.Request.Headers[HeaderName].FirstOrDefault();
         var requestId =
-            context.Request.Headers[HeaderName].FirstOrDefault() ?? Guid.NewGuid().ToString();
+            incoming is not null && Guid.TryParse(incoming, out _)
+                ? incoming
+                : Guid.NewGuid().ToString();
 
         context.Request.Headers[HeaderName] = requestId;
         context.TraceIdentifier = requestId;

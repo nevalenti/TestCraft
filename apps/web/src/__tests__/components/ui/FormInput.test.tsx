@@ -54,9 +54,9 @@ describe("FormInput", () => {
 
   describe("given a custom className — merges with base classes", () => {
     it("includes the custom class alongside base classes", () => {
-      render(<FormInput className="my-custom" />);
+      render(<FormInput className="font-bold" />);
       const input = screen.getByRole("textbox");
-      expect(input.className).toContain("my-custom");
+      expect(input.className).toContain("font-bold");
       expect(input.className).toContain("input");
     });
   });

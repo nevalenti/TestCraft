@@ -9,6 +9,7 @@ export function useSignalR(
   handlers: Record<string, (data: unknown) => void>,
 ) {
   const handlersRef = useRef(handlers);
+  const eventNamesRef = useRef(Object.keys(handlers));
 
   useLayoutEffect(() => {
     handlersRef.current = handlers;
@@ -24,7 +25,7 @@ export function useSignalR(
       .withAutomaticReconnect()
       .build();
 
-    for (const event of Object.keys(handlersRef.current)) {
+    for (const event of eventNamesRef.current) {
       connection.on(event, (data) => handlersRef.current[event]?.(data));
     }
 

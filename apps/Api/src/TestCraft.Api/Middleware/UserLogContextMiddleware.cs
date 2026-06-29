@@ -1,5 +1,5 @@
-using System.Security.Claims;
 using Serilog.Context;
+using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Middleware;
 
@@ -16,14 +16,13 @@ public class UserLogContextMiddleware(RequestDelegate next)
 
         var properties = new List<IDisposable>();
 
-        var userId = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+        var userId = user.GetUserId();
         if (userId is not null)
         {
             properties.Add(LogContext.PushProperty("userId", userId));
         }
 
-        var username =
-            user.FindFirstValue("preferred_username") ?? user.FindFirstValue(ClaimTypes.Name);
+        var username = user.GetUsername();
         if (username is not null)
         {
             properties.Add(LogContext.PushProperty("username", username));

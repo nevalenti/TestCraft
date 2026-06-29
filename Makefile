@@ -28,7 +28,10 @@ load:
 images: build load
 
 deploy: images
-	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --create-namespace --values infrastructure/helm/testcraft/values.secrets.yaml
+	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
+	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
+	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
+	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --values infrastructure/helm/testcraft/values.secrets.yaml
 	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
 	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
 

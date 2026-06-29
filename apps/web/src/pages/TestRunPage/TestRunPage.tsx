@@ -142,7 +142,7 @@ export const TestRunPage = () => {
         onDelete: openDelete,
         onAttachment: setAttachmentResult,
       }),
-    [openEdit, openDelete],
+    [openEdit, openDelete, setAttachmentResult],
   );
 
   const pageCount = resultsPage

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
 using TestCraft.Api.Configuration;
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Api.System;
 
@@ -14,7 +14,8 @@ namespace TestCraft.Api.System;
 [ApiController]
 [ApiVersionNeutral]
 [Route("api")]
-public class SystemController(ApiOptions apiOptions, AppDbContext dbContext) : ControllerBase
+public class SystemController(ApiOptions apiOptions, IApplicationDbContext dbContext)
+    : ControllerBase
 {
     /// <summary>Gets the Keycloak authority used by clients to authenticate.</summary>
     [HttpGet("auth-config")]
@@ -72,13 +73,13 @@ public class SystemController(ApiOptions apiOptions, AppDbContext dbContext) : C
             return Unauthorized();
         }
 
-        await using var stream = new MemoryStream();
+        Response.ContentType = "text/plain; version=0.0.4; charset=utf-8";
         await Metrics.DefaultRegistry.CollectAndExportAsTextAsync(
-            stream,
+            Response.Body,
             HttpContext.RequestAborted
         );
 
-        return File(stream.ToArray(), "text/plain; version=0.0.4; charset=utf-8");
+        return new EmptyResult();
     }
 
     private async Task<bool> PingDbAsync()
