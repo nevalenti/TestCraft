@@ -34,11 +34,12 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
     >
       <div
         data-testid="step-row"
+        style={{ "--card-glow": "var(--color-info)" } as React.CSSProperties}
         className={cn(
-          "card-bg-info group relative rounded-lg border shadow-md transition-shadow duration-200",
+          "card-bg-info group relative rounded-lg border transition-[box-shadow] duration-200 ease-out",
           isDragging
-            ? "border-dashed border-primary/30 !shadow-none"
-            : "border-base-content/20 hover:shadow-xl",
+            ? "border-dashed border-primary/30 shadow-none"
+            : "border-base-content/20 shadow-sm hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
         )}
       >
         <div className={cn(isDragging && "invisible")}>
@@ -51,7 +52,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
             <div className="min-w-0 flex-1">
               <div className="mb-3 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/50 uppercase">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/60 uppercase">
                     Action
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -59,7 +60,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/50 uppercase">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/60 uppercase">
                     Expected Result
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -67,7 +68,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] text-base-content/40 tabular-nums">
+              <p className="text-[11px] text-base-content/50 tabular-nums">
                 {formatDate(step.createdAt)}
               </p>
             </div>

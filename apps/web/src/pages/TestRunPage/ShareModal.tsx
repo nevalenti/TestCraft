@@ -74,14 +74,14 @@ export function ShareModal({
                 {copied ? "Copied!" : "Copy"}
               </button>
             </div>
-            <p className="mt-2 text-xs text-base-content/50">
+            <p className="mt-2 text-xs text-base-content/60">
               Anyone with this link can view the run results without logging in.
             </p>
           </div>
         )}
 
         <div>
-          <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+          <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
             Create Share Link
           </p>
           <div className="flex items-end gap-2">
@@ -114,7 +114,7 @@ export function ShareModal({
 
         {!isPending && tokens && tokens.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
               Active Links
             </p>
             <ul className="space-y-2">
@@ -127,7 +127,7 @@ export function ShareModal({
                     <p className="truncate font-mono text-xs text-base-content/70">
                       /share/{token.token.slice(0, 12)}…
                     </p>
-                    <p className="text-xs text-base-content/40">
+                    <p className="text-xs text-base-content/50">
                       Created {formatDate(token.createdAt)}
                       {token.expiresAt &&
                         ` · expires ${formatDate(token.expiresAt)}`}

@@ -57,7 +57,7 @@ export const Notifications = () => {
             </span>
             <button
               onClick={() => remove(notification.id)}
-              className="flex size-6 shrink-0 items-center justify-center rounded-lg text-base-content/35 transition-colors hover:bg-base-200 hover:text-base-content/70"
+              className="flex size-6 shrink-0 items-center justify-center rounded-lg text-base-content/45 transition-colors hover:bg-base-200 hover:text-base-content/70"
               aria-label="Dismiss notification"
             >
               <XMarkIcon className="size-3.5" aria-hidden="true" />

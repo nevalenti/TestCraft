@@ -15,14 +15,22 @@ interface TestResultSummary {
   status: string;
 }
 
+export interface ApiContext {
+  apiUrl: string;
+  projectId: string;
+  token: string;
+}
+
+const POLL_INTERVAL_MS = 2000;
+const POLL_MAX_ATTEMPTS = 30;
+
 export const createRun = async (
-  apiUrl: string,
-  projectId: string,
-  token: string,
+  ctx: ApiContext,
   name: string,
   environment: string,
   source?: string,
 ): Promise<{ id: string }> => {
+  const { apiUrl, projectId, token } = ctx;
   const response = await fetch(`${apiUrl}/api/v1/projects/${projectId}/runs`, {
     method: "POST",
     headers: { ...authHeaders(token), "Content-Type": "application/json" },
@@ -33,14 +41,13 @@ export const createRun = async (
 };
 
 export const importResults = async (
-  apiUrl: string,
-  projectId: string,
-  token: string,
+  ctx: ApiContext,
   name: string,
   xml: string,
   source?: string,
   runId?: string,
 ): Promise<ImportJobResponse> => {
+  const { apiUrl, projectId, token } = ctx;
   const response = await fetch(
     `${apiUrl}/api/v1/projects/${projectId}/import/junit`,
     {
@@ -54,12 +61,11 @@ export const importResults = async (
 };
 
 export const pollJob = async (
-  apiUrl: string,
-  projectId: string,
+  ctx: ApiContext,
   jobId: string,
-  token: string,
 ): Promise<string | null> => {
-  for (let i = 0; i < 30; i++) {
+  const { apiUrl, projectId, token } = ctx;
+  for (let i = 0; i < POLL_MAX_ATTEMPTS; i++) {
     const job = await fetchJson<ImportJobResponse>(
       `${apiUrl}/api/v1/projects/${projectId}/import/${jobId}`,
       { headers: authHeaders(token) },
@@ -68,17 +74,18 @@ export const pollJob = async (
     if (job.status === "Completed") return job.testRunId ?? null;
     if (job.status === "Failed")
       throw new Error(`Import job failed: ${job.error}`);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS));
   }
-  throw new Error("Import job timed out after 60 s");
+  throw new Error(
+    `Import job timed out after ${(POLL_MAX_ATTEMPTS * POLL_INTERVAL_MS) / 1000} s`,
+  );
 };
 
 export const fetchAllResults = async (
-  apiUrl: string,
-  projectId: string,
+  ctx: ApiContext,
   runId: string,
-  token: string,
 ): Promise<TestResultSummary[]> => {
+  const { apiUrl, projectId, token } = ctx;
   const url = new URL(
     `${apiUrl}/api/v1/projects/${projectId}/runs/${runId}/results`,
   );
@@ -92,14 +99,13 @@ export const fetchAllResults = async (
 };
 
 export const uploadAttachment = async (
-  apiUrl: string,
-  projectId: string,
+  ctx: ApiContext,
   runId: string,
   resultId: string,
-  token: string,
   filePath: string,
   fileName: string,
 ): Promise<void> => {
+  const { apiUrl, projectId, token } = ctx;
   const content = readFileSync(filePath);
   const form = new FormData();
   form.append("file", new Blob([content], { type: "image/png" }), fileName);

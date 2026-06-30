@@ -20,7 +20,7 @@ export const SourceFilter = ({
       {value !== null && (
         <button
           onClick={() => onChange(null)}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content"
         >
           All
         </button>
@@ -37,7 +37,7 @@ export const SourceFilter = ({
           )}
         >
           <span>{source}</span>
-          <span className="font-bold text-base-content/55 tabular-nums">
+          <span className="font-bold text-base-content/65 tabular-nums">
             {counts[source]}
           </span>
         </button>

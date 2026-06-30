@@ -36,7 +36,11 @@ export class LabelsPage {
     const row = this.getLabelRow(name);
     await row.hover();
     await row.getByRole("button", { name: "Delete label" }).click();
-    await expect(this.getLabelRow(name)).toHaveCount(0);
+    await this.page
+      .locator("dialog[open]")
+      .getByRole("button", { name: "Delete" })
+      .click();
+    await expect(this.getLabelRow(name)).toHaveCount(0, { timeout: 10_000 });
   }
 
   async edit(name: string, newName: string) {

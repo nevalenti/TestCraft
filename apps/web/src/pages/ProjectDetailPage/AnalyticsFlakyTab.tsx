@@ -42,7 +42,7 @@ export const AnalyticsFlakyTab = () => {
           </span>
           <div>
             <p className="text-xs font-semibold text-error/80">High Risk</p>
-            <p className="text-xs text-base-content/40">≥ 60% flak rate</p>
+            <p className="text-xs text-base-content/50">≥ 60% flak rate</p>
           </div>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-warning/20 bg-warning/8 px-3 py-2">
@@ -51,7 +51,7 @@ export const AnalyticsFlakyTab = () => {
           </span>
           <div>
             <p className="text-xs font-semibold text-warning/80">Medium Risk</p>
-            <p className="text-xs text-base-content/40">30 – 59% flak rate</p>
+            <p className="text-xs text-base-content/50">30 – 59% flak rate</p>
           </div>
         </div>
         <div className="flex items-center gap-2 rounded-lg border border-info/20 bg-info/8 px-3 py-2">
@@ -60,7 +60,7 @@ export const AnalyticsFlakyTab = () => {
           </span>
           <div>
             <p className="text-xs font-semibold text-info/80">Low Risk</p>
-            <p className="text-xs text-base-content/40">&lt; 30% flak rate</p>
+            <p className="text-xs text-base-content/50">&lt; 30% flak rate</p>
           </div>
         </div>
       </div>
@@ -68,7 +68,7 @@ export const AnalyticsFlakyTab = () => {
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="table table-sm">
           <thead>
-            <tr className="border-b border-border text-xs text-base-content/50">
+            <tr className="border-b border-border text-xs text-base-content/60">
               <th className="w-8 text-center font-medium">#</th>
               <th className="font-medium">Test Case</th>
               <th className="text-right font-medium">Runs</th>
@@ -98,7 +98,7 @@ export const AnalyticsFlakyTab = () => {
                       {stat.testCaseName}
                     </p>
                   </td>
-                  <td className="text-right text-sm text-base-content/60 tabular-nums">
+                  <td className="text-right text-sm text-base-content/70 tabular-nums">
                     {stat.totalRuns}
                   </td>
                   <td className="text-right text-sm font-medium text-success tabular-nums">

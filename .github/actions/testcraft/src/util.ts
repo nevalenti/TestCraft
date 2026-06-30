@@ -1,5 +1,11 @@
 import { authHeaders, fetchJson } from "./http";
 
+export const slugify = (s: string): string =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export const fetchAuthority = async (apiUrl: string): Promise<string> => {
   const data = await fetchJson<{ authority: string }>(
     `${apiUrl}/api/auth-config`,

@@ -56,6 +56,7 @@ public static class CreateRunFromPlan
                 Name = request.Name,
                 Environment = request.Environment,
                 ExecutedById = currentUser.UserId,
+                ExecutedByName = currentUser.UserName,
             };
 
             context.TestRuns.Add(run);
@@ -86,6 +87,7 @@ public static class CreateRunFromPlan
                 Status = run.Status,
                 Source = run.Source,
                 ExecutedById = run.ExecutedById,
+                ExecutedByName = run.ExecutedByName,
                 CreatedAt = run.CreatedAt,
                 UpdatedAt = run.UpdatedAt,
             };

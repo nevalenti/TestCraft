@@ -21,6 +21,7 @@ public class TestRunConfiguration : IEntityTypeConfiguration<TestRun>
             .HasMaxLength(20);
         builder.Property(r => r.Source).HasColumnName("source");
         builder.Property(r => r.ExecutedById).HasColumnName("executed_by_id");
+        builder.Property(r => r.ExecutedByName).HasColumnName("executed_by_name").HasMaxLength(255);
         builder.Property(r => r.ProjectId).HasColumnName("project_id");
         builder.Property(r => r.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
         builder.Property(r => r.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");

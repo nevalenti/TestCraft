@@ -68,14 +68,14 @@ function SortableItem({ item, onRemove }: SortableItemProps) {
       className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-4 py-3"
     >
       <button
-        className="cursor-grab touch-none text-base-content/30 hover:text-base-content/60"
+        className="cursor-grab touch-none text-base-content/40 hover:text-base-content/70"
         {...listeners}
         {...attributes}
         aria-label="Drag to reorder"
       >
         <Bars3Icon className="size-4" />
       </button>
-      <span className="w-5 text-right text-xs text-base-content/40 tabular-nums">
+      <span className="w-5 text-right text-xs text-base-content/50 tabular-nums">
         {item.order}
       </span>
       <span className="flex-1 text-sm font-medium">{item.testCaseName}</span>
@@ -172,7 +172,7 @@ export const TestPlanPage = () => {
     }
     if (sortedCases.length === 0) {
       return (
-        <p className="text-sm text-base-content/40">
+        <p className="text-sm text-base-content/50">
           Add test cases from the right panel.
         </p>
       );
@@ -202,11 +202,9 @@ export const TestPlanPage = () => {
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {plan?.name ?? "…"}
-          </h1>
+          <h1 className="page-title">{plan?.name ?? "…"}</h1>
           {plan?.description && (
-            <p className="mt-0.5 text-sm text-base-content/60">
+            <p className="mt-0.5 text-sm text-base-content/55">
               {plan.description}
             </p>
           )}
@@ -225,7 +223,7 @@ export const TestPlanPage = () => {
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Plan Cases */}
           <div>
-            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
               Plan Cases ({sortedCases.length})
             </p>
             {renderPlanCases()}
@@ -233,11 +231,11 @@ export const TestPlanPage = () => {
 
           {/* Add Cases */}
           <div>
-            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
               Add Cases
             </p>
             <div className="relative mb-3">
-              <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-base-content/40" />
+              <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-base-content/50" />
               <input
                 className="input-bordered input input-sm w-full pl-8"
                 placeholder="Search test cases…"
@@ -246,7 +244,7 @@ export const TestPlanPage = () => {
               />
             </div>
             {availableToAdd.length === 0 ? (
-              <p className="text-sm text-base-content/40">
+              <p className="text-sm text-base-content/50">
                 {addSearch ? "No matches." : "All test cases are in the plan."}
               </p>
             ) : (

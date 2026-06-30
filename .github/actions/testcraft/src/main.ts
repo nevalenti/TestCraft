@@ -1,34 +1,18 @@
 import * as core from "@actions/core";
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
 import { fetchToken } from "./auth";
+import { clearState, readState, saveState } from "./state";
 import {
+  ApiContext,
   createRun,
   fetchAllResults,
   importResults,
   pollJob,
   uploadAttachment,
 } from "./testcraft";
-import { fetchAuthority, findProjectId } from "./util";
-
-const slugify = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-
-// Scoped to this workflow run + job so parallel jobs don't collide.
-const stateFile = join(
-  process.env["RUNNER_TEMP"] ?? tmpdir(),
-  `.testcraft_${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}.run_id`,
-);
-
-const readState = (): string | null => {
-  if (!existsSync(stateFile)) return null;
-  return readFileSync(stateFile, "utf8").trim() || null;
-};
+import { fetchAuthority, findProjectId, slugify } from "./util";
 
 const authenticate = async (
   apiUrl: string,
@@ -43,6 +27,129 @@ const authenticate = async (
   }
   core.info("Authenticating with Keycloak…");
   return fetchToken(authority, username, password);
+};
+
+const buildContext = async (
+  apiUrl: string,
+  username: string,
+  password: string,
+  projectName: string,
+  keycloakAuthority?: string,
+): Promise<ApiContext> => {
+  const token = await authenticate(
+    apiUrl,
+    username,
+    password,
+    keycloakAuthority,
+  );
+  core.info(`Resolving project "${projectName}"…`);
+  const projectId = await findProjectId(apiUrl, token, projectName);
+  return { apiUrl, projectId, token };
+};
+
+const handleStart = async (
+  ctx: ApiContext,
+  runName: string,
+  source?: string,
+): Promise<void> => {
+  core.info("Creating Active run…");
+  const activeRun = await createRun(ctx, runName, "ci", source);
+  saveState(activeRun.id);
+  core.setOutput("run-id", activeRun.id);
+  core.info(`Run ${activeRun.id} is now Active`);
+};
+
+const uploadScreenshots = async (
+  ctx: ApiContext,
+  runId: string,
+  screenshotsDir: string,
+): Promise<void> => {
+  core.info("Uploading screenshots as attachments…");
+  const results = await fetchAllResults(ctx, runId);
+
+  let uploaded = 0;
+  for (const result of results) {
+    const slug = slugify(result.testCaseName);
+    const pngs = readdirSync(screenshotsDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory() && d.name.toLowerCase().includes(slug))
+      .flatMap((d) =>
+        readdirSync(join(screenshotsDir, d.name))
+          .filter((f) => f.endsWith(".png"))
+          .map((f) => join(screenshotsDir, d.name, f)),
+      );
+
+    for (const png of pngs) {
+      await uploadAttachment(ctx, runId, result.id, png, basename(png));
+      uploaded++;
+    }
+  }
+
+  core.info(`Uploaded ${uploaded} screenshot(s)`);
+};
+
+const handleImport = async (
+  ctx: ApiContext,
+  runName: string,
+  junitXml: string,
+  source?: string,
+  screenshotsDir?: string,
+): Promise<void> => {
+  const savedRunId = readState();
+
+  if (!existsSync(junitXml)) {
+    if (savedRunId) {
+      core.info(
+        `JUnit XML not found — completing run ${savedRunId} with no results`,
+      );
+      const emptyXml =
+        '<?xml version="1.0" encoding="UTF-8"?><testsuites name="empty" tests="0"/>';
+      const job = await importResults(
+        ctx,
+        runName,
+        emptyXml,
+        source,
+        savedRunId,
+      );
+      await pollJob(ctx, job.id);
+      clearState();
+    } else {
+      core.warning(`JUnit XML not found at ${junitXml} — skipping import`);
+    }
+    return;
+  }
+
+  if (savedRunId) {
+    core.info(`Appending results to existing run ${savedRunId}…`);
+  } else {
+    core.info("No pre-created run found — creating Active run for import…");
+  }
+
+  core.info("Importing results…");
+  const job = await importResults(
+    ctx,
+    runName,
+    readFileSync(junitXml, "utf8"),
+    source,
+    savedRunId ?? undefined,
+  );
+
+  core.info("Waiting for import job to complete…");
+  const completedRunId = await pollJob(ctx, job.id);
+  core.setOutput("run-id", completedRunId ?? "");
+  core.info("Results imported successfully");
+
+  clearState();
+
+  if (!screenshotsDir || !completedRunId) return;
+
+  if (!existsSync(screenshotsDir)) {
+    core.info(
+      `Screenshots directory not found at ${screenshotsDir} — skipping attachments`,
+    );
+    return;
+  }
+
+  await uploadScreenshots(ctx, completedRunId, screenshotsDir);
 };
 
 const run = async (): Promise<void> => {
@@ -65,151 +172,32 @@ const run = async (): Promise<void> => {
     throw new Error("username and password are required when api-url is set");
   }
 
-  // ── start ─────────────────────────────────────────────────────────────────
-  // Create an Active run before tests begin. The run ID is saved to a temp
-  // file so the subsequent import step can append results to the same run.
-  if (command === "start") {
-    const token = await authenticate(
-      apiUrl,
-      username,
-      password,
-      keycloakAuthority,
-    );
-    core.info(`Resolving project "${projectName}"…`);
-    const projectId = await findProjectId(apiUrl, token, projectName);
+  const ctx = await buildContext(
+    apiUrl,
+    username,
+    password,
+    projectName,
+    keycloakAuthority,
+  );
 
-    core.info("Creating Active run…");
-    const activeRun = await createRun(
-      apiUrl,
-      projectId,
-      token,
-      runName,
-      "ci",
-      source,
-    );
-    writeFileSync(stateFile, activeRun.id, "utf8");
-    core.setOutput("run-id", activeRun.id);
-    core.info(`Run ${activeRun.id} is now Active`);
+  if (command === "start") {
+    await handleStart(ctx, runName, source);
     return;
   }
 
-  // ── import ────────────────────────────────────────────────────────────────
   const junitXmlInput = core.getInput("junit-xml");
   if (!junitXmlInput) {
     throw new Error("junit-xml is required when command is import");
   }
-  const junitXml = resolve(workspace, junitXmlInput);
-
-  const token = await authenticate(
-    apiUrl,
-    username,
-    password,
-    keycloakAuthority,
-  );
-  core.info(`Resolving project "${projectName}"…`);
-  const projectId = await findProjectId(apiUrl, token, projectName);
-
-  if (!existsSync(junitXml)) {
-    const savedRunId = readState();
-    if (savedRunId) {
-      // Tests never ran (e.g. lint/build failed) but a run was already created
-      // as Active. Complete it with zero results so it doesn't stay stuck.
-      core.info(
-        `JUnit XML not found — completing run ${savedRunId} with no results`,
-      );
-      const emptyXml =
-        '<?xml version="1.0" encoding="UTF-8"?><testsuites name="empty" tests="0"/>';
-      const job = await importResults(
-        apiUrl,
-        projectId,
-        token,
-        runName,
-        emptyXml,
-        source,
-        savedRunId,
-      );
-      await pollJob(apiUrl, projectId, job.id, token);
-      writeFileSync(stateFile, "", "utf8");
-    } else {
-      core.warning(`JUnit XML not found at ${junitXml} — skipping import`);
-    }
-    return;
-  }
-
-  // Use the run created by the start step, or create one now if start wasn't called.
-  const savedRunId = readState();
-  if (savedRunId) {
-    core.info(`Appending results to existing run ${savedRunId}…`);
-  } else {
-    core.info("No pre-created run found — creating Active run for import…");
-  }
-
-  core.info("Importing results…");
-  const job = await importResults(
-    apiUrl,
-    projectId,
-    token,
-    runName,
-    readFileSync(junitXml, "utf8"),
-    source,
-    savedRunId ?? undefined,
-  );
-
-  core.info("Waiting for import job to complete…");
-  const completedRunId = await pollJob(apiUrl, projectId, job.id, token);
-  core.setOutput("run-id", completedRunId ?? "");
-  core.info("Results imported successfully");
-
-  // Clear state so a re-run of the same job doesn't reuse a stale run ID.
-  writeFileSync(stateFile, "", "utf8");
 
   const screenshotsDirInput = core.getInput("screenshots-dir") || undefined;
-  if (!screenshotsDirInput || !completedRunId) return;
-
-  const screenshotsDir = resolve(workspace, screenshotsDirInput);
-  if (!existsSync(screenshotsDir)) {
-    core.info(
-      `Screenshots directory not found at ${screenshotsDir} — skipping attachments`,
-    );
-    return;
-  }
-
-  core.info("Uploading screenshots as attachments…");
-  const results = await fetchAllResults(
-    apiUrl,
-    projectId,
-    completedRunId,
-    token,
+  await handleImport(
+    ctx,
+    runName,
+    resolve(workspace, junitXmlInput),
+    source,
+    screenshotsDirInput ? resolve(workspace, screenshotsDirInput) : undefined,
   );
-
-  let uploaded = 0;
-  for (const result of results) {
-    const slug = slugify(result.testCaseName);
-    const matchingDirs = readdirSync(screenshotsDir, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && d.name.toLowerCase().includes(slug))
-      .map((d) => join(screenshotsDir, d.name));
-
-    for (const dir of matchingDirs) {
-      const pngs = readdirSync(dir)
-        .filter((f) => f.endsWith(".png"))
-        .map((f) => join(dir, f));
-
-      for (const png of pngs) {
-        await uploadAttachment(
-          apiUrl,
-          projectId,
-          completedRunId,
-          result.id,
-          token,
-          png,
-          basename(png),
-        );
-        uploaded++;
-      }
-    }
-  }
-
-  core.info(`Uploaded ${uploaded} screenshot(s)`);
 };
 
 run().catch(core.setFailed);

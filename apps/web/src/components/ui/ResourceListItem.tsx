@@ -15,6 +15,16 @@ interface ResourceListItemProps {
   children: React.ReactNode;
 }
 
+const accentToColorVar: Record<string, string> = {
+  "text-primary": "--color-primary",
+  "text-secondary": "--color-secondary",
+  "text-accent": "--color-accent",
+  "text-warning": "--color-warning",
+  "text-success": "--color-success",
+  "text-error": "--color-error",
+  "text-info": "--color-info",
+};
+
 export const ResourceListItem = ({
   to,
   onEdit,
@@ -25,41 +35,48 @@ export const ResourceListItem = ({
   typeIcon,
   testId,
   children,
-}: ResourceListItemProps) => (
-  <div
-    data-testid={testId}
-    className={cn(
-      "group relative flex items-center gap-3 rounded-xl border px-4 py-3 shadow-sm transition-all duration-150 hover:shadow-md",
-      cardBg,
-    )}
-  >
-    {to && (
-      <Link
-        to={to}
-        className="absolute inset-0 rounded-xl"
-        aria-label={`Open ${label}`}
-      />
-    )}
-    {typeIcon && (
-      <span
-        className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-content/[0.06]",
-          accentText,
-        )}
-      >
-        {typeIcon}
-      </span>
-    )}
-    <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
-      {children}
+}: ResourceListItemProps) => {
+  const colorVar = accentToColorVar[accentText] ?? "--color-primary";
+
+  return (
+    <div
+      data-testid={testId}
+      style={{ "--card-glow": `var(${colorVar})` } as React.CSSProperties}
+      className={cn(
+        "group relative flex items-center gap-3 rounded-xl border px-4 py-3",
+        "transition-[box-shadow] duration-200 ease-out",
+        "hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
+        cardBg,
+      )}
+    >
+      {to && (
+        <Link
+          to={to}
+          className="absolute inset-0 rounded-xl"
+          aria-label={`Open ${label}`}
+        />
+      )}
+      {typeIcon && (
+        <span
+          className={cn(
+            "flex size-8 shrink-0 items-center justify-center rounded-lg bg-base-content/[0.06]",
+            accentText,
+          )}
+        >
+          {typeIcon}
+        </span>
+      )}
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-4">
+        {children}
+      </div>
+      <div className="relative z-10 flex shrink-0 items-center gap-1 opacity-100 transition-all duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
+        <ResourceActions
+          onEdit={onEdit}
+          onDelete={onDelete}
+          label={label}
+          size="xs"
+        />
+      </div>
     </div>
-    <div className="relative z-10 flex shrink-0 items-center gap-0.5 opacity-100 transition-all duration-150 focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
-      <ResourceActions
-        onEdit={onEdit}
-        onDelete={onDelete}
-        label={label}
-        size="xs"
-      />
-    </div>
-  </div>
-);
+  );
+};

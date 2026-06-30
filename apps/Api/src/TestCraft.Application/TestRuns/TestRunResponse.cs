@@ -11,6 +11,7 @@ public record TestRunResponse
     public required TestRunStatus Status { get; init; }
     public string? Source { get; init; }
     public Guid? ExecutedById { get; init; }
+    public string? ExecutedByName { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
 }

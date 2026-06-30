@@ -1,7 +1,14 @@
 import {
+  Bars3Icon,
+  HomeIcon,
+  RectangleStackIcon,
+} from "@heroicons/react/24/outline";
+import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  HomeIcon as HomeIconSolid,
+  RectangleStackIcon as RectangleStackIconSolid,
   XMarkIcon,
 } from "@heroicons/react/24/solid";
 import { Link, useNavigate } from "@tanstack/react-router";
@@ -11,6 +18,7 @@ import keycloak from "@/auth/keycloak";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { useAvatarUrl } from "@/hooks/useAccount";
 import { LogoMark } from "@/layout/LogoMark";
+import { NavItem } from "@/layout/NavItem";
 
 const getInitials = (name: string) =>
   name
@@ -30,13 +38,25 @@ export const Header = () => {
   const initials = displayName ? getInitials(displayName) : undefined;
   const { data: avatarData } = useAvatarUrl();
 
+  const closeDrawer = () => {
+    if (drawerRef.current) drawerRef.current.checked = false;
+  };
+
   return (
     <>
-      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-100 px-4 sm:px-6 lg:px-8">
-        <div className="flex min-w-0 flex-1 items-center">
+      {/* Mobile topbar — hidden on desktop */}
+      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-100 px-3 lg:hidden">
+        <div className="flex min-w-0 flex-1 items-center gap-1">
+          <label
+            htmlFor="mobile-nav-drawer"
+            className="btn btn-square btn-ghost btn-sm"
+            aria-label="Open navigation menu"
+          >
+            <Bars3Icon className="size-5" aria-hidden="true" />
+          </label>
           <Link
             to="/"
-            className="flex shrink-0 items-center gap-2.5 text-base-content transition-opacity hover:opacity-75"
+            className="flex shrink-0 items-center gap-2 text-base-content transition-opacity hover:opacity-75"
           >
             <LogoMark />
             <span
@@ -48,7 +68,7 @@ export const Header = () => {
           </Link>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1">
           <ThemeToggle />
           <div className="dropdown dropdown-end">
             <div
@@ -66,11 +86,6 @@ export const Header = () => {
               ) : (
                 <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-content">
                   {initials}
-                </span>
-              )}
-              {displayName && (
-                <span className="hidden max-w-32 truncate text-sm sm:inline">
-                  {displayName}
                 </span>
               )}
               <ChevronDownIcon
@@ -105,13 +120,13 @@ export const Header = () => {
                           {displayName}
                         </p>
                         {email && (
-                          <p className="mt-0.5 truncate text-xs text-base-content/50">
+                          <p className="mt-0.5 truncate text-xs text-base-content/60">
                             {email}
                           </p>
                         )}
                       </div>
                       <ChevronRightIcon
-                        className="size-3.5 shrink-0 text-base-content/25 transition-transform motion-safe:group-hover:translate-x-0.5"
+                        className="size-3.5 shrink-0 text-base-content/35 transition-transform motion-safe:group-hover:translate-x-0.5"
                         aria-hidden="true"
                       />
                     </button>
@@ -128,7 +143,7 @@ export const Header = () => {
                       redirectUri: location.origin + "/",
                     })
                   }
-                  className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-sm text-base-content/55 transition-colors hover:bg-error/8 hover:text-error"
+                  className="flex w-full cursor-pointer items-center gap-2.5 px-4 py-3 text-sm text-base-content/65 transition-colors hover:bg-error/8 hover:text-error"
                 >
                   <ArrowRightStartOnRectangleIcon
                     className="size-4"
@@ -142,7 +157,8 @@ export const Header = () => {
         </div>
       </nav>
 
-      <div className="drawer drawer-end lg:hidden">
+      {/* Mobile nav drawer */}
+      <div className="drawer lg:hidden">
         <input
           id="mobile-nav-drawer"
           ref={drawerRef}
@@ -155,12 +171,17 @@ export const Header = () => {
             aria-label="Close menu"
             className="drawer-overlay"
           />
-          <div className="flex min-h-full w-72 flex-col bg-base-100">
+          <div className="flex min-h-full w-64 flex-col bg-base-100">
             <div className="flex items-center justify-between border-b border-border p-4">
-              <span
-                className="text-sm font-extrabold tracking-tight text-base-content"
-                style={{ fontFamily: "var(--font-display)" }}
-              ></span>
+              <div className="flex items-center gap-2.5">
+                <LogoMark />
+                <span
+                  className="text-[15px] font-extrabold tracking-tight text-base-content"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  TestCraft
+                </span>
+              </div>
               <label
                 htmlFor="mobile-nav-drawer"
                 className="btn btn-square btn-ghost btn-sm"
@@ -171,11 +192,25 @@ export const Header = () => {
             </div>
 
             <nav
-              className="flex flex-1 flex-col gap-0.5 px-3 py-4"
+              className="flex-1 space-y-0.5 px-2 py-3"
               aria-label="Mobile navigation"
-            ></nav>
-
-            <div className="border-t border-border p-4 text-center"></div>
+            >
+              <NavItem
+                to="/"
+                label="Dashboard"
+                OutlineIcon={HomeIcon}
+                SolidIcon={HomeIconSolid}
+                fuzzy={false}
+                onClick={closeDrawer}
+              />
+              <NavItem
+                to="/projects"
+                label="Projects"
+                OutlineIcon={RectangleStackIcon}
+                SolidIcon={RectangleStackIconSolid}
+                onClick={closeDrawer}
+              />
+            </nav>
           </div>
         </div>
       </div>

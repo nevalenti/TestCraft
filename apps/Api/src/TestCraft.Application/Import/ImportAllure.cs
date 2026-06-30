@@ -111,6 +111,7 @@ public static class ImportAllure
                     Name = request.Name,
                     Source = request.Source,
                     UserId = currentUser.UserId,
+                    UserName = currentUser.UserName,
                 },
                 cancellationToken
             );

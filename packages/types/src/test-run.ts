@@ -8,6 +8,7 @@ export interface TestRun {
   status: TestRunStatus;
   source?: string;
   executedById?: string;
+  executedByName?: string;
   createdAt: string;
   updatedAt?: string;
 }

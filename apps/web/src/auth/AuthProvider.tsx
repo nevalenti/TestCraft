@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       <div className="flex h-screen items-center justify-center bg-base-200">
         <div className="space-y-2 text-center">
           <p className="font-semibold text-error">Auth initialisation failed</p>
-          <p className="text-sm text-base-content/60">{error}</p>
+          <p className="text-sm text-base-content/70">{error}</p>
         </div>
       </div>
     );

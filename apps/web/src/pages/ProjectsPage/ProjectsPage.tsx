@@ -90,10 +90,8 @@ export const ProjectsPage = () => {
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            Projects
-          </h1>
-          <p className="mt-0.5 text-sm text-base-content/60">
+          <h1 className="page-title">Projects</h1>
+          <p className="mt-0.5 text-sm text-base-content/55">
             Manage and organise your testing projects
           </p>
         </div>

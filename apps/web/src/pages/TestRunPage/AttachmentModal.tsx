@@ -76,7 +76,7 @@ export const AttachmentModal = ({
       return (
         <div className="flex flex-col items-center gap-2 py-8 text-center">
           <PaperClipIcon className="size-8 text-base-content/20" />
-          <p className="text-sm text-base-content/50">No attachments yet</p>
+          <p className="text-sm text-base-content/60">No attachments yet</p>
         </div>
       );
     return (
@@ -86,12 +86,12 @@ export const AttachmentModal = ({
             key={attachment.id}
             className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-3 py-2.5"
           >
-            <PaperClipIcon className="size-4 shrink-0 text-base-content/40" />
+            <PaperClipIcon className="size-4 shrink-0 text-base-content/50" />
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-medium">
                 {attachment.fileName}
               </p>
-              <p className="text-xs text-base-content/50">
+              <p className="text-xs text-base-content/60">
                 {formatBytes(attachment.sizeBytes)} ·{" "}
                 {formatDateTime(attachment.createdAt)}
               </p>

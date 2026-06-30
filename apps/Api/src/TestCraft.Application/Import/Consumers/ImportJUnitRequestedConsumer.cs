@@ -59,6 +59,7 @@ public partial class ImportJUnitRequestedConsumer(
                     TestRunStatus.Completed,
                     cases,
                     message.UserId,
+                    message.UserName,
                     message.Source?.ToLowerInvariant(),
                     job,
                     cancellationToken

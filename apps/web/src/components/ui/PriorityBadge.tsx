@@ -3,7 +3,7 @@ import { TestCasePriority } from "@testcraft/types";
 const config: Record<TestCasePriority, { label: string; cls: string }> = {
   [TestCasePriority.Low]: {
     label: "Low",
-    cls: "badge-ghost text-base-content/50",
+    cls: "badge-ghost text-base-content/60",
   },
   [TestCasePriority.Medium]: { label: "Medium", cls: "badge-info" },
   [TestCasePriority.High]: { label: "High", cls: "badge-warning" },

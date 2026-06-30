@@ -26,7 +26,7 @@ export const ConfirmDialog = ({
     <div className="flex justify-end gap-2">
       <button
         type="button"
-        className="btn text-base-content/60 btn-ghost btn-sm"
+        className="btn text-base-content/70 btn-ghost btn-sm"
         onClick={onClose}
       >
         Cancel

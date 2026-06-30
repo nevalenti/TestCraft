@@ -19,10 +19,10 @@ const CountBadges = ({ project }: { project: Project }) => {
 
   return (
     <>
-      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
         {project.suiteCount} {project.suiteCount === 1 ? "suite" : "suites"}
       </span>
-      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
         {project.runCount} {project.runCount === 1 ? "run" : "runs"}
       </span>
     </>
@@ -49,9 +49,9 @@ export const ProjectCard = ({
       >
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-sm font-semibold">{project.name}</span>
-          <p className="truncate text-xs text-base-content/60">
+          <p className="truncate text-xs text-base-content/70">
             {project.description ?? (
-              <span className="text-base-content/30 italic">
+              <span className="text-base-content/40 italic">
                 No description
               </span>
             )}
@@ -59,7 +59,7 @@ export const ProjectCard = ({
         </div>
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
           <CountBadges project={project} />
-          <span className="text-[11px] font-medium text-base-content/40 tabular-nums">
+          <span className="text-[11px] font-medium text-base-content/50 tabular-nums">
             {formatDate(project.createdAt)}
           </span>
         </div>
@@ -83,7 +83,7 @@ export const ProjectCard = ({
         </span>
         <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
           {project.description ?? (
-            <span className="text-base-content/30 italic">No description</span>
+            <span className="text-base-content/40 italic">No description</span>
           )}
         </p>
       </div>
@@ -91,7 +91,7 @@ export const ProjectCard = ({
         <div className="flex items-center gap-1">
           <CountBadges project={project} />
         </div>
-        <span className="shrink-0 text-[11px] font-medium text-base-content/40 tabular-nums">
+        <span className="shrink-0 text-[11px] font-medium text-base-content/50 tabular-nums">
           {formatDate(project.createdAt)}
         </span>
       </div>

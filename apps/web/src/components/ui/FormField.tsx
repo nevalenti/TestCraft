@@ -21,7 +21,7 @@ export const FormField = ({
       {label}
     </label>
     {children}
-    {hint && !error && <p className="text-xs text-base-content/45">{hint}</p>}
+    {hint && !error && <p className="text-xs text-base-content/55">{hint}</p>}
     {error && <p className="text-xs font-medium text-error">{error}</p>}
   </div>
 );

@@ -70,6 +70,7 @@ public static class ImportJUnit
                     Source = request.Source,
                     RunId = request.RunId,
                     UserId = currentUser.UserId,
+                    UserName = currentUser.UserName,
                 },
                 cancellationToken
             );

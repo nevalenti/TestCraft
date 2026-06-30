@@ -72,7 +72,7 @@ export function ProjectSettingsModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Project Settings">
-      <div className="mb-5 flex gap-1 border-b border-border pb-3">
+      <div className="mb-5 flex gap-1">
         <button
           className={`btn btn-sm ${tab === "tokens" ? "btn-neutral" : "btn-ghost"}`}
           onClick={() => setTab("tokens")}
@@ -197,7 +197,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             >
               <div>
                 <p className="text-sm font-medium">{t.name}</p>
-                <p className="text-xs text-base-content/40">
+                <p className="text-xs text-base-content/50">
                   Created {formatDate(t.createdAt)}
                   {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
                   {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
@@ -255,7 +255,7 @@ function WebhooksSection({ projectId }: { projectId: string }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
         Webhooks
       </p>
       <div className="mb-4 space-y-3">
@@ -289,7 +289,7 @@ function WebhooksSection({ projectId }: { projectId: string }) {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{wh.url}</p>
-                <p className="text-xs text-base-content/40">
+                <p className="text-xs text-base-content/50">
                   {wh.events.join(", ")}
                 </p>
               </div>
@@ -329,7 +329,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
         Email Subscriptions
       </p>
       <div className="mb-4 space-y-3">
@@ -358,7 +358,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
             >
               <div>
                 <p className="text-sm font-medium">{sub.email}</p>
-                <p className="text-xs text-base-content/40">
+                <p className="text-xs text-base-content/50">
                   {sub.events.join(", ")}
                 </p>
               </div>

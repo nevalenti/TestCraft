@@ -18,7 +18,7 @@ export const ResourceActions = ({
   <>
     <button
       className={cn(
-        "btn btn-ghost text-base-content/45 hover:text-base-content",
+        "btn btn-ghost text-base-content/55 hover:text-base-content",
         `btn-${size}`,
       )}
       onClick={onEdit}
@@ -28,7 +28,7 @@ export const ResourceActions = ({
     </button>
     <button
       className={cn(
-        "btn btn-ghost text-base-content/45 hover:text-error",
+        "btn btn-ghost text-base-content/55 hover:text-error",
         `btn-${size}`,
       )}
       onClick={onDelete}

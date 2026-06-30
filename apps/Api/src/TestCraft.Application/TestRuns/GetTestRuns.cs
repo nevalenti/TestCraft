@@ -48,6 +48,7 @@ public static class GetTestRuns
                     Status = r.Status,
                     Source = r.Source,
                     ExecutedById = r.ExecutedById,
+                    ExecutedByName = r.ExecutedByName,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
                 })

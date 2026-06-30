@@ -101,9 +101,9 @@ export const SuitesTab = () => {
                 <span className="truncate text-sm font-semibold">
                   {suite.name}
                 </span>
-                <p className="truncate text-xs text-base-content/60">
+                <p className="truncate text-xs text-base-content/70">
                   {suite.description ?? (
-                    <span className="text-base-content/30 italic">
+                    <span className="text-base-content/40 italic">
                       No description
                     </span>
                   )}
@@ -111,11 +111,11 @@ export const SuitesTab = () => {
               </div>
               <div className="hidden shrink-0 items-center gap-2 sm:flex">
                 {suite.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
                     {suite.source}
                   </span>
                 )}
-                <span className="text-[11px] font-medium text-base-content/40 tabular-nums">
+                <span className="text-[11px] font-medium text-base-content/50 tabular-nums">
                   {formatDate(suite.createdAt)}
                 </span>
               </div>
@@ -144,7 +144,7 @@ export const SuitesTab = () => {
               </span>
               <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                 {suite.description ?? (
-                  <span className="text-base-content/30 italic">
+                  <span className="text-base-content/40 italic">
                     No description
                   </span>
                 )}
@@ -152,13 +152,13 @@ export const SuitesTab = () => {
             </div>
             <div className="mt-4 flex items-center justify-between gap-2">
               {suite.source ? (
-                <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+                <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
                   {suite.source}
                 </span>
               ) : (
                 <span />
               )}
-              <span className="shrink-0 text-[11px] font-medium text-base-content/40 tabular-nums">
+              <span className="shrink-0 text-[11px] font-medium text-base-content/50 tabular-nums">
                 {formatDate(suite.createdAt)}
               </span>
             </div>

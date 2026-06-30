@@ -27,7 +27,7 @@ export const createColumns = ({
       const { pageIndex, pageSize } = table.getState().pagination;
 
       return (
-        <span className="text-xs text-base-content/40 tabular-nums">
+        <span className="text-xs text-base-content/50 tabular-nums">
           {pageIndex * pageSize + row.index + 1}
         </span>
       );
@@ -61,13 +61,13 @@ export const createColumns = ({
 
       return value ? (
         <div
-          className="max-w-[200px] cursor-default truncate text-sm text-base-content/60"
+          className="max-w-[200px] cursor-default truncate text-sm text-base-content/70"
           title={value}
         >
           {value}
         </div>
       ) : (
-        <span className="text-sm text-base-content/30 italic">—</span>
+        <span className="text-sm text-base-content/40 italic">—</span>
       );
     },
   }),
@@ -75,7 +75,7 @@ export const createColumns = ({
     header: "Duration",
     enableSorting: true,
     cell: (info) => (
-      <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
+      <span className="text-xs whitespace-nowrap text-base-content/60 tabular-nums">
         {formatDuration(info.getValue())}
       </span>
     ),
@@ -83,7 +83,7 @@ export const createColumns = ({
   columnHelper.accessor("executedAt", {
     header: "Executed",
     cell: (info) => (
-      <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
+      <span className="text-xs whitespace-nowrap text-base-content/60 tabular-nums">
         {formatDateTime(info.getValue())}
       </span>
     ),

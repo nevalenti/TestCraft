@@ -136,6 +136,13 @@ services:
     volumes:
       - seq_data:/data
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: testcraft-mailpit
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.17.1
     container_name: testcraft-postgres-exporter

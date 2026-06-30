@@ -31,6 +31,7 @@ export const AccountPage = () => {
   const initials = displayName ? getInitials(displayName) : "?";
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const signOutDialogRef = useRef<HTMLDialogElement>(null);
   const { data: avatarData } = useAvatarUrl();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
 
@@ -43,72 +44,94 @@ export const AccountPage = () => {
     e.target.value = "";
   };
 
+  const fields = [
+    { label: "First Name", value: firstName },
+    { label: "Last Name", value: lastName },
+    { label: "Username", value: username },
+    { label: "Email", value: email },
+  ];
+
   return (
-    <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
-      <div className="mx-auto w-full max-w-md px-4 py-10 sm:px-6 sm:py-14">
-        <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-lg">
-          <div className="flex flex-col items-center px-8 py-10 text-center">
-            <div className="group relative">
+    <>
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+        <header className="page-header">
+          <h1 className="page-title">Account</h1>
+          <p className="mt-0.5 text-sm text-base-content/55">
+            Manage your profile and preferences
+          </p>
+        </header>
+
+        <div className="page-content flex max-w-2xl flex-col gap-5">
+          {/* Profile hero */}
+          <div className="flex items-center gap-5 rounded-2xl border border-border bg-base-100 p-6 shadow-sm">
+            <div className="group relative shrink-0">
               {avatarData?.url ? (
                 <img
                   src={avatarData.url}
                   alt="Avatar"
-                  className="size-20 rounded-full object-cover"
+                  className="size-20 rounded-full object-cover ring-2 ring-primary/20"
                 />
               ) : (
-                <span className="flex size-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-content">
+                <span className="flex size-20 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-content ring-2 ring-primary/20">
                   {initials}
                 </span>
               )}
-
               <button
                 type="button"
                 disabled={isPending}
                 onClick={() => fileInputRef.current?.click()}
-                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100 disabled:cursor-not-allowed"
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/45 opacity-0 transition-opacity group-hover:opacity-100 disabled:cursor-not-allowed"
                 aria-label="Change avatar"
               >
                 {isPending ? (
                   <span className="loading loading-sm loading-spinner text-white" />
                 ) : (
-                  <CameraIcon className="size-6 text-white" />
+                  <CameraIcon className="size-5 text-white" />
                 )}
               </button>
             </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              className="hidden"
-              onChange={handleFileChange}
-            />
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-xl font-bold tracking-tight text-base-content">
+                {displayName || "—"}
+              </p>
+              {email && (
+                <p className="mt-0.5 truncate text-sm text-base-content/55">
+                  {email}
+                </p>
+              )}
+              {username && displayName !== username && (
+                <p className="mt-0.5 text-xs text-base-content/40">
+                  @{username}
+                </p>
+              )}
+              <button
+                type="button"
+                disabled={isPending}
+                onClick={() => fileInputRef.current?.click()}
+                className="mt-3 text-xs font-medium text-primary/70 transition-colors hover:text-primary disabled:cursor-not-allowed"
+              >
+                {isPending ? "Uploading…" : "Change photo"}
+              </button>
+            </div>
           </div>
 
-          <hr className="border-border" />
-
-          <dl className="divide-y divide-border">
-            {[
-              { label: "First Name", value: firstName ?? "—" },
-              { label: "Last Name", value: lastName ?? "—" },
-              { label: "Username", value: username ?? "—" },
-              { label: "Email", value: email ?? "—" },
-            ].map(({ label, value }) => (
-              <div
-                key={label}
-                className="flex items-center justify-between gap-4 px-8 py-4"
-              >
-                <dt className="text-sm text-base-content/45">{label}</dt>
-                <dd className="truncate text-sm font-medium text-base-content">
-                  {value}
-                </dd>
+          {/* Details grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {fields.map(({ label, value }) => (
+              <div key={label} className="rounded-xl bg-base-200 px-4 py-3.5">
+                <p className="text-[10px] font-semibold tracking-widest text-base-content/45 uppercase">
+                  {label}
+                </p>
+                <p className="mt-1 truncate text-sm font-medium text-base-content">
+                  {value ?? "—"}
+                </p>
               </div>
             ))}
-          </dl>
+          </div>
 
-          <hr className="border-border" />
-
-          <div className="flex items-center justify-between px-8 py-5">
+          {/* Actions */}
+          <div className="flex items-center gap-2.5 pt-1">
             <a
               href={keycloakAccountUrl}
               target="_blank"
@@ -119,10 +142,8 @@ export const AccountPage = () => {
               Manage account
             </a>
             <button
-              onClick={() =>
-                keycloak.logout({ redirectUri: location.origin + "/" })
-              }
-              className="btn flex cursor-pointer items-center gap-2 btn-sm btn-error"
+              onClick={() => signOutDialogRef.current?.showModal()}
+              className="btn gap-2 btn-sm btn-error"
             >
               <ArrowRightStartOnRectangleIcon className="size-4" />
               Sign out
@@ -130,6 +151,43 @@ export const AccountPage = () => {
           </div>
         </div>
       </div>
-    </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp,image/gif"
+        className="hidden"
+        onChange={handleFileChange}
+      />
+
+      <dialog ref={signOutDialogRef} className="modal">
+        <div className="modal-box max-w-sm">
+          <h3 className="text-base font-bold">Sign out?</h3>
+          <p className="mt-1.5 text-sm text-base-content/60">
+            You will be returned to the login page.
+          </p>
+          <div className="mt-6 flex justify-end gap-2">
+            <button
+              className="btn btn-ghost btn-sm"
+              onClick={() => signOutDialogRef.current?.close()}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-sm btn-error"
+              onClick={() =>
+                keycloak.logout({ redirectUri: location.origin + "/" })
+              }
+            >
+              <ArrowRightStartOnRectangleIcon className="size-4" />
+              Sign out
+            </button>
+          </div>
+        </div>
+        <form method="dialog" className="modal-backdrop">
+          <button>close</button>
+        </form>
+      </dialog>
+    </>
   );
 };

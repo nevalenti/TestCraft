@@ -34,7 +34,7 @@ export const ErrorState = ({
     <div className="flex flex-1 items-center justify-center p-8">
       <div className="max-w-xs text-center">
         <p className="mb-1.5 text-sm font-semibold text-error">{title}</p>
-        <p className="mb-5 text-sm text-base-content/55">{displayMessage}</p>
+        <p className="mb-5 text-sm text-base-content/65">{displayMessage}</p>
         <button
           className="btn border border-border btn-ghost btn-sm"
           onClick={onRetry}

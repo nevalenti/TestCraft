@@ -103,12 +103,12 @@ const setupMocks = ({
 };
 
 describe("DashboardPage", () => {
-  describe("renders the page header", () => {
-    it("shows the Overview heading", () => {
+  describe("renders section headers", () => {
+    it("shows the Active Runs section heading", () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole("heading", { name: "Overview" }),
+        screen.getByRole("heading", { name: "Active Runs" }),
       ).toBeInTheDocument();
     });
   });

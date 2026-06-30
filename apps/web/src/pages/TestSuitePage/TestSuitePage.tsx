@@ -104,9 +104,9 @@ export const TestSuitePage = () => {
                 <span className="truncate text-sm font-semibold">
                   {testCase.name}
                 </span>
-                <p className="truncate text-xs text-base-content/60">
+                <p className="truncate text-xs text-base-content/70">
                   {testCase.description ?? (
-                    <span className="text-base-content/30 italic">
+                    <span className="text-base-content/40 italic">
                       No description
                     </span>
                   )}
@@ -119,20 +119,20 @@ export const TestSuitePage = () => {
                       <LabelBadge key={label.id} label={label} />
                     ))}
                     {testCase.labels!.length > 2 && (
-                      <span className="text-[11px] font-medium text-base-content/40">
+                      <span className="text-[11px] font-medium text-base-content/50">
                         +{testCase.labels!.length - 2}
                       </span>
                     )}
                   </div>
                 )}
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/50">
+                  <span className="text-[11px] text-base-content/60">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? "" : "s"}
                   </span>
                 )}
                 <PriorityBadge priority={testCase.priority} />
-                <span className="text-[11px] text-base-content/40 tabular-nums">
+                <span className="text-[11px] text-base-content/50 tabular-nums">
                   {formatDate(testCase.createdAt)}
                 </span>
               </div>
@@ -161,7 +161,7 @@ export const TestSuitePage = () => {
               </span>
               <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                 {testCase.description ?? (
-                  <span className="text-base-content/30 italic">
+                  <span className="text-base-content/40 italic">
                     No description
                   </span>
                 )}
@@ -173,7 +173,7 @@ export const TestSuitePage = () => {
                   <LabelBadge key={label.id} label={label} />
                 ))}
                 {testCase.labels!.length > 3 && (
-                  <span className="text-[11px] font-medium text-base-content/40">
+                  <span className="text-[11px] font-medium text-base-content/50">
                     +{testCase.labels!.length - 3}
                   </span>
                 )}
@@ -183,13 +183,13 @@ export const TestSuitePage = () => {
               <div className="flex items-center gap-1.5">
                 <PriorityBadge priority={testCase.priority} />
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/50">
+                  <span className="text-[11px] text-base-content/60">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? "" : "s"}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-base-content/40 tabular-nums">
+              <span className="text-[11px] text-base-content/50 tabular-nums">
                 {formatDate(testCase.createdAt)}
               </span>
             </div>
@@ -204,16 +204,14 @@ export const TestSuitePage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="font-display text-2xl font-bold tracking-tight">
-              {suite?.name}
-            </h1>
+            <h1 className="page-title">{suite?.name}</h1>
             {suite?.source && (
-              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/50">
+              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
                 {suite.source}
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-sm text-base-content/60">
+          <p className="mt-0.5 text-sm text-base-content/55">
             {suite?.description ?? "Test cases in this suite"}
           </p>
         </div>

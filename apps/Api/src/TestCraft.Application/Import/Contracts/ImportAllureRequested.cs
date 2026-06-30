@@ -9,4 +9,5 @@ public record ImportAllureRequested
     public string? Name { get; init; }
     public string? Source { get; init; }
     public required Guid UserId { get; init; }
+    public string? UserName { get; init; }
 }

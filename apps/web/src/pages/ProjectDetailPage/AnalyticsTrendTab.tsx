@@ -24,7 +24,7 @@ const passRateClass = (rate: number) => {
 const deltaClass = (delta: number) => {
   if (delta > 0) return "text-success";
   if (delta < 0) return "text-error";
-  return "text-base-content/40";
+  return "text-base-content/50";
 };
 
 const deltaLabel = (delta: number | null) => {
@@ -58,9 +58,9 @@ const TrendTooltip = ({
   return (
     <div className="min-w-48 rounded-xl border border-border bg-base-100 px-3.5 py-2.5 text-sm shadow-xl">
       <p className="mb-0.5 max-w-52 truncate font-semibold">{d.fullName}</p>
-      <p className="mb-2 text-xs text-base-content/40">{d.date}</p>
+      <p className="mb-2 text-xs text-base-content/50">{d.date}</p>
       <div className="flex items-center justify-between gap-8">
-        <span className="text-xs text-base-content/60">Pass rate</span>
+        <span className="text-xs text-base-content/70">Pass rate</span>
         <span className={`font-bold tabular-nums ${passRateClass(d.passRate)}`}>
           {d.passRate}%
         </span>
@@ -75,7 +75,7 @@ const TrendTooltip = ({
         ] as const
       ).map(({ label, value, cls }) => (
         <div key={label} className="flex items-center justify-between gap-8">
-          <span className="flex items-center gap-1.5 text-xs text-base-content/60">
+          <span className="flex items-center gap-1.5 text-xs text-base-content/70">
             <span className={`inline-block size-1.5 rounded-full ${cls}`} />
             {label}
           </span>
@@ -83,7 +83,7 @@ const TrendTooltip = ({
         </div>
       ))}
       <div className="mt-1.5 flex items-center justify-between border-t border-border/50 pt-1.5">
-        <span className="text-xs text-base-content/40">Total</span>
+        <span className="text-xs text-base-content/50">Total</span>
         <span className="text-xs font-medium tabular-nums">{d.total}</span>
       </div>
     </div>
@@ -130,7 +130,7 @@ export const AnalyticsTrendTab = () => {
 
   if (!stats)
     return (
-      <p className="py-10 text-center text-sm text-base-content/40">
+      <p className="py-10 text-center text-sm text-base-content/50">
         No run data yet. Complete a test run to see trend data.
       </p>
     );
@@ -139,21 +139,21 @@ export const AnalyticsTrendTab = () => {
     <div className="space-y-4 pb-10">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
-          <p className="text-xs text-base-content/50">Latest Pass Rate</p>
+          <p className="text-xs text-base-content/60">Latest Pass Rate</p>
           <p
             className={`mt-1 text-2xl font-bold tabular-nums ${passRateClass(stats.latest.passRate)}`}
           >
             {stats.latest.passRate}%
           </p>
-          <p className="mt-0.5 truncate text-xs text-base-content/40">
+          <p className="mt-0.5 truncate text-xs text-base-content/50">
             {stats.latest.fullName}
           </p>
         </div>
 
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
-          <p className="text-xs text-base-content/50">vs. Previous Run</p>
+          <p className="text-xs text-base-content/60">vs. Previous Run</p>
           {stats.delta === null ? (
-            <p className="mt-1 text-2xl font-bold text-base-content/30">—</p>
+            <p className="mt-1 text-2xl font-bold text-base-content/40">—</p>
           ) : (
             <p
               className={`mt-1 text-2xl font-bold tabular-nums ${deltaClass(stats.delta)}`}
@@ -162,36 +162,36 @@ export const AnalyticsTrendTab = () => {
               {stats.delta}%
             </p>
           )}
-          <p className="mt-0.5 text-xs text-base-content/40">
+          <p className="mt-0.5 text-xs text-base-content/50">
             {deltaLabel(stats.delta)}
           </p>
         </div>
 
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
-          <p className="text-xs text-base-content/50">Average Pass Rate</p>
+          <p className="text-xs text-base-content/60">Average Pass Rate</p>
           <p
             className={`mt-1 text-2xl font-bold tabular-nums ${passRateClass(stats.avg)}`}
           >
             {stats.avg}%
           </p>
-          <p className="mt-0.5 text-xs text-base-content/40">
+          <p className="mt-0.5 text-xs text-base-content/50">
             across {stats.count} run{stats.count === 1 ? "" : "s"}
           </p>
         </div>
 
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
-          <p className="text-xs text-base-content/50">Best Run</p>
+          <p className="text-xs text-base-content/60">Best Run</p>
           <p className="mt-1 text-2xl font-bold text-success tabular-nums">
             {stats.best.passRate}%
           </p>
-          <p className="mt-0.5 truncate text-xs text-base-content/40">
+          <p className="mt-0.5 truncate text-xs text-base-content/50">
             {stats.best.fullName}
           </p>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-base-100 px-4 pt-4 pb-2">
-        <p className="mb-4 text-xs font-semibold tracking-widest text-base-content/40 uppercase">
+        <p className="mb-4 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
           Pass Rate Over Time
         </p>
         <ResponsiveContainer width="100%" height={220}>

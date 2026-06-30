@@ -9,7 +9,7 @@ import { Link, Outlet } from "@tanstack/react-router";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 
 const TAB_BASE =
-  "flex items-center gap-1.5 border-b-2 border-transparent pb-2 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/50 transition-colors hover:text-base-content/80";
+  "flex items-center gap-1.5 border-b-2 border-transparent pb-2 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/60 transition-colors hover:text-base-content/80";
 const TAB_ACTIVE = "!border-primary !text-base-content";
 
 export const AnalyticsLayout = () => {

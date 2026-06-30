@@ -26,7 +26,7 @@ public static class CreateTestRun
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
         : IRequestHandler<Command, TestRunResponse>
     {
         public async Task<TestRunResponse> Handle(
@@ -40,6 +40,8 @@ public static class CreateTestRun
                 Name = request.Name,
                 Environment = request.Environment,
                 Source = request.Source?.ToLowerInvariant(),
+                ExecutedById = currentUser.UserId,
+                ExecutedByName = currentUser.UserName,
             };
 
             context.TestRuns.Add(run);
@@ -54,6 +56,7 @@ public static class CreateTestRun
                 Status = run.Status,
                 Source = run.Source,
                 ExecutedById = run.ExecutedById,
+                ExecutedByName = run.ExecutedByName,
                 CreatedAt = run.CreatedAt,
                 UpdatedAt = run.UpdatedAt,
             };

@@ -3,6 +3,7 @@ import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LabelBadge } from "@/components/ui/LabelBadge";
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -133,6 +134,7 @@ export const LabelsTab = () => {
 
   const [createOpen, setCreateOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<Label | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Label | null>(null);
 
   const handleCreate = (data: CreateLabel) =>
     createLabel.mutate(data, { onSuccess: () => setCreateOpen(false) });
@@ -155,10 +157,10 @@ export const LabelsTab = () => {
     if (!labels || labels.length === 0)
       return (
         <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-center">
-          <p className="text-sm font-semibold text-base-content/50">
+          <p className="text-sm font-semibold text-base-content/60">
             No labels yet
           </p>
-          <p className="text-xs text-base-content/40">
+          <p className="text-xs text-base-content/50">
             Create labels to tag test cases.
           </p>
         </div>
@@ -167,7 +169,7 @@ export const LabelsTab = () => {
       <div className="overflow-hidden rounded-xl border border-border">
         <table className="table table-sm">
           <thead>
-            <tr className="text-xs text-base-content/60">
+            <tr className="text-xs text-base-content/70">
               <th>Label</th>
               <th>Color</th>
               <th />
@@ -180,7 +182,7 @@ export const LabelsTab = () => {
                   <LabelBadge label={label} />
                 </td>
                 <td>
-                  <span className="flex items-center gap-1.5 text-xs text-base-content/50">
+                  <span className="flex items-center gap-1.5 text-xs text-base-content/60">
                     <span
                       className="inline-block size-3 rounded-full"
                       style={{ backgroundColor: label.color }}
@@ -199,8 +201,7 @@ export const LabelsTab = () => {
                     </button>
                     <button
                       className="btn text-error btn-ghost btn-xs"
-                      onClick={() => deleteLabel.mutate(label.id)}
-                      disabled={deleteLabel.isPending}
+                      onClick={() => setDeleteTarget(label)}
                       aria-label="Delete label"
                     >
                       <TrashIcon className="size-3.5" />
@@ -218,7 +219,7 @@ export const LabelsTab = () => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-base-content/60">
+        <p className="text-sm text-base-content/70">
           Labels let you tag test cases for filtering and reporting.
         </p>
         <button
@@ -261,6 +262,20 @@ export const LabelsTab = () => {
           />
         )}
       </Modal>
+
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={() =>
+          deleteLabel.mutate(deleteTarget!.id, {
+            onSuccess: () => setDeleteTarget(null),
+          })
+        }
+        title="Delete label"
+        description={`"${deleteTarget?.name}" will be permanently removed and untagged from all test cases.`}
+        confirmLabel="Delete"
+        isLoading={deleteLabel.isPending}
+      />
     </div>
   );
 };

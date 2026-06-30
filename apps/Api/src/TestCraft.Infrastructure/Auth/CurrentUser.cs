@@ -9,4 +9,6 @@ public class CurrentUser(IHttpContextAccessor httpContextAccessor) : ICurrentUse
     public Guid UserId =>
         httpContextAccessor.HttpContext?.User.GetUserId()
         ?? throw new DomainException("No authenticated user in the current context");
+
+    public string? UserName => httpContextAccessor.HttpContext?.User.GetUserName();
 }

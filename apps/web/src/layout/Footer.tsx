@@ -6,7 +6,7 @@ export const Footer = () => (
     >
       TestCraft
     </span>
-    <p className="text-xs text-base-content/50">
+    <p className="text-xs text-base-content/60">
       &copy; 2026 All rights reserved
     </p>
   </footer>

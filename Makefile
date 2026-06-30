@@ -48,7 +48,8 @@ web:
 	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
 
 e2e:
-	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets
+	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets; \
+	docker stop keycloak 2>/dev/null || true
 
 format:
 	pnpm format

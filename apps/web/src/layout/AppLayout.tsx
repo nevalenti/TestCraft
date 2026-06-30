@@ -4,19 +4,21 @@ import { CookieConsent } from "@/components/CookieConsent";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { Notifications } from "@/components/Notifications";
 import { BreadcrumbBar } from "@/layout/BreadcrumbBar";
-import { Footer } from "@/layout/Footer";
 import { Header } from "@/layout/Header";
+import { Sidebar } from "@/layout/Sidebar";
 
 const AppLayout = () => (
-  <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">
-    <Header />
-    <BreadcrumbBar />
-    <main className="flex min-h-0 flex-1">
-      <ErrorBoundary>
-        <Outlet />
-      </ErrorBoundary>
-    </main>
-    <Footer />
+  <div className="mx-auto flex h-screen w-full max-w-360 overflow-hidden bg-base-100 sm:border-x sm:border-border">
+    <Sidebar />
+    <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <Header />
+      <BreadcrumbBar />
+      <main className="flex min-h-0 flex-1">
+        <ErrorBoundary>
+          <Outlet />
+        </ErrorBoundary>
+      </main>
+    </div>
     <Notifications />
     <CookieConsent />
   </div>

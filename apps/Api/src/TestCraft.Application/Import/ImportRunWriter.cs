@@ -16,6 +16,7 @@ internal static class ImportRunWriter
         TestRunStatus status,
         IReadOnlyList<ParsedTestCase> cases,
         Guid userId,
+        string? userName,
         string? source,
         ImportJob job,
         CancellationToken cancellationToken
@@ -34,6 +35,7 @@ internal static class ImportRunWriter
             Environment = environment,
             Source = source,
             ExecutedById = userId,
+            ExecutedByName = userName,
         };
 
         if (status != TestRunStatus.Active)
@@ -68,6 +70,7 @@ internal static class ImportRunWriter
             Status = run.Status,
             Source = run.Source,
             ExecutedById = run.ExecutedById,
+            ExecutedByName = run.ExecutedByName,
             CreatedAt = run.CreatedAt,
             UpdatedAt = run.UpdatedAt,
         };
@@ -124,6 +127,7 @@ internal static class ImportRunWriter
             Status = run.Status,
             Source = run.Source,
             ExecutedById = run.ExecutedById,
+            ExecutedByName = run.ExecutedByName,
             CreatedAt = run.CreatedAt,
             UpdatedAt = run.UpdatedAt,
         };

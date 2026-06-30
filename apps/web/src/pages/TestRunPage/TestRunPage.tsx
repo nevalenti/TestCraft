@@ -104,7 +104,7 @@ const ResultsContent = ({
   if (resultsPage?.items.length === 0)
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="mb-2 text-sm font-semibold text-base-content/60">
+        <p className="mb-2 text-sm font-semibold text-base-content/70">
           No results match
         </p>
         <div className="flex gap-2">
@@ -219,10 +219,8 @@ export const TestRunPage = () => {
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight">
-            {run?.name}
-          </h1>
-          <p className="mt-0.5 text-sm text-base-content/60">
+          <h1 className="page-title">{run?.name}</h1>
+          <p className="mt-0.5 text-sm text-base-content/55">
             {run?.environment ?? "Track test results for this run"}
           </p>
         </div>

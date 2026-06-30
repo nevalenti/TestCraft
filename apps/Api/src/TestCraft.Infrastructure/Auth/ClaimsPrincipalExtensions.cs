@@ -15,4 +15,9 @@ public static class ClaimsPrincipalExtensions
 
         return userId;
     }
+
+    public static string? GetUserName(this ClaimsPrincipal user) =>
+        user.FindFirstValue("name")
+        ?? user.FindFirstValue(ClaimTypes.Name)
+        ?? user.FindFirstValue("preferred_username");
 }

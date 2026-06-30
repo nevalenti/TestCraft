@@ -10,4 +10,5 @@ public record ImportJUnitRequested
     public string? Source { get; init; }
     public Guid? RunId { get; init; }
     public required Guid UserId { get; init; }
+    public string? UserName { get; init; }
 }

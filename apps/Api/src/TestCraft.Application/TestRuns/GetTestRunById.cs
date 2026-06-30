@@ -32,6 +32,7 @@ public static class GetTestRunById
                     Status = r.Status,
                     Source = r.Source,
                     ExecutedById = r.ExecutedById,
+                    ExecutedByName = r.ExecutedByName,
                     CreatedAt = r.CreatedAt,
                     UpdatedAt = r.UpdatedAt,
                 })

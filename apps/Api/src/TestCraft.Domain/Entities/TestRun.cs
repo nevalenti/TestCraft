@@ -21,6 +21,7 @@ public class TestRun : IAuditableEntity, IHasDomainEvents
     public TestRunStatus Status { get; private set; } = TestRunStatus.Active;
     public string? Source { get; set; }
     public Guid? ExecutedById { get; set; }
+    public string? ExecutedByName { get; set; }
     public Guid ProjectId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
