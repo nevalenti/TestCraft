@@ -90,7 +90,7 @@ jobs:
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
           junit-xml: apps/Api/test-results/junit.xml
-          run-name: "#${{ github.run_id }} api(${{ github.ref_name }})"
+          run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
           source: api
 
   docker:

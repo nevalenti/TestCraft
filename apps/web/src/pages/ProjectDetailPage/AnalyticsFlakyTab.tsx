@@ -87,7 +87,7 @@ export const AnalyticsFlakyTab = () => {
               if (pct >= 60) rankColor = "text-error/60";
               else if (pct >= 30) rankColor = "text-warning/60";
               return (
-                <tr key={stat.testCaseId} className="hover:bg-base-200/40">
+                <tr key={stat.testCaseId} className="hover:bg-base-300/70">
                   <td
                     className={`text-center text-xs font-bold tabular-nums ${rankColor}`}
                   >

@@ -58,7 +58,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
               <tr
                 key={row.id}
                 data-testid="result-row"
-                className="group border-b border-border/60 transition-colors last:border-b-0 hover:bg-base-200/50"
+                className="group border-b border-border/60 transition-colors last:border-b-0 hover:bg-base-300"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id}>

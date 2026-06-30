@@ -207,7 +207,7 @@ export const AnalyticsComparisonTab = () => {
                   {visibleRows.map((row) => (
                     <tr
                       key={row.testCaseId}
-                      className={`hover:bg-base-200/40 ${rowBg(row.isRegression, row.isFix)}`}
+                      className={`hover:bg-base-300/70 ${rowBg(row.isRegression, row.isFix)}`}
                     >
                       <td className="max-w-xs truncate text-sm font-medium">
                         {row.testCaseName}

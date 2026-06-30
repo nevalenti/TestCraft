@@ -12,7 +12,7 @@ public static class UpdateEmailSubscription
 {
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
-        public required Guid ProjectId { get; init; }
+        public Guid ProjectId { get; init; }
         public Guid Id { get; init; }
         public required string Email { get; init; }
         public required IReadOnlyList<string> Events { get; init; }

@@ -177,7 +177,7 @@ export const LabelsTab = () => {
           </thead>
           <tbody>
             {labels.map((label) => (
-              <tr key={label.id} className="group hover:bg-base-200/50">
+              <tr key={label.id} className="group hover:bg-base-300">
                 <td>
                   <LabelBadge label={label} />
                 </td>
