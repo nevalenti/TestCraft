@@ -1,52 +1,61 @@
 # TestCraft
 
-A test management platform for organising projects, test suites, test cases, and test runs — with import support for JUnit and Allure reports, real-time run tracking, email/webhook notifications, and analytics.
+> Test management platform for teams — organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
 
-## Stack
+---
 
-- **Frontend** — React 19, Vite, TanStack Router, DaisyUI
-- **Backend** — .NET 9, EF Core, MassTransit, SignalR
-- **Gateway** — YARP reverse proxy
-- **Auth** — Keycloak
-- **Infra** — PostgreSQL, RabbitMQ, Redis, MinIO, Mailpit (dev)
+## Tech Stack
 
-## Local Development
+| Layer    | Tech                                     |
+| -------- | ---------------------------------------- |
+| Frontend | React 19, Vite, TanStack Router, DaisyUI |
+| Backend  | .NET 9, EF Core, MassTransit, SignalR    |
+| Gateway  | YARP                                     |
+| Auth     | Keycloak                                 |
+| Infra    | PostgreSQL · Redis · RabbitMQ · MinIO    |
+
+---
+
+## Getting Started
 
 **Prerequisites:** Docker, .NET 9 SDK, Node.js 20+, pnpm
 
 ```bash
-# 1. Clone and install dependencies
 git clone https://github.com/nevalenti/TestCraft.git
 cd TestCraft
 pnpm install
-
-# 2. Configure environment
-cp .env.example .env
-# Edit .env — defaults work out of the box for local dev
-
-# 3. Start infrastructure
-make up
-
-# 4. Run the API
-cd apps/Api
-dotnet run --project src/TestCraft.Api
-
-# 5. Run the frontend
-cd apps/web
-pnpm dev
+cp .env.example .env   # defaults work for local dev
+make up                # start infrastructure
 ```
 
-App runs at `http://localhost:5173`. Keycloak admin at `http://localhost:8080`. Mailpit (email preview) at `http://localhost:8025`.
-
-## Production Deployment
-
-Deployed via Helm on k3s.
+Then in separate terminals:
 
 ```bash
-# Fill in values.secrets.yaml, then:
+# API
+dotnet run --project apps/Api/src/TestCraft.Api
+
+# Frontend
+pnpm --filter web dev
+```
+
+| Service  | URL                   |
+| -------- | --------------------- |
+| App      | http://localhost:5173 |
+| Keycloak | http://localhost:8080 |
+| Mailpit  | http://localhost:8025 |
+
+---
+
+## Production
+
+Deployed via Helm on k3s. Fill in `infrastructure/helm/testcraft/values.secrets.yaml`, then:
+
+```bash
 make deploy
 ```
 
+---
+
 ## License
 
-MIT
+[MIT](LICENSE)
