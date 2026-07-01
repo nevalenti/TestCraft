@@ -1,9 +1,11 @@
 import {
   Bars3Icon,
+  Cog6ToothIcon,
   HomeIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import {
+  Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
   XMarkIcon,
@@ -25,7 +27,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-100 px-3 lg:hidden">
+      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-200 px-3 lg:hidden">
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <label
             htmlFor="mobile-nav-drawer"
@@ -104,6 +106,13 @@ export const Header = () => {
                 label="Projects"
                 OutlineIcon={RectangleStackIcon}
                 SolidIcon={RectangleStackIconSolid}
+                onClick={closeDrawer}
+              />
+              <NavItem
+                to="/settings"
+                label="Settings"
+                OutlineIcon={Cog6ToothIcon}
+                SolidIcon={Cog6ToothIconSolid}
                 onClick={closeDrawer}
               />
             </nav>

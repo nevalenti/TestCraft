@@ -2,24 +2,52 @@
 
 > Test management platform for teams — organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
 
-**Built with:** React 19 · ASP.NET Core (.NET 10) · SignalR · PostgreSQL · MassTransit + RabbitMQ · MinIO · Keycloak · YARP · Prometheus/Grafana/Loki · Helm on k3s
+## Built With
+
+| Layer          | Technology                  |
+| -------------- | --------------------------- |
+| Frontend       | React 19                    |
+| Backend        | ASP.NET Core (.NET 10)      |
+| Database       | PostgreSQL                  |
+| Cache          | Redis                       |
+| Messaging      | MassTransit + RabbitMQ      |
+| Real-time      | SignalR                     |
+| Object storage | MinIO                       |
+| Auth           | Keycloak                    |
+| Reverse proxy  | YARP                        |
+| Observability  | Prometheus · Grafana · Loki |
+| Deployment     | Helm on k3s                 |
 
 ---
 
 ## Features
 
-- **Keycloak auth** — SSO with optional GitHub social login
+### Test management
+
 - **Projects & suites** — projects → suites → test cases, drag-and-drop reordering
-- **Test runs** — track progress in real time via SignalR; live log feed per pipeline run
 - **JUnit / Allure import** — upload reports and have results mapped automatically to existing test cases
 - **Attachments** — file uploads stored in MinIO, scoped to test results
 - **Analytics** — pass/fail trend charts per project, configurable time window
-- **Notifications** — email (SMTP) and outbound webhooks on run completion
+
+### Test runs
+
+- **Live progress** — track runs in real time via SignalR, with a live log feed per pipeline run
 - **Shareable links** — read-only run views via public share tokens
-- **API tokens** — machine-to-machine access for CI pipelines
+- **Notifications** — email (SMTP) and outbound webhooks on run completion
+
+### CI integration
+
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
+- **API tokens** — machine-to-machine access for CI pipelines
+
+### Accounts & access
+
+- **Keycloak auth** — SSO with optional GitHub social login
 - **Accounts** — profile settings with avatar upload
-- **Observability** — Prometheus metrics and Grafana dashboards ship out of the box alongside Loki/Seq log aggregation
+
+### Observability
+
+- Prometheus metrics and Grafana dashboards ship out of the box, alongside Loki/Seq log aggregation
 
 ---
 
@@ -53,8 +81,8 @@ packages/
 git clone https://github.com/nevalenti/TestCraft.git
 cd TestCraft
 pnpm install
-cp .env.example .env          # defaults work for local dev
-make up                       # starts Postgres, Redis, RabbitMQ, Keycloak, MinIO, Mailpit, Seq, Prometheus, Grafana, Loki
+cp .env.example .env
+make up
 ```
 
 Keycloak imports the `testcraft` realm automatically on first start. The API applies migrations on startup when `APPLY_MIGRATIONS=true` (set in `.env.example`).
@@ -62,17 +90,18 @@ Keycloak imports the `testcraft` realm automatically on first start. The API app
 Then in separate terminals:
 
 ```bash
-# API
-dotnet run --project apps/Api/src/TestCraft.Api
 
 # Application
 pnpm --filter testcraft-web dev
+
+# API
+dotnet run --project apps/Api/src/TestCraft.Api
 ```
 
 | Service     | URL                           |
 | ----------- | ----------------------------- |
-| API         | http://localhost:5000         |
 | Application | http://localhost:3000         |
+| API         | http://localhost:5000         |
 | Swagger UI  | http://localhost:5000/swagger |
 | Keycloak    | http://localhost:8080         |
 | Mailpit     | http://localhost:8025         |
@@ -96,13 +125,7 @@ make e2e                           # End-to-end (Playwright via act)
 Requires k3s and Helm. Fill in `infrastructure/helm/testcraft/values.secrets.yaml` (not committed), then:
 
 ```bash
-make deploy   # builds images, loads into k3s, upgrades the Helm release, waits for rollout
+make deploy
 ```
 
 Check rollout status at any time with `make status`.
-
----
-
-## License
-
-[MIT](LICENSE)

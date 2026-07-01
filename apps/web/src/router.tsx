@@ -29,6 +29,7 @@ import {
   LazyProjectRunsPage,
   LazyProjectsPage,
   LazyProjectSuitesPage,
+  LazySettingsPage,
   LazySharePage,
   LazyTestCasePage,
   LazyTestPlanPage,
@@ -255,6 +256,12 @@ const accountRoute = createRoute({
   component: LazyAccountPage,
 });
 
+const settingsRoute = createRoute({
+  getParentRoute: () => appLayoutRoute,
+  path: "/settings",
+  component: LazySettingsPage,
+});
+
 const shareRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/share/$token",
@@ -288,6 +295,7 @@ const routeTree = rootRoute.addChildren([
     testPlansRoute,
     testPlanRoute,
     accountRoute,
+    settingsRoute,
   ]),
   shareRoute,
 ]);

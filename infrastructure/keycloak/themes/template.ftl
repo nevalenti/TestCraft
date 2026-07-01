@@ -15,17 +15,17 @@
       :root {
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-        --color-border: oklch(1 0 0 / 0.25);
+        --color-border: oklch(1 0 0 / 0.4);
       }
 
       [data-theme="emerald"] {
-        --color-border: oklch(0 0 0 / 0.28);
+        --color-border: oklch(0 0 0 / 0.35);
       }
 
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        background-color: var(--color-base-100);
+        background-color: var(--color-base-300);
       }
 
       #icon-moon { display: none; }
@@ -67,6 +67,18 @@
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: var(--color-base-300); border-radius: 999px; }
+
+      @media (min-width: 640px) {
+        .app-border {
+          border: 1px solid var(--color-border);
+        }
+
+        .app-shadow {
+          box-shadow:
+            0 25px 50px -12px oklch(0 0 0 / 0.35),
+            0 10px 20px -6px oklch(0 0 0 / 0.2);
+        }
+      }
     </style>
     <script>
       const THEME_KEY = 'app-theme';
@@ -103,7 +115,7 @@
     </script>
   </head>
   <body class="text-base-content min-h-screen">
-    <div class="mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100" style="border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border);">
+    <div class="app-border app-shadow mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-5 sm:min-h-[calc(100vh-2.5rem)] sm:rounded-2xl">
 
       <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">

@@ -137,3 +137,10 @@ export const LazyAccountPage = suspend(
     return { default: module.AccountPage };
   }),
 );
+
+export const LazySettingsPage = suspend(
+  React.lazy(async () => {
+    const module = await import("./SettingsPage/SettingsPage");
+    return { default: module.SettingsPage };
+  }),
+);

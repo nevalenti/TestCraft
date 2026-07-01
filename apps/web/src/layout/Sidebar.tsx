@@ -1,5 +1,10 @@
-import { HomeIcon, RectangleStackIcon } from "@heroicons/react/24/outline";
 import {
+  Cog6ToothIcon,
+  HomeIcon,
+  RectangleStackIcon,
+} from "@heroicons/react/24/outline";
+import {
+  Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
 } from "@heroicons/react/24/solid";
@@ -41,11 +46,19 @@ export const Sidebar = () => {
           OutlineIcon={RectangleStackIcon}
           SolidIcon={RectangleStackIconSolid}
         />
+        <NavItem
+          to="/settings"
+          label="Settings"
+          OutlineIcon={Cog6ToothIcon}
+          SolidIcon={Cog6ToothIconSolid}
+        />
       </nav>
 
       <div className="shrink-0 border-t border-border">
         <div className="flex items-center justify-center px-3 py-1.5">
-          <p className="text-[10px] text-base-content/35">© 2026 TestCraft</p>
+          <p className="text-[10px] text-base-content/35">
+            © 2026 <span className="font-semibold">TestCraft</span>
+          </p>
         </div>
       </div>
     </aside>
