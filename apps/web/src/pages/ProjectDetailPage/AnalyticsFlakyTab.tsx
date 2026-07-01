@@ -74,7 +74,7 @@ export const AnalyticsFlakyTab = () => {
               <th className="text-right font-medium">Runs</th>
               <th className="text-right font-medium">Passed</th>
               <th className="text-right font-medium">Failed</th>
-              <th className="text-right font-medium">Flak Rate</th>
+              <th className="text-right font-medium">Flake Rate</th>
             </tr>
           </thead>
           <tbody>

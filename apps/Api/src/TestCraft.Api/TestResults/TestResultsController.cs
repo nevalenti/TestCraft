@@ -82,6 +82,36 @@ public class TestResultsController(ISender sender) : ControllerBase
         );
     }
 
+    /// <summary>Records a test result by suite and test case name, creating them if they don't exist.</summary>
+    [HttpPost("by-name")]
+    public async Task<ActionResult<TestResultResponse>> CreateByName(
+        Guid projectId,
+        Guid runId,
+        CreateTestResultByName.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                RunId = runId,
+            },
+            cancellationToken
+        );
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new
+            {
+                projectId,
+                runId,
+                id = result.Id,
+            },
+            result
+        );
+    }
+
     /// <summary>Updates a test result.</summary>
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<TestResultResponse>> Update(

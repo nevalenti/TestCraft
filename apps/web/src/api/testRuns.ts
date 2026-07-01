@@ -43,6 +43,12 @@ export const testRunsApi = {
     );
     return data;
   },
+  getLogs: async (projectId: string, id: string) => {
+    const { data } = await client.get<string[]>(
+      `${BASE(projectId)}/${id}/logs`,
+    );
+    return data;
+  },
 };
 
 export const testRunQueries = {

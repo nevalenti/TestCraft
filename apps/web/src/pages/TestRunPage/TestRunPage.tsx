@@ -1,4 +1,10 @@
-import { PlusIcon, ShareIcon } from "@heroicons/react/24/solid";
+import {
+  CommandLineIcon,
+  PlusIcon,
+  QueueListIcon,
+  ShareIcon,
+  SignalIcon,
+} from "@heroicons/react/24/solid";
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -37,6 +43,8 @@ import { RESULTS_PAGE_SIZE } from "@/lib/constants";
 import { AttachmentModal } from "@/pages/TestRunPage/AttachmentModal";
 import { createColumns } from "@/pages/TestRunPage/columns";
 import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
+import { LiveLogFeed } from "@/pages/TestRunPage/LiveLogFeed";
+import { LogPanel } from "@/pages/TestRunPage/LogPanel";
 import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
 import { RunSummaryBar } from "@/pages/TestRunPage/RunSummaryBar";
 import { ShareModal } from "@/pages/TestRunPage/ShareModal";
@@ -131,6 +139,7 @@ export const TestRunPage = () => {
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestResult>();
   const [shareOpen, setShareOpen] = useState(false);
+  const [view, setView] = useState<"table" | "live" | "logs">("table");
   const [attachmentResult, setAttachmentResult] = useState<TestResult | null>(
     null,
   );
@@ -215,26 +224,14 @@ export const TestRunPage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
-  return (
-    <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header flex items-center justify-between gap-4">
-        <div>
-          <h1 className="page-title">{run?.name}</h1>
-          <p className="mt-0.5 text-sm text-base-content/55">
-            {run?.environment ?? "Track test results for this run"}
-          </p>
-        </div>
-        <button
-          className="btn gap-1.5 btn-ghost btn-sm"
-          onClick={() => setShareOpen(true)}
-          aria-label="Share this run"
-        >
-          <ShareIcon className="size-4" />
-          Share
-        </button>
-      </header>
-
-      <section className="page-content min-h-0 flex-1 overflow-y-auto">
+  let viewContent: React.ReactNode;
+  if (view === "live") {
+    viewContent = <LiveLogFeed projectId={projectId} runId={runId} />;
+  } else if (view === "logs") {
+    viewContent = <LogPanel projectId={projectId} runId={runId} />;
+  } else {
+    viewContent = (
+      <>
         {runSummary && runSummary.total > 0 && (
           <RunSummaryBar
             runSummary={runSummary}
@@ -261,6 +258,58 @@ export const TestRunPage = () => {
             pageCount={pageCount}
           />
         </div>
+      </>
+    );
+  }
+
+  return (
+    <div className="flex min-h-0 w-full flex-col">
+      <header className="page-header flex items-center justify-between gap-4">
+        <div>
+          <h1 className="page-title">{run?.name}</h1>
+          <p className="mt-0.5 text-sm text-base-content/55">
+            {run?.environment ?? "Track test results for this run"}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <div className="join">
+            <button
+              className={`btn join-item gap-1.5 btn-sm ${view === "table" ? "btn-neutral" : "btn-ghost"}`}
+              onClick={() => setView("table")}
+              aria-label="Table view"
+            >
+              <QueueListIcon className="size-4" />
+              Table
+            </button>
+            <button
+              className={`btn join-item gap-1.5 btn-sm ${view === "live" ? "btn-neutral" : "btn-ghost"}`}
+              onClick={() => setView("live")}
+              aria-label="Live log view"
+            >
+              <SignalIcon className="size-4" />
+              Live
+            </button>
+            <button
+              className={`btn join-item gap-1.5 btn-sm ${view === "logs" ? "btn-neutral" : "btn-ghost"}`}
+              onClick={() => setView("logs")}
+              aria-label="Pipeline logs"
+            >
+              <CommandLineIcon className="size-4" />
+              Logs
+            </button>
+          </div>
+          <button
+            className="btn btn-square btn-ghost btn-sm"
+            onClick={() => setShareOpen(true)}
+            aria-label="Share this run"
+          >
+            <ShareIcon className="size-4" />
+          </button>
+        </div>
+      </header>
+
+      <section className="page-content min-h-0 flex-1 overflow-y-auto">
+        {viewContent}
       </section>
 
       <Modal

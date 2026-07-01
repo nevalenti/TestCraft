@@ -57,7 +57,6 @@ export const AnalyticsComparisonTab = () => {
 
   return (
     <div className="space-y-4 pb-10">
-      {/* Selectors */}
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-36 flex-1">
           <label
@@ -136,7 +135,6 @@ export const AnalyticsComparisonTab = () => {
 
       {submitted && comparison && counts && (
         <>
-          {/* Summary strip */}
           <div className="flex flex-wrap gap-2">
             <div className="flex items-center gap-2 rounded-lg border border-error/20 bg-error/8 px-3 py-2">
               <span className="text-lg font-bold text-error tabular-nums">
@@ -161,7 +159,6 @@ export const AnalyticsComparisonTab = () => {
               </span>
             </div>
 
-            {/* Filter toggle */}
             <div className="ml-auto flex items-center gap-0.5 rounded-lg bg-base-200 p-0.5">
               {(
                 [
@@ -187,7 +184,6 @@ export const AnalyticsComparisonTab = () => {
             </div>
           </div>
 
-          {/* Table */}
           {visibleRows.length === 0 ? (
             <p className="py-6 text-center text-sm text-base-content/50">
               No changes between these two runs.

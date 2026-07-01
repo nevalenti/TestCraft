@@ -56,6 +56,7 @@ export default defineConfig([
             "header-stripes",
             "page-header",
             "page-content",
+            "page-title",
             "card-bg-.+",
             "app-shadow",
             "font-display",

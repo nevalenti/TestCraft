@@ -14,6 +14,7 @@ export default defineConfig({
     ["list"],
     ["html", { outputFolder: "e2e-results", open: "never" }],
     ["junit", { outputFile: "e2e-results/junit.xml" }],
+    ...(process.env.TESTCRAFT_RUN_ID ? [["./reporter.ts"] as [string]] : []),
   ],
   use: {
     baseURL: process.env.E2E_BASE_URL,
@@ -36,8 +37,8 @@ export default defineConfig({
   ],
   webServer: [
     {
-      command: "pnpm --filter testcraft-web dev",
-      url: "http://localhost:3000",
+      command: "pnpm --filter testcraft-web dev --port 4173",
+      url: "http://localhost:4173",
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,
     },

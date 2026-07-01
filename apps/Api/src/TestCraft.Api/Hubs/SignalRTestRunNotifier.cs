@@ -41,4 +41,13 @@ public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestR
         hubContext
             .Clients.Group($"run:{runId}")
             .SendAsync("RunStatusChanged", newStatus, cancellationToken);
+
+    public Task LogsAppendedAsync(
+        Guid runId,
+        IReadOnlyList<string> lines,
+        CancellationToken cancellationToken = default
+    ) =>
+        hubContext
+            .Clients.Group($"run:{runId}")
+            .SendAsync("LogsAppended", lines, cancellationToken);
 }

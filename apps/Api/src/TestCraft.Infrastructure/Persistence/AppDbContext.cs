@@ -27,6 +27,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
     public DbSet<WebhookSubscription> WebhookSubscriptions => Set<WebhookSubscription>();
     public DbSet<EmailSubscription> EmailSubscriptions => Set<EmailSubscription>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
+    public DbSet<RunLog> RunLogs => Set<RunLog>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -13,7 +13,26 @@ import { useRunTrend } from "@/hooks/useAnalytics";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 import { formatDate } from "@/lib/format";
 
-const PASSED_COLOR = "#36d399";
+const PALETTE = [
+  "#818cf8",
+  "#36d399",
+  "#f97316",
+  "#f43f5e",
+  "#facc15",
+  "#22d3ee",
+  "#a78bfa",
+];
+
+const MANUAL_COLOR = "#94a3b8";
+
+const sourceLabel = (source: string | undefined) =>
+  source ? source.charAt(0).toUpperCase() + source.slice(1) : "Manual";
+
+const sourceColor = (source: string | undefined, index: number) =>
+  source ? (PALETTE[index % PALETTE.length] ?? PALETTE[0]) : MANUAL_COLOR;
+
+const gradientId = (source: string | undefined) =>
+  `trendGrad-${source ?? "manual"}`;
 
 const passRateClass = (rate: number) => {
   if (rate >= 80) return "text-success";
@@ -93,50 +112,45 @@ const TrendTooltip = ({
 const truncate = (s: string, n: number) =>
   s.length > n ? s.slice(0, n) + "…" : s;
 
-export const AnalyticsTrendTab = () => {
-  const projectId = useRequiredParam("projectId");
-  const { data: trend } = useRunTrend(projectId, 20);
+type SourceGroup = {
+  source: string | undefined;
+  data: TrendEntry[];
+  index: number;
+};
 
-  const trendData = useMemo(
-    () =>
-      [...(trend ?? [])].toReversed().map((p) => ({
-        name: truncate(p.runName, 18),
-        fullName: p.runName,
-        date: formatDate(p.createdAt),
-        passRate: p.passRate,
-        passed: p.passed,
-        failed: p.failed,
-        blocked: p.blocked,
-        skipped: p.skipped,
-        total: p.total,
-      })),
-    [trend],
-  );
+const TrendSection = ({ group }: { group: SourceGroup }) => {
+  const color = sourceColor(group.source, group.index);
+  const label = sourceLabel(group.source);
+  const gradId = gradientId(group.source);
+  const data = group.data;
 
   const stats = useMemo(() => {
-    if (trendData.length === 0) return null;
-    const latest = trendData.at(-1)!;
-    const prev = trendData.length > 1 ? trendData.at(-2)! : null;
+    if (data.length === 0) return null;
+    const latest = data.at(-1)!;
+    const prev = data.length > 1 ? data.at(-2)! : null;
     const delta = prev === null ? null : latest.passRate - prev.passRate;
     let sum = 0;
-    for (const p of trendData) sum += p.passRate;
-    const avg = Math.round(sum / trendData.length);
+    for (const p of data) sum += p.passRate;
+    const avg = Math.round(sum / data.length);
     let best = latest;
-    for (const p of trendData) {
+    for (const p of data) {
       if (p.passRate > best.passRate) best = p;
     }
-    return { latest, delta, avg, best, count: trendData.length };
-  }, [trendData]);
+    return { latest, delta, avg, best, count: data.length };
+  }, [data]);
 
-  if (!stats)
-    return (
-      <p className="py-10 text-center text-sm text-base-content/50">
-        No run data yet. Complete a test run to see trend data.
-      </p>
-    );
+  if (!stats) return null;
 
   return (
-    <div className="space-y-4 pb-10">
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <span
+          className="inline-block size-2.5 rounded-full"
+          style={{ backgroundColor: color }}
+        />
+        <h3 className="text-sm font-semibold">{label}</h3>
+      </div>
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <div className="rounded-xl border border-border bg-base-100 px-4 py-3">
           <p className="text-xs text-base-content/60">Latest Pass Rate</p>
@@ -196,13 +210,13 @@ export const AnalyticsTrendTab = () => {
         </p>
         <ResponsiveContainer width="100%" height={220}>
           <AreaChart
-            data={trendData}
+            data={data}
             margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
           >
             <defs>
-              <linearGradient id="trendGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={PASSED_COLOR} stopOpacity={0.18} />
-                <stop offset="95%" stopColor={PASSED_COLOR} stopOpacity={0} />
+              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor={color} stopOpacity={0.18} />
+                <stop offset="95%" stopColor={color} stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -233,13 +247,13 @@ export const AnalyticsTrendTab = () => {
               type="monotone"
               dataKey="passRate"
               name="Pass Rate"
-              stroke={PASSED_COLOR}
+              stroke={color}
               strokeWidth={2}
-              fill="url(#trendGradient)"
-              dot={{ r: 3, fill: PASSED_COLOR, strokeWidth: 0 }}
+              fill={`url(#${gradId})`}
+              dot={{ r: 3, fill: color, strokeWidth: 0 }}
               activeDot={{
                 r: 5,
-                fill: PASSED_COLOR,
+                fill: color,
                 stroke: "#fff",
                 strokeWidth: 2,
               }}
@@ -247,6 +261,59 @@ export const AnalyticsTrendTab = () => {
           </AreaChart>
         </ResponsiveContainer>
       </div>
+    </div>
+  );
+};
+
+export const AnalyticsTrendTab = () => {
+  const projectId = useRequiredParam("projectId");
+  const { data: trend } = useRunTrend(projectId, 20);
+
+  const groups = useMemo(() => {
+    const raw = [...(trend ?? [])].toReversed();
+    const map = new Map<string, TrendEntry[]>();
+
+    for (const p of raw) {
+      const key = p.source ?? "__manual__";
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push({
+        name: truncate(p.runName, 18),
+        fullName: p.runName,
+        date: formatDate(p.createdAt),
+        passRate: p.passRate,
+        passed: p.passed,
+        failed: p.failed,
+        blocked: p.blocked,
+        skipped: p.skipped,
+        total: p.total,
+      });
+    }
+
+    const sorted = [...map].toSorted((a, b) => {
+      if (a[0] === "__manual__") return 1;
+      if (b[0] === "__manual__") return -1;
+      return a[0].localeCompare(b[0]);
+    });
+
+    return sorted.map(([key, data], index) => ({
+      source: key === "__manual__" ? undefined : key,
+      data,
+      index,
+    }));
+  }, [trend]);
+
+  if (groups.length === 0)
+    return (
+      <p className="py-10 text-center text-sm text-base-content/50">
+        No run data yet. Complete a test run to see trend data.
+      </p>
+    );
+
+  return (
+    <div className="space-y-8 pb-10">
+      {groups.map((group) => (
+        <TrendSection key={group.source ?? "__manual__"} group={group} />
+      ))}
     </div>
   );
 };

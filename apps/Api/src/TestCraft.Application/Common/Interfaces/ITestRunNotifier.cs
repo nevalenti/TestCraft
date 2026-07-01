@@ -24,4 +24,10 @@ public interface ITestRunNotifier
         string newStatus,
         CancellationToken cancellationToken = default
     );
+
+    Task LogsAppendedAsync(
+        Guid runId,
+        IReadOnlyList<string> lines,
+        CancellationToken cancellationToken = default
+    );
 }

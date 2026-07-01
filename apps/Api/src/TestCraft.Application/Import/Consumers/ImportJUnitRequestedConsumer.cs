@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Import.Contracts;
+using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Consumers;
 
 public partial class ImportJUnitRequestedConsumer(
     IApplicationDbContext dbContext,
+    ITestRunNotifier notifier,
     ILogger<ImportJUnitRequestedConsumer> logger
 ) : IConsumer<ImportJUnitRequested>
 {
@@ -36,9 +38,10 @@ public partial class ImportJUnitRequestedConsumer(
         {
             var (runName, cases) = JUnitParser.Parse(message.Xml);
 
+            TestRunResponse run;
             if (message.RunId.HasValue)
             {
-                await ImportRunWriter.AppendResultsToRunAsync(
+                run = await ImportRunWriter.AppendResultsToRunAsync(
                     dbContext,
                     message.ProjectId,
                     message.RunId.Value,
@@ -51,7 +54,7 @@ public partial class ImportJUnitRequestedConsumer(
             }
             else
             {
-                await ImportRunWriter.CreateRunWithResultsAsync(
+                run = await ImportRunWriter.CreateRunWithResultsAsync(
                     dbContext,
                     message.ProjectId,
                     message.Name ?? runName,
@@ -65,6 +68,8 @@ public partial class ImportJUnitRequestedConsumer(
                     cancellationToken
                 );
             }
+
+            await notifier.RunStatusChangedAsync(run.Id, run.Status.ToString(), cancellationToken);
         }
         catch (Exception ex)
         {

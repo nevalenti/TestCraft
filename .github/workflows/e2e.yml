@@ -65,9 +65,10 @@ jobs:
             --network host \
             -e KC_HEALTH_ENABLED=true \
             -v ${{ github.workspace }}/infrastructure/keycloak/themes:/opt/keycloak/themes/dracula/login \
-            -v ${{ github.workspace }}/infrastructure/keycloak/realm.json:/opt/keycloak/data/import/realm.json \
+            -v ${{ github.workspace }}/infrastructure/keycloak/realm.json:/realm-source/realm.json:ro \
+            --entrypoint /bin/sh \
             quay.io/keycloak/keycloak:26.2 \
-            start-dev --import-realm
+            -c 'mkdir -p /opt/keycloak/data/import && sed "s|\"GITHUB_IDP_ENABLED\"|false|g" /realm-source/realm.json > /opt/keycloak/data/import/realm.json && exec /opt/keycloak/bin/kc.sh start-dev --import-realm'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -102,6 +103,7 @@ jobs:
         run: timeout 120 sh -c 'until curl -sf http://localhost:9000/health/ready > /dev/null 2>&1; do sleep 3; done'
 
       - name: Start TestCraft run
+        id: testcraft-start
         if: always()
         continue-on-error: true
         uses: ./.github/actions/testcraft
@@ -119,19 +121,26 @@ jobs:
         run: pnpm --filter testcraft-e2e run e2e
         env:
           CI: "true"
-          E2E_BASE_URL: http://localhost:3000
+          E2E_BASE_URL: http://localhost:4173
           E2E_USERNAME: e2e@testcraft.dev
           E2E_PASSWORD: e2e
           DATABASE_URL: postgresql://e2e:e2e@localhost:5433/testcraft_e2e
           KEYCLOAK_AUTHORITY: http://localhost:8080/realms/testcraft
           KEYCLOAK_AUDIENCE: testcraft-web
           KEYCLOAK_REQUIRE_HTTPS_METADATA: "false"
-          CORS_ALLOWED_ORIGINS: http://localhost:3000
+          CORS_ALLOWED_ORIGINS: http://localhost:4173
           APPLY_MIGRATIONS: "true"
           VITE_API_URL: http://localhost:5000
           VITE_KEYCLOAK_URL: http://localhost:8080
           VITE_KEYCLOAK_REALM: testcraft
           VITE_KEYCLOAK_CLIENT_ID: testcraft-web
+          TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
+          TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
+          TESTCRAFT_KEYCLOAK_AUTHORITY: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          TESTCRAFT_USERNAME: ${{ secrets.TESTCRAFT_USERNAME }}
+          TESTCRAFT_PASSWORD: ${{ secrets.TESTCRAFT_PASSWORD }}
+          TESTCRAFT_PROJECT_NAME: TestCraft
+          TESTCRAFT_SOURCE: e2e
 
       - name: Import results to TestCraft
         if: always()

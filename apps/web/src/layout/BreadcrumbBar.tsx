@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
 
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { AccountMenu } from "@/layout/AccountMenu";
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 export const BreadcrumbBar = () => {
@@ -58,6 +60,10 @@ export const BreadcrumbBar = () => {
   return (
     <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-200/50 px-4 sm:px-6 lg:h-14 lg:px-8">
       {content()}
+      <div className="ml-auto hidden items-center gap-2 lg:flex">
+        <AccountMenu />
+        <ThemeToggle />
+      </div>
     </div>
   );
 };

@@ -221,7 +221,6 @@ export const TestPlanPage = () => {
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <div className="grid gap-6 lg:grid-cols-2">
-          {/* Plan Cases */}
           <div>
             <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
               Plan Cases ({sortedCases.length})
@@ -229,7 +228,6 @@ export const TestPlanPage = () => {
             {renderPlanCases()}
           </div>
 
-          {/* Add Cases */}
           <div>
             <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
               Add Cases

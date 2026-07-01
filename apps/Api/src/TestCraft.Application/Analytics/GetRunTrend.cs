@@ -15,7 +15,8 @@ public record TrendPoint(
     int Failed,
     int Blocked,
     int Skipped,
-    double PassRate
+    double PassRate,
+    string? Source
 );
 
 public static class GetRunTrend
@@ -43,6 +44,7 @@ public static class GetRunTrend
                     r.Id,
                     r.Name,
                     r.CreatedAt,
+                    r.Source,
                     Passed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Passed),
                     Failed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Failed),
                     Blocked = r.TestResults.Count(tr => tr.Status == TestResultStatus.Blocked),
@@ -66,7 +68,8 @@ public static class GetRunTrend
                         r.Failed,
                         r.Blocked,
                         r.Skipped,
-                        passRate
+                        passRate,
+                        r.Source
                     );
                 })
                 .ToList();

@@ -21,13 +21,14 @@ export const testResultsApi = {
     status?: TestResultStatus,
     search?: string,
     page = 1,
+    pageSize = RESULTS_PAGE_SIZE,
   ) => {
     const { data } = await client.get<Paginated<TestResult>>(
       BASE(projectId, runId),
       {
         params: {
           page,
-          pageSize: RESULTS_PAGE_SIZE,
+          pageSize,
           ...(status !== undefined && { status }),
           ...(search && { search }),
         },

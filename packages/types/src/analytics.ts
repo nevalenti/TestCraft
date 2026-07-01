@@ -8,6 +8,7 @@ export interface TrendPoint {
   blocked: number;
   skipped: number;
   passRate: number;
+  source?: string;
 }
 
 export interface SuiteBreakdown {

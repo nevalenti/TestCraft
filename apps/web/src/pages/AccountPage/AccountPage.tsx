@@ -62,7 +62,6 @@ export const AccountPage = () => {
         </header>
 
         <div className="page-content flex max-w-2xl flex-col gap-5">
-          {/* Profile hero */}
           <div className="flex items-center gap-5 rounded-2xl border border-border bg-base-100 p-6 shadow-sm">
             <div className="group relative shrink-0">
               {avatarData?.url ? (
@@ -116,7 +115,6 @@ export const AccountPage = () => {
             </div>
           </div>
 
-          {/* Details grid */}
           <div className="grid grid-cols-2 gap-3">
             {fields.map(({ label, value }) => (
               <div key={label} className="rounded-xl bg-base-200 px-4 py-3.5">
@@ -130,7 +128,6 @@ export const AccountPage = () => {
             ))}
           </div>
 
-          {/* Actions */}
           <div className="flex items-center gap-2.5 pt-1">
             <a
               href={keycloakAccountUrl}

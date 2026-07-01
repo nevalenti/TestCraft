@@ -23,6 +23,7 @@ public interface IApplicationDbContext
     DbSet<WebhookSubscription> WebhookSubscriptions { get; }
     DbSet<EmailSubscription> EmailSubscriptions { get; }
     DbSet<UserProfile> UserProfiles { get; }
+    DbSet<RunLog> RunLogs { get; }
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

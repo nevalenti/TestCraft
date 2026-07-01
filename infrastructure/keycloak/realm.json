@@ -16,11 +16,13 @@
       "directAccessGrantsEnabled": true,
       "redirectUris": [
         "http://localhost:3000/*",
+        "http://localhost:4173/*",
         "https://localhost/*",
         "https://testcraft.dev/*"
       ],
       "webOrigins": [
         "http://localhost:3000",
+        "http://localhost:4173",
         "https://localhost",
         "https://testcraft.dev"
       ],
@@ -66,7 +68,7 @@
       "alias": "github",
       "displayName": "GitHub",
       "providerId": "github",
-      "enabled": true,
+      "enabled": "GITHUB_IDP_ENABLED",
       "trustEmail": true,
       "storeToken": false,
       "addReadTokenRoleOnCreate": false,

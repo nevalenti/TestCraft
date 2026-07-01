@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Import.Contracts;
+using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import.Consumers;
 
 public partial class ImportAllureRequestedConsumer(
     IApplicationDbContext dbContext,
+    ITestRunNotifier notifier,
     ILogger<ImportAllureRequestedConsumer> logger
 ) : IConsumer<ImportAllureRequested>
 {
@@ -36,7 +38,7 @@ public partial class ImportAllureRequestedConsumer(
         {
             var cases = AllureParser.Parse(message.Results);
 
-            await ImportRunWriter.CreateRunWithResultsAsync(
+            var run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
                 message.ProjectId,
                 message.Name ?? ImportAllure.Command.DefaultRunName,
@@ -49,6 +51,8 @@ public partial class ImportAllureRequestedConsumer(
                 job,
                 cancellationToken
             );
+
+            await notifier.RunStatusChangedAsync(run.Id, run.Status.ToString(), cancellationToken);
         }
         catch (Exception ex)
         {

@@ -71,6 +71,33 @@ public class TestRunsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
 
+    /// <summary>Gets persisted log lines for a test run.</summary>
+    [HttpGet("{id:guid}/logs")]
+    public async Task<ActionResult<IReadOnlyList<string>>> GetLogs(
+        Guid projectId,
+        Guid id,
+        CancellationToken cancellationToken
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetRunLogs.Query { ProjectId = projectId, RunId = id },
+                cancellationToken
+            )
+        );
+
+    /// <summary>Appends log lines to the live feed for a test run.</summary>
+    [HttpPost("{id:guid}/logs")]
+    public async Task<IActionResult> AppendLogs(
+        Guid projectId,
+        Guid id,
+        AppendRunLogs.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        await sender.Send(command with { ProjectId = projectId, RunId = id }, cancellationToken);
+        return NoContent();
+    }
+
     /// <summary>Deletes a test run.</summary>
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(

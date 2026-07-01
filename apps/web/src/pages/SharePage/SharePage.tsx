@@ -60,7 +60,6 @@ export const SharePage = () => {
           {formatDate(run.createdAt)}
         </p>
 
-        {/* Summary */}
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
           <Stat label="Total" value={run.total} />
           <Stat label="Passed" value={run.passed} className="text-success" />
@@ -79,7 +78,6 @@ export const SharePage = () => {
           <span className="ml-1.5 text-sm text-base-content/60">pass rate</span>
         </div>
 
-        {/* Results Table */}
         <div className="mt-8 overflow-x-auto rounded-xl border border-border bg-base-100">
           <table className="table">
             <thead>
