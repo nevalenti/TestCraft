@@ -6,6 +6,7 @@ export * from "./label.js";
 export * from "./notification.js";
 export * from "./pagination.js";
 export * from "./project.js";
+export * from "./project-member.js";
 export * from "./share-token.js";
 export * from "./test-case.js";
 export * from "./test-plan.js";

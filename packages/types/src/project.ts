@@ -6,6 +6,7 @@ export interface Project {
   updatedAt?: string;
   suiteCount?: number;
   runCount?: number;
+  isOwner: boolean;
 }
 
 export interface CreateProject {

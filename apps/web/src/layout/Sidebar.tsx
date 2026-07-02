@@ -56,7 +56,7 @@ export const Sidebar = () => {
 
       <div className="shrink-0 border-t border-border">
         <div className="flex items-center justify-center px-3 py-1.5">
-          <p className="text-[10px] text-base-content/35">
+          <p className="text-[10px] text-base-content/50">
             © 2026 <span className="font-semibold">TestCraft</span>
           </p>
         </div>

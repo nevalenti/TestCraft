@@ -15,7 +15,7 @@ export const ViewToggle = () => {
           "flex size-7 items-center justify-center rounded-md transition-all",
           viewMode === "grid"
             ? "bg-base-100 text-base-content shadow-sm"
-            : "text-base-content/50 hover:text-base-content/70",
+            : "text-base-content/65 hover:text-base-content/85",
         )}
         onClick={() => setViewMode("grid")}
         aria-label="Grid view"
@@ -29,7 +29,7 @@ export const ViewToggle = () => {
           "flex size-7 items-center justify-center rounded-md transition-all",
           viewMode === "list"
             ? "bg-base-100 text-base-content shadow-sm"
-            : "text-base-content/50 hover:text-base-content/70",
+            : "text-base-content/65 hover:text-base-content/85",
         )}
         onClick={() => setViewMode("list")}
         aria-label="List view"

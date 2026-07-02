@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 interface ResourceCardProps {
   to?: string;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   label: string;
   cardBg?: string;
   accentText?: string;
@@ -56,11 +56,11 @@ export const ResourceCard = ({
           aria-label={`Open ${label}`}
         />
       )}
-      <div className="flex min-h-[116px] flex-col justify-between p-4 pr-10">
+      <div className="flex min-h-[92px] flex-col justify-between p-3.5 pr-9">
         {typeIcon && (
-          <div className="mb-3 flex items-center gap-1.5">
+          <div className="mb-2 flex items-center gap-1.5">
             <span className={accentText}>{typeIcon}</span>
-            <span className="text-[10px] font-semibold tracking-[0.1em] text-base-content/48 uppercase">
+            <span className="text-[10px] font-semibold tracking-[0.1em] text-base-content/63 uppercase">
               {label}
             </span>
           </div>

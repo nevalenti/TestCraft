@@ -50,7 +50,7 @@ export const AccountMenu = () => {
           </span>
         )}
         <ChevronDownIcon
-          className="size-3.5 shrink-0 text-base-content/50 transition-transform duration-200 group-focus-within:rotate-180"
+          className="size-3.5 shrink-0 text-base-content/65 transition-transform duration-200 group-focus-within:rotate-180"
           aria-hidden="true"
         />
       </div>
@@ -81,13 +81,13 @@ export const AccountMenu = () => {
                     {displayName}
                   </p>
                   {email && (
-                    <p className="mt-0.5 truncate text-xs text-base-content/60">
+                    <p className="mt-0.5 truncate text-xs text-base-content/75">
                       {email}
                     </p>
                   )}
                 </div>
                 <ChevronRightIcon
-                  className="size-3.5 shrink-0 text-base-content/35 transition-transform motion-safe:group-hover:translate-x-0.5"
+                  className="size-3.5 shrink-0 text-base-content/50 transition-transform motion-safe:group-hover:translate-x-0.5"
                   aria-hidden="true"
                 />
               </button>
@@ -104,7 +104,7 @@ export const AccountMenu = () => {
                 redirectUri: location.origin + "/",
               })
             }
-            className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/65 transition-colors hover:bg-error/10 hover:text-error"
+            className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/80 transition-colors hover:bg-error/10 hover:text-error"
           >
             <ArrowRightStartOnRectangleIcon
               className="size-4"

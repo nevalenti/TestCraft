@@ -56,7 +56,7 @@ export const AccountPage = () => {
       <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
         <header className="page-header">
           <h1 className="page-title">Account</h1>
-          <p className="mt-0.5 text-sm text-base-content/55">
+          <p className="mt-0.5 text-sm text-base-content/70">
             Manage your profile and preferences
           </p>
         </header>
@@ -95,12 +95,12 @@ export const AccountPage = () => {
                 {displayName || "—"}
               </p>
               {email && (
-                <p className="mt-0.5 truncate text-sm text-base-content/55">
+                <p className="mt-0.5 truncate text-sm text-base-content/70">
                   {email}
                 </p>
               )}
               {username && displayName !== username && (
-                <p className="mt-0.5 text-xs text-base-content/40">
+                <p className="mt-0.5 text-xs text-base-content/55">
                   @{username}
                 </p>
               )}
@@ -118,7 +118,7 @@ export const AccountPage = () => {
           <div className="grid grid-cols-2 gap-3">
             {fields.map(({ label, value }) => (
               <div key={label} className="rounded-xl bg-base-200 px-4 py-3.5">
-                <p className="text-[10px] font-semibold tracking-widest text-base-content/45 uppercase">
+                <p className="text-[10px] font-semibold tracking-widest text-base-content/60 uppercase">
                   {label}
                 </p>
                 <p className="mt-1 truncate text-sm font-medium text-base-content">
@@ -160,7 +160,7 @@ export const AccountPage = () => {
       <dialog ref={signOutDialogRef} className="modal">
         <div className="modal-box max-w-sm">
           <h3 className="text-base font-bold">Sign out?</h3>
-          <p className="mt-1.5 text-sm text-base-content/60">
+          <p className="mt-1.5 text-sm text-base-content/75">
             You will be returned to the login page.
           </p>
           <div className="mt-6 flex justify-end gap-2">

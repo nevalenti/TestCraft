@@ -157,10 +157,10 @@ export const LabelsTab = () => {
     if (!labels || labels.length === 0)
       return (
         <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-center">
-          <p className="text-sm font-semibold text-base-content/60">
+          <p className="text-sm font-semibold text-base-content/75">
             No labels yet
           </p>
-          <p className="text-xs text-base-content/50">
+          <p className="text-xs text-base-content/65">
             Create labels to tag test cases.
           </p>
         </div>
@@ -169,7 +169,7 @@ export const LabelsTab = () => {
       <div className="overflow-hidden rounded-xl border border-border">
         <table className="table table-sm">
           <thead>
-            <tr className="text-xs text-base-content/70">
+            <tr className="text-xs text-base-content/85">
               <th>Label</th>
               <th>Color</th>
               <th />
@@ -182,7 +182,7 @@ export const LabelsTab = () => {
                   <LabelBadge label={label} />
                 </td>
                 <td>
-                  <span className="flex items-center gap-1.5 text-xs text-base-content/60">
+                  <span className="flex items-center gap-1.5 text-xs text-base-content/75">
                     <span
                       className="inline-block size-3 rounded-full"
                       style={{ backgroundColor: label.color }}
@@ -219,7 +219,7 @@ export const LabelsTab = () => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-base-content/70">
+        <p className="text-sm text-base-content/85">
           Labels let you tag test cases for filtering and reporting.
         </p>
         <button

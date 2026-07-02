@@ -15,7 +15,7 @@ public static class GetProjectById
         Guid IProjectScopedRequest.ProjectId => Id;
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
         : IRequestHandler<Query, ProjectResponse>
     {
         public async Task<ProjectResponse> Handle(
@@ -33,6 +33,7 @@ public static class GetProjectById
                     UpdatedAt = p.UpdatedAt,
                     SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
                     RunCount = p.TestRuns.Count(r => !r.IsDeleted),
+                    IsOwner = p.UserId == currentUser.UserId,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();

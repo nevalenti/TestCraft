@@ -12,6 +12,7 @@ public record TestRunResponse
     public string? Source { get; init; }
     public Guid? ExecutedById { get; init; }
     public string? ExecutedByName { get; init; }
+    public string? ExecutedByAvatarUrl { get; init; }
     public required DateTimeOffset CreatedAt { get; init; }
     public required DateTimeOffset UpdatedAt { get; init; }
 }

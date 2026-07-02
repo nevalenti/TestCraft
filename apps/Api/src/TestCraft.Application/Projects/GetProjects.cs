@@ -22,7 +22,9 @@ public static class GetProjects
             CancellationToken cancellationToken
         )
         {
-            var query = context.Projects.Where(p => p.UserId == currentUser.UserId);
+            var query = context.Projects.Where(p =>
+                p.UserId == currentUser.UserId || p.Members.Any(m => m.UserId == currentUser.UserId)
+            );
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
@@ -46,6 +48,7 @@ public static class GetProjects
                     UpdatedAt = p.UpdatedAt,
                     SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
                     RunCount = p.TestRuns.Count(r => !r.IsDeleted),
+                    IsOwner = p.UserId == currentUser.UserId,
                 })
                 .ToListAsync(cancellationToken);
 

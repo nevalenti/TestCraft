@@ -10,7 +10,7 @@ interface ProjectCardProps {
   project: Project;
   viewMode?: ViewMode;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
 }
 
 const CountBadges = ({ project }: { project: Project }) => {
@@ -19,10 +19,10 @@ const CountBadges = ({ project }: { project: Project }) => {
 
   return (
     <>
-      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
+      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
         {project.suiteCount} {project.suiteCount === 1 ? "suite" : "suites"}
       </span>
-      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
+      <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
         {project.runCount} {project.runCount === 1 ? "run" : "runs"}
       </span>
     </>
@@ -35,12 +35,14 @@ export const ProjectCard = ({
   onEdit,
   onDelete,
 }: ProjectCardProps) => {
+  const deleteHandler = project.isOwner ? onDelete : undefined;
+
   if (viewMode === "list")
     return (
       <ResourceListItem
         to={`/projects/${project.id}`}
         onEdit={onEdit}
-        onDelete={onDelete}
+        onDelete={deleteHandler}
         label="project"
         testId="project-card"
         cardBg="card-bg-primary"
@@ -49,9 +51,9 @@ export const ProjectCard = ({
       >
         <div className="flex min-w-0 flex-col gap-0.5">
           <span className="truncate text-sm font-semibold">{project.name}</span>
-          <p className="truncate text-xs text-base-content/70">
+          <p className="truncate text-xs text-base-content/85">
             {project.description ?? (
-              <span className="text-base-content/40 italic">
+              <span className="text-base-content/55 italic">
                 No description
               </span>
             )}
@@ -59,7 +61,7 @@ export const ProjectCard = ({
         </div>
         <div className="hidden shrink-0 items-center gap-2 sm:flex">
           <CountBadges project={project} />
-          <span className="text-[11px] font-medium text-base-content/50 tabular-nums">
+          <span className="text-[11px] font-medium text-base-content/65 tabular-nums">
             {formatDate(project.createdAt)}
           </span>
         </div>
@@ -70,28 +72,28 @@ export const ProjectCard = ({
     <ResourceCard
       to={`/projects/${project.id}`}
       onEdit={onEdit}
-      onDelete={onDelete}
+      onDelete={deleteHandler}
       label="project"
       testId="project-card"
       cardBg="card-bg-primary"
       accentText="text-primary"
       typeIcon={<FolderIcon className="size-3.5" />}
     >
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-1">
         <span className="line-clamp-2 text-base leading-snug font-semibold">
           {project.name}
         </span>
-        <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
+        <p className="line-clamp-2 text-sm leading-relaxed text-base-content/85">
           {project.description ?? (
-            <span className="text-base-content/40 italic">No description</span>
+            <span className="text-base-content/55 italic">No description</span>
           )}
         </p>
       </div>
-      <div className="mt-4 flex items-center justify-between gap-2">
+      <div className="mt-2.5 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
           <CountBadges project={project} />
         </div>
-        <span className="shrink-0 text-[11px] font-medium text-base-content/50 tabular-nums">
+        <span className="shrink-0 text-[11px] font-medium text-base-content/65 tabular-nums">
           {formatDate(project.createdAt)}
         </span>
       </div>

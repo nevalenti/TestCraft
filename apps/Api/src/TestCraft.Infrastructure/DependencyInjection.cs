@@ -100,6 +100,16 @@ public static class DependencyInjection
             }
         );
 
+        services.AddHttpClient(
+            "keycloak-admin",
+            client =>
+            {
+                client.Timeout = TimeSpan.FromSeconds(10);
+            }
+        );
+        services.AddSingleton<IKeycloakAdminTokenProvider, KeycloakAdminTokenProvider>();
+        services.AddScoped<IKeycloakUserDirectory, KeycloakUserDirectory>();
+
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
         services.AddSingleton<IDbExceptionClassifier, PostgresExceptionClassifier>();

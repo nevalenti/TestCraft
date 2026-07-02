@@ -44,17 +44,17 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
             Live
           </span>
         ) : (
-          <span className="inline-flex items-center rounded-full border border-base-content/12 bg-base-content/5 px-2.5 py-1 text-xs font-semibold text-base-content/50">
+          <span className="inline-flex items-center rounded-full border border-base-content/12 bg-base-content/5 px-2.5 py-1 text-xs font-semibold text-base-content/65">
             Completed
           </span>
         )}
-        <span className="text-sm text-base-content/50">
+        <span className="text-sm text-base-content/65">
           {items.length} result{items.length === 1 ? "" : "s"}
         </span>
       </div>
 
       {items.length === 0 ? (
-        <p className="py-16 text-center text-sm text-base-content/40">
+        <p className="py-16 text-center text-sm text-base-content/55">
           Waiting for results…
         </p>
       ) : (
@@ -71,11 +71,11 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
                   {result.testCaseName}
                 </span>
                 {duration && (
-                  <span className="shrink-0 rounded-md bg-base-200 px-1.5 py-0.5 text-xs text-base-content/55 tabular-nums">
+                  <span className="shrink-0 rounded-md bg-base-200 px-1.5 py-0.5 text-xs text-base-content/70 tabular-nums">
                     {duration}
                   </span>
                 )}
-                <span className="shrink-0 text-xs text-base-content/40">
+                <span className="shrink-0 text-xs text-base-content/55">
                   {formatDate(result.createdAt)}
                 </span>
               </div>

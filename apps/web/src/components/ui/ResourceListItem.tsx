@@ -6,7 +6,7 @@ import { cn } from "@/lib/cn";
 interface ResourceListItemProps {
   to?: string;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   label: string;
   cardBg?: string;
   accentText?: string;

@@ -104,9 +104,9 @@ export const TestSuitePage = () => {
                 <span className="truncate text-sm font-semibold">
                   {testCase.name}
                 </span>
-                <p className="truncate text-xs text-base-content/70">
+                <p className="truncate text-xs text-base-content/85">
                   {testCase.description ?? (
-                    <span className="text-base-content/40 italic">
+                    <span className="text-base-content/55 italic">
                       No description
                     </span>
                   )}
@@ -119,20 +119,20 @@ export const TestSuitePage = () => {
                       <LabelBadge key={label.id} label={label} />
                     ))}
                     {testCase.labels!.length > 2 && (
-                      <span className="text-[11px] font-medium text-base-content/50">
+                      <span className="text-[11px] font-medium text-base-content/65">
                         +{testCase.labels!.length - 2}
                       </span>
                     )}
                   </div>
                 )}
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/60">
+                  <span className="text-[11px] text-base-content/75">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? "" : "s"}
                   </span>
                 )}
                 <PriorityBadge priority={testCase.priority} />
-                <span className="text-[11px] text-base-content/50 tabular-nums">
+                <span className="text-[11px] text-base-content/65 tabular-nums">
                   {formatDate(testCase.createdAt)}
                 </span>
               </div>
@@ -155,41 +155,41 @@ export const TestSuitePage = () => {
             accentText="text-info"
             typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
           >
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <span className="line-clamp-2 text-base leading-snug font-semibold">
                 {testCase.name}
               </span>
-              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
+              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/85">
                 {testCase.description ?? (
-                  <span className="text-base-content/40 italic">
+                  <span className="text-base-content/55 italic">
                     No description
                   </span>
                 )}
               </p>
             </div>
             {(testCase.labels ?? []).length > 0 && (
-              <div className="mt-2.5 flex flex-wrap items-center gap-1">
+              <div className="mt-2 flex flex-wrap items-center gap-1">
                 {testCase.labels!.slice(0, 3).map((label) => (
                   <LabelBadge key={label.id} label={label} />
                 ))}
                 {testCase.labels!.length > 3 && (
-                  <span className="text-[11px] font-medium text-base-content/50">
+                  <span className="text-[11px] font-medium text-base-content/65">
                     +{testCase.labels!.length - 3}
                   </span>
                 )}
               </div>
             )}
-            <div className="mt-3 flex items-center justify-between gap-2">
+            <div className="mt-2 flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <PriorityBadge priority={testCase.priority} />
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/60">
+                  <span className="text-[11px] text-base-content/75">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? "" : "s"}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-base-content/50 tabular-nums">
+              <span className="text-[11px] text-base-content/65 tabular-nums">
                 {formatDate(testCase.createdAt)}
               </span>
             </div>
@@ -206,12 +206,12 @@ export const TestSuitePage = () => {
           <div className="flex items-center gap-2">
             <h1 className="page-title">{suite?.name}</h1>
             {suite?.source && (
-              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
+              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
                 {suite.source}
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-sm text-base-content/55">
+          <p className="mt-0.5 text-sm text-base-content/70">
             {suite?.description ?? "Test cases in this suite"}
           </p>
         </div>

@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using TestCraft.Application.Import;
 using TestCraft.Application.Labels;
+using TestCraft.Application.ProjectMembers;
 using TestCraft.Application.Projects;
 using TestCraft.Application.TestCases;
 using TestCraft.Application.TestPlans;
@@ -138,6 +139,16 @@ internal static class ApiTestHelpers
 
         return (await response.Content.ReadFromJsonAsync<TestResultResponse>(JsonOptions))!;
     }
+
+    public static async Task<HttpResponseMessage> AddMemberAsync(
+        this HttpClient client,
+        Guid projectId,
+        string email
+    ) =>
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/members",
+            new AddProjectMember.Command { Email = email }
+        );
 
     public static async Task<ImportJobResponse> WaitForImportJobAsync(
         this HttpClient client,

@@ -45,7 +45,7 @@ const SuiteTooltip = ({
           key={entry.name}
           className="flex items-center justify-between gap-6"
         >
-          <span className="flex items-center gap-1.5 text-xs text-base-content/70">
+          <span className="flex items-center gap-1.5 text-xs text-base-content/85">
             <span
               className="inline-block size-1.5 rounded-full"
               style={{ background: entry.fill }}
@@ -58,7 +58,7 @@ const SuiteTooltip = ({
         </div>
       ))}
       <div className="mt-1.5 flex items-center justify-between border-t border-border pt-1.5">
-        <span className="text-xs text-base-content/50">Total</span>
+        <span className="text-xs text-base-content/65">Total</span>
         <span className="text-xs font-bold tabular-nums">{total}</span>
       </div>
     </div>
@@ -93,7 +93,7 @@ export const AnalyticsSuiteTab = () => {
         <div className="flex-1">
           <label
             htmlFor="suite-run-select"
-            className="mb-1 block text-xs font-medium text-base-content/60"
+            className="mb-1 block text-xs font-medium text-base-content/75"
           >
             Select run
           </label>
@@ -132,7 +132,7 @@ export const AnalyticsSuiteTab = () => {
       {suiteRunId && suiteData.length > 0 && (
         <div className="rounded-xl border border-border bg-base-100 px-4 pt-4 pb-2">
           {selectedRun && (
-            <p className="mb-4 truncate text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+            <p className="mb-4 truncate text-xs font-semibold tracking-widest text-base-content/65 uppercase">
               {selectedRun.name} · {formatDate(selectedRun.createdAt)}
             </p>
           )}

@@ -25,8 +25,17 @@ public sealed class InfrastructureOptions
     public string? SmtpPassword { get; init; }
     public string SmtpFromAddress { get; init; } = "noreply@testcraft.local";
 
+    public string KeycloakBaseUrl { get; init; } = string.Empty;
+    public string KeycloakRealm { get; init; } = "testcraft";
+    public string KeycloakAdminUsername { get; init; } = string.Empty;
+    public string KeycloakAdminPassword { get; init; } = string.Empty;
+
     public static InfrastructureOptions Bind(IConfiguration configuration)
     {
+        var authority = configuration["KEYCLOAK_AUTHORITY"] ?? string.Empty;
+        const string realmMarker = "/realms/";
+        var realmIndex = authority.IndexOf(realmMarker, StringComparison.Ordinal);
+
         var options = new InfrastructureOptions
         {
             DatabaseUrl = configuration["DATABASE_URL"] ?? string.Empty,
@@ -43,6 +52,11 @@ public sealed class InfrastructureOptions
             SmtpUser = configuration["SMTP_USER"],
             SmtpPassword = configuration["SMTP_PASSWORD"],
             SmtpFromAddress = configuration["SMTP_FROM_ADDRESS"] ?? "noreply@testcraft.local",
+            KeycloakBaseUrl = realmIndex >= 0 ? authority[..realmIndex] : authority,
+            KeycloakRealm =
+                realmIndex >= 0 ? authority[(realmIndex + realmMarker.Length)..] : "testcraft",
+            KeycloakAdminUsername = configuration["KEYCLOAK_ADMIN"] ?? string.Empty,
+            KeycloakAdminPassword = configuration["KEYCLOAK_ADMIN_PASSWORD"] ?? string.Empty,
         };
 
         var results = new List<ValidationResult>();

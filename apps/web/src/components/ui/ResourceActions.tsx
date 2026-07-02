@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
 
 interface ResourceActionsProps {
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   label: string;
   size?: "sm" | "xs";
 }
@@ -18,7 +18,7 @@ export const ResourceActions = ({
   <>
     <button
       className={cn(
-        "btn btn-ghost text-base-content/55 hover:text-base-content",
+        "btn btn-ghost text-base-content/70 hover:text-base-content",
         `btn-${size}`,
       )}
       onClick={onEdit}
@@ -26,15 +26,17 @@ export const ResourceActions = ({
     >
       <PencilIcon className={cn(size === "xs" ? "size-3.5" : "size-4")} />
     </button>
-    <button
-      className={cn(
-        "btn btn-ghost text-base-content/55 hover:text-error",
-        `btn-${size}`,
-      )}
-      onClick={onDelete}
-      aria-label={`Delete ${label}`}
-    >
-      <TrashIcon className={cn(size === "xs" ? "size-3.5" : "size-4")} />
-    </button>
+    {onDelete && (
+      <button
+        className={cn(
+          "btn btn-ghost text-base-content/70 hover:text-error",
+          `btn-${size}`,
+        )}
+        onClick={onDelete}
+        aria-label={`Delete ${label}`}
+      >
+        <TrashIcon className={cn(size === "xs" ? "size-3.5" : "size-4")} />
+      </button>
+    )}
   </>
 );

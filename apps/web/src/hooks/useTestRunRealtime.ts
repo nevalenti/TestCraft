@@ -16,14 +16,34 @@ export const useTestRunRealtime = (projectId: string, runId: string) => {
     });
   }, [queryClient, projectId, runId]);
 
-  useSignalR(runId, {
-    ResultAdded: invalidateResults,
-    ResultUpdated: invalidateResults,
-    ResultDeleted: invalidateResults,
-    RunStatusChanged: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.detail(projectId, runId),
-      });
+  const invalidateAll = useCallback(() => {
+    invalidateResults();
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.testRuns.detail(projectId, runId),
+    });
+    queryClient.invalidateQueries({
+      queryKey: queryKeys.testRuns.logs(projectId, runId),
+    });
+  }, [invalidateResults, queryClient, projectId, runId]);
+
+  useSignalR(
+    runId,
+    {
+      ResultAdded: invalidateResults,
+      ResultUpdated: invalidateResults,
+      ResultDeleted: invalidateResults,
+      RunStatusChanged: () => {
+        queryClient.invalidateQueries({
+          queryKey: queryKeys.testRuns.detail(projectId, runId),
+        });
+      },
+      LogsAppended: (data) => {
+        queryClient.setQueryData<string[]>(
+          queryKeys.testRuns.logs(projectId, runId),
+          (prev = []) => [...prev, ...(data as string[])],
+        );
+      },
     },
-  });
+    invalidateAll,
+  );
 };

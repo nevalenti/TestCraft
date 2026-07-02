@@ -16,7 +16,7 @@ export const FormActions = ({
   <div className="flex justify-end gap-2 pt-3">
     <button
       type="button"
-      className="btn text-base-content/70 btn-ghost btn-sm"
+      className="btn text-base-content/85 btn-ghost btn-sm"
       onClick={onCancel}
     >
       Cancel

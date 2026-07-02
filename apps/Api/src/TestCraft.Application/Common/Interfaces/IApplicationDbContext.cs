@@ -24,6 +24,7 @@ public interface IApplicationDbContext
     DbSet<EmailSubscription> EmailSubscriptions { get; }
     DbSet<UserProfile> UserProfiles { get; }
     DbSet<RunLog> RunLogs { get; }
+    DbSet<ProjectMember> ProjectMembers { get; }
     DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

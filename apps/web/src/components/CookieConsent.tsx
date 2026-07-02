@@ -23,7 +23,7 @@ export const CookieConsent = () => {
             />
             <div className="flex min-w-0 flex-col gap-0.5">
               <p className="text-sm font-semibold">We use cookies</p>
-              <p className="text-xs leading-relaxed text-base-content/75">
+              <p className="text-xs leading-relaxed text-base-content/90">
                 We use cookies to enhance your browsing experience and analyse
                 our traffic.
               </p>

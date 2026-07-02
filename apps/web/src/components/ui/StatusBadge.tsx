@@ -29,7 +29,7 @@ const config: Record<
   },
   [TestResultStatus.Skipped]: {
     label: "Skipped",
-    cls: "bg-base-content/6 text-base-content/65 border-base-content/15",
+    cls: "bg-base-content/6 text-base-content/80 border-base-content/15",
     icon: <MinusIcon className="size-3" />,
   },
 };

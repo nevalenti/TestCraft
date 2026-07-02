@@ -28,6 +28,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
     public DbSet<EmailSubscription> EmailSubscriptions => Set<EmailSubscription>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
     public DbSet<RunLog> RunLogs => Set<RunLog>();
+    public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

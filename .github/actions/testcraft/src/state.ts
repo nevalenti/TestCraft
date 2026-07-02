@@ -2,7 +2,6 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
-// Scoped to this workflow run + job so parallel jobs don't collide.
 const stateFile = join(
   process.env["RUNNER_TEMP"] ?? tmpdir(),
   `.testcraft_${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}.run_id`,

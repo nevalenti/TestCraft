@@ -16,12 +16,12 @@ export const FormField = ({
   <div className="flex flex-col gap-1.5">
     <label
       htmlFor={htmlFor}
-      className="text-xs font-semibold text-base-content/65"
+      className="text-xs font-semibold text-base-content/80"
     >
       {label}
     </label>
     {children}
-    {hint && !error && <p className="text-xs text-base-content/55">{hint}</p>}
+    {hint && !error && <p className="text-xs text-base-content/70">{hint}</p>}
     {error && <p className="text-xs font-medium text-error">{error}</p>}
   </div>
 );

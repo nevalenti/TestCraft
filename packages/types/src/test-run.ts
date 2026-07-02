@@ -9,6 +9,7 @@ export interface TestRun {
   source?: string;
   executedById?: string;
   executedByName?: string;
+  executedByAvatarUrl?: string;
   createdAt: string;
   updatedAt?: string;
 }

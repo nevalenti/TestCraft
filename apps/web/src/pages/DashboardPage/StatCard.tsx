@@ -15,7 +15,7 @@ type StatCardProps = {
 };
 
 const cardBase =
-  "relative overflow-hidden rounded-2xl p-5 transition-[box-shadow] duration-200 ease-out";
+  "relative overflow-hidden rounded-2xl p-4 transition-[box-shadow] duration-200 ease-out";
 
 export const StatCard = ({
   label,
@@ -30,12 +30,12 @@ export const StatCard = ({
   const inner = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <p className="text-[11px] font-bold tracking-widest text-base-content/45 uppercase">
+        <p className="text-[11px] font-bold tracking-widest text-base-content/60 uppercase">
           {label}
         </p>
         <span
           className={cn(
-            "flex size-8 shrink-0 items-center justify-center rounded-xl bg-current/8",
+            "flex size-7 shrink-0 items-center justify-center rounded-xl bg-current/8",
             accent,
           )}
         >
@@ -45,7 +45,7 @@ export const StatCard = ({
 
       <p
         className={cn(
-          "mt-3 font-display text-[2.5rem] leading-none font-extrabold tabular-nums tracking-tight",
+          "mt-2 font-display text-[2rem] leading-none font-extrabold tabular-nums tracking-tight",
           accent,
         )}
       >
@@ -53,13 +53,13 @@ export const StatCard = ({
       </p>
 
       {to ? (
-        <p className="mt-3 flex items-center gap-1 text-[11px] font-medium text-base-content/40">
+        <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-base-content/55">
           View all
           <ArrowRightIcon className="size-3" />
         </p>
       ) : (
         description && (
-          <p className="mt-3 text-xs text-base-content/40">{description}</p>
+          <p className="mt-2 text-xs text-base-content/55">{description}</p>
         )
       )}
     </>

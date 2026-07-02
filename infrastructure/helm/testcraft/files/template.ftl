@@ -103,7 +103,7 @@
     </script>
   </head>
   <body class="text-base-content min-h-screen">
-    <div class="mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100" style="border-left: 1px solid var(--color-border); border-right: 1px solid var(--color-border);">
+    <div class="mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-3 sm:min-h-[calc(100vh-1.5rem)] sm:rounded-2xl" style="border: 1px solid var(--color-border);">
 
       <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">

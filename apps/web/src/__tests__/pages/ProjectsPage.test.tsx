@@ -56,6 +56,7 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   runCount: 1,
   createdAt: "2026-01-15T00:00:00.000Z",
   updatedAt: "2026-01-15T00:00:00.000Z",
+  isOwner: true,
   ...overrides,
 });
 

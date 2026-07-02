@@ -20,13 +20,13 @@ export const ConfirmDialog = ({
   isLoading,
 }: ConfirmDialogProps) => (
   <Modal isOpen={isOpen} onClose={onClose} title={title}>
-    <p className="mb-5 text-sm leading-relaxed text-base-content/70">
+    <p className="mb-5 text-sm leading-relaxed text-base-content/85">
       {description}
     </p>
     <div className="flex justify-end gap-2">
       <button
         type="button"
-        className="btn text-base-content/70 btn-ghost btn-sm"
+        className="btn text-base-content/85 btn-ghost btn-sm"
         onClick={onClose}
       >
         Cancel

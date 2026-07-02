@@ -137,15 +137,15 @@ export const FileDropZone = ({
       {files.length === 0 ? (
         <div className="pointer-events-none flex flex-col items-center gap-2.5 px-4 py-8 text-center select-none">
           <div className="rounded-full bg-base-300 p-2.5">
-            <ArrowUpTrayIcon className="size-5 text-base-content/60" />
+            <ArrowUpTrayIcon className="size-5 text-base-content/75" />
           </div>
           <div>
-            <p className="text-sm text-base-content/70">
+            <p className="text-sm text-base-content/85">
               <span className={cn("font-medium", c.text)}>Click to upload</span>{" "}
               or drag & drop
             </p>
             {hint && (
-              <p className="mt-0.5 text-xs text-base-content/50">{hint}</p>
+              <p className="mt-0.5 text-xs text-base-content/65">{hint}</p>
             )}
           </div>
         </div>
@@ -160,17 +160,17 @@ export const FileDropZone = ({
               key={fileIndex}
               className="flex items-center gap-2 rounded-lg bg-base-100 px-3 py-2 shadow-sm"
             >
-              <DocumentIcon className="size-4 shrink-0 text-base-content/50" />
-              <span className="flex-1 truncate text-sm font-medium text-base-content/80">
+              <DocumentIcon className="size-4 shrink-0 text-base-content/65" />
+              <span className="flex-1 truncate text-sm font-medium text-base-content/90">
                 {file.name}
               </span>
-              <span className="text-xs whitespace-nowrap text-base-content/50 tabular-nums">
+              <span className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
                 {(file.size / 1024).toFixed(1)} KB
               </span>
               <button
                 type="button"
                 aria-label={`Remove ${file.name}`}
-                className="ml-1 rounded p-0.5 text-base-content/40 transition-colors hover:bg-error/10 hover:text-error"
+                className="ml-1 rounded p-0.5 text-base-content/55 transition-colors hover:bg-error/10 hover:text-error"
                 onClick={() => removeFile(fileIndex)}
               >
                 <XMarkIcon className="size-3.5" />

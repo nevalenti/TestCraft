@@ -63,6 +63,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
                 );
 
             services.AddScoped<IStorageService, FakeStorageService>();
+            services.AddSingleton<IKeycloakUserDirectory, FakeKeycloakUserDirectory>();
         });
     }
 

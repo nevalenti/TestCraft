@@ -23,7 +23,7 @@ export const BreadcrumbBar = () => {
               >
                 {index > 0 && (
                   <span
-                    className="text-xs text-base-content/30 select-none"
+                    className="text-xs text-base-content/45 select-none"
                     aria-hidden="true"
                   >
                     /
@@ -34,7 +34,7 @@ export const BreadcrumbBar = () => {
                     // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     to={item.href as any}
                     title={item.label}
-                    className="flex max-w-48 items-center truncate text-xs font-medium text-base-content/60 transition-colors hover:text-base-content/80"
+                    className="flex max-w-48 items-center truncate text-xs font-medium text-base-content/75 transition-colors hover:text-base-content/90"
                   >
                     {item.label}
                   </Link>
@@ -43,7 +43,7 @@ export const BreadcrumbBar = () => {
                     aria-current={isLast ? "page" : undefined}
                     title={item.label}
                     className={`max-w-64 truncate text-xs font-semibold ${
-                      isLast ? "text-base-content/80" : "text-base-content/70"
+                      isLast ? "text-base-content/90" : "text-base-content/85"
                     }`}
                   >
                     {item.label}
@@ -58,7 +58,7 @@ export const BreadcrumbBar = () => {
   };
 
   return (
-    <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-200/50 px-4 sm:px-6 lg:h-14 lg:px-8">
+    <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-200 px-4 sm:px-6 lg:h-14 lg:px-8">
       {content()}
       <div className="ml-auto hidden items-center gap-2 lg:flex">
         <AccountMenu />

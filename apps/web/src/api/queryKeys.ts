@@ -29,6 +29,9 @@ export const queryKeys = {
   apiTokens: {
     all: (projectId: string) => ["projects", projectId, "tokens"] as const,
   },
+  projectMembers: {
+    all: (projectId: string) => ["projects", projectId, "members"] as const,
+  },
   attachments: {
     all: (projectId: string, runId: string, resultId: string) =>
       [
@@ -93,6 +96,8 @@ export const queryKeys = {
       ["projects", projectId, "runs", id] as const,
     summary: (projectId: string, id: string) =>
       ["projects", projectId, "runs", id, "summary"] as const,
+    logs: (projectId: string, id: string) =>
+      ["projects", projectId, "runs", id, "logs"] as const,
   },
   testResults: {
     all: (projectId: string, runId: string) =>

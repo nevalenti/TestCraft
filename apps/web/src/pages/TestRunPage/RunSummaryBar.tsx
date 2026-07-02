@@ -54,7 +54,7 @@ export const RunSummaryBar = ({
       {statusFilter !== null && (
         <button
           onClick={() => onStatusFilter(null)}
-          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/70 transition-colors hover:bg-base-200 hover:text-base-content"
+          className="flex items-center gap-1.5 rounded-lg border border-border bg-base-100 px-2.5 py-1.5 text-xs font-medium text-base-content/85 transition-colors hover:bg-base-200 hover:text-base-content"
         >
           All results
         </button>
@@ -77,7 +77,7 @@ export const RunSummaryBar = ({
             }`}
           >
             <StatusBadge status={value} />
-            <span className="font-bold text-base-content/70 tabular-nums">
+            <span className="font-bold text-base-content/85 tabular-nums">
               {count}
             </span>
           </button>
@@ -85,7 +85,7 @@ export const RunSummaryBar = ({
       })}
     </div>
 
-    <p className="mb-4 px-1 text-sm text-base-content/65">
+    <p className="mb-4 px-1 text-sm text-base-content/80">
       <span className="font-semibold text-base-content">
         {runSummary.total}
       </span>{" "}

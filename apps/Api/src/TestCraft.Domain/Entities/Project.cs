@@ -18,4 +18,5 @@ public class Project : IAuditableEntity
     public ICollection<ApiToken> ApiTokens { get; set; } = [];
     public ICollection<WebhookSubscription> WebhookSubscriptions { get; set; } = [];
     public ICollection<EmailSubscription> EmailSubscriptions { get; set; } = [];
+    public ICollection<ProjectMember> Members { get; set; } = [];
 }

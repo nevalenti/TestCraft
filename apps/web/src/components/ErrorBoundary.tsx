@@ -35,7 +35,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <p className="mb-2 font-semibold text-error">
                 Something went wrong
               </p>
-              <p className="mx-auto mb-4 max-w-sm text-sm text-base-content/65">
+              <p className="mx-auto mb-4 max-w-sm text-sm text-base-content/80">
                 {this.state.error.message}
               </p>
               <button

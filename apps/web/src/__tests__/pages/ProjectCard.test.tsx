@@ -30,6 +30,7 @@ const makeProject = (overrides: Partial<Project> = {}): Project => ({
   runCount: 2,
   createdAt: "2026-01-15T00:00:00.000Z",
   updatedAt: "2026-01-15T00:00:00.000Z",
+  isOwner: true,
   ...overrides,
 });
 
@@ -141,6 +142,22 @@ describe("ProjectCard", () => {
         screen.getByRole("button", { name: "Delete project" }),
       );
       expect(onDelete).toHaveBeenCalledOnce();
+    });
+
+    it("hides the Delete action for a project the user does not own", () => {
+      render(
+        <ProjectCard
+          project={makeProject({ isOwner: false })}
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+        />,
+      );
+      expect(
+        screen.queryByRole("button", { name: "Delete project" }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Edit project" }),
+      ).toBeInTheDocument();
     });
   });
 });

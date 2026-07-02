@@ -46,7 +46,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
           <h3 className="text-base font-semibold text-base-content">{title}</h3>
           <button
             type="button"
-            className="flex size-7 items-center justify-center rounded-lg text-base-content/50 transition-colors hover:bg-base-200 hover:text-base-content"
+            className="flex size-7 items-center justify-center rounded-lg text-base-content/65 transition-colors hover:bg-base-200 hover:text-base-content"
             onClick={onClose}
             aria-label="Close dialog"
           >

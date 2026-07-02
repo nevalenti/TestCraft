@@ -57,6 +57,16 @@ spec:
               value: http://keycloak:8080/realms/testcraft
             - name: KEYCLOAK_ISSUER
               value: https://testcraft.dev:8443/realms/testcraft
+            - name: KEYCLOAK_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: KEYCLOAK_ADMIN_PASSWORD
             - name: KEYCLOAK_AUDIENCE
               value: testcraft-web
             - name: KEYCLOAK_REQUIRE_HTTPS_METADATA

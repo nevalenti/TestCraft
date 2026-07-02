@@ -61,7 +61,7 @@ export const AnalyticsComparisonTab = () => {
         <div className="min-w-36 flex-1">
           <label
             htmlFor="run-a"
-            className="mb-1 block text-xs font-medium text-base-content/60"
+            className="mb-1 block text-xs font-medium text-base-content/75"
           >
             Run A
           </label>
@@ -83,14 +83,14 @@ export const AnalyticsComparisonTab = () => {
           </select>
         </div>
 
-        <span className="pb-1.5 text-xs font-semibold text-base-content/40 select-none">
+        <span className="pb-1.5 text-xs font-semibold text-base-content/55 select-none">
           VS
         </span>
 
         <div className="min-w-36 flex-1">
           <label
             htmlFor="run-b"
-            className="mb-1 block text-xs font-medium text-base-content/60"
+            className="mb-1 block text-xs font-medium text-base-content/75"
           >
             Run B
           </label>
@@ -151,10 +151,10 @@ export const AnalyticsComparisonTab = () => {
               <span className="text-xs font-medium text-success/70">Fixed</span>
             </div>
             <div className="flex items-center gap-2 rounded-lg border border-border bg-base-200/60 px-3 py-2">
-              <span className="text-lg font-bold text-base-content/70 tabular-nums">
+              <span className="text-lg font-bold text-base-content/85 tabular-nums">
                 {counts.unchanged}
               </span>
-              <span className="text-xs font-medium text-base-content/50">
+              <span className="text-xs font-medium text-base-content/65">
                 Unchanged
               </span>
             </div>
@@ -174,7 +174,7 @@ export const AnalyticsComparisonTab = () => {
                   className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                     filter === key
                       ? "bg-base-100 text-base-content shadow-sm"
-                      : "text-base-content/60 hover:text-base-content"
+                      : "text-base-content/75 hover:text-base-content"
                   }`}
                   onClick={() => setFilter(key)}
                 >
@@ -185,14 +185,14 @@ export const AnalyticsComparisonTab = () => {
           </div>
 
           {visibleRows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-base-content/50">
+            <p className="py-6 text-center text-sm text-base-content/65">
               No changes between these two runs.
             </p>
           ) : (
             <div className="overflow-x-auto rounded-xl border border-border">
               <table className="table table-sm">
                 <thead>
-                  <tr className="border-b border-border text-xs text-base-content/60">
+                  <tr className="border-b border-border text-xs text-base-content/75">
                     <th className="font-medium">Test Case</th>
                     <th className="font-medium">{comparison.runAName}</th>
                     <th className="font-medium">{comparison.runBName}</th>
@@ -216,7 +216,7 @@ export const AnalyticsComparisonTab = () => {
                             {row.statusInA}
                           </span>
                         ) : (
-                          <span className="text-sm text-base-content/40">
+                          <span className="text-sm text-base-content/55">
                             —
                           </span>
                         )}
@@ -229,7 +229,7 @@ export const AnalyticsComparisonTab = () => {
                             {row.statusInB}
                           </span>
                         ) : (
-                          <span className="text-sm text-base-content/40">
+                          <span className="text-sm text-base-content/55">
                             —
                           </span>
                         )}

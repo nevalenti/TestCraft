@@ -72,7 +72,7 @@ export const TestPlansPage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="page-title">Test Plans</h1>
-          <p className="mt-0.5 text-sm text-base-content/55">
+          <p className="mt-0.5 text-sm text-base-content/70">
             Pre-select test cases for structured test runs
           </p>
         </div>
@@ -105,11 +105,11 @@ export const TestPlansPage = () => {
                     {plan.name}
                   </Link>
                   {plan.description && (
-                    <p className="mt-0.5 truncate text-xs text-base-content/60">
+                    <p className="mt-0.5 truncate text-xs text-base-content/75">
                       {plan.description}
                     </p>
                   )}
-                  <p className="mt-1 text-xs text-base-content/50">
+                  <p className="mt-1 text-xs text-base-content/65">
                     Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{" "}
                     case{plan.caseCount === 1 ? "" : "s"}
                   </p>

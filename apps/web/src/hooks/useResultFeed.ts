@@ -1,20 +1,13 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { TestRunStatus } from "@testcraft/types";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
+import { queryKeys } from "@/api/queryKeys";
 import { testResultsApi } from "@/api/testResults";
 import { testRunsApi } from "@/api/testRuns";
-import { useSignalR } from "@/hooks/useSignalR";
-import { useTestRun } from "@/hooks/useTestRuns";
 
 export const useResultFeed = (projectId: string, runId: string) => {
-  const queryClient = useQueryClient();
-  const { data: run } = useTestRun(projectId, runId);
-  const isActive = run?.status === TestRunStatus.Active;
-
-  const feedKey = useMemo(() => ["feed", projectId, runId], [projectId, runId]);
-  const logsKey = useMemo(
-    () => ["run-logs", projectId, runId],
+  const feedKey = useMemo(
+    () => [...queryKeys.testResults.all(projectId, runId), "feed"],
     [projectId, runId],
   );
 
@@ -23,34 +16,15 @@ export const useResultFeed = (projectId: string, runId: string) => {
     queryFn: () =>
       testResultsApi.getAll(projectId, runId, undefined, undefined, 1, 500),
     refetchOnWindowFocus: false,
-    refetchInterval: isActive ? 3000 : false,
   });
 
   const { data: logs = [] } = useQuery({
-    queryKey: logsKey,
+    queryKey: queryKeys.testRuns.logs(projectId, runId),
     queryFn: () => testRunsApi.getLogs(projectId, runId),
     refetchOnWindowFocus: false,
-    refetchInterval: isActive ? 2000 : false,
   });
 
   const items = useMemo(() => (page?.items ?? []).toReversed(), [page]);
-
-  const invalidateFeed = async () => {
-    await queryClient.invalidateQueries({ queryKey: feedKey });
-  };
-
-  useSignalR(runId, {
-    ResultAdded: invalidateFeed,
-    ResultUpdated: invalidateFeed,
-    ResultDeleted: invalidateFeed,
-    RunStatusChanged: invalidateFeed,
-    LogsAppended: (data) => {
-      queryClient.setQueryData<string[]>(logsKey, (prev = []) => [
-        ...prev,
-        ...(data as string[]),
-      ]);
-    },
-  });
 
   return { items, logs, isLoading };
 };

@@ -16,7 +16,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
   }, [logs]);
 
   return logs.length === 0 ? (
-    <p className="py-16 text-center text-sm text-base-content/40">
+    <p className="py-16 text-center text-sm text-base-content/55">
       No pipeline output yet…
     </p>
   ) : (
@@ -25,7 +25,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
         <span className="size-2 rounded-full bg-error" />
         <span className="size-2 rounded-full bg-warning" />
         <span className="size-2 rounded-full bg-success" />
-        <span className="ml-2 text-xs font-medium text-base-content/40">
+        <span className="ml-2 text-xs font-medium text-base-content/55">
           Pipeline output
         </span>
       </div>
@@ -33,7 +33,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
         {logs.map((line, i) => (
           <p
             key={i}
-            className="font-mono text-xs leading-5 break-all whitespace-pre-wrap text-base-content/70"
+            className="font-mono text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85"
           >
             {line}
           </p>

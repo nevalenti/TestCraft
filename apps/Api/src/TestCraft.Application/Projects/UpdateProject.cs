@@ -28,6 +28,7 @@ public static class UpdateProject
 
     public sealed class Handler(
         IApplicationDbContext context,
+        ICurrentUser currentUser,
         IDbExceptionClassifier dbExceptionClassifier
     ) : IRequestHandler<Command, ProjectResponse>
     {
@@ -65,6 +66,7 @@ public static class UpdateProject
                     UpdatedAt = p.UpdatedAt,
                     SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
                     RunCount = p.TestRuns.Count(r => !r.IsDeleted),
+                    IsOwner = p.UserId == currentUser.UserId,
                 })
                 .FirstAsync(cancellationToken);
         }

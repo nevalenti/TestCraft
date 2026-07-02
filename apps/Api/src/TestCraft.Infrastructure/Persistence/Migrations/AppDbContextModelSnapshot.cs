@@ -317,6 +317,47 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.ToTable("projects", (string)null);
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.ProjectMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<string>("DisplayName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("display_name");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("character varying(254)")
+                        .HasColumnName("email");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("project_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("project_members", (string)null);
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.RunLog", b =>
                 {
                     b.Property<Guid>("Id")
@@ -920,6 +961,17 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.ProjectMember", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.Project", "Project")
+                        .WithMany("Members")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.RunLog", b =>
                 {
                     b.HasOne("TestCraft.Domain.Entities.TestRun", "Run")
@@ -1077,6 +1129,8 @@ namespace TestCraft.Infrastructure.Persistence.Migrations
                     b.Navigation("EmailSubscriptions");
 
                     b.Navigation("Labels");
+
+                    b.Navigation("Members");
 
                     b.Navigation("TestPlans");
 

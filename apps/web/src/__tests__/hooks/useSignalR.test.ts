@@ -5,6 +5,7 @@ import { useSignalR } from "@/hooks/useSignalR";
 
 const mockConnection = vi.hoisted(() => ({
   on: vi.fn(),
+  onreconnected: vi.fn(),
   start: vi.fn().mockResolvedValue(undefined),
   stop: vi.fn().mockResolvedValue(undefined),
   invoke: vi.fn().mockResolvedValue(undefined),
@@ -34,6 +35,7 @@ vi.mock("@/lib/env", () => ({
 
 beforeEach(() => {
   mockConnection.on.mockClear();
+  mockConnection.onreconnected.mockClear();
   mockConnection.start.mockClear().mockResolvedValue(undefined);
   mockConnection.stop.mockClear().mockResolvedValue(undefined);
   mockConnection.invoke.mockClear().mockResolvedValue(undefined);
@@ -118,6 +120,25 @@ describe("useSignalR", () => {
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe("on reconnect — rejoins the run and notifies the caller", () => {
+    it("invokes JoinRun again and calls onReconnected", async () => {
+      const onReconnected = vi.fn();
+
+      renderHook(() => useSignalR("run-1", {}, onReconnected));
+
+      await act(async () => {});
+      mockConnection.invoke.mockClear();
+
+      const [reconnectedCallback] = mockConnection.onreconnected.mock.calls[0]!;
+      await act(async () => {
+        await reconnectedCallback();
+      });
+
+      expect(mockConnection.invoke).toHaveBeenCalledWith("JoinRun", "run-1");
+      expect(onReconnected).toHaveBeenCalledOnce();
     });
   });
 

@@ -39,19 +39,32 @@ const getRunAvatarLabel = (executedByName?: string, source?: string) => {
 
 const RunAvatar = ({
   executedByName,
+  executedByAvatarUrl,
   source,
 }: {
   executedByName?: string;
+  executedByAvatarUrl?: string;
   source?: string;
 }) => {
-  const label = getRunAvatarLabel(executedByName, source);
   const title = executedByName ?? source ?? "Unknown";
+
+  if (executedByAvatarUrl) {
+    return (
+      <img
+        src={executedByAvatarUrl}
+        alt={title}
+        title={title}
+        className="size-7 shrink-0 rounded-full object-cover"
+      />
+    );
+  }
+
   return (
     <span
-      className="flex size-7 shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/55 tabular-nums"
+      className="flex size-7 shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums"
       title={title}
     >
-      {label}
+      {getRunAvatarLabel(executedByName, source)}
     </span>
   );
 };
@@ -156,7 +169,7 @@ export const DashboardPage = () => {
             <h1 className="page-title text-2xl">
               {firstName ? `${getGreeting()}, ${firstName}` : "Dashboard"}
             </h1>
-            <p className="mt-0.5 text-sm text-base-content/55">
+            <p className="mt-0.5 text-sm text-base-content/70">
               {"Here's an overview of your testing activity."}
             </p>
           </header>
@@ -196,7 +209,7 @@ export const DashboardPage = () => {
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="flex items-center gap-2 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+                  <h2 className="flex items-center gap-2 text-xs font-semibold tracking-widest text-base-content/65 uppercase">
                     Active Runs
                     {activeRuns.length > 0 && (
                       <span className="rounded-full bg-warning/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-warning tabular-nums">
@@ -219,6 +232,12 @@ export const DashboardPage = () => {
                       const summary = activeRunSummaries.get(run.id);
                       const resultCount = summary?.total ?? 0;
                       const hasResults = resultCount > 0;
+                      const passed = summary?.passed ?? 0;
+                      const failed = summary?.failed ?? 0;
+                      const passRate =
+                        resultCount > 0
+                          ? Math.round((passed / resultCount) * 100)
+                          : 0;
 
                       return (
                         <li key={run.id} className="relative overflow-hidden">
@@ -232,53 +251,80 @@ export const DashboardPage = () => {
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group relative flex items-center gap-3 px-4 py-3 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
+                            className="group relative flex flex-col gap-1 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
                           >
-                            <span
-                              className={cn(
-                                "flex size-8 shrink-0 items-center justify-center rounded-full",
-                                hasResults
-                                  ? "bg-warning/12 text-warning"
-                                  : "bg-base-content/6 text-base-content/40",
-                              )}
-                            >
-                              {hasResults ? (
-                                <BoltIcon className="size-4" />
-                              ) : (
-                                <ClockIcon className="size-4" />
-                              )}
-                            </span>
-
-                            <div className="min-w-0 flex-1">
-                              <p className="truncate text-sm font-semibold">
-                                {run.name}
-                              </p>
-                              <p className="mt-0.5 truncate text-xs text-base-content/55">
-                                {project && (
-                                  <span className="font-medium text-base-content/70">
-                                    {project.name}
-                                  </span>
+                            <div className="flex items-center gap-3">
+                              <span
+                                className={cn(
+                                  "flex size-7 shrink-0 items-center justify-center rounded-full",
+                                  hasResults
+                                    ? "bg-warning/12 text-warning"
+                                    : "bg-base-content/6 text-base-content/55",
                                 )}
-                                {" · "}
-                                {run.environment}
-                                {" · "}
-                                {formatDateTime(run.createdAt)}
-                              </p>
-                            </div>
+                              >
+                                {hasResults ? (
+                                  <BoltIcon className="size-3.5" />
+                                ) : (
+                                  <ClockIcon className="size-3.5" />
+                                )}
+                              </span>
 
-                            <div className="flex shrink-0 items-center gap-2">
-                              {hasResults && (
-                                <span className="rounded-md bg-warning/8 px-2 py-0.5 font-mono text-xs font-semibold text-warning/80 tabular-nums">
-                                  {resultCount} logged
-                                </span>
-                              )}
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-sm font-semibold">
+                                  {run.name}
+                                </p>
+                                <p className="mt-0.5 truncate text-xs text-base-content/70">
+                                  {project && (
+                                    <span className="font-medium text-base-content/85">
+                                      {project.name}
+                                    </span>
+                                  )}
+                                  {" · "}
+                                  {run.environment}
+                                  {" · "}
+                                  {formatDateTime(run.createdAt)}
+                                </p>
+                              </div>
+
                               <RunAvatar
                                 executedByName={run.executedByName}
+                                executedByAvatarUrl={run.executedByAvatarUrl}
                                 source={run.source}
                               />
-                              <span className="inline-flex animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-warning uppercase">
+                              <span className="inline-flex shrink-0 animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-warning uppercase">
                                 Live
                               </span>
+                            </div>
+
+                            <div className="ml-10 flex items-center gap-2.5">
+                              {hasResults ? (
+                                <>
+                                  <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-warning/15">
+                                    <div
+                                      className="h-full rounded-full bg-warning transition-all"
+                                      style={{ width: `${passRate}%` }}
+                                    />
+                                  </div>
+                                  <div className="flex shrink-0 items-center gap-1.5">
+                                    {passed > 0 && (
+                                      <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs font-semibold text-success tabular-nums">
+                                        {passed}
+                                        <CheckCircleIcon className="size-3" />
+                                      </span>
+                                    )}
+                                    {failed > 0 && (
+                                      <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs font-semibold text-error tabular-nums">
+                                        {failed}
+                                        <XCircleIcon className="size-3" />
+                                      </span>
+                                    )}
+                                  </div>
+                                </>
+                              ) : (
+                                <span className="text-[11px] text-base-content/55">
+                                  Waiting for results…
+                                </span>
+                              )}
                             </div>
                           </Link>
                         </li>
@@ -289,10 +335,10 @@ export const DashboardPage = () => {
               </div>
 
               <div className="flex flex-col gap-3">
-                <h2 className="flex items-center gap-2 text-xs font-semibold tracking-widest text-base-content/50 uppercase">
+                <h2 className="flex items-center gap-2 text-xs font-semibold tracking-widest text-base-content/65 uppercase">
                   Recently Completed
                   {recentlyCompletedRuns.length > 0 && (
-                    <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 font-mono text-[10px] font-bold text-base-content/55 tabular-nums">
+                    <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 font-mono text-[10px] font-bold text-base-content/70 tabular-nums">
                       {recentlyCompletedRuns.length}
                     </span>
                   )}
@@ -320,21 +366,21 @@ export const DashboardPage = () => {
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group flex flex-col gap-2 px-4 py-3 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
+                            className="group flex flex-col gap-1 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
                           >
                             <div className="flex items-center gap-3">
                               <span
                                 className={cn(
-                                  "flex size-8 shrink-0 items-center justify-center rounded-full",
+                                  "flex size-7 shrink-0 items-center justify-center rounded-full",
                                   hasFailed
                                     ? "bg-error/12 text-error"
                                     : "bg-success/12 text-success",
                                 )}
                               >
                                 {hasFailed ? (
-                                  <XCircleIcon className="size-4" />
+                                  <XCircleIcon className="size-3.5" />
                                 ) : (
-                                  <CheckCircleIcon className="size-4" />
+                                  <CheckCircleIcon className="size-3.5" />
                                 )}
                               </span>
 
@@ -342,9 +388,9 @@ export const DashboardPage = () => {
                                 <p className="truncate text-sm font-semibold">
                                   {run.name}
                                 </p>
-                                <p className="mt-0.5 truncate text-xs text-base-content/55">
+                                <p className="mt-0.5 truncate text-xs text-base-content/70">
                                   {project && (
-                                    <span className="font-medium text-base-content/70">
+                                    <span className="font-medium text-base-content/85">
                                       {project.name}
                                     </span>
                                   )}
@@ -359,12 +405,13 @@ export const DashboardPage = () => {
 
                               <RunAvatar
                                 executedByName={run.executedByName}
+                                executedByAvatarUrl={run.executedByAvatarUrl}
                                 source={run.source}
                               />
                               {passRate !== null && (
                                 <span
                                   className={cn(
-                                    "shrink-0 rounded-md px-2 py-0.5 font-mono text-sm font-bold tabular-nums",
+                                    "shrink-0 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
                                     passRate === 100 &&
                                       "bg-success/10 text-success",
                                     passRate !== null &&
@@ -381,35 +428,43 @@ export const DashboardPage = () => {
                               )}
                             </div>
 
-                            {summary && total > 0 && (
-                              <div className="ml-11 flex items-center gap-2.5">
-                                <div
-                                  className={cn(
-                                    "h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
-                                    hasFailed ? "bg-error/20" : "bg-success/20",
-                                  )}
-                                >
+                            <div className="ml-10 flex items-center gap-2.5">
+                              {summary && total > 0 ? (
+                                <>
                                   <div
-                                    className="h-full rounded-full bg-success transition-all"
-                                    style={{ width: `${passRate ?? 0}%` }}
-                                  />
-                                </div>
-                                <div className="flex shrink-0 items-center gap-1.5">
-                                  {passed > 0 && (
-                                    <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs font-semibold text-success tabular-nums">
-                                      {passed}
-                                      <CheckCircleIcon className="size-3" />
-                                    </span>
-                                  )}
-                                  {(summary.failed ?? 0) > 0 && (
-                                    <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs font-semibold text-error tabular-nums">
-                                      {summary.failed}
-                                      <XCircleIcon className="size-3" />
-                                    </span>
-                                  )}
-                                </div>
-                              </div>
-                            )}
+                                    className={cn(
+                                      "h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
+                                      hasFailed
+                                        ? "bg-error/20"
+                                        : "bg-success/20",
+                                    )}
+                                  >
+                                    <div
+                                      className="h-full rounded-full bg-success transition-all"
+                                      style={{ width: `${passRate ?? 0}%` }}
+                                    />
+                                  </div>
+                                  <div className="flex shrink-0 items-center gap-1.5">
+                                    {passed > 0 && (
+                                      <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs text-success tabular-nums">
+                                        {passed}
+                                        <CheckCircleIcon className="size-3" />
+                                      </span>
+                                    )}
+                                    {(summary.failed ?? 0) > 0 && (
+                                      <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs text-error tabular-nums">
+                                        {summary.failed}
+                                        <XCircleIcon className="size-3" />
+                                      </span>
+                                    )}
+                                  </div>
+                                </>
+                              ) : (
+                                <span className="text-[11px] text-base-content/55">
+                                  No results logged
+                                </span>
+                              )}
+                            </div>
                           </Link>
                         </li>
                       );

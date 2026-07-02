@@ -7,12 +7,15 @@ import { env } from "@/lib/env";
 export function useSignalR(
   runId: string | undefined,
   handlers: Record<string, (data: unknown) => void>,
+  onReconnected?: () => void,
 ) {
   const handlersRef = useRef(handlers);
   const eventNamesRef = useRef(Object.keys(handlers));
+  const onReconnectedRef = useRef(onReconnected);
 
   useLayoutEffect(() => {
     handlersRef.current = handlers;
+    onReconnectedRef.current = onReconnected;
   });
 
   useEffect(() => {
@@ -28,6 +31,17 @@ export function useSignalR(
     for (const event of eventNamesRef.current) {
       connection.on(event, (data) => handlersRef.current[event]?.(data));
     }
+
+    connection.onreconnected(() => {
+      (async () => {
+        try {
+          await connection.invoke("JoinRun", runId);
+          onReconnectedRef.current?.();
+        } catch (error) {
+          console.error(error);
+        }
+      })();
+    });
 
     (async () => {
       try {

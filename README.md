@@ -15,7 +15,7 @@
 | Object storage | MinIO                       |
 | Auth           | Keycloak                    |
 | Reverse proxy  | YARP                        |
-| Observability  | Prometheus · Grafana · Loki |
+| Observability  | Grafana · Prometheus · Loki |
 | Deployment     | Helm on k3s                 |
 
 ---
@@ -56,19 +56,32 @@
 ```
 apps/
   Api/src/
-    TestCraft.Domain          # entities, domain events — no framework dependencies
-    TestCraft.Application     # CQRS commands/queries (MediatR), interfaces
-    TestCraft.Infrastructure  # EF Core, Redis, MinIO, MailKit, MassTransit
-    TestCraft.Api             # ASP.NET Core controllers, SignalR hubs
-  Gateway/src/                # YARP reverse proxy — fronts API + web in production
-  web/                        # React SPA
-    src/api/                  # Axios clients — one file per domain
-    src/hooks/                # TanStack Query hooks + Zustand stores
-    src/pages/                # Route components consuming hooks only
-  e2e/                        # Playwright end-to-end suite
+    TestCraft.Domain           # entities, domain events — no framework dependencies
+    TestCraft.Application      # CQRS commands/queries (MediatR), interfaces
+    TestCraft.Infrastructure   # EF Core, Redis, MinIO, MailKit, MassTransit
+    TestCraft.Api              # ASP.NET Core controllers, SignalR hubs
+  Gateway/src/                 # YARP reverse proxy — fronts API + web in production
+  web/                         # React SPA
+    src/api/                   # Axios clients — one file per domain
+    src/hooks/                 # TanStack Query hooks — one file per domain
+    src/stores/                # Zustand stores (breadcrumbs, notifications, view mode)
+    src/pages/                 # Route components consuming hooks only
+    src/layout/                # App shell — header, sidebar, account menu, breadcrumbs
+    src/components/            # Shared components + ui/ primitives
+    src/auth/                  # Keycloak provider/client
+    src/contexts/              # React context providers (theme)
+    src/lib/                   # cn, env, format, cookie, notify helpers
+    src/types/                 # Shared frontend types
+    src/__tests__/             # Vitest unit/component tests
+  e2e/                         # Playwright end-to-end suite
 packages/
-  types/                      # Shared TypeScript types
-.github/actions/testcraft/    # GitHub Action that reports CI results into TestCraft
+  types/                       # Shared TypeScript types (published to web + e2e)
+infrastructure/
+  helm/                        # Helm chart for k8s deployment
+  keycloak/                    # Realm config + custom login theme
+  grafana/                     # Dashboard provisioning
+  prometheus/                  # Scrape config
+.github/actions/testcraft/     # GitHub Action that reports CI results into TestCraft
 ```
 
 ---
@@ -109,6 +122,7 @@ dotnet run --project apps/Api/src/TestCraft.Api
 | MinIO       | http://localhost:9001         |
 | Grafana     | http://localhost:3001         |
 | Prometheus  | http://localhost:9090         |
+| RabbitMQ    | http://localhost:15672        |
 
 ### Running tests
 

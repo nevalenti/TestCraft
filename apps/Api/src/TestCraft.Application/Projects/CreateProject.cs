@@ -16,6 +16,7 @@ public record ProjectResponse
     public required DateTimeOffset UpdatedAt { get; init; }
     public required int SuiteCount { get; init; }
     public required int RunCount { get; init; }
+    public required bool IsOwner { get; init; }
 }
 
 public static class CreateProject
@@ -72,6 +73,7 @@ public static class CreateProject
                 UpdatedAt = project.UpdatedAt,
                 SuiteCount = 0,
                 RunCount = 0,
+                IsOwner = true,
             };
         }
     }

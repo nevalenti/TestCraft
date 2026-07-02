@@ -52,5 +52,10 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .WithOne(e => e.Project)
             .HasForeignKey(e => e.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
+        builder
+            .HasMany(p => p.Members)
+            .WithOne(m => m.Project)
+            .HasForeignKey(m => m.ProjectId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

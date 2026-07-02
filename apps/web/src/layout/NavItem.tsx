@@ -32,7 +32,7 @@ export const NavItem = ({
         "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
         isActive
           ? "bg-primary/12 font-semibold text-primary"
-          : "font-medium text-base-content/70 hover:bg-base-content/6 hover:text-base-content",
+          : "font-medium text-base-content/85 hover:bg-base-content/6 hover:text-base-content",
       )}
     >
       {!hideIcon &&

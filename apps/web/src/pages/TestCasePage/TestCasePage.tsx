@@ -204,7 +204,7 @@ export const TestCasePage = () => {
       <header className="page-header flex items-start justify-between gap-4">
         <div>
           <h1 className="page-title">{testCase?.name}</h1>
-          <p className="mt-0.5 text-sm text-base-content/55">
+          <p className="mt-0.5 text-sm text-base-content/70">
             {testCase?.description ?? "Steps for this test case"}
           </p>
           {testCase && (

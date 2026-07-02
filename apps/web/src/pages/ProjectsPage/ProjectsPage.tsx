@@ -91,7 +91,7 @@ export const ProjectsPage = () => {
       <header className="page-header flex items-center justify-between gap-4">
         <div>
           <h1 className="page-title">Projects</h1>
-          <p className="mt-0.5 text-sm text-base-content/55">
+          <p className="mt-0.5 text-sm text-base-content/70">
             Manage and organise your testing projects
           </p>
         </div>

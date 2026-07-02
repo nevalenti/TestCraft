@@ -15,10 +15,18 @@ public static class DeleteProject
         Guid IProjectScopedRequest.ProjectId => Id;
     }
 
-    public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>
+    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
+        : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
+            await ProjectOwnershipGuard.EnsureOwnerAsync(
+                context,
+                request.Id,
+                currentUser.UserId,
+                cancellationToken
+            );
+
             var project =
                 await context.Projects.FirstOrDefaultAsync(
                     p => p.Id == request.Id,

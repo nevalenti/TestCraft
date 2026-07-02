@@ -25,7 +25,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
                 key={headerGroup.id}
-                className="border-b border-border text-[11px] font-semibold tracking-wider text-base-content/55 uppercase"
+                className="border-b border-border text-[11px] font-semibold tracking-wider text-base-content/70 uppercase"
               >
                 {headerGroup.headers.map((header) => (
                   <th
@@ -43,7 +43,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
                         header.getContext(),
                       )}
                       {header.column.getCanSort() && (
-                        <span className="text-base-content/35">
+                        <span className="text-base-content/50">
                           {getSortIcon(header.column.getIsSorted())}
                         </span>
                       )}
@@ -73,7 +73,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
 
       {pageCount > 1 && (
         <div className="mt-4 flex items-center justify-between gap-4">
-          <span className="px-1 text-sm text-base-content/60">
+          <span className="px-1 text-sm text-base-content/75">
             Page{" "}
             <span className="font-semibold text-base-content">
               {pageIndex + 1}

@@ -17,6 +17,11 @@ import {
   useEmails,
   useWebhooks,
 } from "@/hooks/useNotifications";
+import {
+  useAddProjectMember,
+  useProjectMembers,
+  useRemoveProjectMember,
+} from "@/hooks/useProjectMembers";
 import { formatDate } from "@/lib/format";
 
 const AVAILABLE_EVENTS = ["RunCompleted", "FailureThresholdExceeded"];
@@ -59,14 +64,16 @@ interface ProjectSettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId: string;
+  isOwner: boolean;
 }
 
-type Tab = "tokens" | "notifications";
+type Tab = "tokens" | "notifications" | "members";
 
 export function ProjectSettingsModal({
   isOpen,
   onClose,
   projectId,
+  isOwner,
 }: ProjectSettingsModalProps) {
   const [tab, setTab] = useState<Tab>("tokens");
 
@@ -85,12 +92,21 @@ export function ProjectSettingsModal({
         >
           Notifications
         </button>
+        {isOwner && (
+          <button
+            className={`btn btn-sm ${tab === "members" ? "btn-neutral" : "btn-ghost"}`}
+            onClick={() => setTab("members")}
+          >
+            Members
+          </button>
+        )}
       </div>
 
       {tab === "tokens" && <ApiTokensSection projectId={projectId} />}
       {tab === "notifications" && (
         <NotificationsSection projectId={projectId} />
       )}
+      {tab === "members" && isOwner && <MembersSection projectId={projectId} />}
     </Modal>
   );
 }
@@ -197,7 +213,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             >
               <div>
                 <p className="text-sm font-medium">{t.name}</p>
-                <p className="text-xs text-base-content/50">
+                <p className="text-xs text-base-content/65">
                   Created {formatDate(t.createdAt)}
                   {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
                   {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
@@ -214,6 +230,81 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
                   Revoke
                 </button>
               )}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+function MembersSection({ projectId }: { projectId: string }) {
+  const { data: members } = useProjectMembers(projectId);
+  const addMember = useAddProjectMember(projectId);
+  const removeMember = useRemoveProjectMember(projectId);
+  const [email, setEmail] = useState("");
+
+  const handleAdd = () => {
+    if (!email) return;
+    addMember.mutate(
+      { email },
+      {
+        onSuccess: () => setEmail(""),
+      },
+    );
+  };
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-end gap-2">
+        <div className="flex-1">
+          <label htmlFor="member-email" className="label-text label text-xs">
+            Add member by email
+          </label>
+          <input
+            id="member-email"
+            type="email"
+            className="input-bordered input input-sm w-full"
+            placeholder="teammate@example.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
+        <button
+          className="btn btn-sm btn-primary"
+          onClick={handleAdd}
+          disabled={!email || addMember.isPending}
+        >
+          {addMember.isPending ? (
+            <span className="loading loading-xs loading-spinner" />
+          ) : (
+            "Add"
+          )}
+        </button>
+      </div>
+
+      {members && members.length > 0 && (
+        <ul className="space-y-2">
+          {members.map((member) => (
+            <li
+              key={member.id}
+              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
+            >
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium">
+                  {member.displayName ?? member.email}
+                </p>
+                <p className="truncate text-xs text-base-content/65">
+                  {member.email} · added {formatDate(member.createdAt)}
+                </p>
+              </div>
+              <button
+                className="btn text-error btn-ghost btn-xs"
+                onClick={() => removeMember.mutate(member.id)}
+                aria-label={`Remove ${member.email}`}
+              >
+                <TrashIcon className="size-3.5" />
+              </button>
             </li>
           ))}
         </ul>
@@ -255,7 +346,7 @@ function WebhooksSection({ projectId }: { projectId: string }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
+      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
         Webhooks
       </p>
       <div className="mb-4 space-y-3">
@@ -289,7 +380,7 @@ function WebhooksSection({ projectId }: { projectId: string }) {
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium">{wh.url}</p>
-                <p className="text-xs text-base-content/50">
+                <p className="text-xs text-base-content/65">
                   {wh.events.join(", ")}
                 </p>
               </div>
@@ -329,7 +420,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
 
   return (
     <div>
-      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/60 uppercase">
+      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
         Email Subscriptions
       </p>
       <div className="mb-4 space-y-3">
@@ -358,7 +449,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
             >
               <div>
                 <p className="text-sm font-medium">{sub.email}</p>
-                <p className="text-xs text-base-content/50">
+                <p className="text-xs text-base-content/65">
                   {sub.events.join(", ")}
                 </p>
               </div>

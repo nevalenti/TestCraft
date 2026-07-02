@@ -52,7 +52,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
             <div className="min-w-0 flex-1">
               <div className="mb-3 grid gap-4 sm:grid-cols-2">
                 <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/60 uppercase">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/75 uppercase">
                     Action
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -60,7 +60,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/60 uppercase">
+                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/75 uppercase">
                     Expected Result
                   </p>
                   <p className="text-sm leading-relaxed text-base-content/90">
@@ -68,7 +68,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
                   </p>
                 </div>
               </div>
-              <p className="text-[11px] text-base-content/50 tabular-nums">
+              <p className="text-[11px] text-base-content/65 tabular-nums">
                 {formatDate(step.createdAt)}
               </p>
             </div>

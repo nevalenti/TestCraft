@@ -150,18 +150,18 @@ export const RunsTab = () => {
                 <span className="truncate text-sm font-semibold">
                   {run.name}
                 </span>
-                <p className="truncate text-xs text-base-content/70">
+                <p className="truncate text-xs text-base-content/85">
                   {run.environment}
                 </p>
               </div>
               <div className="hidden shrink-0 items-center gap-2 sm:flex">
                 {run.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
                     {run.source}
                   </span>
                 )}
                 <RunStatusBadge status={run.status} />
-                <span className="text-[11px] font-medium text-base-content/50 tabular-nums">
+                <span className="text-[11px] font-medium text-base-content/65 tabular-nums">
                   {formatDate(run.createdAt)}
                 </span>
               </div>
@@ -184,24 +184,24 @@ export const RunsTab = () => {
             accentText="text-warning"
             typeIcon={getRunIcon(run, "xs")}
           >
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1">
               <span className="line-clamp-2 text-base leading-snug font-semibold">
                 {run.name}
               </span>
-              <p className="text-sm font-medium text-base-content/70">
+              <p className="text-sm font-medium text-base-content/85">
                 {run.environment}
               </p>
             </div>
-            <div className="mt-4 flex items-center justify-between gap-2">
+            <div className="mt-2.5 flex items-center justify-between gap-2">
               <div className="flex items-center gap-1">
                 {run.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/60">
+                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
                     {run.source}
                   </span>
                 )}
                 <RunStatusBadge status={run.status} />
               </div>
-              <span className="shrink-0 text-[11px] font-medium text-base-content/50 tabular-nums">
+              <span className="shrink-0 text-[11px] font-medium text-base-content/65 tabular-nums">
                 {formatDate(run.createdAt)}
               </span>
             </div>

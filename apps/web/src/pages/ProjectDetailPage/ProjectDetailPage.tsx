@@ -15,7 +15,7 @@ import { useRequiredParam } from "@/hooks/useRequiredParam";
 import { ProjectSettingsModal } from "@/pages/ProjectDetailPage/ProjectSettingsModal";
 
 const NAV_BASE =
-  "flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/60 transition-colors hover:text-base-content/80";
+  "flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90";
 const NAV_ACTIVE = "!border-primary !text-base-content";
 
 export const ProjectDetailPage = () => {
@@ -44,7 +44,7 @@ export const ProjectDetailPage = () => {
         <div className="flex items-center justify-between gap-4">
           <div>
             <h1 className="page-title">{project?.name}</h1>
-            <p className="mt-0.5 text-sm text-base-content/55">
+            <p className="mt-0.5 text-sm text-base-content/70">
               {project?.description ??
                 "Manage test suites and runs for this project"}
             </p>
@@ -74,7 +74,7 @@ export const ProjectDetailPage = () => {
           <PlayCircleIcon className="size-3.5 shrink-0" aria-hidden="true" />
           Test Runs
           {!!project?.runCount && (
-            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/70 tabular-nums">
+            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/85 tabular-nums">
               {project.runCount}
             </span>
           )}
@@ -92,7 +92,7 @@ export const ProjectDetailPage = () => {
           />
           Test Suites
           {!!project?.suiteCount && (
-            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/70 tabular-nums">
+            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/85 tabular-nums">
               {project.suiteCount}
             </span>
           )}
@@ -128,6 +128,7 @@ export const ProjectDetailPage = () => {
         isOpen={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         projectId={projectId}
+        isOwner={project?.isOwner ?? false}
       />
     </div>
   );

@@ -18,12 +18,17 @@ public class ProjectAuthorizationBehaviour<TRequest, TResponse>(
         CancellationToken cancellationToken
     )
     {
-        var isOwner = await context.Projects.AnyAsync(
-            p => p.Id == request.ProjectId && p.UserId == currentUser.UserId,
+        var hasAccess = await context.Projects.AnyAsync(
+            p =>
+                p.Id == request.ProjectId
+                && (
+                    p.UserId == currentUser.UserId
+                    || p.Members.Any(m => m.UserId == currentUser.UserId)
+                ),
             cancellationToken
         );
 
-        if (!isOwner)
+        if (!hasAccess)
         {
             throw new NotFoundException();
         }
