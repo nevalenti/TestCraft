@@ -307,7 +307,9 @@ export const TestRunPage = () => {
         </div>
       </header>
 
-      <section className="page-content min-h-0 flex-1 overflow-y-auto">
+      <section
+        className={`page-content min-h-0 flex-1 ${view === "logs" ? "flex overflow-hidden" : "overflow-y-auto"}`}
+      >
         {viewContent}
       </section>
 
