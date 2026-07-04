@@ -29,7 +29,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
           Pipeline output
         </span>
       </div>
-      <div className="max-h-[calc(100vh-16rem)] overflow-y-auto px-4 py-3">
+      <div className="px-4 py-3">
         {logs.map((line, i) => (
           <p
             key={i}

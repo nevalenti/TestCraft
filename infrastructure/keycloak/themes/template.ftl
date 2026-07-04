@@ -22,10 +22,16 @@
         --color-border: oklch(0 0 0 / 0.35);
       }
 
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
         background-color: var(--color-base-300);
+        overflow: hidden;
       }
 
       #icon-moon { display: none; }
@@ -114,10 +120,10 @@
       }
     </script>
   </head>
-  <body class="text-base-content min-h-screen">
-    <div class="app-border app-shadow mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-5 sm:min-h-[calc(100vh-2.5rem)] sm:rounded-2xl">
+  <body class="text-base-content">
+    <div class="app-border app-shadow mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-3 sm:h-[calc(100vh-1.5rem)] sm:rounded-2xl">
 
-      <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="border-bottom: 1px solid var(--color-border);">
+      <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">
           <a href="https://testcraft.dev" class="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 shrink-0 text-primary" aria-hidden="true">
@@ -138,7 +144,7 @@
         </div>
       </nav>
 
-      <main class="flex flex-1 flex-col items-center justify-start pt-[10vh] px-4 pb-8" style="background-image: inherit;">
+      <main class="flex flex-1 flex-col items-center justify-start overflow-y-auto pt-[10vh] px-4 pb-8" style="background-image: inherit;">
         <div class="w-full max-w-sm card-enter">
           <#nested "header">
         </div>

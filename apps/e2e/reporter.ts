@@ -138,6 +138,16 @@ class TestCraftReporter implements Reporter {
 
   onTestEnd(test: TestCase, result: TestResult): void {
     if (!this.initPromise) return;
+    const icon =
+      result.status === "passed"
+        ? "✓"
+        : result.status === "skipped"
+          ? "-"
+          : "✗";
+    const duration =
+      result.duration > 0 ? ` (${(result.duration / 1000).toFixed(1)}s)` : "";
+    const suiteName = test.parent.title || "Default";
+    this.postLog([`${icon}  ${suiteName} › ${test.title}${duration}`]);
     const p = this.initPromise.then(() => this.report(test, result));
     this.pending.push(p);
   }

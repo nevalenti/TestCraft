@@ -15,24 +15,76 @@
       :root {
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-        --color-border: oklch(1 0 0 / 0.25);
+        --color-border: oklch(1 0 0 / 0.32);
       }
 
-      [data-theme="emerald"] {
-        --color-border: oklch(0 0 0 / 0.28);
+      [data-theme="testcraft-light"] {
+        --color-base-100: oklch(0.99 0.006 285);
+        --color-base-200: oklch(0.946 0.02 285);
+        --color-base-300: oklch(0.9 0.028 285);
+        --color-base-content: oklch(0.21 0.045 285);
+        --color-primary: oklch(0.52 0.26 291);
+        --color-primary-content: oklch(1 0 0);
+        --color-secondary: oklch(0.55 0.24 330);
+        --color-secondary-content: oklch(1 0 0);
+        --color-accent: oklch(0.51 0.17 210);
+        --color-accent-content: oklch(1 0 0);
+        --color-neutral: oklch(0.26 0.045 285);
+        --color-neutral-content: oklch(0.97 0.005 285);
+        --color-info: oklch(0.52 0.17 215);
+        --color-info-content: oklch(1 0 0);
+        --color-success: oklch(0.48 0.21 142);
+        --color-success-content: oklch(1 0 0);
+        --color-warning: oklch(0.57 0.19 68);
+        --color-warning-content: oklch(1 0 0);
+        --color-error: oklch(0.55 0.26 25);
+        --color-error-content: oklch(1 0 0);
+        --color-border: oklch(0 0 0 / 0.35);
+      }
+
+      html, body {
+        margin: 0;
+        padding: 0;
       }
 
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
         background-color: var(--color-base-100);
+        overflow: hidden;
+      }
+
+      .kc-shell {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 90rem;
+        height: 100vh;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+      }
+
+      @media (min-width: 640px) {
+        .kc-shell {
+          margin-top: 0.75rem;
+          margin-bottom: 0.75rem;
+          height: calc(100vh - 1.5rem);
+          border-radius: 1rem;
+        }
+      }
+
+      .kc-main {
+        flex: 1 1 0%;
+        min-height: 0;
+        overflow-y: auto;
       }
 
       #icon-moon { display: none; }
-      [data-theme="emerald"] #icon-moon { display: block; }
-      [data-theme="emerald"] #icon-sun { display: none; }
+      [data-theme="testcraft-light"] #icon-moon { display: block; }
+      [data-theme="testcraft-light"] #icon-sun { display: none; }
 
-      [data-theme="emerald"] .header-stripes {
+      [data-theme="testcraft-light"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
@@ -70,7 +122,7 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'emerald';
+      const LIGHT = 'testcraft-light';
       const DARK = 'dracula';
 
       function getCookie(name) {
@@ -102,10 +154,10 @@
       }
     </script>
   </head>
-  <body class="text-base-content min-h-screen">
-    <div class="mx-auto flex min-h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-3 sm:min-h-[calc(100vh-1.5rem)] sm:rounded-2xl" style="border: 1px solid var(--color-border);">
+  <body class="text-base-content">
+    <div class="kc-shell bg-base-100 sm:rounded-2xl" style="border: 1px solid var(--color-border);">
 
-      <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="border-bottom: 1px solid var(--color-border);">
+      <nav class="navbar bg-base-200 header-stripes shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; height: 3.5rem; border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">
           <a href="https://testcraft.dev" class="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 shrink-0 text-primary" aria-hidden="true">
@@ -126,7 +178,7 @@
         </div>
       </nav>
 
-      <main class="flex flex-1 flex-col items-center justify-start pt-[10vh] px-4 pb-8" style="background-image: inherit;">
+      <main class="kc-main flex flex-col items-center justify-start pt-[10vh] px-4 pb-8" style="background-image: inherit;">
         <div class="w-full max-w-sm card-enter">
           <#nested "header">
         </div>
