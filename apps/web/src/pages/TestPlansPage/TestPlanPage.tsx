@@ -113,7 +113,6 @@ export const TestPlanPage = () => {
   }>({ defaultValues: { name: "", environment: "" } });
 
   useBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: "Test Plans", href: `/projects/${projectId}/plans` },

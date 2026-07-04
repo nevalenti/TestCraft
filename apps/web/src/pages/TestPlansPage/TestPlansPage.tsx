@@ -32,7 +32,6 @@ export const TestPlansPage = () => {
   const [modal, setModal] = useState<ModalState>({ type: "closed" });
 
   useBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: "Test Plans" },

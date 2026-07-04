@@ -24,7 +24,6 @@ export const ProjectDetailPage = () => {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…" },
   ]);

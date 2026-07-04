@@ -190,7 +190,6 @@ export const TestRunPage = () => {
     deleteResult.mutate(id, { onSuccess: close });
 
   useBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     { label: run?.name ?? "…" },

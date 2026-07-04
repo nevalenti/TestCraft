@@ -141,7 +141,6 @@ export const TestCasePage = () => {
   };
 
   useBreadcrumbs([
-    { label: "Dashboard", href: "/" },
     { label: "Projects", href: "/projects" },
     { label: project?.name ?? "…", href: `/projects/${projectId}` },
     {

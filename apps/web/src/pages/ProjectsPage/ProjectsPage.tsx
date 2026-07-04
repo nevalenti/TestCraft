@@ -37,7 +37,7 @@ export const ProjectsPage = () => {
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
-  useBreadcrumbs([{ label: "Dashboard", href: "/" }, { label: "Projects" }]);
+  useBreadcrumbs([{ label: "Projects" }]);
 
   if (isError) return <ErrorState error={error} />;
 

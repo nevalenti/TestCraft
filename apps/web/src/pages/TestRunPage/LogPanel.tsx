@@ -33,7 +33,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
         {logs.map((line, i) => (
           <p
             key={i}
-            className="font-mono text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85"
+            className="font-logs text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85"
           >
             {line}
           </p>
