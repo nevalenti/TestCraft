@@ -123,7 +123,7 @@ public partial class NotificationDispatcher(
     {
         var recipients = await context
             .EmailSubscriptions.Where(e =>
-                e.ProjectId == projectId && e.IsActive && e.Events.Contains(eventType)
+                e.ProjectId == projectId && e.IsActive && e.Events.Contains($"\"{eventType}\"")
             )
             .Select(e => e.Email)
             .ToListAsync(cancellationToken);

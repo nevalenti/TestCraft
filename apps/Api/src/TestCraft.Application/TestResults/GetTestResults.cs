@@ -27,7 +27,9 @@ public static class GetTestResults
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestResults.Where(r => r.TestRunId == request.RunId);
+            var query = context.TestResults.Where(r =>
+                r.TestRunId == request.RunId && r.TestRun!.ProjectId == request.ProjectId
+            );
 
             if (request.Status is not null)
             {

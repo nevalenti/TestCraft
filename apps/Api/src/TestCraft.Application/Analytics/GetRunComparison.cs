@@ -54,8 +54,13 @@ public static class GetRunComparison
                 .Select(r => new { r.TestCaseId, r.Status })
                 .ToListAsync(cancellationToken);
 
-            var mapA = resultsA.ToDictionary(r => r.TestCaseId, r => r.Status);
-            var mapB = resultsB.ToDictionary(r => r.TestCaseId, r => r.Status);
+            // Use last result per test case in case a run has multiple entries for the same case.
+            var mapA = resultsA
+                .GroupBy(r => r.TestCaseId)
+                .ToDictionary(g => g.Key, g => g.Last().Status);
+            var mapB = resultsB
+                .GroupBy(r => r.TestCaseId)
+                .ToDictionary(g => g.Key, g => g.Last().Status);
 
             var allCaseIds = mapA.Keys.Union(mapB.Keys).ToList();
 

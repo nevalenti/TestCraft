@@ -4,19 +4,19 @@
 
 ## Built With
 
-| Layer          | Technology                  |
-| -------------- | --------------------------- |
-| Frontend       | React 19                    |
-| Backend        | ASP.NET Core (.NET 10)      |
-| Database       | PostgreSQL                  |
-| Cache          | Redis                       |
-| Messaging      | MassTransit + RabbitMQ      |
-| Real-time      | SignalR                     |
-| Object storage | MinIO                       |
-| Auth           | Keycloak                    |
-| Reverse proxy  | YARP                        |
-| Observability  | Grafana · Prometheus · Loki |
-| Deployment     | Helm on k3s                 |
+| Layer          | Technology                        |
+| -------------- | --------------------------------- |
+| Frontend       | React 19                          |
+| Backend        | ASP.NET Core (.NET 10)            |
+| Database       | PostgreSQL                        |
+| Cache          | Redis                             |
+| Messaging      | MassTransit + RabbitMQ            |
+| Real-time      | SignalR                           |
+| Object storage | MinIO                             |
+| Auth           | Keycloak                          |
+| Reverse proxy  | YARP                              |
+| Observability  | Grafana · Prometheus · Loki · Seq |
+| Deployment     | Helm on k3s                       |
 
 ---
 
@@ -24,10 +24,11 @@
 
 ### Test management
 
-- **Projects & suites** — projects → suites → test cases, drag-and-drop reordering
+- **Projects & suites** — projects → suites → test cases; test case steps support drag-and-drop reordering
+- **Test plans** — curate ordered lists of test cases across suites with drag-and-drop reordering
 - **JUnit / Allure import** — upload reports and have results mapped automatically to existing test cases
 - **Attachments** — file uploads stored in MinIO, scoped to test results
-- **Analytics** — pass/fail trend charts per project, configurable time window
+- **Analytics** — trend charts, flaky test detection, suite breakdown, and run comparison per project
 
 ### Test runs
 
@@ -43,6 +44,7 @@
 ### Accounts & access
 
 - **Keycloak auth** — SSO with optional GitHub social login
+- **Project members** — invite collaborators to projects for shared access
 - **Accounts** — profile settings with avatar upload
 
 ### Observability
@@ -103,7 +105,6 @@ Keycloak imports the `testcraft` realm automatically on first start. The API app
 Then in separate terminals:
 
 ```bash
-
 # Application
 pnpm --filter testcraft-web dev
 
@@ -116,13 +117,13 @@ dotnet run --project apps/Api/src/TestCraft.Api
 | Application | http://localhost:3000         |
 | API         | http://localhost:5000         |
 | Swagger UI  | http://localhost:5000/swagger |
+| RabbitMQ    | http://localhost:15672        |
+| MinIO       | http://localhost:9001         |
 | Keycloak    | http://localhost:8080         |
 | Mailpit     | http://localhost:8025         |
 | Seq         | http://localhost:5341         |
-| MinIO       | http://localhost:9001         |
 | Grafana     | http://localhost:3001         |
 | Prometheus  | http://localhost:9090         |
-| RabbitMQ    | http://localhost:15672        |
 
 ### Running tests
 

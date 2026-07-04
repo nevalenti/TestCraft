@@ -24,7 +24,9 @@ public static class GetSuiteBreakdown
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestResults.Where(r => r.TestRunId == request.RunId)
+                .TestResults.Where(r =>
+                    r.TestRunId == request.RunId && r.TestRun!.ProjectId == request.ProjectId
+                )
                 .Join(
                     context.TestCases,
                     r => r.TestCaseId,
