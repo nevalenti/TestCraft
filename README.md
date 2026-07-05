@@ -62,7 +62,7 @@ apps/
     TestCraft.Application      # CQRS commands/queries (MediatR), interfaces
     TestCraft.Infrastructure   # EF Core, Redis, MinIO, MailKit, MassTransit
     TestCraft.Api              # ASP.NET Core controllers, SignalR hubs
-  Gateway/src/                 # YARP reverse proxy — fronts API + web in production
+  Gateway/src/                 # YARP reverse proxy — fronts Application + API in production
   web/                         # React SPA
     src/api/                   # Axios clients — one file per domain
     src/hooks/                 # TanStack Query hooks — one file per domain
