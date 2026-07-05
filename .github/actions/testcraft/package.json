@@ -1,5 +1,5 @@
 {
-  "name": "testcraft",
+  "name": "@testcraft/gh-action",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@actions/core": "^1.11.1"
+    "@actions/core": "^1.11.1",
+    "@testcraft/ci-reporter": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

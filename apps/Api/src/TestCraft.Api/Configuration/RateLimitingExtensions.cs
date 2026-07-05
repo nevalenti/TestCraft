@@ -24,6 +24,7 @@ public static class RateLimitingExtensions
                             "TestCraft-GitHub-Actions/",
                             StringComparison.Ordinal
                         )
+                        || userAgent.StartsWith("TestCraft-CI-Reporter/", StringComparison.Ordinal)
                         || userAgent.StartsWith("TestCraft-Reporter/", StringComparison.Ordinal)
                     )
                     {

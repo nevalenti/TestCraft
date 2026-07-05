@@ -2,17 +2,23 @@ import * as core from "@actions/core";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
-import { fetchToken } from "./auth";
-import { clearState, readState, saveState } from "./state";
 import {
   ApiContext,
   createRun,
+  createStateStore,
   fetchAllResults,
+  fetchAuthority,
+  fetchToken,
+  findProjectId,
   importResults,
   pollJob,
+  slugify,
   uploadAttachment,
-} from "./testcraft";
-import { fetchAuthority, findProjectId, slugify } from "./util";
+} from "@testcraft/ci-reporter";
+
+const { readState, saveState, clearState } = createStateStore(
+  `${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}`,
+);
 
 const authenticate = async (
   apiUrl: string,
@@ -26,7 +32,9 @@ const authenticate = async (
     authority = await fetchAuthority(apiUrl);
   }
   core.info("Authenticating with Keycloak…");
-  return fetchToken(authority, username, password);
+  const token = await fetchToken(authority, username, password);
+  core.setSecret(token);
+  return token;
 };
 
 const buildContext = async (

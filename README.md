@@ -7,8 +7,6 @@
 
 > A self-hosted alternative to TestRail/Xray: organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
 
-![Test cases in a suite](docs-assets/test-cases.png)
-
 ## Built With
 
 | Layer          | Technology                        |
@@ -46,6 +44,7 @@
 ### CI integration
 
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
+- **CI reporter CLI** — `@testcraft/ci-reporter`, an npx/Docker equivalent of the GitHub Action for GitLab CI and other CI systems
 - **API tokens** — machine-to-machine access for CI pipelines
 
 ### Accounts & access
@@ -85,6 +84,7 @@ apps/
   e2e/                         # Playwright end-to-end suite
 packages/
   types/                       # Shared TypeScript types (published to web + e2e)
+  ci-reporter/                 # CI results reporter (npx / Docker) for GitLab CI and other non-GitHub CI systems
 infrastructure/
   helm/                        # Helm chart for k8s deployment
   keycloak/                    # Realm config + custom login theme

@@ -1,6 +1,8 @@
+const USER_AGENT = "TestCraft-CI-Reporter/1.0";
+
 export const authHeaders = (token: string): Record<string, string> => ({
   Authorization: `Bearer ${token}`,
-  "User-Agent": "TestCraft-GitHub-Actions/1.0",
+  "User-Agent": USER_AGENT,
 });
 
 export const assertOk = async (

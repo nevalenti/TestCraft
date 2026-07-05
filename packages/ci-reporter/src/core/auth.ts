@@ -1,6 +1,5 @@
-import * as core from "@actions/core";
-
 import { fetchJson } from "./http";
+import { setSecret } from "./log";
 
 interface TokenResponse {
   access_token: string;
@@ -25,7 +24,7 @@ export const fetchToken = async (
     },
     "Keycloak auth failed",
   );
-  core.setSecret(access_token);
+  setSecret(access_token);
 
   return access_token;
 };
