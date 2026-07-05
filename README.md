@@ -5,7 +5,7 @@
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-> A self-hosted alternative to TestRail/Xray: organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
+> A self-hosted alternative to TestRail/Xray: organize projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
 
 ## Built With
 
@@ -44,7 +44,8 @@
 ### CI integration
 
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
-- **CI reporter CLI** — `@testcraft/ci-reporter`, an npx/Docker equivalent of the GitHub Action for GitLab CI and other CI systems
+- **CI reporter CLI** — `@testcraft/ci-reporter`, an npx/Docker equivalent of the GitHub Action for CI systems without native support
+- **Pipeline examples** — ready-to-use pipelines for [GitHub Actions](.github/workflows), [GitLab CI](.gitlab-ci.yml), and [Jenkins](jenkins) covering api, web, and e2e suites
 - **API tokens** — machine-to-machine access for CI pipelines
 
 ### Accounts & access
@@ -90,7 +91,12 @@ infrastructure/
   keycloak/                    # Realm config + custom login theme
   grafana/                     # Dashboard provisioning
   prometheus/                  # Scrape config
-.github/actions/testcraft/     # GitHub Action that reports CI results into TestCraft
+.github/
+  actions/testcraft/           # GitHub Action that reports CI results into TestCraft
+  workflows/                   # GitHub Actions pipelines for api, web, e2e
+jenkins/                       # Example Jenkins pipelines (api, web, e2e) using the CI reporter CLI
+.gitlab-ci.yml                 # Example GitLab CI pipelines (api, web, e2e) using the CI reporter CLI
+.gitlab/ci/                    # Per-suite GitLab CI job definitions
 ```
 
 ---
