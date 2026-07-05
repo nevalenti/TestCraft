@@ -1,0 +1,148 @@
+def buildReporterImage() {
+    sh "docker build -t ${env.CI_REPORTER_IMAGE} -f packages/ci-reporter/Dockerfile ."
+}
+
+def reportToTestCraft(String junitXml) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        sh """
+            docker run --rm \
+                -w /repo -v "\$WORKSPACE:/repo" \
+                -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
+                -e CI_PIPELINE_ID="${env.JOB_NAME}" -e CI_JOB_ID="${env.BUILD_NUMBER}" \
+                ${env.CI_REPORTER_IMAGE} import \
+                --project-name TestCraft \
+                --junit-xml "${junitXml}" \
+                --run-name "#${env.BUILD_NUMBER} api (${env.BRANCH_NAME ?: env.GIT_BRANCH})" \
+                --source api
+        """
+    }
+}
+
+pipeline {
+    agent { label 'testcraft' }
+
+    options {
+        timeout(time: 20, unit: 'MINUTES')
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+
+    environment {
+        IMAGE_NAME        = "ghcr.io/${env.GHCR_OWNER ?: 'nevalenti'}/testcraft-api"
+        CI_REPORTER_IMAGE = "testcraft-ci-reporter:build-${env.BUILD_NUMBER}"
+    }
+
+    stages {
+        stage('Lint Dockerfile') {
+            steps {
+                sh '''
+                    wget -qO /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+                    chmod +x /tmp/hadolint
+                    /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Dockerfile
+                '''
+            }
+        }
+
+        stage('Restore') {
+            steps {
+                sh 'dotnet restore TestCraft.slnx'
+                sh 'dotnet tool restore'
+            }
+        }
+
+        stage('Audit dependencies') {
+            steps {
+                sh '''
+                    dotnet list TestCraft.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.log
+                    if grep -q "has the following vulnerable packages" vulnerable-packages.log; then
+                        echo "Vulnerable NuGet packages detected"
+                        exit 1
+                    fi
+                '''
+            }
+        }
+
+        stage('Format check') {
+            steps {
+                sh 'dotnet csharpier check .'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'dotnet build TestCraft.slnx --no-restore --configuration Release'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    sh 'dotnet test TestCraft.slnx --no-build --configuration Release'
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'apps/Api/test-results/junit.xml', allowEmptyResults: true
+                }
+            }
+        }
+
+        stage('Report to TestCraft') {
+            steps {
+                script {
+                    try {
+                        buildReporterImage()
+                        reportToTestCraft('apps/Api/test-results/junit.xml')
+                    } catch (err) {
+                        echo "WARNING: TestCraft reporting failed: ${err}"
+                    }
+                }
+            }
+        }
+
+        stage('Docker build & scan') {
+            when { expression { currentBuild.currentResult == 'SUCCESS' } }
+            steps {
+                sh "docker build -t api-scan:${env.GIT_COMMIT} -f apps/Api/Dockerfile ."
+                sh """
+                    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy:latest image \
+                        --format sarif --output /tmp/trivy-results.sarif \
+                        --severity CRITICAL,HIGH --ignore-unfixed \
+                        api-scan:${env.GIT_COMMIT} || true
+                """
+                archiveArtifacts artifacts: 'trivy-results.sarif', allowEmptyArchive: true
+            }
+        }
+
+        stage('Docker push') {
+            when {
+                allOf {
+                    branch 'main'
+                    expression { currentBuild.currentResult == 'SUCCESS' }
+                }
+            }
+            steps {
+                sh "docker tag api-scan:${env.GIT_COMMIT} ${env.IMAGE_NAME}:${env.GIT_COMMIT}"
+                sh "docker tag api-scan:${env.GIT_COMMIT} ${env.IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(credentialsId: 'ghcr-credentials', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+                    sh '''
+                        echo "$REGISTRY_PASSWORD" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin
+                    '''
+                }
+                sh "docker push ${env.IMAGE_NAME}:${env.GIT_COMMIT}"
+                sh "docker push ${env.IMAGE_NAME}:latest"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi ${env.CI_REPORTER_IMAGE} || true"
+            sh "docker rmi api-scan:${env.GIT_COMMIT} || true"
+        }
+    }
+}

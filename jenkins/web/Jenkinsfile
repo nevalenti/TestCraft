@@ -1,0 +1,185 @@
+def buildCiReporter() {
+    sh 'pnpm --filter @testcraft/ci-reporter run build'
+}
+
+def reporterCli(String args) {
+    return "node packages/ci-reporter/dist/cli.js ${args}"
+}
+
+def startTestCraftRun(String runName) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        sh reporterCli("""start \
+            --project-name TestCraft \
+            --run-name \"${runName}\" \
+            --source web \
+            --dotenv .testcraft.env""")
+    }
+    def dotenv = fileExists('.testcraft.env') ? readFile('.testcraft.env') : ''
+    sh 'rm -f .testcraft.env'
+    def match = (dotenv =~ /TESTCRAFT_RUN_ID=(.*)/)
+    return match ? match[0][1].trim() : ''
+}
+
+def importTestCraftResults(String runName, String junitXml) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        def runIdArg = env.TESTCRAFT_RUN_ID ? "--run-id ${env.TESTCRAFT_RUN_ID}" : ''
+        sh reporterCli("""import \
+            --project-name TestCraft \
+            --junit-xml \"${junitXml}\" \
+            --run-name \"${runName}\" \
+            --source web ${runIdArg}""")
+    }
+}
+
+pipeline {
+    agent { label 'testcraft' }
+
+    options {
+        timeout(time: 15, unit: 'MINUTES')
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+
+    environment {
+        IMAGE_NAME = "ghcr.io/${env.GHCR_OWNER ?: 'nevalenti'}/testcraft-web"
+        RUN_NAME   = "#${env.BUILD_NUMBER} web (${env.BRANCH_NAME ?: env.GIT_BRANCH})"
+    }
+
+    stages {
+        stage('Install dependencies') {
+            steps {
+                sh 'corepack enable && corepack prepare pnpm@11.3.0 --activate'
+                sh 'pnpm install --frozen-lockfile'
+            }
+        }
+
+        stage('Audit dependencies') {
+            steps {
+                sh 'pnpm audit --audit-level=high --filter testcraft-web'
+            }
+        }
+
+        stage('Lint') {
+            steps {
+                sh 'pnpm --filter testcraft-web run lint'
+            }
+        }
+
+        stage('Typecheck') {
+            steps {
+                sh 'pnpm --filter testcraft-web run typecheck'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'pnpm turbo build --filter testcraft-web'
+            }
+        }
+
+        stage('Start TestCraft run') {
+            steps {
+                script {
+                    try {
+                        buildCiReporter()
+                        env.TESTCRAFT_RUN_ID = startTestCraftRun(env.RUN_NAME)
+                    } catch (err) {
+                        echo "WARNING: could not start TestCraft run: ${err}"
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                    sh 'pnpm --filter testcraft-web run test'
+                }
+            }
+        }
+
+        stage('Report to TestCraft') {
+            steps {
+                script {
+                    try {
+                        importTestCraftResults(env.RUN_NAME, 'apps/web/test-results/junit.xml')
+                    } catch (err) {
+                        echo "WARNING: TestCraft reporting failed: ${err}"
+                    }
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'apps/web/test-results/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'apps/web/test-results/**', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'apps/web/dist/**', allowEmptyArchive: true
+                }
+            }
+        }
+
+        stage('Publish report') {
+            when {
+                allOf {
+                    branch 'main'
+                    expression { currentBuild.currentResult == 'SUCCESS' }
+                }
+            }
+            steps {
+                publishHTML(target: [
+                    allowMissing: true,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'apps/web/test-results',
+                    reportFiles: 'index.html',
+                    reportName: 'Web Test Report',
+                ])
+            }
+        }
+
+        stage('Docker build & scan') {
+            when { expression { currentBuild.currentResult == 'SUCCESS' } }
+            steps {
+                sh "docker build -t web-scan:${env.GIT_COMMIT} -f apps/web/Dockerfile ."
+                sh """
+                    docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
+                        aquasec/trivy:latest image \
+                        --format sarif --output /tmp/trivy-results.sarif \
+                        --severity CRITICAL,HIGH --ignore-unfixed \
+                        web-scan:${env.GIT_COMMIT} || true
+                """
+                archiveArtifacts artifacts: 'trivy-results.sarif', allowEmptyArchive: true
+            }
+        }
+
+        stage('Docker push') {
+            when {
+                allOf {
+                    branch 'main'
+                    expression { currentBuild.currentResult == 'SUCCESS' }
+                }
+            }
+            steps {
+                sh "docker tag web-scan:${env.GIT_COMMIT} ${env.IMAGE_NAME}:${env.GIT_COMMIT}"
+                sh "docker tag web-scan:${env.GIT_COMMIT} ${env.IMAGE_NAME}:latest"
+                withCredentials([usernamePassword(credentialsId: 'ghcr-credentials', usernameVariable: 'REGISTRY_USER', passwordVariable: 'REGISTRY_PASSWORD')]) {
+                    sh 'echo "$REGISTRY_PASSWORD" | docker login ghcr.io -u "$REGISTRY_USER" --password-stdin'
+                }
+                sh "docker push ${env.IMAGE_NAME}:${env.GIT_COMMIT}"
+                sh "docker push ${env.IMAGE_NAME}:latest"
+            }
+        }
+    }
+
+    post {
+        always {
+            sh "docker rmi web-scan:${env.GIT_COMMIT} || true"
+        }
+    }
+}

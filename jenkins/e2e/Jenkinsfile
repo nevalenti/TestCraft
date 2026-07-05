@@ -1,0 +1,160 @@
+def buildCiReporter() {
+    sh 'pnpm --filter @testcraft/ci-reporter run build'
+}
+
+def reporterCli(String args) {
+    return "node packages/ci-reporter/dist/cli.js ${args}"
+}
+
+def startTestCraftRun(String runName) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        sh reporterCli("""start \
+            --project-name TestCraft \
+            --run-name \"${runName}\" \
+            --source e2e \
+            --dotenv .testcraft.env""")
+    }
+    def dotenv = fileExists('.testcraft.env') ? readFile('.testcraft.env') : ''
+    sh 'rm -f .testcraft.env'
+    def match = (dotenv =~ /TESTCRAFT_RUN_ID=(.*)/)
+    return match ? match[0][1].trim() : ''
+}
+
+def importTestCraftResults(String runName, String junitXml, String screenshotsDir) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        def runIdArg = env.TESTCRAFT_RUN_ID ? "--run-id ${env.TESTCRAFT_RUN_ID}" : ''
+        sh reporterCli("""import \
+            --project-name TestCraft \
+            --junit-xml \"${junitXml}\" \
+            --run-name \"${runName}\" \
+            --source e2e \
+            --screenshots-dir \"${screenshotsDir}\" ${runIdArg}""")
+    }
+}
+
+pipeline {
+    agent { label 'testcraft' }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+
+    environment {
+        RUN_NAME = "#${env.BUILD_NUMBER} e2e (${env.BRANCH_NAME ?: env.GIT_BRANCH})"
+    }
+
+    stages {
+        stage('Start services') {
+            steps {
+                sh '''
+                    docker run -d --rm --name testcraft-e2e-postgres \
+                        -e POSTGRES_USER=e2e -e POSTGRES_PASSWORD=e2e -e POSTGRES_DB=testcraft_e2e \
+                        -p 5433:5432 postgres:16-alpine
+                    timeout 60 sh -c 'until docker exec testcraft-e2e-postgres pg_isready -U e2e > /dev/null 2>&1; do sleep 2; done'
+
+                    docker run -d --rm --name keycloak \
+                        --network host \
+                        -e KC_HEALTH_ENABLED=true \
+                        -v "$WORKSPACE/infrastructure/keycloak/themes:/opt/keycloak/themes/dracula/login" \
+                        -v "$WORKSPACE/infrastructure/keycloak/realm.json:/realm-source/realm.json:ro" \
+                        --entrypoint /bin/sh \
+                        quay.io/keycloak/keycloak:26.2 \
+                        -c 'mkdir -p /opt/keycloak/data/import && sed "s|\\"GITHUB_IDP_ENABLED\\"|false|g" /realm-source/realm.json > /opt/keycloak/data/import/realm.json && exec /opt/keycloak/bin/kc.sh start-dev --import-realm'
+
+                    timeout 120 sh -c 'until curl -sf http://localhost:9000/health/ready > /dev/null 2>&1; do sleep 3; done'
+                '''
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'corepack enable && corepack prepare pnpm@11.3.0 --activate'
+                sh 'dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj'
+                sh 'pnpm install --frozen-lockfile'
+                sh 'pnpm --filter @testcraft/types run build'
+                sh 'pnpm --filter testcraft-e2e exec playwright install chromium --with-deps'
+            }
+        }
+
+        stage('Start TestCraft run') {
+            steps {
+                script {
+                    try {
+                        buildCiReporter()
+                        env.TESTCRAFT_RUN_ID = startTestCraftRun(env.RUN_NAME)
+                    } catch (err) {
+                        echo "WARNING: could not start TestCraft run: ${err}"
+                    }
+                }
+            }
+        }
+
+        stage('Run e2e tests') {
+            environment {
+                CI                              = 'true'
+                E2E_BASE_URL                    = 'http://localhost:4173'
+                E2E_USERNAME                    = 'e2e@testcraft.dev'
+                E2E_PASSWORD                    = 'e2e'
+                DATABASE_URL                    = 'postgresql://e2e:e2e@localhost:5433/testcraft_e2e'
+                KEYCLOAK_AUTHORITY              = 'http://localhost:8080/realms/testcraft'
+                KEYCLOAK_AUDIENCE               = 'testcraft-web'
+                KEYCLOAK_REQUIRE_HTTPS_METADATA = 'false'
+                CORS_ALLOWED_ORIGINS            = 'http://localhost:4173'
+                APPLY_MIGRATIONS                = 'true'
+                VITE_API_URL                    = 'http://localhost:5000'
+                VITE_KEYCLOAK_URL               = 'http://localhost:8080'
+                VITE_KEYCLOAK_REALM             = 'testcraft'
+                VITE_KEYCLOAK_CLIENT_ID         = 'testcraft-web'
+                TESTCRAFT_PROJECT_NAME          = 'TestCraft'
+                TESTCRAFT_SOURCE                = 'e2e'
+            }
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+                    string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+                    string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+                ]) {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        sh 'pnpm --filter testcraft-e2e run e2e'
+                    }
+                }
+            }
+        }
+
+        stage('Report to TestCraft') {
+            steps {
+                script {
+                    try {
+                        importTestCraftResults(env.RUN_NAME, 'apps/e2e/e2e-results/junit.xml', 'apps/e2e/test-results')
+                    } catch (err) {
+                        echo "WARNING: TestCraft reporting failed: ${err}"
+                    }
+                }
+            }
+            post {
+                always {
+                    junit testResults: 'apps/e2e/e2e-results/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'apps/e2e/e2e-results/**', allowEmptyArchive: true
+                }
+                failure {
+                    archiveArtifacts artifacts: 'apps/e2e/test-results/**', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            sh 'docker stop keycloak testcraft-e2e-postgres || true'
+        }
+    }
+}
