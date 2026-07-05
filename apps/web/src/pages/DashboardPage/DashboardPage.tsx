@@ -185,6 +185,7 @@ export const DashboardPage = () => {
                 cardBg="card-bg-primary border"
                 to="/projects"
                 description="Click to view all projects"
+                testId="stat-projects"
               />
               <StatCard
                 label="Test Runs"
@@ -194,6 +195,7 @@ export const DashboardPage = () => {
                 colorVar="--color-warning"
                 cardBg="card-bg-warning border"
                 description="Across all projects"
+                testId="stat-runs"
               />
               <StatCard
                 label="Test Suites"
@@ -203,6 +205,7 @@ export const DashboardPage = () => {
                 colorVar="--color-info"
                 cardBg="card-bg-info border"
                 description="Across all projects"
+                testId="stat-suites"
               />
             </div>
 

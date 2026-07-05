@@ -128,6 +128,24 @@ describe("useCreateTestCase", () => {
       expect(notify).toHaveBeenCalledWith("Test case created");
     });
   });
+
+  describe("on mutate failure — sets error state", () => {
+    it("is in error state when the API rejects", async () => {
+      vi.mocked(testCasesApi.create).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(
+        () => useCreateTestCase("proj-1", "suite-1"),
+        { wrapper },
+      );
+
+      result.current.mutate({ name: "Fail" });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(notify).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe("useUpdateTestCase", () => {
@@ -152,6 +170,23 @@ describe("useUpdateTestCase", () => {
         "c1",
         { name: "Updated", priority: "Medium" },
       );
+    });
+  });
+
+  describe("on mutate failure — sets error state", () => {
+    it("is in error state when the API rejects", async () => {
+      vi.mocked(testCasesApi.update).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(
+        () => useUpdateTestCase("proj-1", "suite-1"),
+        { wrapper },
+      );
+
+      result.current.mutate({ id: "c1", name: "Fail", priority: "Medium" });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
     });
   });
 });
@@ -188,6 +223,24 @@ describe("useDeleteTestCase", () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(notify).toHaveBeenCalledWith("Test case deleted");
+    });
+  });
+
+  describe("on mutate failure — sets error state", () => {
+    it("is in error state when the API rejects", async () => {
+      vi.mocked(testCasesApi.delete).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(
+        () => useDeleteTestCase("proj-1", "suite-1"),
+        { wrapper },
+      );
+
+      result.current.mutate("c1");
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(notify).not.toHaveBeenCalled();
     });
   });
 });

@@ -8,5 +8,6 @@
   <Folder Name="/tests/">
     <Project Path="apps/Api/tests/TestCraft.Api.IntegrationTests/TestCraft.Api.IntegrationTests.csproj" />
     <Project Path="apps/Api/tests/TestCraft.Domain.UnitTests/TestCraft.Domain.UnitTests.csproj" />
+    <Project Path="apps/Api/tests/TestCraft.Application.UnitTests/TestCraft.Application.UnitTests.csproj" />
   </Folder>
 </Solution>

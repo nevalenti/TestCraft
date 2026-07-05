@@ -54,7 +54,6 @@ public static class GetRunComparison
                 .Select(r => new { r.TestCaseId, r.Status })
                 .ToListAsync(cancellationToken);
 
-            // Use last result per test case in case a run has multiple entries for the same case.
             var mapA = resultsA
                 .GroupBy(r => r.TestCaseId)
                 .ToDictionary(g => g.Key, g => g.Last().Status);

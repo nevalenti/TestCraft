@@ -12,6 +12,7 @@ type StatCardProps = {
   cardBg?: string;
   to?: string;
   description?: string;
+  testId?: string;
 };
 
 const cardBase =
@@ -26,6 +27,7 @@ export const StatCard = ({
   cardBg,
   to,
   description,
+  testId,
 }: StatCardProps) => {
   const inner = (
     <>
@@ -44,6 +46,7 @@ export const StatCard = ({
       </div>
 
       <p
+        data-testid={testId}
         className={cn(
           "mt-2 font-display text-[2rem] leading-none font-extrabold tabular-nums tracking-tight",
           accent,

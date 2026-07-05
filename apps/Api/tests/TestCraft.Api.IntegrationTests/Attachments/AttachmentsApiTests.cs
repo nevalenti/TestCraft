@@ -205,4 +205,61 @@ public class AttachmentsApiTests(ApiFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
+
+    [Fact]
+    public async Task Upload_EmptyFile_ReturnsCreatedAttachmentWithZeroSize()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+
+        var form = new MultipartFormDataContent();
+        var emptyContent = new ByteArrayContent([]);
+        emptyContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        form.Add(emptyContent, "file", "empty.png");
+
+        var response = await client.PostAsync(AttachmentsUrl(projectId, runId, resultId), form);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var attachment = await response.Content.ReadFromJsonAsync<AttachmentResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        attachment!.SizeBytes.Should().Be(0);
+    }
+
+    [Fact]
+    public async Task Upload_DisallowedContentType_IsCurrentlyAccepted()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+
+        var response = await client.PostAsync(
+            AttachmentsUrl(projectId, runId, resultId),
+            BuildFileContent("payload.exe", "application/x-msdownload")
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var attachment = await response.Content.ReadFromJsonAsync<AttachmentResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        attachment!.ContentType.Should().Be("application/x-msdownload");
+    }
+
+    [Fact]
+    public async Task Upload_FileExceedingConfiguredSizeLimit_IsCurrentlyAccepted()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+
+        var oversizedBytes = new byte[52_428_800 + 1];
+        var fileContent = new ByteArrayContent(oversizedBytes);
+        fileContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
+        var form = new MultipartFormDataContent();
+        form.Add(fileContent, "file", "huge.png");
+
+        var response = await client.PostAsync(AttachmentsUrl(projectId, runId, resultId), form);
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+    }
 }

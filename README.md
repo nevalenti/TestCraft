@@ -64,7 +64,7 @@
 ```
 apps/
   Api/src/
-    TestCraft.Domain           # entities, domain events — no framework dependencies
+    TestCraft.Domain           # entities, domain events
     TestCraft.Application      # CQRS commands/queries (MediatR), interfaces
     TestCraft.Infrastructure   # EF Core, Redis, MinIO, MailKit, MassTransit
     TestCraft.Api              # ASP.NET Core controllers, SignalR hubs
@@ -83,7 +83,7 @@ apps/
     src/__tests__/             # Vitest unit/component tests
   e2e/                         # Playwright end-to-end suite
 packages/
-  types/                       # Shared TypeScript types (published to web + e2e)
+  types/                       # Shared TypeScript types (published to web)
   ci-reporter/                 # CI results reporter (npx / Docker) for GitLab CI and other non-GitHub CI systems
 infrastructure/
   helm/                        # Helm chart for k8s deployment

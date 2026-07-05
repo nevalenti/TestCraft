@@ -2,10 +2,13 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
+using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.TestRuns;
 
@@ -94,6 +97,36 @@ public class TestRunsApiTests(ApiFactory factory)
             ApiTestHelpers.JsonOptions
         );
         updated!.Status.Should().Be(TestRunStatus.Completed);
+    }
+
+    [Fact]
+    public async Task Update_StatusTransition_PreservesCreatedAtButAdvancesUpdatedAt()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+
+        run.CreatedAt.Should().Be(run.UpdatedAt);
+
+        await Task.Delay(TimeSpan.FromMilliseconds(50));
+
+        var updateResponse = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}",
+            new UpdateTestRun.Command
+            {
+                Id = run.Id,
+                Name = run.Name,
+                Environment = run.Environment,
+                Status = TestRunStatus.Completed,
+            }
+        );
+
+        var updated = await updateResponse.Content.ReadFromJsonAsync<TestRunResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+
+        updated!.CreatedAt.Should().BeCloseTo(run.CreatedAt, TimeSpan.FromMilliseconds(1));
+        updated.UpdatedAt.Should().BeAfter(run.UpdatedAt);
     }
 
     [Fact]
@@ -261,5 +294,38 @@ public class TestRunsApiTests(ApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task Update_ConcurrentLoads_LostUpdateIsNotDetected()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+
+        using var scopeA = factory.Services.CreateScope();
+        using var scopeB = factory.Services.CreateScope();
+        var contextA = scopeA.ServiceProvider.GetRequiredService<AppDbContext>();
+        var contextB = scopeB.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var runA = await contextA.TestRuns.SingleAsync(r => r.Id == run.Id);
+        var runB = await contextB.TestRuns.SingleAsync(r => r.Id == run.Id);
+
+        runB.TransitionTo(TestRunStatus.Archived);
+        await contextB.SaveChangesAsync();
+
+        var act = () =>
+        {
+            runA.TransitionTo(TestRunStatus.Completed);
+            return contextA.SaveChangesAsync();
+        };
+
+        await act.Should().NotThrowAsync();
+
+        var final = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}")
+        ).Content.ReadFromJsonAsync<TestRunResponse>(ApiTestHelpers.JsonOptions);
+
+        final!.Status.Should().Be(TestRunStatus.Completed);
     }
 }

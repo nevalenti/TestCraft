@@ -1,4 +1,5 @@
 import { expect, test } from "../fixtures";
+import { ProjectsPage } from "../pages/projects.page";
 
 test.describe("Dashboard", () => {
   test.beforeEach(async ({ page }) => {
@@ -29,5 +30,25 @@ test.describe("Dashboard", () => {
     await expect(
       page.getByRole("heading", { name: "Active Runs" }),
     ).toBeVisible();
+  });
+
+  test("Projects stat card increments by exactly one after creating a project", async ({
+    page,
+  }) => {
+    const projectsStat = page.getByTestId("stat-projects");
+    const before = Number(await projectsStat.textContent());
+
+    const projectName = `E2E Dashboard Stat ${Date.now()}`;
+    const projects = new ProjectsPage(page);
+    await projects.goto();
+    await projects.create(projectName);
+
+    await page.goto("/");
+    await expect(page.getByTestId("stat-projects")).toHaveText(
+      String(before + 1),
+    );
+
+    await projects.goto();
+    await projects.delete(projectName);
   });
 });

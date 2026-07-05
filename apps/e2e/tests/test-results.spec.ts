@@ -114,6 +114,27 @@ test.describe("Test Results", () => {
     }
   });
 
+  test("pass rate reflects the actual mix of recorded result statuses", async ({
+    testResultsPage,
+    page,
+  }) => {
+    for (const status of ["Passed", "Failed", "Blocked"] as const) {
+      await testResultsPage.addResult(testCaseName, status);
+      await expect(testResultsPage.rows.last()).toBeVisible({
+        timeout: 10_000,
+      });
+    }
+    await expect(testResultsPage.rows).toHaveCount(3, { timeout: 10_000 });
+
+    await expect(page.getByText("3 results")).toBeVisible();
+    await expect(page.getByText("33%")).toBeVisible();
+
+    for (let i = 0; i < 3; i++) {
+      await testResultsPage.deleteResult(0);
+    }
+    await expect(testResultsPage.rows).toHaveCount(0);
+  });
+
   test("edits a result status", async ({ testResultsPage }) => {
     await testResultsPage.addResult(testCaseName, "Passed");
     await expect(testResultsPage.rows.first().getByText("Passed")).toBeVisible({

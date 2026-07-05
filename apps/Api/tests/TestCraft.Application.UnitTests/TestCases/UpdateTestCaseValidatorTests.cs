@@ -1,0 +1,67 @@
+using FluentValidation.TestHelper;
+using TestCraft.Application.TestCases;
+using TestCraft.Domain.Enums;
+
+namespace TestCraft.Application.UnitTests.TestCases;
+
+public class UpdateTestCaseValidatorTests
+{
+    private readonly UpdateTestCase.Validator _validator = new();
+
+    private static UpdateTestCase.Command ValidCommand() =>
+        new()
+        {
+            ProjectId = Guid.NewGuid(),
+            SuiteId = Guid.NewGuid(),
+            Id = Guid.NewGuid(),
+            Name = "Login works",
+            Priority = TestCasePriority.Medium,
+        };
+
+    [Fact]
+    public void ValidCommand_PassesValidation()
+    {
+        var result = _validator.TestValidate(ValidCommand());
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void EmptyOrWhitespaceName_FailsValidation(string name)
+    {
+        var result = _validator.TestValidate(ValidCommand() with { Name = name });
+        result.ShouldHaveValidationErrorFor(x => x.Name);
+    }
+
+    [Fact]
+    public void NameExceedingMaxLength_FailsValidation()
+    {
+        var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 256) });
+        result.ShouldHaveValidationErrorFor(x => x.Name);
+    }
+
+    [Fact]
+    public void DescriptionExceedingMaxLength_FailsValidation()
+    {
+        var result = _validator.TestValidate(
+            ValidCommand() with
+            {
+                Description = new string('a', 2001),
+            }
+        );
+        result.ShouldHaveValidationErrorFor(x => x.Description);
+    }
+
+    [Fact]
+    public void OutOfRangePriority_FailsValidation()
+    {
+        var result = _validator.TestValidate(
+            ValidCommand() with
+            {
+                Priority = (TestCasePriority)999,
+            }
+        );
+        result.ShouldHaveValidationErrorFor(x => x.Priority);
+    }
+}

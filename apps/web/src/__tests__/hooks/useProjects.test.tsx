@@ -197,6 +197,36 @@ describe("useUpdateProject", () => {
       ).toBe(true);
     });
   });
+
+  describe("on mutate failure — sets error state", () => {
+    it("is in error state when the API rejects", async () => {
+      vi.mocked(projectsApi.update).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(() => useUpdateProject(), { wrapper });
+
+      result.current.mutate({ id: "p1", name: "Fail" });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+
+    it("does not invalidate cached queries", async () => {
+      vi.mocked(projectsApi.update).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { queryClient, wrapper } = makeWrapper();
+      queryClient.setQueryData(queryKeys.projects.all, { items: [] });
+
+      const { result } = renderHook(() => useUpdateProject(), { wrapper });
+      result.current.mutate({ id: "p1", name: "Fail" });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(
+        queryClient.getQueryState(queryKeys.projects.all)?.isInvalidated,
+      ).toBe(false);
+    });
+  });
 });
 
 describe("useDeleteProject", () => {
@@ -251,6 +281,36 @@ describe("useDeleteProject", () => {
       expect(
         queryClient.getQueryState(queryKeys.projects.all)?.isInvalidated,
       ).toBe(true);
+    });
+  });
+
+  describe("on mutate failure — sets error state", () => {
+    it("is in error state when the API rejects", async () => {
+      vi.mocked(projectsApi.delete).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(() => useDeleteProject(), { wrapper });
+
+      result.current.mutate("p1");
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+    });
+
+    it("does not remove the project detail from cache", async () => {
+      vi.mocked(projectsApi.delete).mockRejectedValue(
+        new Error("Server error"),
+      );
+      const { queryClient, wrapper } = makeWrapper();
+      queryClient.setQueryData(queryKeys.projects.detail("p1"), { id: "p1" });
+
+      const { result } = renderHook(() => useDeleteProject(), { wrapper });
+      result.current.mutate("p1");
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(
+        queryClient.getQueryState(queryKeys.projects.detail("p1")),
+      ).not.toBeUndefined();
     });
   });
 });

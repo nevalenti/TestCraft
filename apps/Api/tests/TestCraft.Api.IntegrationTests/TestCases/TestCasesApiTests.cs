@@ -138,6 +138,38 @@ public class TestCasesApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Update_ChangesFields_PreservesCreatedAtButAdvancesUpdatedAt()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id);
+
+        testCase.CreatedAt.Should().Be(testCase.UpdatedAt);
+        testCase.CreatedAt.Should().BeCloseTo(DateTimeOffset.UtcNow, TimeSpan.FromSeconds(10));
+
+        await Task.Delay(TimeSpan.FromMilliseconds(50));
+
+        var updateResponse = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase.Id}",
+            new UpdateTestCase.Command
+            {
+                Id = testCase.Id,
+                Name = "New Name",
+                Description = "Updated",
+                Priority = TestCasePriority.Critical,
+            }
+        );
+
+        var updated = await updateResponse.Content.ReadFromJsonAsync<TestCaseResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+
+        updated!.CreatedAt.Should().BeCloseTo(testCase.CreatedAt, TimeSpan.FromMilliseconds(1));
+        updated.UpdatedAt.Should().BeAfter(testCase.UpdatedAt);
+    }
+
+    [Fact]
     public async Task Update_NonExistentCase_ReturnsNotFound()
     {
         var client = CreateClient(Guid.NewGuid());
