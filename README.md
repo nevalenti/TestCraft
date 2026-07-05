@@ -1,6 +1,13 @@
 # TestCraft
 
-> Test management platform for teams — organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
+[![API](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml)
+[![Web](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml)
+[![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+> A self-hosted alternative to TestRail/Xray: organise projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
+
+![Test cases in a suite](docs-assets/test-cases.png)
 
 ## Built With
 
@@ -62,7 +69,7 @@ apps/
     TestCraft.Application      # CQRS commands/queries (MediatR), interfaces
     TestCraft.Infrastructure   # EF Core, Redis, MinIO, MailKit, MassTransit
     TestCraft.Api              # ASP.NET Core controllers, SignalR hubs
-  Gateway/src/                 # YARP reverse proxy — fronts Application + API in production
+  Gateway/src/                 # YARP reverse proxy — fronts Web + API in production
   web/                         # React SPA
     src/api/                   # Axios clients — one file per domain
     src/hooks/                 # TanStack Query hooks — one file per domain
@@ -105,30 +112,30 @@ Keycloak imports the `testcraft` realm automatically on first start. The API app
 Then in separate terminals:
 
 ```bash
-# Application
+# Web
 pnpm --filter testcraft-web dev
 
 # API
 dotnet run --project apps/Api/src/TestCraft.Api
 ```
 
-| Service     | URL                           |
-| ----------- | ----------------------------- |
-| Application | http://localhost:3000         |
-| API         | http://localhost:5000         |
-| Swagger UI  | http://localhost:5000/swagger |
-| RabbitMQ    | http://localhost:15672        |
-| MinIO       | http://localhost:9001         |
-| Keycloak    | http://localhost:8080         |
-| Mailpit     | http://localhost:8025         |
-| Seq         | http://localhost:5341         |
-| Grafana     | http://localhost:3001         |
-| Prometheus  | http://localhost:9090         |
+| Service    | URL                           |
+| ---------- | ----------------------------- |
+| Web        | http://localhost:3000         |
+| API        | http://localhost:5000         |
+| Swagger UI | http://localhost:5000/swagger |
+| RabbitMQ   | http://localhost:15672        |
+| MinIO      | http://localhost:9001         |
+| Keycloak   | http://localhost:8080         |
+| Mailpit    | http://localhost:8025         |
+| Seq        | http://localhost:5341         |
+| Grafana    | http://localhost:3001         |
+| Prometheus | http://localhost:9090         |
 
 ### Running tests
 
 ```bash
-pnpm --filter testcraft-web test   # Application (Vitest)
+pnpm --filter testcraft-web test   # Web (Vitest)
 dotnet test apps/Api               # API (xUnit + Testcontainers)
 make e2e                           # End-to-end (Playwright via act)
 ```
@@ -144,3 +151,9 @@ make deploy
 ```
 
 Check rollout status at any time with `make status`.
+
+---
+
+## License
+
+[MIT](LICENSE)
