@@ -1,0 +1,88 @@
+variables:
+  API_IMAGE: $CI_REGISTRY_IMAGE/testcraft-api
+
+api:build-test:
+  stage: build-test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  timeout: 15m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - changes:
+        - "apps/Api/**/*"
+        - ".gitlab/ci/api.yml"
+  variables:
+    NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget/packages
+    TESTCRAFT_PROJECT_NAME: TestCraft
+    TESTCRAFT_SOURCE: api
+    TESTCRAFT_JUNIT_XML: apps/Api/test-results/junit.xml
+    TESTCRAFT_RUN_NAME: "#$CI_PIPELINE_IID api ($CI_COMMIT_REF_NAME)"
+  cache:
+    key:
+      files:
+        - Directory.Packages.props
+    paths:
+      - .nuget/packages
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg
+    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+    - apt-get install -y --no-install-recommends nodejs
+    - corepack enable && corepack prepare pnpm@11.3.0 --activate
+  script:
+    - curl -sSLo /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+    - chmod +x /tmp/hadolint
+    - /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Dockerfile
+    - dotnet restore TestCraft.slnx
+    - dotnet tool restore
+    - dotnet list TestCraft.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.log
+    - '! grep -q "has the following vulnerable packages" vulnerable-packages.log'
+    - dotnet csharpier check .
+    - dotnet build TestCraft.slnx --no-restore --configuration Release
+    - dotnet test TestCraft.slnx --no-build --configuration Release
+  after_script:
+    - pnpm install --frozen-lockfile --filter @testcraft/ci-reporter...
+    - pnpm --filter @testcraft/ci-reporter run build
+    - node packages/ci-reporter/dist/cli.js import || true
+  artifacts:
+    when: always
+    reports:
+      junit: apps/Api/test-results/junit.xml
+    paths:
+      - apps/Api/test-results/
+    expire_in: 7 days
+
+api:docker:
+  stage: docker
+  image: docker:27
+  needs:
+    - api:build-test
+  services:
+    - docker:27-dind
+  timeout: 20m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - changes:
+        - "apps/Api/**/*"
+        - ".gitlab/ci/api.yml"
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apk add --no-cache curl
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    - curl -sSL -o /tmp/gitlab.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/gitlab.tpl
+  script:
+    - docker build -t $API_IMAGE:$CI_COMMIT_SHA -f apps/Api/Dockerfile .
+    - trivy image --format template --template "@/tmp/gitlab.tpl" -o gl-container-scanning-report.json --severity CRITICAL,HIGH --ignore-unfixed $API_IMAGE:$CI_COMMIT_SHA
+    - |
+      if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+        docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+        docker tag $API_IMAGE:$CI_COMMIT_SHA $API_IMAGE:latest
+        docker tag $API_IMAGE:$CI_COMMIT_SHA $API_IMAGE:$CI_COMMIT_REF_SLUG
+        docker push $API_IMAGE:$CI_COMMIT_SHA
+        docker push $API_IMAGE:latest
+        docker push $API_IMAGE:$CI_COMMIT_REF_SLUG
+      fi
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json

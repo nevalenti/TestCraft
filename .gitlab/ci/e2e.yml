@@ -1,0 +1,71 @@
+e2e:
+  stage: build-test
+  image: mcr.microsoft.com/dotnet/sdk:10.0
+  timeout: 30m
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "web"
+    - changes:
+        - "apps/Api/**/*"
+        - "apps/web/**/*"
+        - "apps/e2e/**/*"
+        - "packages/**/*"
+        - "pnpm-lock.yaml"
+        - "infrastructure/keycloak/**/*"
+        - ".gitlab/ci/e2e.yml"
+  services:
+    - name: docker:27-dind
+      alias: docker
+    - name: postgres:16-alpine
+      alias: postgres
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+    POSTGRES_USER: e2e
+    POSTGRES_PASSWORD: e2e
+    POSTGRES_DB: testcraft_e2e
+    CI: "true"
+    E2E_BASE_URL: http://localhost:4173
+    E2E_USERNAME: e2e@testcraft.dev
+    E2E_PASSWORD: e2e
+    DATABASE_URL: postgresql://e2e:e2e@postgres:5432/testcraft_e2e
+    KEYCLOAK_AUTHORITY: http://docker:8080/realms/testcraft
+    KEYCLOAK_AUDIENCE: testcraft-web
+    KEYCLOAK_REQUIRE_HTTPS_METADATA: "false"
+    CORS_ALLOWED_ORIGINS: http://localhost:4173
+    APPLY_MIGRATIONS: "true"
+    VITE_API_URL: http://localhost:5000
+    VITE_KEYCLOAK_URL: http://docker:8080
+    VITE_KEYCLOAK_REALM: testcraft
+    VITE_KEYCLOAK_CLIENT_ID: testcraft-web
+    TESTCRAFT_PROJECT_NAME: TestCraft
+    TESTCRAFT_SOURCE: e2e
+    TESTCRAFT_JUNIT_XML: apps/e2e/e2e-results/junit.xml
+    TESTCRAFT_RUN_NAME: "#$CI_PIPELINE_IID e2e ($CI_COMMIT_REF_NAME)"
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg
+    - curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz --strip-components=1 -C /usr/local/bin docker/docker
+    - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
+    - apt-get install -y --no-install-recommends nodejs
+    - corepack enable && corepack prepare pnpm@11.3.0 --activate
+  script:
+    - docker build -t e2e-keycloak:$CI_COMMIT_SHA -f infrastructure/keycloak/e2e.Dockerfile infrastructure/keycloak
+    - docker run -d --name keycloak -p 8080:8080 -p 9000:9000 e2e-keycloak:$CI_COMMIT_SHA
+    - dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj
+    - pnpm install --frozen-lockfile
+    - pnpm --filter @testcraft/types run build
+    - pnpm --filter testcraft-e2e exec playwright install chromium --with-deps
+    - timeout 120 sh -c 'until curl -sf http://docker:9000/health/ready > /dev/null 2>&1; do sleep 3; done'
+    - pnpm --filter @testcraft/ci-reporter run build
+    - node packages/ci-reporter/dist/cli.js start --dotenv testcraft.env || true
+    - if [ -f testcraft.env ]; then set -a; . ./testcraft.env; set +a; fi
+    - pnpm --filter testcraft-e2e run e2e
+  after_script:
+    - node packages/ci-reporter/dist/cli.js import --screenshots-dir apps/e2e/test-results || true
+  artifacts:
+    when: always
+    reports:
+      junit: apps/e2e/e2e-results/junit.xml
+    paths:
+      - apps/e2e/e2e-results/
+      - apps/e2e/test-results/
+    expire_in: 7 days
