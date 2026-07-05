@@ -31,7 +31,7 @@ export const Notifications = () => {
   return (
     <div
       className="toast toast-center toast-bottom z-[999]"
-      style={{ bottom: "3.5rem" }}
+      style={{ bottom: "4rem" }}
     >
       {notifications.map((notification) => {
         const config = typeConfig[notification.type];
