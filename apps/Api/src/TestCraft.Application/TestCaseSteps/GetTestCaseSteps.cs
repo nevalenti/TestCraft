@@ -8,11 +8,19 @@ namespace TestCraft.Application.TestCaseSteps;
 
 public static class GetTestCaseSteps
 {
+    /// <summary>Lists the steps of a test case, in order.</summary>
     public sealed record Query : IRequest<Paginated<TestCaseStepResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project the test case belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The test case to list steps for.</summary>
         public Guid CaseId { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of steps per page.</summary>
         public int? PageSize { get; init; }
     }
 

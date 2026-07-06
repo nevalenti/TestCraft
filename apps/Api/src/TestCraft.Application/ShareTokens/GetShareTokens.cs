@@ -7,9 +7,13 @@ namespace TestCraft.Application.ShareTokens;
 
 public static class GetShareTokens
 {
+    /// <summary>Lists the share tokens issued for a run.</summary>
     public sealed record Query : IRequest<IReadOnlyList<ShareTokenResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run to list share tokens for.</summary>
         public required Guid RunId { get; init; }
     }
 
@@ -22,13 +26,14 @@ public static class GetShareTokens
         ) =>
             await context
                 .ShareTokens.Where(st => st.TestRunId == request.RunId)
-                .Select(st => new ShareTokenResponse(
-                    st.Id,
-                    st.TestRunId,
-                    st.Token,
-                    st.ExpiresAt,
-                    st.CreatedAt
-                ))
+                .Select(st => new ShareTokenResponse
+                {
+                    Id = st.Id,
+                    TestRunId = st.TestRunId,
+                    Token = st.Token,
+                    ExpiresAt = st.ExpiresAt,
+                    CreatedAt = st.CreatedAt,
+                })
                 .ToListAsync(cancellationToken);
     }
 }

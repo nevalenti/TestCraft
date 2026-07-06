@@ -8,9 +8,13 @@ namespace TestCraft.Application.TestRuns;
 
 public static class GetRunLogs
 {
+    /// <summary>Requests a run's log lines, in order.</summary>
     public sealed record Query : IRequest<IReadOnlyList<string>>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run to fetch logs for.</summary>
         public Guid RunId { get; init; }
     }
 

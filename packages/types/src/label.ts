@@ -1,17 +1,8 @@
-export interface Label {
-  id: string;
-  name: string;
-  color: string;
-  projectId: string;
-  createdAt: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface CreateLabel {
-  name: string;
-  color: string;
-}
-
-export interface UpdateLabel {
-  name: string;
-  color: string;
-}
+export type Label =
+  components["schemas"]["TestCraft.Application.Labels.LabelResponse"];
+export type CreateLabel =
+  components["schemas"]["TestCraft.Application.Labels.CreateLabel.Command"];
+export type UpdateLabel =
+  components["schemas"]["TestCraft.Application.Labels.UpdateLabel.Command"];

@@ -8,10 +8,12 @@ namespace TestCraft.Application.Notifications;
 
 public static class GetWebhookSubscriptions
 {
+    /// <summary>Lists the webhook subscriptions on a project.</summary>
     public sealed record Query
         : IRequest<IReadOnlyList<WebhookSubscriptionResponse>>,
             IProjectScopedRequest
     {
+        /// <summary>The project to list subscriptions for.</summary>
         public required Guid ProjectId { get; init; }
     }
 
@@ -27,14 +29,15 @@ public static class GetWebhookSubscriptions
                 .WebhookSubscriptions.Where(w => w.ProjectId == request.ProjectId)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(w => new WebhookSubscriptionResponse(
-                    w.Id,
-                    w.ProjectId,
-                    w.Url,
-                    w.IsActive,
-                    JsonSerializer.Deserialize<List<string>>(w.Events) ?? [],
-                    w.CreatedAt
-                ))
+            return rows.Select(w => new WebhookSubscriptionResponse
+                {
+                    Id = w.Id,
+                    ProjectId = w.ProjectId,
+                    Url = w.Url,
+                    IsActive = w.IsActive,
+                    Events = JsonSerializer.Deserialize<List<string>>(w.Events) ?? [],
+                    CreatedAt = w.CreatedAt,
+                })
                 .ToList();
         }
     }

@@ -9,11 +9,19 @@ namespace TestCraft.Application.TestSuites;
 
 public static class UpdateTestSuite
 {
+    /// <summary>Updates a test suite's name and description.</summary>
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the suite belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The suite to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The suite's new display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The suite's new description.</summary>
         public string? Description { get; init; }
     }
 

@@ -31,7 +31,10 @@ const getInitials = (name: string) =>
     .join("")
     .toUpperCase();
 
-const getRunAvatarLabel = (executedByName?: string, source?: string) => {
+const getRunAvatarLabel = (
+  executedByName?: string | null,
+  source?: string | null,
+) => {
   if (executedByName) return getInitials(executedByName);
   if (source) return source.slice(0, 2).toUpperCase();
   return "?";
@@ -42,9 +45,9 @@ const RunAvatar = ({
   executedByAvatarUrl,
   source,
 }: {
-  executedByName?: string;
-  executedByAvatarUrl?: string;
-  source?: string;
+  executedByName?: string | null;
+  executedByAvatarUrl?: string | null;
+  source?: string | null;
 }) => {
   const title = executedByName ?? source ?? "Unknown";
 

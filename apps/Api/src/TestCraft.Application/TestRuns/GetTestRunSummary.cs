@@ -10,19 +10,35 @@ namespace TestCraft.Application.TestRuns;
 
 public static class GetTestRunSummary
 {
+    /// <summary>Requests aggregated result counts for a run.</summary>
     public sealed record Query : IRequest<Response>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run to summarize.</summary>
         public required Guid Id { get; init; }
     }
 
+    /// <summary>Aggregated result counts for a run.</summary>
     public sealed record Response
     {
+        /// <summary>The total number of results.</summary>
         public required int Total { get; init; }
+
+        /// <summary>The number of passed results.</summary>
         public required int Passed { get; init; }
+
+        /// <summary>The number of failed results.</summary>
         public required int Failed { get; init; }
+
+        /// <summary>The number of blocked results.</summary>
         public required int Blocked { get; init; }
+
+        /// <summary>The number of skipped results.</summary>
         public required int Skipped { get; init; }
+
+        /// <summary>The pass rate, as a whole-number percentage.</summary>
         public required int PassRate { get; init; }
     }
 

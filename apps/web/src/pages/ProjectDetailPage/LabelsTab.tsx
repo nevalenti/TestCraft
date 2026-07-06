@@ -99,7 +99,6 @@ const LabelForm = ({
               name: watch("name") || "Preview",
               color,
               projectId: "",
-              createdAt: "",
             }}
           />
         </div>

@@ -8,9 +8,13 @@ namespace TestCraft.Application.Labels;
 
 public static class DeleteLabel
 {
+    /// <summary>Deletes a label from a project.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the label belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The label to delete.</summary>
         public required Guid Id { get; init; }
     }
 

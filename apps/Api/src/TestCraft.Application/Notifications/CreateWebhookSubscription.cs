@@ -7,22 +7,43 @@ using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Notifications;
 
-public record WebhookSubscriptionResponse(
-    Guid Id,
-    Guid ProjectId,
-    string Url,
-    bool IsActive,
-    IReadOnlyList<string> Events,
-    DateTimeOffset CreatedAt
-);
+/// <summary>A webhook subscription that posts to a URL when project events occur.</summary>
+public record WebhookSubscriptionResponse
+{
+    /// <summary>The subscription's identifier.</summary>
+    public required Guid Id { get; init; }
+
+    /// <summary>The project the subscription belongs to.</summary>
+    public required Guid ProjectId { get; init; }
+
+    /// <summary>The URL event payloads are posted to.</summary>
+    public required string Url { get; init; }
+
+    /// <summary>Whether the subscription is currently active.</summary>
+    public required bool IsActive { get; init; }
+
+    /// <summary>The event types the subscription notifies on.</summary>
+    public required IReadOnlyList<string> Events { get; init; }
+
+    /// <summary>When the subscription was created.</summary>
+    public required DateTimeOffset CreatedAt { get; init; }
+}
 
 public static class CreateWebhookSubscription
 {
+    /// <summary>Subscribes a webhook URL to project event notifications.</summary>
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to subscribe to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }
+
+        /// <summary>An optional shared secret used to sign the webhook payload.</summary>
         public string? Secret { get; init; }
+
+        /// <summary>The event types to notify on.</summary>
         public required IReadOnlyList<string> Events { get; init; }
     }
 
@@ -65,14 +86,15 @@ public static class CreateWebhookSubscription
             context.WebhookSubscriptions.Add(subscription);
             await context.SaveChangesAsync(cancellationToken);
 
-            return new WebhookSubscriptionResponse(
-                subscription.Id,
-                subscription.ProjectId,
-                subscription.Url,
-                subscription.IsActive,
-                request.Events,
-                subscription.CreatedAt
-            );
+            return new WebhookSubscriptionResponse
+            {
+                Id = subscription.Id,
+                ProjectId = subscription.ProjectId,
+                Url = subscription.Url,
+                IsActive = subscription.IsActive,
+                Events = request.Events,
+                CreatedAt = subscription.CreatedAt,
+            };
         }
     }
 }

@@ -8,9 +8,13 @@ namespace TestCraft.Application.Import;
 
 public static class GetImportJobById
 {
+    /// <summary>Requests the status of an import job.</summary>
     public sealed record Query : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the import job belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The import job to look up.</summary>
         public required Guid Id { get; init; }
     }
 

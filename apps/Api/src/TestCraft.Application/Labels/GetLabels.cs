@@ -7,8 +7,10 @@ namespace TestCraft.Application.Labels;
 
 public static class GetLabels
 {
+    /// <summary>Lists the labels defined in a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<LabelResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list labels for.</summary>
         public Guid ProjectId { get; init; }
     }
 

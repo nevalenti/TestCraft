@@ -11,13 +11,25 @@ namespace TestCraft.Application.TestResults;
 
 public static class UpdateTestResult
 {
+    /// <summary>Updates a test result's status, notes, and defect type.</summary>
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run the result belongs to.</summary>
         public Guid RunId { get; init; }
+
+        /// <summary>The result to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The result's new status.</summary>
         public required TestResultStatus Status { get; init; }
+
+        /// <summary>Free-form notes, e.g. a failure message.</summary>
         public string? Notes { get; init; }
+
+        /// <summary>The category of defect, when the result failed.</summary>
         public DefectType? DefectType { get; init; }
     }
 

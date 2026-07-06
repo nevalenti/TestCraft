@@ -8,8 +8,10 @@ namespace TestCraft.Application.Projects;
 
 public static class GetProjectById
 {
+    /// <summary>Requests a single project by id.</summary>
     public sealed record Query : IRequest<ProjectResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to look up.</summary>
         public required Guid Id { get; init; }
 
         Guid IProjectScopedRequest.ProjectId => Id;

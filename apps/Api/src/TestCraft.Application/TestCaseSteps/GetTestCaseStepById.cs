@@ -8,10 +8,16 @@ namespace TestCraft.Application.TestCaseSteps;
 
 public static class GetTestCaseStepById
 {
+    /// <summary>Requests a single test case step by id.</summary>
     public sealed record Query : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the test case belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The test case the step belongs to.</summary>
         public required Guid CaseId { get; init; }
+
+        /// <summary>The step to look up.</summary>
         public required Guid Id { get; init; }
     }
 

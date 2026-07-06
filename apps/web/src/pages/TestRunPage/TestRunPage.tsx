@@ -334,7 +334,6 @@ export const TestRunPage = () => {
             defaultValues={{
               status: modal.item.status,
               notes: modal.item.notes ?? "",
-              durationMs: modal.item.durationMs,
               defectType: modal.item.defectType,
             }}
             onSubmit={handleUpdate(modal.item.id)}

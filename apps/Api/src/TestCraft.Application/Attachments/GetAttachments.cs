@@ -7,10 +7,16 @@ namespace TestCraft.Application.Attachments;
 
 public static class GetAttachments
 {
+    /// <summary>Lists the attachments on a test result.</summary>
     public sealed record Query : IRequest<IReadOnlyList<AttachmentResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project the test result belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run the test result belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The test result to list attachments for.</summary>
         public required Guid ResultId { get; init; }
     }
 

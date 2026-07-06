@@ -9,9 +9,13 @@ namespace TestCraft.Application.TestRuns;
 
 public static class DeleteTestRun
 {
+    /// <summary>Soft-deletes a test run.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run to delete.</summary>
         public required Guid Id { get; init; }
     }
 

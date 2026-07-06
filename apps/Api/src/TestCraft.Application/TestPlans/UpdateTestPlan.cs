@@ -9,11 +9,19 @@ namespace TestCraft.Application.TestPlans;
 
 public static class UpdateTestPlan
 {
+    /// <summary>Updates a test plan's name and description.</summary>
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The plan's new display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The plan's new description.</summary>
         public string? Description { get; init; }
     }
 

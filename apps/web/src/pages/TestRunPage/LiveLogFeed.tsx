@@ -12,8 +12,8 @@ const STATUS_BORDER: Record<TestResultStatus, string> = {
   [TestResultStatus.Skipped]: "border-l-base-content/20",
 };
 
-const formatDuration = (ms: number | undefined) => {
-  if (ms === undefined) return null;
+const formatDuration = (ms: number | null | undefined) => {
+  if (ms === undefined || ms === null) return null;
   if (ms < 1000) return `${ms}ms`;
   return `${(ms / 1000).toFixed(2)}s`;
 };

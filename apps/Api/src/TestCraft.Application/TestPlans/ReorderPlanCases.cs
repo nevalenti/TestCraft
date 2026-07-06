@@ -8,12 +8,19 @@ namespace TestCraft.Application.TestPlans;
 
 public static class ReorderPlanCases
 {
+    /// <summary>The new position for a single test case within a plan.</summary>
     public sealed record PlanCaseOrder(Guid TestCaseId, int Order);
 
+    /// <summary>Reorders the test cases within a plan.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan whose test cases are being reordered.</summary>
         public required Guid TestPlanId { get; init; }
+
+        /// <summary>The new order for the given test cases.</summary>
         public required IReadOnlyList<PlanCaseOrder> Cases { get; init; }
     }
 

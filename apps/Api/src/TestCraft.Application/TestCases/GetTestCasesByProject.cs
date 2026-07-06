@@ -9,12 +9,22 @@ namespace TestCraft.Application.TestCases;
 
 public static class GetTestCasesByProject
 {
+    /// <summary>Lists test cases across all suites in a project.</summary>
     public sealed record Query : IRequest<Paginated<TestCaseResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list test cases for.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>Filters test cases whose name contains this text.</summary>
         public string? Search { get; init; }
+
+        /// <summary>Filters test cases that have this label attached.</summary>
         public Guid? LabelId { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of test cases per page.</summary>
         public int? PageSize { get; init; }
     }
 

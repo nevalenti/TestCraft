@@ -8,27 +8,55 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestCases;
 
+/// <summary>A test case within a suite.</summary>
 public record TestCaseResponse
 {
+    /// <summary>The test case's identifier.</summary>
     public required Guid Id { get; init; }
+
+    /// <summary>The suite the test case belongs to.</summary>
     public required Guid SuiteId { get; init; }
+
+    /// <summary>The test case's display name.</summary>
     public required string Name { get; init; }
+
+    /// <summary>The test case's description, if set.</summary>
     public string? Description { get; init; }
+
+    /// <summary>The test case's priority.</summary>
     public required TestCasePriority Priority { get; init; }
+
+    /// <summary>The number of non-deleted steps in the test case.</summary>
     public required int StepCount { get; init; }
+
+    /// <summary>When the test case was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
+
+    /// <summary>When the test case was last updated.</summary>
     public required DateTimeOffset UpdatedAt { get; init; }
+
+    /// <summary>The labels attached to the test case.</summary>
     public IReadOnlyList<LabelResponse> Labels { get; init; } = [];
 }
 
 public static class CreateTestCase
 {
+    /// <summary>Creates a new test case in a suite.</summary>
     public sealed record Command : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the suite belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The suite to create the test case in.</summary>
         public Guid SuiteId { get; init; }
+
+        /// <summary>The test case's display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The test case's description.</summary>
         public string? Description { get; init; }
+
+        /// <summary>The test case's priority. Defaults to Medium if omitted.</summary>
         public TestCasePriority? Priority { get; init; }
     }
 

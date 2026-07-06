@@ -12,16 +12,37 @@ namespace TestCraft.Application.TestResults;
 
 public static class CreateTestResultByName
 {
+    /// <summary>
+    /// Records a test result by suite/case name, creating the suite and test case if they
+    /// don't already exist. Used by CI reporters importing results without known ids.
+    /// </summary>
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run to record the result against.</summary>
         public Guid RunId { get; init; }
+
+        /// <summary>The suite name, created if it doesn't already exist.</summary>
         public required string SuiteName { get; init; }
+
+        /// <summary>The test case name, created if it doesn't already exist.</summary>
         public required string TestCaseName { get; init; }
+
+        /// <summary>The result status.</summary>
         public required TestResultStatus Status { get; init; }
+
+        /// <summary>Free-form notes, e.g. a failure message.</summary>
         public string? Notes { get; init; }
+
+        /// <summary>How long the test took to execute, in milliseconds.</summary>
         public long? DurationMs { get; init; }
+
+        /// <summary>Identifies the CI system or tool the result came from.</summary>
         public string? Source { get; init; }
+
+        /// <summary>When the test was executed.</summary>
         public required DateTimeOffset ExecutedAt { get; init; }
     }
 

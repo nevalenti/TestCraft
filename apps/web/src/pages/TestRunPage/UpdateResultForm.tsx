@@ -9,7 +9,6 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/FormActions";
 import { FormField } from "@/components/ui/FormField";
-import { FormInput } from "@/components/ui/FormInput";
 import { FormTextarea } from "@/components/ui/FormTextarea";
 import { statusOptions } from "@/lib/constants";
 
@@ -23,12 +22,6 @@ const defectTypeOptions = [
 const schema = z.object({
   status: z.nativeEnum(TestResultStatus),
   notes: z.string(),
-  durationMs: z.coerce
-    .number()
-    .int()
-    .nonnegative()
-    .optional()
-    .or(z.literal("")),
   defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
 });
 
@@ -38,7 +31,6 @@ interface UpdateResultFormProps {
   defaultValues: {
     status: TestResultStatus;
     notes: string;
-    durationMs?: number;
     defectType?: DefectType;
   };
   onSubmit: (data: UpdateTestResult) => void;
@@ -59,10 +51,7 @@ export const UpdateResultForm = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: {
-      ...defaultValues,
-      durationMs: defaultValues.durationMs ?? "",
-    },
+    defaultValues,
   });
 
   const status = useWatch({ control, name: "status" });
@@ -73,7 +62,6 @@ export const UpdateResultForm = ({
         onSubmit({
           status: data.status,
           notes: data.notes || undefined,
-          durationMs: data.durationMs === "" ? undefined : data.durationMs,
           defectType:
             data.status === TestResultStatus.Failed && data.defectType !== ""
               ? data.defectType
@@ -120,19 +108,6 @@ export const UpdateResultForm = ({
           </select>
         </FormField>
       )}
-      <FormField
-        label="Duration (ms)"
-        htmlFor="update-result-duration"
-        error={errors.durationMs?.message}
-      >
-        <FormInput
-          id="update-result-duration"
-          type="number"
-          placeholder="e.g. 1500 (optional)"
-          min={0}
-          {...register("durationMs")}
-        />
-      </FormField>
       <FormField
         label="Notes"
         htmlFor="update-result-notes"

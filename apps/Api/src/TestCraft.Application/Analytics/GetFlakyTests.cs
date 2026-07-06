@@ -6,20 +6,37 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Analytics;
 
-public record FlakyTestStat(
-    Guid TestCaseId,
-    string TestCaseName,
-    int TotalRuns,
-    int PassCount,
-    int FailCount,
-    double FlakRate
-);
+/// <summary>Pass/fail signal for a test case that has flipped status across recent runs.</summary>
+public record FlakyTestStat
+{
+    /// <summary>The test case's identifier.</summary>
+    public required Guid TestCaseId { get; init; }
+
+    /// <summary>The test case's name.</summary>
+    public required string TestCaseName { get; init; }
+
+    /// <summary>Total number of qualifying runs considered.</summary>
+    public required int TotalRuns { get; init; }
+
+    /// <summary>Number of passing results among those runs.</summary>
+    public required int PassCount { get; init; }
+
+    /// <summary>Number of failing results among those runs.</summary>
+    public required int FailCount { get; init; }
+
+    /// <summary>Percentage of runs that failed.</summary>
+    public required double FlakRate { get; init; }
+}
 
 public static class GetFlakyTests
 {
+    /// <summary>Requests flaky test detection for a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<FlakyTestStat>>, IProjectScopedRequest
     {
+        /// <summary>The project to scan.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>Minimum number of runs a test must have to be considered.</summary>
         public int MinRuns { get; init; } = 3;
     }
 
@@ -52,14 +69,15 @@ public static class GetFlakyTests
                 .OrderByDescending(s => (double)s.FailCount / s.TotalRuns)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(s => new FlakyTestStat(
-                    s.TestCaseId,
-                    s.TestCaseName,
-                    s.TotalRuns,
-                    s.PassCount,
-                    s.FailCount,
-                    Math.Round((double)s.FailCount / s.TotalRuns * 100, 1)
-                ))
+            return rows.Select(s => new FlakyTestStat
+                {
+                    TestCaseId = s.TestCaseId,
+                    TestCaseName = s.TestCaseName,
+                    TotalRuns = s.TotalRuns,
+                    PassCount = s.PassCount,
+                    FailCount = s.FailCount,
+                    FlakRate = Math.Round((double)s.FailCount / s.TotalRuns * 100, 1),
+                })
                 .ToList();
         }
     }

@@ -7,8 +7,10 @@ namespace TestCraft.Application.TestPlans;
 
 public static class GetTestPlans
 {
+    /// <summary>Lists the test plans in a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<TestPlanResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list plans for.</summary>
         public Guid ProjectId { get; init; }
     }
 

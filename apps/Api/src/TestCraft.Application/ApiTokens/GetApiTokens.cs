@@ -7,8 +7,10 @@ namespace TestCraft.Application.ApiTokens;
 
 public static class GetApiTokens
 {
+    /// <summary>Lists the API tokens issued for a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<ApiTokenResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list tokens for.</summary>
         public Guid ProjectId { get; init; }
     }
 

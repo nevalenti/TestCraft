@@ -8,19 +8,31 @@ using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.ProjectMembers;
 
+/// <summary>A user with collaborator access to a project.</summary>
 public record ProjectMemberResponse
 {
+    /// <summary>The membership's identifier.</summary>
     public required Guid Id { get; init; }
+
+    /// <summary>The member's email address.</summary>
     public required string Email { get; init; }
+
+    /// <summary>The member's display name, if set.</summary>
     public string? DisplayName { get; init; }
+
+    /// <summary>When the member was added to the project.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
 }
 
 public static class AddProjectMember
 {
+    /// <summary>Adds a user to a project by email. Owner-only.</summary>
     public sealed record Command : IRequest<ProjectMemberResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to add the member to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The email address of the user to add.</summary>
         public required string Email { get; init; }
     }
 

@@ -1,7 +1,4 @@
-export interface AllureResultItem {
-  name?: string;
-  fullName?: string;
-  status?: "passed" | "failed" | "broken" | "skipped" | "unknown";
-  statusDetails?: { message?: string; trace?: string };
-  labels?: Array<{ name: string; value: string }>;
-}
+import type { components } from "./generated/schema.js";
+
+export type AllureResultItem =
+  components["schemas"]["TestCraft.Application.Import.AllureResultItem"];

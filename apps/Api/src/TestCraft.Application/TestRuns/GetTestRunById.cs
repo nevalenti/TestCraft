@@ -8,9 +8,13 @@ namespace TestCraft.Application.TestRuns;
 
 public static class GetTestRunById
 {
+    /// <summary>Requests a single test run by id.</summary>
     public sealed record Query : IRequest<TestRunResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run to look up.</summary>
         public required Guid Id { get; init; }
     }
 

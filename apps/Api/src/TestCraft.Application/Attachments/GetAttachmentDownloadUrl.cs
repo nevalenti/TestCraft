@@ -8,11 +8,19 @@ namespace TestCraft.Application.Attachments;
 
 public static class GetAttachmentDownloadUrl
 {
+    /// <summary>Requests a presigned download URL for an attachment.</summary>
     public sealed record Query : IRequest<AttachmentDownloadUrlResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the attachment belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run the attachment belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The test result the attachment belongs to.</summary>
         public required Guid ResultId { get; init; }
+
+        /// <summary>The attachment to generate a download URL for.</summary>
         public required Guid AttachmentId { get; init; }
     }
 

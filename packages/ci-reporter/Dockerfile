@@ -12,7 +12,7 @@ COPY packages/ci-reporter/ ./packages/ci-reporter/
 
 RUN pnpm --filter @testcraft/ci-reporter run build
 
-FROM node:20-alpine AS runtime
+FROM node:24-alpine AS runtime
 WORKDIR /app
 
 RUN addgroup -S -g 1001 appgroup && \

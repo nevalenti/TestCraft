@@ -13,11 +13,15 @@
     }
   },
   "scripts": {
+    "generate": "openapi-typescript ../../apps/Api/openapi/v1.json -o src/generated/schema.d.ts",
+    "pretypecheck": "pnpm run generate",
     "typecheck": "tsc --noEmit",
+    "prebuild": "pnpm run generate",
     "build": "tsc",
     "dev": "tsc --watch"
   },
   "devDependencies": {
+    "openapi-typescript": "^7.9.1",
     "typescript": "~6.0.3"
   }
 }

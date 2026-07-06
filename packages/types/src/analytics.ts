@@ -1,65 +1,19 @@
-export interface TrendPoint {
-  runId: string;
-  runName: string;
-  createdAt: string;
-  total: number;
-  passed: number;
-  failed: number;
-  blocked: number;
-  skipped: number;
-  passRate: number;
-  source?: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface SuiteBreakdown {
-  suiteName: string;
-  passed: number;
-  failed: number;
-  blocked: number;
-  skipped: number;
-}
+export type TrendPoint =
+  components["schemas"]["TestCraft.Application.Analytics.TrendPoint"];
+export type SuiteBreakdown =
+  components["schemas"]["TestCraft.Application.Analytics.SuiteBreakdown"];
+export type FlakyTestStat =
+  components["schemas"]["TestCraft.Application.Analytics.FlakyTestStat"];
+export type RunComparison =
+  components["schemas"]["TestCraft.Application.Analytics.RunComparison"];
+export type ComparisonRow =
+  components["schemas"]["TestCraft.Application.Analytics.ComparisonRow"];
 
-export interface FlakyTestStat {
-  testCaseId: string;
-  testCaseName: string;
-  totalRuns: number;
-  passCount: number;
-  failCount: number;
-  flakRate: number;
-}
-
-export interface RunComparison {
-  runAName: string;
-  runBName: string;
-  results: ComparisonRow[];
-}
-
-export interface ComparisonRow {
-  testCaseId: string;
-  testCaseName: string;
-  statusInA?: string;
-  statusInB?: string;
-  isRegression: boolean;
-  isFix: boolean;
-}
-
-export interface ApiTokenResponse {
-  id: string;
-  name: string;
-  projectId: string;
-  lastUsedAt?: string;
-  expiresAt?: string;
-  isRevoked: boolean;
-  createdAt: string;
-}
-
-export interface CreateApiTokenResponse {
-  id: string;
-  name: string;
-  token: string;
-}
-
-export interface CreateApiToken {
-  name: string;
-  expiresAt?: string;
-}
+export type ApiTokenResponse =
+  components["schemas"]["TestCraft.Application.ApiTokens.ApiTokenResponse"];
+export type CreateApiTokenResponse =
+  components["schemas"]["TestCraft.Application.ApiTokens.CreateApiTokenResponse"];
+export type CreateApiToken =
+  components["schemas"]["TestCraft.Application.ApiTokens.CreateApiToken.Command"];

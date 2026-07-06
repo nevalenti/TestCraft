@@ -8,10 +8,16 @@ namespace TestCraft.Application.ShareTokens;
 
 public static class RevokeShareToken
 {
+    /// <summary>Revokes a share token, invalidating its public link.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run the share token belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The share token to revoke.</summary>
         public required Guid Id { get; init; }
     }
 

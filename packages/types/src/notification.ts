@@ -1,41 +1,20 @@
-export interface WebhookSubscription {
-  id: string;
-  projectId: string;
-  url: string;
-  isActive: boolean;
-  events: string[];
-  createdAt: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface EmailSubscription {
-  id: string;
-  projectId: string;
-  email: string;
-  isActive: boolean;
-  events: string[];
-  createdAt: string;
-}
+export type WebhookSubscription =
+  components["schemas"]["TestCraft.Application.Notifications.WebhookSubscriptionResponse"];
+export type EmailSubscription =
+  components["schemas"]["TestCraft.Application.Notifications.EmailSubscriptionResponse"];
 
-export interface CreateWebhookSubscription {
-  url: string;
-  secret?: string;
-  events: string[];
-}
-
-export interface UpdateWebhookSubscription {
-  url: string;
-  secret?: string;
-  events: string[];
-  isActive: boolean;
-}
-
-export interface CreateEmailSubscription {
-  email: string;
-  events: string[];
-}
-
-export interface UpdateEmailSubscription {
-  email: string;
-  events: string[];
-  isActive: boolean;
-}
+// `projectId` is bound from the route, not supplied by the client.
+export type CreateWebhookSubscription = Omit<
+  components["schemas"]["TestCraft.Application.Notifications.CreateWebhookSubscription.Command"],
+  "projectId"
+>;
+export type UpdateWebhookSubscription = Omit<
+  components["schemas"]["TestCraft.Application.Notifications.UpdateWebhookSubscription.Command"],
+  "projectId"
+>;
+export type CreateEmailSubscription =
+  components["schemas"]["TestCraft.Application.Notifications.CreateEmailSubscription.Command"];
+export type UpdateEmailSubscription =
+  components["schemas"]["TestCraft.Application.Notifications.UpdateEmailSubscription.Command"];

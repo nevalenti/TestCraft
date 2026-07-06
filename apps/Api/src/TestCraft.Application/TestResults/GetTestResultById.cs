@@ -8,10 +8,16 @@ namespace TestCraft.Application.TestResults;
 
 public static class GetTestResultById
 {
+    /// <summary>Requests a single test result by id.</summary>
     public sealed record Query : IRequest<TestResultResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run the result belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The result to look up.</summary>
         public required Guid Id { get; init; }
     }
 

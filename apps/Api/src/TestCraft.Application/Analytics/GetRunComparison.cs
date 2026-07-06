@@ -7,23 +7,53 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Analytics;
 
-public record RunComparison(string RunAName, string RunBName, IReadOnlyList<ComparisonRow> Results);
+/// <summary>Per-test-case comparison between two runs.</summary>
+public record RunComparison
+{
+    /// <summary>The baseline run's name.</summary>
+    public required string RunAName { get; init; }
 
-public record ComparisonRow(
-    Guid TestCaseId,
-    string TestCaseName,
-    string? StatusInA,
-    string? StatusInB,
-    bool IsRegression,
-    bool IsFix
-);
+    /// <summary>The comparison run's name.</summary>
+    public required string RunBName { get; init; }
+
+    /// <summary>Per-test-case comparison rows.</summary>
+    public required IReadOnlyList<ComparisonRow> Results { get; init; }
+}
+
+/// <summary>Status of a single test case across the two compared runs.</summary>
+public record ComparisonRow
+{
+    /// <summary>The test case's identifier.</summary>
+    public required Guid TestCaseId { get; init; }
+
+    /// <summary>The test case's name.</summary>
+    public required string TestCaseName { get; init; }
+
+    /// <summary>The result status in run A, if the test case was executed there.</summary>
+    public string? StatusInA { get; init; }
+
+    /// <summary>The result status in run B, if the test case was executed there.</summary>
+    public string? StatusInB { get; init; }
+
+    /// <summary>Whether the test case passed in run A but failed in run B.</summary>
+    public required bool IsRegression { get; init; }
+
+    /// <summary>Whether the test case failed in run A but passed in run B.</summary>
+    public required bool IsFix { get; init; }
+}
 
 public static class GetRunComparison
 {
+    /// <summary>Requests a comparison between two runs in a project.</summary>
     public sealed record Query : IRequest<RunComparison>, IProjectScopedRequest
     {
+        /// <summary>The project both runs belong to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The baseline run.</summary>
         public required Guid RunAId { get; init; }
+
+        /// <summary>The run being compared against the baseline.</summary>
         public required Guid RunBId { get; init; }
     }
 
@@ -80,19 +110,25 @@ public static class GetRunComparison
                     var isFix =
                         statusA == TestResultStatus.Failed && statusB == TestResultStatus.Passed;
 
-                    return new ComparisonRow(
-                        caseId,
-                        caseName ?? caseId.ToString(),
-                        mapA.ContainsKey(caseId) ? statusA.ToString() : null,
-                        mapB.ContainsKey(caseId) ? statusB.ToString() : null,
-                        isRegression,
-                        isFix
-                    );
+                    return new ComparisonRow
+                    {
+                        TestCaseId = caseId,
+                        TestCaseName = caseName ?? caseId.ToString(),
+                        StatusInA = mapA.ContainsKey(caseId) ? statusA.ToString() : null,
+                        StatusInB = mapB.ContainsKey(caseId) ? statusB.ToString() : null,
+                        IsRegression = isRegression,
+                        IsFix = isFix,
+                    };
                 })
                 .OrderBy(r => r.TestCaseName)
                 .ToList();
 
-            return new RunComparison(runA.Name, runB.Name, rows);
+            return new RunComparison
+            {
+                RunAName = runA.Name,
+                RunBName = runB.Name,
+                Results = rows,
+            };
         }
     }
 }

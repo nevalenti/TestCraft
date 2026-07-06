@@ -9,10 +9,16 @@ namespace TestCraft.Application.TestRuns;
 
 public static class AppendRunLogs
 {
+    /// <summary>Appends log lines to a run's live log feed.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run to append logs to.</summary>
         public Guid RunId { get; init; }
+
+        /// <summary>The log lines to append, in order.</summary>
         public required IReadOnlyList<string> Lines { get; init; }
     }
 

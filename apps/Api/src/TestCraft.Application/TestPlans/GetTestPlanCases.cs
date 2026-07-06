@@ -8,11 +8,15 @@ namespace TestCraft.Application.TestPlans;
 
 public static class GetTestPlanCases
 {
+    /// <summary>Lists the test cases in a plan, in order.</summary>
     public sealed record Query
         : IRequest<IReadOnlyList<TestPlanCaseResponse>>,
             IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to list test cases for.</summary>
         public required Guid TestPlanId { get; init; }
     }
 

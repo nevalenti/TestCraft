@@ -16,6 +16,7 @@ public static class SwaggerExtensions
         builder.Services.AddSwaggerGen(options =>
         {
             options.CustomSchemaIds(type => (type.FullName ?? type.Name).Replace("+", "."));
+            options.SupportNonNullableReferenceTypes();
 
             options.AddSecurityDefinition(
                 "bearerAuth",
@@ -37,6 +38,9 @@ public static class SwaggerExtensions
             options.OperationFilter<ProblemResponsesOperationFilter>();
 
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TestCraft.Api.xml"));
+            options.IncludeXmlComments(
+                Path.Combine(AppContext.BaseDirectory, "TestCraft.Application.xml")
+            );
         });
 
         return builder;

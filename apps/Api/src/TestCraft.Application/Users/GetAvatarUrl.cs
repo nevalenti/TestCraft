@@ -6,6 +6,7 @@ namespace TestCraft.Application.Users;
 
 public static class GetAvatarUrl
 {
+    /// <summary>Requests a presigned URL for the current user's avatar, if one is set.</summary>
     public sealed record Query : IRequest<AvatarUrlResponse?>;
 
     public sealed class Handler(

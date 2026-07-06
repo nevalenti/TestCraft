@@ -1,52 +1,17 @@
-import type { TestCasePriority } from "./enums.js";
-import type { Label } from "./label.js";
+import type { components } from "./generated/schema.js";
 
-export interface TestCase {
-  id: string;
-  suiteId: string;
-  name: string;
-  description?: string;
-  priority: TestCasePriority;
-  stepCount: number;
-  labels?: Label[];
-  createdAt: string;
-  updatedAt?: string;
-}
+export type TestCase =
+  components["schemas"]["TestCraft.Application.TestCases.TestCaseResponse"];
+export type CreateTestCase =
+  components["schemas"]["TestCraft.Application.TestCases.CreateTestCase.Command"];
+export type UpdateTestCase =
+  components["schemas"]["TestCraft.Application.TestCases.UpdateTestCase.Command"];
 
-export interface CreateTestCase {
-  name: string;
-  description?: string;
-  priority?: TestCasePriority;
-}
-
-export interface UpdateTestCase {
-  name: string;
-  description?: string;
-  priority: TestCasePriority;
-}
-
-export interface TestCaseStep {
-  id: string;
-  testCaseId: string;
-  order: number;
-  action: string;
-  expectedResult: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface CreateTestCaseStep {
-  order: number;
-  action: string;
-  expectedResult: string;
-}
-
-export interface UpdateTestCaseStep {
-  order: number;
-  action: string;
-  expectedResult: string;
-}
-
-export interface BulkReorderSteps {
-  steps: { id: string; order: number }[];
-}
+export type TestCaseStep =
+  components["schemas"]["TestCraft.Application.TestCaseSteps.TestCaseStepResponse"];
+export type CreateTestCaseStep =
+  components["schemas"]["TestCraft.Application.TestCaseSteps.CreateTestCaseStep.Command"];
+export type UpdateTestCaseStep =
+  components["schemas"]["TestCraft.Application.TestCaseSteps.UpdateTestCaseStep.Command"];
+export type BulkReorderSteps =
+  components["schemas"]["TestCraft.Application.TestCaseSteps.BulkReorderSteps.Command"];

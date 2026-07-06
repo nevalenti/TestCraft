@@ -8,11 +8,19 @@ namespace TestCraft.Application.TestSuites;
 
 public static class GetTestSuites
 {
+    /// <summary>Lists the test suites in a project.</summary>
     public sealed record Query : IRequest<Paginated<TestSuiteResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list suites for.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>Filters suites whose name contains this text.</summary>
         public string? Search { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of suites per page.</summary>
         public int? PageSize { get; init; }
     }
 

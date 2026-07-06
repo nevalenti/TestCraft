@@ -8,11 +8,19 @@ namespace TestCraft.Application.Attachments;
 
 public static class DeleteAttachment
 {
+    /// <summary>Deletes an attachment and its stored file.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the attachment belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run the attachment belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The test result the attachment belongs to.</summary>
         public required Guid ResultId { get; init; }
+
+        /// <summary>The attachment to delete.</summary>
         public required Guid AttachmentId { get; init; }
     }
 

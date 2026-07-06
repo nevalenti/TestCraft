@@ -7,10 +7,16 @@ namespace TestCraft.Application.Projects;
 
 public static class GetProjects
 {
+    /// <summary>Lists the projects the current user owns or is a member of.</summary>
     public sealed record Query : IRequest<Paginated<ProjectResponse>>
     {
+        /// <summary>Filters projects whose name contains this text.</summary>
         public string? Search { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of projects per page.</summary>
         public int? PageSize { get; init; }
     }
 

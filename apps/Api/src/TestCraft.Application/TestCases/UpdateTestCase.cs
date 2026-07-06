@@ -11,13 +11,25 @@ namespace TestCraft.Application.TestCases;
 
 public static class UpdateTestCase
 {
+    /// <summary>Updates a test case's name, description, and priority.</summary>
     public sealed record Command : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the suite belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The suite the test case belongs to.</summary>
         public Guid SuiteId { get; init; }
+
+        /// <summary>The test case to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The test case's new display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The test case's new description.</summary>
         public string? Description { get; init; }
+
+        /// <summary>The test case's new priority.</summary>
         public required TestCasePriority Priority { get; init; }
     }
 

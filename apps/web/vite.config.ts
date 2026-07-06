@@ -13,6 +13,19 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      onLog(level, log, handler) {
+        if (
+          log.code === "INVALID_ANNOTATION" &&
+          log.id?.includes("@microsoft/signalr")
+        ) {
+          return;
+        }
+        handler(level, log);
+      },
+    },
+  },
   server: {
     port: 3000,
     proxy: {

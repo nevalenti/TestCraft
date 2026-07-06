@@ -8,9 +8,13 @@ namespace TestCraft.Application.ApiTokens;
 
 public static class RevokeApiToken
 {
+    /// <summary>Revokes an API token, permanently disabling it.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the token belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The token to revoke.</summary>
         public required Guid Id { get; init; }
     }
 

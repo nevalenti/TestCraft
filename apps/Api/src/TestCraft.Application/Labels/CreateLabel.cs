@@ -6,20 +6,34 @@ using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Labels;
 
+/// <summary>A label that can be attached to test cases within a project.</summary>
 public record LabelResponse
 {
+    /// <summary>The label's identifier.</summary>
     public required Guid Id { get; init; }
+
+    /// <summary>The label's display name.</summary>
     public required string Name { get; init; }
+
+    /// <summary>The label's color, as a "#RRGGBB" hex string.</summary>
     public required string Color { get; init; }
+
+    /// <summary>The project the label belongs to.</summary>
     public required Guid ProjectId { get; init; }
 }
 
 public static class CreateLabel
 {
+    /// <summary>Creates a new label in a project.</summary>
     public sealed record Command : IRequest<LabelResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to create the label in.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The label's display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The label's color, as a "#RRGGBB" hex string.</summary>
         public required string Color { get; init; }
     }
 

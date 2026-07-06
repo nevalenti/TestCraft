@@ -8,9 +8,13 @@ namespace TestCraft.Application.ProjectMembers;
 
 public static class RemoveProjectMember
 {
+    /// <summary>Removes a member from a project. Owner-only.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project to remove the member from.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The membership to remove.</summary>
         public required Guid Id { get; init; }
     }
 

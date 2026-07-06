@@ -8,9 +8,13 @@ namespace TestCraft.Application.TestSuites;
 
 public static class GetTestSuiteById
 {
+    /// <summary>Requests a single test suite by id.</summary>
     public sealed record Query : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the suite belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The suite to look up.</summary>
         public required Guid Id { get; init; }
     }
 

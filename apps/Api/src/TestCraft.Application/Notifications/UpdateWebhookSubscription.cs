@@ -10,13 +10,25 @@ namespace TestCraft.Application.Notifications;
 
 public static class UpdateWebhookSubscription
 {
+    /// <summary>Updates a webhook subscription's URL, secret, events, and active state.</summary>
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the subscription belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The subscription to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }
+
+        /// <summary>An optional shared secret used to sign the webhook payload.</summary>
         public string? Secret { get; init; }
+
+        /// <summary>The event types to notify on.</summary>
         public required IReadOnlyList<string> Events { get; init; }
+
+        /// <summary>Whether the subscription is active.</summary>
         public required bool IsActive { get; init; }
     }
 
@@ -57,14 +69,15 @@ public static class UpdateWebhookSubscription
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new WebhookSubscriptionResponse(
-                subscription.Id,
-                subscription.ProjectId,
-                subscription.Url,
-                subscription.IsActive,
-                request.Events,
-                subscription.CreatedAt
-            );
+            return new WebhookSubscriptionResponse
+            {
+                Id = subscription.Id,
+                ProjectId = subscription.ProjectId,
+                Url = subscription.Url,
+                IsActive = subscription.IsActive,
+                Events = request.Events,
+                CreatedAt = subscription.CreatedAt,
+            };
         }
     }
 }

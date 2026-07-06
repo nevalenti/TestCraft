@@ -1,6 +1,6 @@
 .PHONY: up down clean \
         build load images deploy destroy status \
-        api web e2e \
+        api web e2e openapi \
         format
 
 API_IMAGE = testcraft-api
@@ -53,6 +53,17 @@ web:
 e2e:
 	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets; \
 	docker stop keycloak 2>/dev/null || true
+
+openapi:
+	@mkdir -p apps/Api/openapi
+	ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile --project apps/Api/src/TestCraft.Api --urls http://localhost:5299 & \
+	echo $$! > /tmp/testcraft-api-openapi.pid; \
+	trap 'kill $$(cat /tmp/testcraft-api-openapi.pid) 2>/dev/null; rm -f /tmp/testcraft-api-openapi.pid' EXIT; \
+	for i in $$(seq 1 60); do \
+		curl -sf http://localhost:5299/api/docs/v1/swagger.json -o apps/Api/openapi/v1.json && break; \
+		sleep 1; \
+	done
+	@test -s apps/Api/openapi/v1.json
 
 format:
 	pnpm format

@@ -8,9 +8,13 @@ namespace TestCraft.Application.Notifications;
 
 public static class DeleteWebhookSubscription
 {
+    /// <summary>Deletes a webhook subscription.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the subscription belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The subscription to delete.</summary>
         public required Guid Id { get; init; }
     }
 

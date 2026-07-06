@@ -1,29 +1,8 @@
-export interface ShareToken {
-  id: string;
-  testRunId: string;
-  token: string;
-  expiresAt?: string;
-  createdAt: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface SharedRunResponse {
-  runName: string;
-  environment: string;
-  status: string;
-  createdAt: string;
-  total: number;
-  passed: number;
-  failed: number;
-  blocked: number;
-  skipped: number;
-  passRate: number;
-  results: SharedResultItem[];
-}
-
-export interface SharedResultItem {
-  testCaseName: string;
-  status: string;
-  notes?: string;
-  durationMs?: number;
-  executedAt: string;
-}
+export type ShareToken =
+  components["schemas"]["TestCraft.Application.ShareTokens.ShareTokenResponse"];
+export type SharedRunResponse =
+  components["schemas"]["TestCraft.Application.ShareTokens.SharedRunResponse"];
+export type SharedResultItem =
+  components["schemas"]["TestCraft.Application.ShareTokens.SharedResultItem"];

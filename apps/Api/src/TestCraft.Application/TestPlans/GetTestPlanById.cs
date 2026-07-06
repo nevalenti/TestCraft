@@ -8,9 +8,13 @@ namespace TestCraft.Application.TestPlans;
 
 public static class GetTestPlanById
 {
+    /// <summary>Requests a single test plan, including its ordered test cases.</summary>
     public sealed record Query : IRequest<TestPlanDetailResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to look up.</summary>
         public required Guid Id { get; init; }
     }
 

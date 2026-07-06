@@ -8,11 +8,19 @@ namespace TestCraft.Application.TestRuns;
 
 public static class GetTestRuns
 {
+    /// <summary>Lists the test runs in a project.</summary>
     public sealed record Query : IRequest<Paginated<TestRunResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project to list runs for.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>Filters runs whose name contains this text.</summary>
         public string? Search { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of runs per page.</summary>
         public int? PageSize { get; init; }
     }
 

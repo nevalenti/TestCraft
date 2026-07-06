@@ -9,10 +9,16 @@ namespace TestCraft.Application.TestPlans;
 
 public static class AddCaseToPlan
 {
+    /// <summary>Adds a test case to a plan, appended to the end of the ordering.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to add the test case to.</summary>
         public required Guid TestPlanId { get; init; }
+
+        /// <summary>The test case to add.</summary>
         public required Guid TestCaseId { get; init; }
     }
 

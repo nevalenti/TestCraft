@@ -11,13 +11,25 @@ namespace TestCraft.Application.Import;
 
 public static class ImportJUnit
 {
+    /// <summary>Queues a JUnit XML report for import.</summary>
     public sealed record Command : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to import the run into.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The raw JUnit XML report content.</summary>
         public required string Xml { get; init; }
+
+        /// <summary>The environment label to record on the run.</summary>
         public required string Environment { get; init; }
+
+        /// <summary>The name to give the created run, if a new run is being created.</summary>
         public string? Name { get; init; }
+
+        /// <summary>Identifies the CI system or tool the report came from.</summary>
         public string? Source { get; init; }
+
+        /// <summary>An existing active run to import results into, instead of creating one.</summary>
         public Guid? RunId { get; init; }
     }
 

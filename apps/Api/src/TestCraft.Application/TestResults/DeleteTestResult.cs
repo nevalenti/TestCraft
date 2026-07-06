@@ -9,10 +9,16 @@ namespace TestCraft.Application.TestResults;
 
 public static class DeleteTestResult
 {
+    /// <summary>Soft-deletes a test result.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The run the result belongs to.</summary>
         public required Guid RunId { get; init; }
+
+        /// <summary>The result to delete.</summary>
         public required Guid Id { get; init; }
     }
 

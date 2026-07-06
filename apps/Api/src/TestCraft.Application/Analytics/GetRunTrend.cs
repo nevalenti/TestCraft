@@ -6,24 +6,49 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Analytics;
 
-public record TrendPoint(
-    Guid RunId,
-    string RunName,
-    DateTimeOffset CreatedAt,
-    int Total,
-    int Passed,
-    int Failed,
-    int Blocked,
-    int Skipped,
-    double PassRate,
-    string? Source
-);
+/// <summary>Pass-rate snapshot for a single run, used to plot a project's trend over time.</summary>
+public record TrendPoint
+{
+    /// <summary>The run's identifier.</summary>
+    public required Guid RunId { get; init; }
+
+    /// <summary>The run's display name.</summary>
+    public required string RunName { get; init; }
+
+    /// <summary>When the run was created.</summary>
+    public required DateTimeOffset CreatedAt { get; init; }
+
+    /// <summary>Total number of results recorded for the run.</summary>
+    public required int Total { get; init; }
+
+    /// <summary>Number of passed results.</summary>
+    public required int Passed { get; init; }
+
+    /// <summary>Number of failed results.</summary>
+    public required int Failed { get; init; }
+
+    /// <summary>Number of blocked results.</summary>
+    public required int Blocked { get; init; }
+
+    /// <summary>Number of skipped results.</summary>
+    public required int Skipped { get; init; }
+
+    /// <summary>Percentage of results that passed.</summary>
+    public required double PassRate { get; init; }
+
+    /// <summary>The run's source, e.g. the CI system that reported it.</summary>
+    public string? Source { get; init; }
+}
 
 public static class GetRunTrend
 {
+    /// <summary>Requests the run trend for a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<TrendPoint>>, IProjectScopedRequest
     {
+        /// <summary>The project to report on.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>Maximum number of most recent runs to include.</summary>
         public int Limit { get; init; } = 20;
     }
 
@@ -59,18 +84,19 @@ public static class GetRunTrend
                     var total = r.Passed + r.Failed + r.Blocked + r.Skipped;
                     var passRate = total > 0 ? Math.Round((double)r.Passed / total * 100, 1) : 0.0;
 
-                    return new TrendPoint(
-                        r.Id,
-                        r.Name,
-                        r.CreatedAt,
-                        total,
-                        r.Passed,
-                        r.Failed,
-                        r.Blocked,
-                        r.Skipped,
-                        passRate,
-                        r.Source
-                    );
+                    return new TrendPoint
+                    {
+                        RunId = r.Id,
+                        RunName = r.Name,
+                        CreatedAt = r.CreatedAt,
+                        Total = total,
+                        Passed = r.Passed,
+                        Failed = r.Failed,
+                        Blocked = r.Blocked,
+                        Skipped = r.Skipped,
+                        PassRate = passRate,
+                        Source = r.Source,
+                    };
                 })
                 .ToList();
         }

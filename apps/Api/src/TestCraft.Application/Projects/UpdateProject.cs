@@ -9,10 +9,16 @@ namespace TestCraft.Application.Projects;
 
 public static class UpdateProject
 {
+    /// <summary>Updates a project's name and description.</summary>
     public sealed record Command : IRequest<ProjectResponse>, IProjectScopedRequest
     {
+        /// <summary>The project to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The project's new display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The project's new description.</summary>
         public string? Description { get; init; }
 
         Guid IProjectScopedRequest.ProjectId => Id;

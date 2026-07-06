@@ -7,10 +7,16 @@ namespace TestCraft.Application.TestPlans;
 
 public static class RemoveCaseFromPlan
 {
+    /// <summary>Removes a test case from a plan.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to remove the test case from.</summary>
         public required Guid TestPlanId { get; init; }
+
+        /// <summary>The test case to remove.</summary>
         public required Guid TestCaseId { get; init; }
     }
 

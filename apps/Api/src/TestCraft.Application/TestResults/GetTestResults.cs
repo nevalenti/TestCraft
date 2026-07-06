@@ -9,13 +9,25 @@ namespace TestCraft.Application.TestResults;
 
 public static class GetTestResults
 {
+    /// <summary>Lists the test results within a run.</summary>
     public sealed record Query : IRequest<Paginated<TestResultResponse>>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run to list results for.</summary>
         public Guid RunId { get; init; }
+
+        /// <summary>Filters results to this status.</summary>
         public TestResultStatus? Status { get; init; }
+
+        /// <summary>Filters results whose test case name contains this text.</summary>
         public string? Search { get; init; }
+
+        /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }
+
+        /// <summary>The number of results per page.</summary>
         public int? PageSize { get; init; }
     }
 

@@ -12,11 +12,19 @@ namespace TestCraft.Application.TestPlans;
 
 public static class CreateRunFromPlan
 {
+    /// <summary>Creates a new run seeded with all test cases in a plan, in Blocked status.</summary>
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to create the run from.</summary>
         public required Guid TestPlanId { get; init; }
+
+        /// <summary>The name to give the created run.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The environment label to record on the run.</summary>
         public required string Environment { get; init; }
     }
 

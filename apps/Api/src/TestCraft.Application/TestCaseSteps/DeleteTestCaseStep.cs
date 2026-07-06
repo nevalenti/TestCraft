@@ -8,10 +8,16 @@ namespace TestCraft.Application.TestCaseSteps;
 
 public static class DeleteTestCaseStep
 {
+    /// <summary>Soft-deletes a test case step.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the test case belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The test case the step belongs to.</summary>
         public required Guid CaseId { get; init; }
+
+        /// <summary>The step to delete.</summary>
         public required Guid Id { get; init; }
     }
 

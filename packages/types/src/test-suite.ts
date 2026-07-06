@@ -1,19 +1,8 @@
-export interface TestSuite {
-  id: string;
-  projectId: string;
-  name: string;
-  description?: string;
-  source?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface CreateTestSuite {
-  name: string;
-  description?: string;
-}
-
-export interface UpdateTestSuite {
-  name: string;
-  description?: string;
-}
+export type TestSuite =
+  components["schemas"]["TestCraft.Application.TestSuites.TestSuiteResponse"];
+export type CreateTestSuite =
+  components["schemas"]["TestCraft.Application.TestSuites.CreateTestSuite.Command"];
+export type UpdateTestSuite =
+  components["schemas"]["TestCraft.Application.TestSuites.UpdateTestSuite.Command"];

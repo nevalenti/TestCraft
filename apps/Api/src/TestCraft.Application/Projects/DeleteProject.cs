@@ -8,8 +8,10 @@ namespace TestCraft.Application.Projects;
 
 public static class DeleteProject
 {
+    /// <summary>Soft-deletes a project. Owner-only.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project to delete.</summary>
         public required Guid Id { get; init; }
 
         Guid IProjectScopedRequest.ProjectId => Id;

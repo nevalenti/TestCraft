@@ -9,27 +9,51 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Import;
 
+/// <summary>The status of a report import job, processed asynchronously.</summary>
 public record ImportJobResponse
 {
+    /// <summary>The import job's identifier.</summary>
     public required Guid Id { get; init; }
+
+    /// <summary>The project the import job belongs to.</summary>
     public required Guid ProjectId { get; init; }
+
+    /// <summary>The job's current processing status.</summary>
     public required ImportJobStatus Status { get; init; }
+
+    /// <summary>The run created from this import, once processing succeeds.</summary>
     public Guid? TestRunId { get; init; }
+
+    /// <summary>The failure message, if the job failed.</summary>
     public string? Error { get; init; }
+
+    /// <summary>When the import job was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
+
+    /// <summary>When the import job was last updated.</summary>
     public required DateTimeOffset UpdatedAt { get; init; }
 }
 
 public static class ImportAllure
 {
+    /// <summary>Queues an Allure report for import as a new test run.</summary>
     public sealed record Command : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
         public const string DefaultRunName = "Allure Import";
 
+        /// <summary>The project to import the run into.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The Allure test results to import.</summary>
         public required IReadOnlyList<AllureResultItem> Results { get; init; }
+
+        /// <summary>The environment label to record on the created run.</summary>
         public required string Environment { get; init; }
+
+        /// <summary>The name to give the created run. Defaults to "Allure Import" if omitted.</summary>
         public string? Name { get; init; }
+
+        /// <summary>Identifies the CI system or tool the report came from.</summary>
         public string? Source { get; init; }
     }
 

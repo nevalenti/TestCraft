@@ -8,9 +8,13 @@ namespace TestCraft.Application.TestPlans;
 
 public static class DeleteTestPlan
 {
+    /// <summary>Soft-deletes a test plan.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
+        /// <summary>The project the plan belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The plan to delete.</summary>
         public required Guid Id { get; init; }
     }
 

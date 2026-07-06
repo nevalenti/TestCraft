@@ -9,10 +9,16 @@ namespace TestCraft.Application.TestCases;
 
 public static class GetTestCaseById
 {
+    /// <summary>Requests a single test case by id.</summary>
     public sealed record Query : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the suite belongs to.</summary>
         public required Guid ProjectId { get; init; }
+
+        /// <summary>The suite the test case belongs to.</summary>
         public required Guid SuiteId { get; init; }
+
+        /// <summary>The test case to look up.</summary>
         public required Guid Id { get; init; }
     }
 

@@ -1,36 +1,10 @@
-import type { TestRunStatus } from "./enums.js";
+import type { components } from "./generated/schema.js";
 
-export interface TestRun {
-  id: string;
-  projectId: string;
-  name: string;
-  environment: string;
-  status: TestRunStatus;
-  source?: string;
-  executedById?: string;
-  executedByName?: string;
-  executedByAvatarUrl?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface CreateTestRun {
-  name: string;
-  environment: string;
-  status?: TestRunStatus;
-}
-
-export interface UpdateTestRun {
-  name: string;
-  environment: string;
-  status: TestRunStatus;
-}
-
-export interface TestRunSummary {
-  total: number;
-  passed: number;
-  failed: number;
-  blocked: number;
-  skipped: number;
-  passRate: number;
-}
+export type TestRun =
+  components["schemas"]["TestCraft.Application.TestRuns.TestRunResponse"];
+export type CreateTestRun =
+  components["schemas"]["TestCraft.Application.TestRuns.CreateTestRun.Command"];
+export type UpdateTestRun =
+  components["schemas"]["TestCraft.Application.TestRuns.UpdateTestRun.Command"];
+export type TestRunSummary =
+  components["schemas"]["TestCraft.Application.TestRuns.GetTestRunSummary.Response"];

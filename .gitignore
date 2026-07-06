@@ -3,7 +3,7 @@ node_modules/
 dist/
 packages/*/dist/
 !.github/actions/*/dist/
-apps/api/src/generated/
+packages/types/src/generated/
 
 .turbo/
 *.tsbuildinfo

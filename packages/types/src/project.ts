@@ -1,20 +1,8 @@
-export interface Project {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt?: string;
-  suiteCount?: number;
-  runCount?: number;
-  isOwner: boolean;
-}
+import type { components } from "./generated/schema.js";
 
-export interface CreateProject {
-  name: string;
-  description?: string;
-}
-
-export interface UpdateProject {
-  name: string;
-  description?: string;
-}
+export type Project =
+  components["schemas"]["TestCraft.Application.Projects.ProjectResponse"];
+export type CreateProject =
+  components["schemas"]["TestCraft.Application.Projects.CreateProject.Command"];
+export type UpdateProject =
+  components["schemas"]["TestCraft.Application.Projects.UpdateProject.Command"];

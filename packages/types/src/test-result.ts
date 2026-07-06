@@ -1,33 +1,8 @@
-import type { DefectType, TestResultStatus } from "./enums.js";
+import type { components } from "./generated/schema.js";
 
-export interface TestResult {
-  id: string;
-  testRunId: string;
-  testCaseId: string;
-  suiteId: string;
-  testCaseName: string;
-  status: TestResultStatus;
-  notes?: string;
-  durationMs?: number;
-  defectType?: DefectType;
-  executedAt: string;
-  executedById?: string;
-  createdAt: string;
-  updatedAt?: string;
-}
-
-export interface CreateTestResult {
-  testCaseId: string;
-  status: TestResultStatus;
-  notes?: string;
-  durationMs?: number;
-  defectType?: DefectType;
-  executedAt: string;
-}
-
-export interface UpdateTestResult {
-  status: TestResultStatus;
-  notes?: string;
-  durationMs?: number;
-  defectType?: DefectType;
-}
+export type TestResult =
+  components["schemas"]["TestCraft.Application.TestResults.TestResultResponse"];
+export type CreateTestResult =
+  components["schemas"]["TestCraft.Application.TestResults.CreateTestResult.Command"];
+export type UpdateTestResult =
+  components["schemas"]["TestCraft.Application.TestResults.UpdateTestResult.Command"];

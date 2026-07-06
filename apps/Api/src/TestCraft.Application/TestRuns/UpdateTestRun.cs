@@ -10,12 +10,22 @@ namespace TestCraft.Application.TestRuns;
 
 public static class UpdateTestRun
 {
+    /// <summary>Updates a test run's name, environment, and status.</summary>
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the run belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The run to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The run's new display name.</summary>
         public required string Name { get; init; }
+
+        /// <summary>The run's new environment.</summary>
         public required string Environment { get; init; }
+
+        /// <summary>The run's new status.</summary>
         public required TestRunStatus Status { get; init; }
     }
 

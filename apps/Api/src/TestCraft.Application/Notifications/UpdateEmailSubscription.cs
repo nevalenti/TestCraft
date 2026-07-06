@@ -10,12 +10,22 @@ namespace TestCraft.Application.Notifications;
 
 public static class UpdateEmailSubscription
 {
+    /// <summary>Updates an email subscription's address, events, and active state.</summary>
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
+        /// <summary>The project the subscription belongs to.</summary>
         public Guid ProjectId { get; init; }
+
+        /// <summary>The subscription to update.</summary>
         public Guid Id { get; init; }
+
+        /// <summary>The email address to notify.</summary>
         public required string Email { get; init; }
+
+        /// <summary>The event types to notify on.</summary>
         public required IReadOnlyList<string> Events { get; init; }
+
+        /// <summary>Whether the subscription is active.</summary>
         public required bool IsActive { get; init; }
     }
 
@@ -48,14 +58,15 @@ public static class UpdateEmailSubscription
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new EmailSubscriptionResponse(
-                subscription.Id,
-                subscription.ProjectId,
-                subscription.Email,
-                subscription.IsActive,
-                request.Events,
-                subscription.CreatedAt
-            );
+            return new EmailSubscriptionResponse
+            {
+                Id = subscription.Id,
+                ProjectId = subscription.ProjectId,
+                Email = subscription.Email,
+                IsActive = subscription.IsActive,
+                Events = request.Events,
+                CreatedAt = subscription.CreatedAt,
+            };
         }
     }
 }

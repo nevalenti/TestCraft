@@ -1,24 +1,10 @@
-export interface TestPlan {
-  id: string;
-  name: string;
-  description?: string;
-  projectId: string;
-  caseCount: number;
-  createdAt: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface TestPlanCase {
-  testCaseId: string;
-  testCaseName: string;
-  order: number;
-}
-
-export interface CreateTestPlan {
-  name: string;
-  description?: string;
-}
-
-export interface UpdateTestPlan {
-  name: string;
-  description?: string;
-}
+export type TestPlan =
+  components["schemas"]["TestCraft.Application.TestPlans.TestPlanResponse"];
+export type TestPlanCase =
+  components["schemas"]["TestCraft.Application.TestPlans.TestPlanCaseResponse"];
+export type CreateTestPlan =
+  components["schemas"]["TestCraft.Application.TestPlans.CreateTestPlan.Command"];
+export type UpdateTestPlan =
+  components["schemas"]["TestCraft.Application.TestPlans.UpdateTestPlan.Command"];

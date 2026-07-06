@@ -1,10 +1,6 @@
-export interface ProjectMember {
-  id: string;
-  email: string;
-  displayName?: string;
-  createdAt: string;
-}
+import type { components } from "./generated/schema.js";
 
-export interface AddProjectMember {
-  email: string;
-}
+export type ProjectMember =
+  components["schemas"]["TestCraft.Application.ProjectMembers.ProjectMemberResponse"];
+export type AddProjectMember =
+  components["schemas"]["TestCraft.Application.ProjectMembers.AddProjectMember.Command"];

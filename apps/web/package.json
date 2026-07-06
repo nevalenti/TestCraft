@@ -4,8 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "pretypecheck": "pnpm --filter @testcraft/types run generate",
     "typecheck": "tsc -b",
+    "predev": "pnpm --filter @testcraft/types run generate",
     "dev": "vite",
+    "prebuild": "pnpm --filter @testcraft/types run generate",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
