@@ -68,7 +68,7 @@ jobs:
             -v ${{ github.workspace }}/infrastructure/keycloak/realm.json:/realm-source/realm.json:ro \
             --entrypoint /bin/sh \
             quay.io/keycloak/keycloak:26.2 \
-            -c 'mkdir -p /opt/keycloak/data/import && sed "s|\"GITHUB_IDP_ENABLED\"|false|g" /realm-source/realm.json > /opt/keycloak/data/import/realm.json && exec /opt/keycloak/bin/kc.sh start-dev --import-realm'
+            -c 'mkdir -p /opt/keycloak/data/import && sed "s|\"GITHUB_IDP_ENABLED\"|false|g; s|\"GOOGLE_IDP_ENABLED\"|false|g" /realm-source/realm.json > /opt/keycloak/data/import/realm.json && exec /opt/keycloak/bin/kc.sh start-dev --import-realm'
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4

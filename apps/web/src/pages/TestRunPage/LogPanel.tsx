@@ -30,14 +30,9 @@ export const LogPanel = ({ projectId, runId }: Props) => {
         </span>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
-        {logs.map((line, i) => (
-          <p
-            key={i}
-            className="font-logs text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85"
-          >
-            {line}
-          </p>
-        ))}
+        <pre className="font-logs text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85">
+          {logs.join("\n")}
+        </pre>
         <div ref={endRef} />
       </div>
     </div>

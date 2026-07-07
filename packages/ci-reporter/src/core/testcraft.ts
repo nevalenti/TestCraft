@@ -40,6 +40,23 @@ export const createRun = async (
   return (await response.json()) as { id: string };
 };
 
+export const appendLogs = async (
+  ctx: ApiContext,
+  runId: string,
+  lines: string[],
+): Promise<void> => {
+  const { apiUrl, projectId, token } = ctx;
+  const response = await fetch(
+    `${apiUrl}/api/v1/projects/${projectId}/runs/${runId}/logs`,
+    {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify({ lines }),
+    },
+  );
+  await assertOk(response, "Failed to append logs");
+};
+
 export const importResults = async (
   ctx: ApiContext,
   name: string,

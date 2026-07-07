@@ -1,8 +1,11 @@
 export { fetchToken } from "./auth";
 export { assertOk, authHeaders, fetchJson } from "./http";
+export { createStdioCapture } from "./logStream";
+export type { StdioCapture } from "./logStream";
 export { createStateStore } from "./state";
 export type { StateStore } from "./state";
 export {
+  appendLogs,
   createRun,
   fetchAllResults,
   importResults,

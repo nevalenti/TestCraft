@@ -60,6 +60,9 @@ importers:
       '@playwright/test':
         specifier: ^1.61.0
         version: 1.61.0
+      '@testcraft/ci-reporter':
+        specifier: workspace:*
+        version: link:../../packages/ci-reporter
       '@types/node':
         specifier: ^26.0.0
         version: 26.0.0
@@ -151,6 +154,9 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.101.1
         version: 5.101.1(@tanstack/react-query@5.101.1(react@19.2.7))(react@19.2.7)
+      '@testcraft/ci-reporter':
+        specifier: workspace:*
+        version: link:../../packages/ci-reporter
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1

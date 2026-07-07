@@ -49,3 +49,5 @@ secrets:
   keycloakAdminPassword: ""
   githubClientId: ""
   githubClientSecret: ""
+  googleClientId: ""
+  googleClientSecret: ""

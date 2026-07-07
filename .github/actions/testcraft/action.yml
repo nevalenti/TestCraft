@@ -19,7 +19,7 @@ inputs:
     description: TestCraft project name to import results into
     required: true
   junit-xml:
-    description: Path to the JUnit XML report file (required when command is import)
+    description: Path to the JUnit XML report file, or a single-directory glob (e.g. "dir/*.junit.xml") to merge multiple reports — required when command is import
     required: false
   run-name:
     description: Display name for the imported test run

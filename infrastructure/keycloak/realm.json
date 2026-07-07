@@ -78,6 +78,21 @@
         "clientSecret": "${GITHUB_CLIENT_SECRET}",
         "defaultScope": "user:email"
       }
+    },
+    {
+      "alias": "google",
+      "displayName": "Google",
+      "providerId": "google",
+      "enabled": "GOOGLE_IDP_ENABLED",
+      "trustEmail": true,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "clientId": "${GOOGLE_CLIENT_ID}",
+        "clientSecret": "${GOOGLE_CLIENT_SECRET}",
+        "defaultScope": "openid profile email"
+      }
     }
   ]
 }

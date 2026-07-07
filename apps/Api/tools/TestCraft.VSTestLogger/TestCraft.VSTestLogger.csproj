@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <!-- S4830: cert validation bypass is opt-in via NODE_TLS_REJECT_UNAUTHORIZED=0, matching the Node reporters' behavior against the same self-signed dev endpoint. -->
+    <NoWarn>$(NoWarn);S4830</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" />
+  </ItemGroup>
+</Project>

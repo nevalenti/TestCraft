@@ -45,7 +45,7 @@
 
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
 - **CI reporter CLI** — `@testcraft/ci-reporter`, an npx/Docker equivalent of the GitHub Action for CI systems without native support
-- **Pipeline examples** — ready-to-use pipelines for [GitHub Actions](.github/workflows), [GitLab CI](.gitlab-ci.yml), and [Jenkins](jenkins) covering api, web, and e2e suites
+- **Pipeline examples** — ready-to-use pipelines for [GitHub Actions](.github/workflows), [GitLab CI](.gitlab-ci.yml), and [Jenkins](jenkins) covering API, web, and E2E suites
 - **API tokens** — machine-to-machine access for CI pipelines
 
 ### Accounts & access
@@ -65,45 +65,45 @@
 ```
 apps/
   Api/src/
-    TestCraft.Domain           # entities, domain events
-    TestCraft.Application      # CQRS commands/queries (MediatR), interfaces
-    TestCraft.Infrastructure   # EF Core, Redis, MinIO, MailKit, MassTransit
-    TestCraft.Api              # ASP.NET Core controllers, SignalR hubs
-  Gateway/src/                 # YARP reverse proxy — fronts Web + API in production
-  web/                         # React SPA
-    src/api/                   # Axios clients — one file per domain
-    src/hooks/                 # TanStack Query hooks — one file per domain
-    src/stores/                # Zustand stores (breadcrumbs, notifications, view mode)
-    src/pages/                 # Route components consuming hooks only
-    src/layout/                # App shell — header, sidebar, account menu, breadcrumbs
-    src/components/            # Shared components + ui/ primitives
-    src/auth/                  # Keycloak provider/client
-    src/contexts/              # React context providers (theme)
-    src/lib/                   # cn, env, format, cookie, notify helpers
-    src/types/                 # Shared frontend types
-    src/__tests__/             # Vitest unit/component tests
-  e2e/                         # Playwright end-to-end suite
+    TestCraft.Domain            # Entities and domain events
+    TestCraft.Application       # CQRS commands/queries (MediatR) and application interfaces
+    TestCraft.Infrastructure     # EF Core, Redis, MinIO, MailKit, and MassTransit integrations
+    TestCraft.Api                 # ASP.NET Core controllers and SignalR hubs
+  Gateway/src/                    # YARP reverse proxy fronting Web and API in production
+  web/                             # React SPA
+    src/api/                      # Axios clients, one file per domain
+    src/hooks/                    # TanStack Query hooks, one file per domain
+    src/stores/                   # Zustand stores (breadcrumbs, notifications, view mode)
+    src/pages/                    # Route components that consume hooks only
+    src/layout/                   # App shell: header, sidebar, account menu, breadcrumbs
+    src/components/               # Shared components and ui/ primitives
+    src/auth/                     # Keycloak provider and client
+    src/contexts/                 # React context providers (theme)
+    src/lib/                      # Shared helpers: cn, env, format, cookie, notify
+    src/types/                    # Shared frontend types
+    src/__tests__/                # Vitest unit and component tests
+  e2e/                             # Playwright end-to-end suite
 packages/
-  types/                       # Shared TypeScript types (published to web)
-  ci-reporter/                 # CI results reporter (npx / Docker) for GitLab CI and other non-GitHub CI systems
+  types/                          # Shared TypeScript types, published to web
+  ci-reporter/                    # CI results reporter (npx/Docker) for GitLab CI and other non-GitHub CI systems
 infrastructure/
-  helm/                        # Helm chart for k8s deployment
-  keycloak/                    # Realm config + custom login theme
-  grafana/                     # Dashboard provisioning
-  prometheus/                  # Scrape config
+  helm/                           # Helm chart for Kubernetes deployment
+  keycloak/                       # Realm configuration and custom login theme
+  grafana/                        # Dashboard provisioning
+  prometheus/                     # Scrape configuration
 .github/
-  actions/testcraft/           # GitHub Action that reports CI results into TestCraft
-  workflows/                   # GitHub Actions pipelines for api, web, e2e
-jenkins/                       # Example Jenkins pipelines (api, web, e2e) using the CI reporter CLI
-.gitlab-ci.yml                 # Example GitLab CI pipelines (api, web, e2e) using the CI reporter CLI
-.gitlab/ci/                    # Per-suite GitLab CI job definitions
+  actions/testcraft/              # GitHub Action that reports CI results into TestCraft
+  workflows/                      # GitHub Actions pipelines for the API, web, and E2E suites
+jenkins/                          # Example Jenkins pipelines (API, web, E2E) using the CI reporter CLI
+.gitlab-ci.yml                    # Example GitLab CI pipelines (API, web, E2E) using the CI reporter CLI
+.gitlab/ci/                       # Per-suite GitLab CI job definitions
 ```
 
 ---
 
 ## Getting Started
 
-**Prerequisites:** Docker, .NET 10 SDK, Node.js 22+, pnpm
+**Prerequisites:** Docker, .NET 10 SDK, Node.js 24, pnpm
 
 ```bash
 git clone https://github.com/nevalenti/TestCraft.git
@@ -113,7 +113,7 @@ cp .env.example .env
 make up
 ```
 
-Keycloak imports the `testcraft` realm automatically on first start. The API applies migrations on startup when `APPLY_MIGRATIONS=true` (set in `.env.example`).
+Keycloak imports the `testcraft` realm automatically on first start. The API applies migrations on startup when `APPLY_MIGRATIONS=true` is set in `.env`.
 
 Then in separate terminals:
 
@@ -142,7 +142,7 @@ dotnet run --project apps/Api/src/TestCraft.Api
 
 ```bash
 pnpm --filter testcraft-web test   # Web (Vitest)
-dotnet test apps/Api               # API (xUnit + Testcontainers)
+dotnet test TestCraft.slnx         # API (xUnit + Testcontainers)
 make e2e                           # End-to-end (Playwright via act)
 ```
 

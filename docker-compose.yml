@@ -70,8 +70,9 @@ services:
       - -c
       - |
         GITHUB_ENABLED="$${GITHUB_CLIENT_ID:+true}"; GITHUB_ENABLED="$${GITHUB_ENABLED:-false}"
+        GOOGLE_ENABLED="$${GOOGLE_CLIENT_ID:+true}"; GOOGLE_ENABLED="$${GOOGLE_ENABLED:-false}"
         mkdir -p /opt/keycloak/data/import
-        sed "s|\"GITHUB_IDP_ENABLED\"|$$GITHUB_ENABLED|g; s|\$${GITHUB_CLIENT_ID}|$$GITHUB_CLIENT_ID|g; s|\$${GITHUB_CLIENT_SECRET}|$$GITHUB_CLIENT_SECRET|g" \
+        sed "s|\"GITHUB_IDP_ENABLED\"|$$GITHUB_ENABLED|g; s|\$${GITHUB_CLIENT_ID}|$$GITHUB_CLIENT_ID|g; s|\$${GITHUB_CLIENT_SECRET}|$$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$$GOOGLE_ENABLED|g; s|\$${GOOGLE_CLIENT_ID}|$$GOOGLE_CLIENT_ID|g; s|\$${GOOGLE_CLIENT_SECRET}|$$GOOGLE_CLIENT_SECRET|g" \
           /realm-source/realm.json > /opt/keycloak/data/import/realm.json
         exec /opt/keycloak/bin/kc.sh start-dev --import-realm
     environment:
@@ -81,6 +82,8 @@ services:
       KC_HTTP_MANAGEMENT_PORT: "9100"
       GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID:-}
       GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
     ports:
       - "8080:8080"
     volumes:

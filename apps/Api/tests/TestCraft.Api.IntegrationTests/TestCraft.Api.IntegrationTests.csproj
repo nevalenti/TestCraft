@@ -3,7 +3,7 @@
     <IsPackable>false</IsPackable>
     <!-- CA1707: underscores are idiomatic for xUnit test names; CA1711: xUnit collection fixtures end in "Collection". -->
     <NoWarn>$(NoWarn);CA1707;CA1711</NoWarn>
-    <VSTestLogger>junit%3BLogFilePath=$(MSBuildThisFileDirectory)../../test-results/junit.xml</VSTestLogger>
+    <VSTestLogger>junit%3BLogFilePath=$(MSBuildThisFileDirectory)../../test-results/$(MSBuildProjectName).junit.xml;testcraft</VSTestLogger>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,5 +27,6 @@
     <ProjectReference Include="..\..\src\TestCraft.Domain\TestCraft.Domain.csproj" />
     <ProjectReference Include="..\..\src\TestCraft.Application\TestCraft.Application.csproj" />
     <ProjectReference Include="..\..\src\TestCraft.Infrastructure\TestCraft.Infrastructure.csproj" />
+    <ProjectReference Include="..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
   </ItemGroup>
 </Project>

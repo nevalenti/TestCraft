@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
 import {
@@ -15,6 +15,8 @@ import {
   slugify,
   uploadAttachment,
 } from "@testcraft/ci-reporter";
+
+import { resolveJunitXml } from "./junit";
 
 const { readState, saveState, clearState } = createStateStore(
   `${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}`,
@@ -98,13 +100,15 @@ const uploadScreenshots = async (
 const handleImport = async (
   ctx: ApiContext,
   runName: string,
-  junitXml: string,
+  junitXmlPattern: string,
+  workspace: string,
   source?: string,
   screenshotsDir?: string,
 ): Promise<void> => {
   const savedRunId = readState();
+  const junitXml = resolveJunitXml(junitXmlPattern, workspace);
 
-  if (!existsSync(junitXml)) {
+  if (!junitXml) {
     if (savedRunId) {
       core.info(
         `JUnit XML not found — completing run ${savedRunId} with no results`,
@@ -121,7 +125,9 @@ const handleImport = async (
       await pollJob(ctx, job.id);
       clearState();
     } else {
-      core.warning(`JUnit XML not found at ${junitXml} — skipping import`);
+      core.warning(
+        `JUnit XML not found at ${junitXmlPattern} — skipping import`,
+      );
     }
     return;
   }
@@ -136,7 +142,7 @@ const handleImport = async (
   const job = await importResults(
     ctx,
     runName,
-    readFileSync(junitXml, "utf8"),
+    junitXml,
     source,
     savedRunId ?? undefined,
   );
@@ -202,7 +208,8 @@ const run = async (): Promise<void> => {
   await handleImport(
     ctx,
     runName,
-    resolve(workspace, junitXmlInput),
+    junitXmlInput,
+    workspace,
     source,
     screenshotsDirInput ? resolve(workspace, screenshotsDirInput) : undefined,
   );

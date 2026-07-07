@@ -1,0 +1,63 @@
+const ANSI_PATTERN = new RegExp("[\\u001B\\u009B]\\[[0-9;]*[a-zA-Z]", "g");
+const stripAnsi = (text: string): string => text.replace(ANSI_PATTERN, "");
+
+type WriteFn = typeof process.stdout.write;
+
+export interface StdioCapture {
+  /** Restores the original stdout/stderr write functions. */
+  restore(): void;
+  /** Emits any buffered partial line that never reached a trailing newline. */
+  flush(): void;
+}
+
+/**
+ * Monkey-patches process.stdout/stderr so `onLines` receives, in order,
+ * every complete line written to either stream — mirroring exactly what a
+ * developer would see in the terminal, ANSI codes stripped. Chunk
+ * boundaries don't align with line boundaries, so partial trailing
+ * segments are buffered until a newline completes them (or `flush` is
+ * called).
+ */
+export const createStdioCapture = (
+  onLines: (lines: string[]) => void,
+): StdioCapture => {
+  let stdoutBuffer = "";
+  let stderrBuffer = "";
+
+  const capture = (chunk: string | Uint8Array, isErr: boolean): void => {
+    const text = stripAnsi(chunk.toString());
+    const combined = (isErr ? stderrBuffer : stdoutBuffer) + text;
+    const parts = combined.split("\n");
+    const remainder = parts.pop() ?? "";
+    if (isErr) stderrBuffer = remainder;
+    else stdoutBuffer = remainder;
+
+    const lines = parts.filter((l) => l.length > 0);
+    if (lines.length) onLines(lines);
+  };
+
+  const origStdoutWrite = process.stdout.write.bind(process.stdout);
+  const origStderrWrite = process.stderr.write.bind(process.stderr);
+
+  process.stdout.write = ((chunk: string | Uint8Array, ...args: unknown[]) => {
+    capture(chunk, false);
+    return (origStdoutWrite as (...a: unknown[]) => boolean)(chunk, ...args);
+  }) as WriteFn;
+  process.stderr.write = ((chunk: string | Uint8Array, ...args: unknown[]) => {
+    capture(chunk, true);
+    return (origStderrWrite as (...a: unknown[]) => boolean)(chunk, ...args);
+  }) as WriteFn;
+
+  return {
+    restore: () => {
+      process.stdout.write = origStdoutWrite;
+      process.stderr.write = origStderrWrite;
+    },
+    flush: () => {
+      const trailing = [stdoutBuffer, stderrBuffer].filter((l) => l.length > 0);
+      stdoutBuffer = "";
+      stderrBuffer = "";
+      if (trailing.length) onLines(trailing);
+    },
+  };
+};

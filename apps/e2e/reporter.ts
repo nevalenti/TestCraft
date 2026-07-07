@@ -1,4 +1,13 @@
 import type { Reporter, TestCase, TestResult } from "@playwright/test/reporter";
+import {
+  type ApiContext,
+  appendLogs,
+  createStdioCapture,
+  fetchAuthority,
+  fetchToken,
+  findProjectId,
+  type StdioCapture,
+} from "@testcraft/ci-reporter";
 
 const USER_AGENT = "TestCraft-Reporter/1.0";
 
@@ -10,10 +19,7 @@ const STATUS_MAP: Record<string, string> = {
   interrupted: "Failed",
 };
 
-interface Ctx {
-  apiUrl: string;
-  projectId: string;
-  token: string;
+interface Ctx extends ApiContext {
   runId: string;
   source: string | undefined;
 }
@@ -22,6 +28,7 @@ class TestCraftReporter implements Reporter {
   private ctx: Ctx | null = null;
   private initPromise: Promise<void> | null = null;
   private readonly pending: Promise<void>[] = [];
+  private capture: StdioCapture | null = null;
 
   onBegin(): void {
     const apiUrl = process.env["TESTCRAFT_API_URL"];
@@ -41,6 +48,8 @@ class TestCraftReporter implements Reporter {
       projectName,
       keycloakAuthority,
     );
+
+    this.capture = createStdioCapture((lines) => this.postLog(lines));
   }
 
   private async init(
@@ -52,51 +61,14 @@ class TestCraftReporter implements Reporter {
     keycloakAuthority: string | undefined,
   ): Promise<void> {
     try {
-      let authority = keycloakAuthority;
-      if (!authority) {
-        const cfgRes = await fetch(`${apiUrl}/api/auth-config`, {
-          headers: { "User-Agent": USER_AGENT },
-        });
-        const cfg = (await cfgRes.json()) as { authority: string };
-        authority = cfg.authority;
-      }
-
-      const tokenRes = await fetch(
-        `${authority}/protocol/openid-connect/token`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: new URLSearchParams({
-            grant_type: "password",
-            client_id: "testcraft-web",
-            username,
-            password,
-          }),
-        },
-      );
-      const { access_token } = (await tokenRes.json()) as {
-        access_token: string;
-      };
-
-      const url = new URL(`${apiUrl}/api/v1/projects`);
-      url.searchParams.set("search", projectName);
-      url.searchParams.set("pageSize", "500");
-      const projRes = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "User-Agent": USER_AGENT,
-        },
-      });
-      const { items } = (await projRes.json()) as {
-        items: { id: string; name: string }[];
-      };
-      const project = items.find((p) => p.name === projectName);
-      if (!project) throw new Error(`Project "${projectName}" not found`);
+      const authority = keycloakAuthority ?? (await fetchAuthority(apiUrl));
+      const token = await fetchToken(authority, username, password);
+      const projectId = await findProjectId(apiUrl, token, projectName);
 
       this.ctx = {
         apiUrl,
-        projectId: project.id,
-        token: access_token,
+        projectId,
+        token,
         runId,
         source: process.env["TESTCRAFT_SOURCE"],
       };
@@ -114,59 +86,16 @@ class TestCraftReporter implements Reporter {
   private async sendLogs(lines: string[]): Promise<void> {
     if (!this.ctx) return;
     try {
-      await fetch(
-        `${this.ctx.apiUrl}/api/v1/projects/${this.ctx.projectId}/runs/${this.ctx.runId}/logs`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${this.ctx.token}`,
-            "Content-Type": "application/json",
-            "User-Agent": USER_AGENT,
-          },
-          body: JSON.stringify({ lines }),
-        },
-      );
+      await appendLogs(this.ctx, this.ctx.runId, lines);
     } catch {
       // non-critical — swallow silently
     }
   }
 
-  onTestBegin(test: TestCase): void {
-    const suiteName = test.parent.title || "Default";
-    this.postLog([`▶  ${suiteName} › ${test.title}`]);
-  }
-
   onTestEnd(test: TestCase, result: TestResult): void {
     if (!this.initPromise) return;
-    const icon =
-      result.status === "passed"
-        ? "✓"
-        : result.status === "skipped"
-          ? "-"
-          : "✗";
-    const duration =
-      result.duration > 0 ? ` (${(result.duration / 1000).toFixed(1)}s)` : "";
-    const suiteName = test.parent.title || "Default";
-    this.postLog([`${icon}  ${suiteName} › ${test.title}${duration}`]);
     const p = this.initPromise.then(() => this.report(test, result));
     this.pending.push(p);
-  }
-
-  onStdOut(chunk: string | Buffer): void {
-    const text = chunk.toString().trimEnd();
-    if (!text) return;
-    this.postLog(text.split("\n").filter(Boolean));
-  }
-
-  onStdErr(chunk: string | Buffer): void {
-    const text = chunk.toString().trimEnd();
-    if (!text) return;
-    this.postLog(
-      text
-        .split("\n")
-        .filter(Boolean)
-        .map((l: string) => `[err] ${l}`),
-    );
   }
 
   private async report(test: TestCase, result: TestResult): Promise<void> {
@@ -214,6 +143,8 @@ class TestCraftReporter implements Reporter {
   }
 
   async onEnd(): Promise<void> {
+    this.capture?.flush();
+    this.capture?.restore();
     await Promise.allSettled(this.pending);
   }
 }

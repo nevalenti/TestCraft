@@ -41,7 +41,14 @@ export default defineConfig({
     setupFiles: "./src/__tests__/setup.ts",
     exclude: ["**/node_modules/**", "e2e/**"],
     css: true,
-    reporters: ["verbose", "html", "junit"],
+    reporters: [
+      "verbose",
+      "html",
+      "junit",
+      ...(process.env["TESTCRAFT_RUN_ID"]
+        ? [["./testcraft-reporter.ts"] as [string]]
+        : []),
+    ],
     outputFile: {
       html: "./test-results/index.html",
       junit: "./test-results/junit.xml",

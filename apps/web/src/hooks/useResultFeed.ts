@@ -22,6 +22,7 @@ export const useResultFeed = (projectId: string, runId: string) => {
     queryKey: queryKeys.testRuns.logs(projectId, runId),
     queryFn: () => testRunsApi.getLogs(projectId, runId),
     refetchOnWindowFocus: false,
+    staleTime: 0,
   });
 
   const items = useMemo(() => (page?.items ?? []).toReversed(), [page]);

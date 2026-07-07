@@ -67,6 +67,7 @@ jobs:
         run: pnpm turbo build --filter testcraft-web
 
       - name: Start TestCraft run
+        id: testcraft-start
         if: always()
         continue-on-error: true
         uses: ./.github/actions/testcraft
@@ -82,6 +83,14 @@ jobs:
 
       - name: Test
         run: pnpm --filter testcraft-web run test
+        env:
+          TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
+          TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
+          TESTCRAFT_KEYCLOAK_AUTHORITY: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          TESTCRAFT_USERNAME: ${{ secrets.TESTCRAFT_USERNAME }}
+          TESTCRAFT_PASSWORD: ${{ secrets.TESTCRAFT_PASSWORD }}
+          TESTCRAFT_PROJECT_NAME: TestCraft
+          TESTCRAFT_SOURCE: web
 
       - name: Import results to TestCraft
         if: always()
