@@ -22,6 +22,8 @@ const typeConfig: Record<string, { cls: string; dotCls: string }> = {
   },
 };
 
+const MAX_VISIBLE = 4;
+
 export const Notifications = () => {
   const notifications = useNotificationsStore((store) => store.notifications);
   const remove = useNotificationsStore((store) => store.remove);
@@ -31,9 +33,9 @@ export const Notifications = () => {
   return (
     <div
       className="toast toast-center toast-bottom z-[999]"
-      style={{ bottom: "4rem" }}
+      style={{ bottom: "11rem" }}
     >
-      {notifications.map((notification) => {
+      {notifications.slice(-MAX_VISIBLE).map((notification) => {
         const config = typeConfig[notification.type];
 
         return (

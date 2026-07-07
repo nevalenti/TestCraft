@@ -9,14 +9,13 @@ type StatCardProps = {
   icon: React.ReactNode;
   accent: string;
   colorVar: string;
-  cardBg?: string;
   to?: string;
   description?: string;
   testId?: string;
 };
 
 const cardBase =
-  "relative overflow-hidden rounded-2xl p-4 transition-[box-shadow] duration-200 ease-out";
+  "relative overflow-hidden rounded-2xl border border-border bg-base-100 p-4 shadow-sm transition-[box-shadow] duration-200 ease-out";
 
 export const StatCard = ({
   label,
@@ -24,7 +23,6 @@ export const StatCard = ({
   icon,
   accent,
   colorVar,
-  cardBg,
   to,
   description,
   testId,
@@ -56,9 +54,14 @@ export const StatCard = ({
       </p>
 
       {to ? (
-        <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-base-content/55">
+        <p
+          className={cn(
+            "mt-2 flex items-center gap-1 text-[11px] font-semibold",
+            accent,
+          )}
+        >
           View all
-          <ArrowRightIcon className="size-3" />
+          <ArrowRightIcon className="size-3 transition-transform group-hover:translate-x-0.5" />
         </p>
       ) : (
         description && (
@@ -75,7 +78,6 @@ export const StatCard = ({
         style={{ "--card-glow": `var(${colorVar})` } as React.CSSProperties}
         className={cn(
           cardBase,
-          cardBg ?? "border border-border bg-base-100 shadow-sm",
           "group hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
         )}
       >
@@ -84,14 +86,5 @@ export const StatCard = ({
     );
   }
 
-  return (
-    <div
-      className={cn(
-        cardBase,
-        cardBg ?? "border border-border bg-base-100 shadow-sm",
-      )}
-    >
-      {inner}
-    </div>
-  );
+  return <div className={cardBase}>{inner}</div>;
 };

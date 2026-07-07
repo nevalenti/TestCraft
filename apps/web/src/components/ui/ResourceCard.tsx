@@ -43,10 +43,9 @@ export const ResourceCard = ({
       data-testid={testId}
       style={{ "--card-glow": `var(${colorVar})` } as React.CSSProperties}
       className={cn(
-        "group relative overflow-hidden rounded-xl border shadow-sm",
-        "transition-[box-shadow] duration-200 ease-out",
-        "hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
-        cardBg,
+        "group relative overflow-hidden rounded-xl border border-border bg-base-100",
+        "transition-[background-color,box-shadow] duration-200 ease-out",
+        "hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.4),0_8px_20px_-8px_oklch(from_var(--card-glow)_l_c_h/0.35)]",
       )}
     >
       {to && (
@@ -59,7 +58,15 @@ export const ResourceCard = ({
       <div className="flex min-h-[92px] flex-col justify-between p-3.5 pr-9">
         {typeIcon && (
           <div className="mb-2 flex items-center gap-1.5">
-            <span className={accentText}>{typeIcon}</span>
+            <span
+              className={cn(
+                "flex size-6 shrink-0 items-center justify-center rounded-lg border",
+                cardBg,
+                accentText,
+              )}
+            >
+              {typeIcon}
+            </span>
             <span className="text-[10px] font-semibold tracking-[0.1em] text-base-content/63 uppercase">
               {label}
             </span>

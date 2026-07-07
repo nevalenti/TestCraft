@@ -5,7 +5,6 @@ export type WebhookSubscription =
 export type EmailSubscription =
   components["schemas"]["TestCraft.Application.Notifications.EmailSubscriptionResponse"];
 
-// `projectId` is bound from the route, not supplied by the client.
 export type CreateWebhookSubscription = Omit<
   components["schemas"]["TestCraft.Application.Notifications.CreateWebhookSubscription.Command"],
   "projectId"

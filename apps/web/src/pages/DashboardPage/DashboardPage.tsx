@@ -185,7 +185,6 @@ export const DashboardPage = () => {
                 icon={<FolderIcon className="size-4.5" />}
                 accent="text-primary"
                 colorVar="--color-primary"
-                cardBg="card-bg-primary border"
                 to="/projects"
                 description="Click to view all projects"
                 testId="stat-projects"
@@ -196,7 +195,6 @@ export const DashboardPage = () => {
                 icon={<BoltIcon className="size-4.5" />}
                 accent="text-warning"
                 colorVar="--color-warning"
-                cardBg="card-bg-warning border"
                 description="Across all projects"
                 testId="stat-runs"
               />
@@ -204,9 +202,8 @@ export const DashboardPage = () => {
                 label="Test Suites"
                 value={totalSuites}
                 icon={<ClipboardDocumentListIcon className="size-4.5" />}
-                accent="text-info"
-                colorVar="--color-info"
-                cardBg="card-bg-info border"
+                accent="text-success"
+                colorVar="--color-success"
                 description="Across all projects"
                 testId="stat-suites"
               />
