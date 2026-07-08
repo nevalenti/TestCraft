@@ -2,10 +2,12 @@ import { act, renderHook } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { useCookieConsent } from "@/hooks/useCookieConsent";
+import { useCookieConsentStore } from "@/stores/cookieConsent";
 
 const clearConsentCookie = () => {
   document.cookie =
     "cookies-consent=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/";
+  useCookieConsentStore.setState({ consent: null });
 };
 
 beforeEach(clearConsentCookie);

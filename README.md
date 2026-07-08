@@ -1,11 +1,32 @@
-# TestCraft
+<div align="center">
+
+# 🧪 TestCraft
+
+**A self-hosted alternative to TestRail/Xray**
+
+Organize projects, suites, and test cases · import JUnit/Allure reports · track runs in real time · get notified via email or webhooks
 
 [![API](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml)
 [![Web](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml)
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
+[![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](apps/web)
 
-> A self-hosted alternative to TestRail/Xray: organize projects, suites, and test cases, import JUnit/Allure reports, track runs in real time, and get notified via email or webhooks.
+</div>
+
+---
+
+## Contents
+
+- [Built With](#built-with)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Getting Started](#getting-started)
+- [Production](#production)
+- [License](#license)
+
+---
 
 ## Built With
 

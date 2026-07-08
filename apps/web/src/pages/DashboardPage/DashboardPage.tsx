@@ -174,7 +174,7 @@ export const DashboardPage = () => {
       ) : (
         <>
           <header className="px-4 pt-6 pb-5 sm:px-6 lg:px-8">
-            <h1 className="page-title text-2xl">
+            <h1 className="page-title">
               {firstName ? `${getGreeting()}, ${firstName}` : "Dashboard"}
             </h1>
             <p className="mt-0.5 text-sm text-base-content/70">

@@ -1,31 +1,9 @@
-import { useState } from "react";
-
-import { getCookie, setCookie } from "@/lib/cookie";
-
-const CONSENT_KEY = "cookies-consent";
+import { useCookieConsentStore } from "@/stores/cookieConsent";
 
 export const useCookieConsent = () => {
-  const [consent, setConsent] = useState<boolean | null>(() => {
-    const stored = getCookie(CONSENT_KEY);
-
-    if (!stored) return null;
-
-    try {
-      return JSON.parse(stored) === true;
-    } catch {
-      return null;
-    }
-  });
-
-  const accept = () => {
-    setCookie(CONSENT_KEY, "true");
-    setConsent(true);
-  };
-
-  const decline = () => {
-    setCookie(CONSENT_KEY, "false");
-    setConsent(false);
-  };
+  const consent = useCookieConsentStore((store) => store.consent);
+  const accept = useCookieConsentStore((store) => store.accept);
+  const decline = useCookieConsentStore((store) => store.decline);
 
   return { consent, isShowing: consent === null, accept, decline };
 };

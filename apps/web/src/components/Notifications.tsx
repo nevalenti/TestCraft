@@ -1,5 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/solid";
 
+import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { cn } from "@/lib/cn";
 import { useNotificationsStore } from "@/stores/notifications";
 
@@ -27,13 +28,16 @@ const MAX_VISIBLE = 4;
 export const Notifications = () => {
   const notifications = useNotificationsStore((store) => store.notifications);
   const remove = useNotificationsStore((store) => store.remove);
+  const { isShowing: isCookieBannerShowing } = useCookieConsent();
 
   if (notifications.length === 0) return null;
 
   return (
     <div
-      className="toast toast-center toast-bottom z-[999]"
-      style={{ bottom: "11rem" }}
+      className={cn(
+        "toast toast-center toast-bottom z-[999]",
+        isCookieBannerShowing ? "mb-28 sm:mb-36 md:mb-44" : "mb-2",
+      )}
     >
       {notifications.slice(-MAX_VISIBLE).map((notification) => {
         const config = typeConfig[notification.type];
