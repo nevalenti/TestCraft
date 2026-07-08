@@ -1,8 +1,5 @@
-node_modules/
-
-dist/
 apps/api/src/generated/
-
-pnpm-lock.yaml
-
+dist/
 helm/
+node_modules/
+pnpm-lock.yaml

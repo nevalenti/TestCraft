@@ -114,11 +114,11 @@ infrastructure/
   grafana/                   # Dashboard provisioning
   prometheus/                # Scrape config
 .github/
-  actions/testcraft/         # GitHub Action reporting CI results
+  actions/testcraft/         # CI reporter for GitHub Actions
   workflows/                 # GitHub Actions pipelines
-jenkins/                     # Example Jenkins pipelines
-.gitlab-ci.yml               # Example GitLab CI pipelines
-.gitlab/ci/                  # Per-suite GitLab CI jobs
+jenkins/                     # Jenkins pipelines
+.gitlab-ci.yml               # GitLab CI pipelines
+.gitlab/ci/                  # GitLab CI pipelines
 ```
 
 ---

@@ -1,26 +1,10 @@
 #!/usr/bin/env bash
-# Ensures the local Jenkins controller (image + persistent container) is up, then, if a job
-# name is given, triggers that job's build, streams its console output, and exits with the
-# build's actual pass/fail status. Used by `make jenkins-up` (no args) and
-# `make {api,web,e2e}-jenkins` (job name arg) - see root Makefile.
 set -euo pipefail
 
 IMAGE="testcraft-jenkins-controller"
 CONTAINER="testcraft-jenkins-controller"
-# Jenkins itself sits off the standard 8080/8000s dev ports since the controller runs with
-# --network host (needed so its shell steps can reach services the pipelines start on
-# localhost, e.g. the e2e Jenkinsfile's Keycloak on 8080/9000) and would otherwise collide
-# with those same ports.
 URL="http://localhost:8090"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-# Jenkins' workspace for these jobs must be a path that resolves correctly BOTH inside this
-# container AND on the real host - because pipeline steps (e.g. the e2e Jenkinsfile's Keycloak
-# `docker run -v $WORKSPACE/...`) are Docker-outside-of-Docker: they're forwarded to the real
-# host's daemon via the mounted socket, which resolves paths against the real host filesystem,
-# not this container's view of it. WORKSPACE_ROOT/workspace/<job> is a symlink (created for
-# real, on the host, below) pointing at ROOT, and WORKSPACE_ROOT is bind-mounted at the same
-# absolute path on both sides - so the same path string is valid (and resolves to the real
-# repo) whether read from inside the container or by the host's own daemon.
 WORKSPACE_ROOT="$HOME/.testcraft-jenkins"
 
 ensure_image() {
@@ -43,11 +27,6 @@ ensure_container() {
     docker rm -f "$CONTAINER" >/dev/null 2>&1 || true
     ensure_workspace_symlinks
     echo "Starting $CONTAINER..."
-    # TESTCRAFT_API_URL/TESTCRAFT_KEYCLOAK_AUTHORITY point at a local instance whose TLS cert
-    # is mkcert-signed - trusted on the host (mkcert installs its root there) but not inside
-    # this minimal container image, so ci-reporter's Node fetch() would otherwise reject it.
-    # Mirrors NODE_TLS_REJECT_UNAUTHORIZED=0 already used for the same reason by
-    # gitlab-ci-local (see root Makefile) and by TestCraft.VSTestLogger.
     docker run -d --rm --name "$CONTAINER" \
       --user root \
       --network host \
@@ -73,8 +52,6 @@ wait_job_seeded() {
   timeout 60 sh -c "until curl -sf $URL/job/$job/api/json >/dev/null 2>&1; do sleep 2; done"
 }
 
-# Triggers the build and follows the queue item until it's assigned a build number, printing
-# that number on stdout (avoids racing lastBuild against a still-queued or previous build).
 trigger_job() {
   local job="$1"
   echo "Triggering $job..." >&2
