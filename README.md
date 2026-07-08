@@ -118,11 +118,11 @@ Keycloak imports the `testcraft` realm automatically on first start. The API app
 Then in separate terminals:
 
 ```bash
-# Web
-pnpm --filter testcraft-web dev
-
 # API
 dotnet run --project apps/Api/src/TestCraft.Api
+
+# Web
+pnpm --filter testcraft-web dev
 ```
 
 | Service    | URL                           |
@@ -141,8 +141,8 @@ dotnet run --project apps/Api/src/TestCraft.Api
 ### Running tests
 
 ```bash
-pnpm --filter testcraft-web test   # Web (Vitest)
 dotnet test TestCraft.slnx         # API (xUnit + Testcontainers)
+pnpm --filter testcraft-web test   # Web (Vitest)
 make e2e                           # End-to-end (Playwright via act)
 ```
 

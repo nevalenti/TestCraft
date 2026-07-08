@@ -4,20 +4,10 @@ const stripAnsi = (text: string): string => text.replace(ANSI_PATTERN, "");
 type WriteFn = typeof process.stdout.write;
 
 export interface StdioCapture {
-  /** Restores the original stdout/stderr write functions. */
   restore(): void;
-  /** Emits any buffered partial line that never reached a trailing newline. */
   flush(): void;
 }
 
-/**
- * Monkey-patches process.stdout/stderr so `onLines` receives, in order,
- * every complete line written to either stream — mirroring exactly what a
- * developer would see in the terminal, ANSI codes stripped. Chunk
- * boundaries don't align with line boundaries, so partial trailing
- * segments are buffered until a newline completes them (or `flush` is
- * called).
- */
 export const createStdioCapture = (
   onLines: (lines: string[]) => void,
 ): StdioCapture => {
