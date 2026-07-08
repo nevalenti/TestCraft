@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { assertOk, authHeaders, fetchJson } from "./http";
+import { assertOk, authHeaders, fetchJson, fetchWithRetry } from "./http";
 
 interface ImportJobResponse {
   id: string;
@@ -31,11 +31,15 @@ export const createRun = async (
   source?: string,
 ): Promise<{ id: string }> => {
   const { apiUrl, projectId, token } = ctx;
-  const response = await fetch(`${apiUrl}/api/v1/projects/${projectId}/runs`, {
-    method: "POST",
-    headers: { ...authHeaders(token), "Content-Type": "application/json" },
-    body: JSON.stringify({ name, environment, source }),
-  });
+  const response = await fetchWithRetry(
+    `${apiUrl}/api/v1/projects/${projectId}/runs`,
+    {
+      method: "POST",
+      headers: { ...authHeaders(token), "Content-Type": "application/json" },
+      body: JSON.stringify({ name, environment, source }),
+    },
+    "Failed to create run",
+  );
   await assertOk(response, "Failed to create run");
   return (await response.json()) as { id: string };
 };
@@ -46,13 +50,14 @@ export const appendLogs = async (
   lines: string[],
 ): Promise<void> => {
   const { apiUrl, projectId, token } = ctx;
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `${apiUrl}/api/v1/projects/${projectId}/runs/${runId}/logs`,
     {
       method: "POST",
       headers: { ...authHeaders(token), "Content-Type": "application/json" },
       body: JSON.stringify({ lines }),
     },
+    "Failed to append logs",
   );
   await assertOk(response, "Failed to append logs");
 };
@@ -65,13 +70,14 @@ export const importResults = async (
   runId?: string,
 ): Promise<ImportJobResponse> => {
   const { apiUrl, projectId, token } = ctx;
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `${apiUrl}/api/v1/projects/${projectId}/import/junit`,
     {
       method: "POST",
       headers: { ...authHeaders(token), "Content-Type": "application/json" },
       body: JSON.stringify({ xml, environment: "ci", name, source, runId }),
     },
+    "Import failed",
   );
   await assertOk(response, "Import failed");
   return (await response.json()) as ImportJobResponse;
@@ -126,13 +132,14 @@ export const uploadAttachment = async (
   const content = readFileSync(filePath);
   const form = new FormData();
   form.append("file", new Blob([content], { type: "image/png" }), fileName);
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `${apiUrl}/api/v1/projects/${projectId}/runs/${runId}/results/${resultId}/attachments`,
     {
       method: "POST",
       headers: authHeaders(token),
       body: form,
     },
+    `Failed to upload ${fileName}`,
   );
   await assertOk(response, `Failed to upload ${fileName}`);
 };

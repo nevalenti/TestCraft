@@ -1,0 +1,50 @@
+jenkins:
+  numExecutors: 2
+  labelString: "testcraft"
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+  authorizationStrategy: "unsecured"
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - usernamePassword:
+              scope: GLOBAL
+              id: testcraft-service-account
+              username: ${TESTCRAFT_USERNAME}
+              password: ${TESTCRAFT_PASSWORD}
+          - string:
+              scope: GLOBAL
+              id: testcraft-api-url
+              secret: ${TESTCRAFT_API_URL}
+          - string:
+              scope: GLOBAL
+              id: testcraft-keycloak-authority
+              secret: ${TESTCRAFT_KEYCLOAK_AUTHORITY}
+          - usernamePassword:
+              scope: GLOBAL
+              id: ghcr-credentials
+              username: ${GHCR_USER:unused}
+              password: ${GHCR_TOKEN:unused}
+
+# Each job's workspace is a symlink into the real repo, sitting under $JENKINS_HOME/workspace/
+# (JENKINS_HOME = TESTCRAFT_WORKSPACE_ROOT, both set by jenkins/controller/run.sh) - so this
+# just points each pipeline at the Jenkinsfile already sitting there - no SCM checkout involved.
+jobs:
+  - script: |
+      def workspaceRoot = System.getenv('TESTCRAFT_WORKSPACE_ROOT')
+      ['api', 'web', 'e2e'].each { name ->
+        pipelineJob(name) {
+          definition {
+            cps {
+              script(new File(workspaceRoot + '/workspace/' + name + '/jenkins/' + name + '/Jenkinsfile').text)
+              sandbox()
+            }
+          }
+        }
+      }

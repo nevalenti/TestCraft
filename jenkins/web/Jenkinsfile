@@ -92,6 +92,7 @@ pipeline {
                         env.TESTCRAFT_RUN_ID = startTestCraftRun(env.RUN_NAME)
                     } catch (err) {
                         echo "WARNING: could not start TestCraft run: ${err}"
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }
@@ -112,6 +113,7 @@ pipeline {
                         importTestCraftResults(env.RUN_NAME, 'apps/web/test-results/junit.xml')
                     } catch (err) {
                         echo "WARNING: TestCraft reporting failed: ${err}"
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }

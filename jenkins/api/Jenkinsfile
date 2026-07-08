@@ -13,6 +13,7 @@ def reportToTestCraft(String junitXml) {
                 -w /repo -v "\$WORKSPACE:/repo" \
                 -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
                 -e CI_PIPELINE_ID="${env.JOB_NAME}" -e CI_JOB_ID="${env.BUILD_NUMBER}" \
+                -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
                 ${env.CI_REPORTER_IMAGE} import \
                 --project-name TestCraft \
                 --junit-xml "${junitXml}" \
@@ -85,7 +86,7 @@ pipeline {
             }
             post {
                 always {
-                    junit testResults: 'apps/Api/test-results/junit.xml', allowEmptyResults: true
+                    junit testResults: 'apps/Api/test-results/*.junit.xml', allowEmptyResults: true
                 }
             }
         }
@@ -95,9 +96,10 @@ pipeline {
                 script {
                     try {
                         buildReporterImage()
-                        reportToTestCraft('apps/Api/test-results/junit.xml')
+                        reportToTestCraft('apps/Api/test-results/*.junit.xml')
                     } catch (err) {
                         echo "WARNING: TestCraft reporting failed: ${err}"
+                        currentBuild.result = 'UNSTABLE'
                     }
                 }
             }

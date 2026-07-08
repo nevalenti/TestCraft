@@ -1,7 +1,8 @@
-import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 
 import { fetchToken } from "./core/auth";
+import { resolveJunitXml } from "./core/junit";
 import * as log from "./core/log";
 import { createStateStore } from "./core/state";
 import {
@@ -143,9 +144,10 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
   }
 
   const junitXml = resolve(process.cwd(), opts.junitXml);
+  const xml = resolveJunitXml(opts.junitXml, process.cwd());
   const savedRunId = opts.runId ?? readState();
 
-  if (!existsSync(junitXml)) {
+  if (xml === null) {
     if (savedRunId) {
       log.info(
         `JUnit XML not found — completing run ${savedRunId} with no results`,
@@ -177,7 +179,7 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
   const job = await importResults(
     ctx,
     opts.runName,
-    readFileSync(junitXml, "utf8"),
+    xml,
     opts.source,
     savedRunId ?? undefined,
   );

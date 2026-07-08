@@ -12,11 +12,10 @@ import {
   findProjectId,
   importResults,
   pollJob,
+  resolveJunitXml,
   slugify,
   uploadAttachment,
 } from "@testcraft/ci-reporter";
-
-import { resolveJunitXml } from "./junit";
 
 const { readState, saveState, clearState } = createStateStore(
   `${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}`,

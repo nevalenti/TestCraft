@@ -44,10 +44,12 @@ const RunAvatar = ({
   executedByName,
   executedByAvatarUrl,
   source,
+  size = "size-6",
 }: {
   executedByName?: string | null;
   executedByAvatarUrl?: string | null;
   source?: string | null;
+  size?: string;
 }) => {
   const title = executedByName ?? source ?? "Unknown";
 
@@ -57,14 +59,17 @@ const RunAvatar = ({
         src={executedByAvatarUrl}
         alt={title}
         title={title}
-        className="size-7 shrink-0 rounded-full object-cover"
+        className={cn(size, "shrink-0 rounded-full object-cover")}
       />
     );
   }
 
   return (
     <span
-      className="flex size-7 shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums"
+      className={cn(
+        "flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums",
+        size,
+      )}
       title={title}
     >
       {getRunAvatarLabel(executedByName, source)}
@@ -108,7 +113,7 @@ export const DashboardPage = () => {
             .toSorted((a, b) =>
               compareDesc(new Date(a.createdAt), new Date(b.createdAt)),
             )
-            .slice(0, 5),
+            .slice(0, 10),
           recentlyCompletedRuns: allRuns
             .filter((run) => run.status === TestRunStatus.Completed)
             .toSorted((a, b) =>
@@ -117,7 +122,7 @@ export const DashboardPage = () => {
                 new Date(b.updatedAt ?? b.createdAt),
               ),
             )
-            .slice(0, 5),
+            .slice(0, 10),
           totalRuns: results.reduce(
             (sum, result) => sum + (result.data?.total ?? 0),
             0,
@@ -254,80 +259,85 @@ export const DashboardPage = () => {
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group relative flex flex-col gap-1 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
+                            className="group relative flex items-center gap-3 px-4 py-1.5 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
                           >
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={cn(
-                                  "flex size-7 shrink-0 items-center justify-center rounded-full",
-                                  hasResults
-                                    ? "bg-warning/12 text-warning"
-                                    : "bg-base-content/6 text-base-content/55",
-                                )}
-                              >
-                                {hasResults ? (
-                                  <BoltIcon className="size-3.5" />
-                                ) : (
-                                  <ClockIcon className="size-3.5" />
-                                )}
+                            <span
+                              className={cn(
+                                "relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
+                                hasResults
+                                  ? "bg-warning/12 text-warning"
+                                  : "bg-base-content/6 text-base-content/55",
+                              )}
+                            >
+                              {hasResults ? (
+                                <BoltIcon className="size-4 shrink-0 transition-opacity duration-150 group-hover:opacity-0" />
+                              ) : (
+                                <ClockIcon className="size-4 shrink-0 transition-opacity duration-150 group-hover:opacity-0" />
+                              )}
+                              <span className="absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                <RunAvatar
+                                  executedByName={run.executedByName}
+                                  executedByAvatarUrl={run.executedByAvatarUrl}
+                                  source={run.source}
+                                  size="size-8"
+                                />
                               </span>
+                            </span>
 
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-semibold">
-                                  {run.name}
-                                </p>
-                                <p className="mt-0.5 truncate text-xs text-base-content/70">
-                                  {project && (
-                                    <span className="font-medium text-base-content/85">
-                                      {project.name}
-                                    </span>
-                                  )}
-                                  {" · "}
-                                  {run.environment}
-                                  {" · "}
-                                  {formatDateTime(run.createdAt)}
-                                </p>
+                            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                              <div className="flex items-center gap-3">
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold">
+                                    {run.name}
+                                  </p>
+                                  <p className="mt-0.5 truncate text-xs text-base-content/70">
+                                    {project && (
+                                      <span className="font-medium text-base-content/85">
+                                        {project.name}
+                                      </span>
+                                    )}
+                                    {" · "}
+                                    {run.environment}
+                                    {" · "}
+                                    {formatDateTime(run.createdAt)}
+                                  </p>
+                                </div>
+
+                                <span className="inline-flex shrink-0 animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-warning uppercase">
+                                  Live
+                                </span>
                               </div>
 
-                              <RunAvatar
-                                executedByName={run.executedByName}
-                                executedByAvatarUrl={run.executedByAvatarUrl}
-                                source={run.source}
-                              />
-                              <span className="inline-flex shrink-0 animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-warning uppercase">
-                                Live
-                              </span>
-                            </div>
-
-                            <div className="ml-10 flex items-center gap-2.5">
-                              {hasResults ? (
-                                <>
-                                  <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-warning/15">
-                                    <div
-                                      className="h-full rounded-full bg-warning transition-all"
-                                      style={{ width: `${passRate}%` }}
-                                    />
-                                  </div>
-                                  <div className="flex shrink-0 items-center gap-1.5">
-                                    {passed > 0 && (
-                                      <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs font-semibold text-success tabular-nums">
-                                        {passed}
-                                        <CheckCircleIcon className="size-3" />
-                                      </span>
-                                    )}
-                                    {failed > 0 && (
-                                      <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs font-semibold text-error tabular-nums">
-                                        {failed}
-                                        <XCircleIcon className="size-3" />
-                                      </span>
-                                    )}
-                                  </div>
-                                </>
-                              ) : (
-                                <span className="text-[11px] text-base-content/55">
-                                  Waiting for results…
-                                </span>
-                              )}
+                              <div className="flex items-center gap-2.5">
+                                {hasResults ? (
+                                  <>
+                                    <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-warning/15">
+                                      <div
+                                        className="h-full rounded-full bg-warning transition-all"
+                                        style={{ width: `${passRate}%` }}
+                                      />
+                                    </div>
+                                    <div className="flex shrink-0 items-center gap-1.5">
+                                      {passed > 0 && (
+                                        <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs font-semibold text-success tabular-nums">
+                                          {passed}
+                                          <CheckCircleIcon className="size-3" />
+                                        </span>
+                                      )}
+                                      {failed > 0 && (
+                                        <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs font-semibold text-error tabular-nums">
+                                          {failed}
+                                          <XCircleIcon className="size-3" />
+                                        </span>
+                                      )}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <span className="text-[11px] text-base-content/55">
+                                    Waiting for results…
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </Link>
                         </li>
@@ -369,104 +379,109 @@ export const DashboardPage = () => {
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group flex flex-col gap-1 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
+                            className="group flex items-center gap-3 px-4 py-1.5 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
                           >
-                            <div className="flex items-center gap-3">
-                              <span
-                                className={cn(
-                                  "flex size-7 shrink-0 items-center justify-center rounded-full",
-                                  hasFailed
-                                    ? "bg-error/12 text-error"
-                                    : "bg-success/12 text-success",
-                                )}
-                              >
-                                {hasFailed ? (
-                                  <XCircleIcon className="size-3.5" />
-                                ) : (
-                                  <CheckCircleIcon className="size-3.5" />
-                                )}
-                              </span>
-
-                              <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-semibold">
-                                  {run.name}
-                                </p>
-                                <p className="mt-0.5 truncate text-xs text-base-content/70">
-                                  {project && (
-                                    <span className="font-medium text-base-content/85">
-                                      {project.name}
-                                    </span>
-                                  )}
-                                  {" · "}
-                                  {run.environment}
-                                  {" · "}
-                                  {formatDateTime(
-                                    run.updatedAt ?? run.createdAt,
-                                  )}
-                                </p>
-                              </div>
-
-                              <RunAvatar
-                                executedByName={run.executedByName}
-                                executedByAvatarUrl={run.executedByAvatarUrl}
-                                source={run.source}
-                              />
-                              {passRate !== null && (
-                                <span
-                                  className={cn(
-                                    "shrink-0 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
-                                    passRate === 100 &&
-                                      "bg-success/10 text-success",
-                                    passRate !== null &&
-                                      passRate < 100 &&
-                                      passRate >= 80 &&
-                                      "bg-warning/10 text-warning",
-                                    passRate !== null &&
-                                      passRate < 80 &&
-                                      "bg-error/10 text-error",
-                                  )}
-                                >
-                                  {passRate}%
-                                </span>
+                            <span
+                              className={cn(
+                                "relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
+                                hasFailed
+                                  ? "bg-error/12 text-error"
+                                  : "bg-success/12 text-success",
                               )}
-                            </div>
+                            >
+                              {hasFailed ? (
+                                <XCircleIcon className="size-5 shrink-0 transition-opacity duration-150 group-hover:opacity-0" />
+                              ) : (
+                                <CheckCircleIcon className="size-5 shrink-0 transition-opacity duration-150 group-hover:opacity-0" />
+                              )}
+                              <span className="absolute inset-0 opacity-0 transition-opacity duration-150 group-hover:opacity-100">
+                                <RunAvatar
+                                  executedByName={run.executedByName}
+                                  executedByAvatarUrl={run.executedByAvatarUrl}
+                                  source={run.source}
+                                  size="size-8"
+                                />
+                              </span>
+                            </span>
 
-                            <div className="ml-10 flex items-center gap-2.5">
-                              {summary && total > 0 ? (
-                                <>
-                                  <div
+                            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                              <div className="flex items-center gap-3">
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm font-semibold">
+                                    {run.name}
+                                  </p>
+                                  <p className="mt-0.5 truncate text-xs text-base-content/70">
+                                    {project && (
+                                      <span className="font-medium text-base-content/85">
+                                        {project.name}
+                                      </span>
+                                    )}
+                                    {" · "}
+                                    {run.environment}
+                                    {" · "}
+                                    {formatDateTime(
+                                      run.updatedAt ?? run.createdAt,
+                                    )}
+                                  </p>
+                                </div>
+
+                                {passRate !== null && (
+                                  <span
                                     className={cn(
-                                      "h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
-                                      hasFailed
-                                        ? "bg-error/20"
-                                        : "bg-success/20",
+                                      "shrink-0 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
+                                      passRate === 100 &&
+                                        "bg-success/10 text-success",
+                                      passRate !== null &&
+                                        passRate < 100 &&
+                                        passRate >= 80 &&
+                                        "bg-warning/10 text-warning",
+                                      passRate !== null &&
+                                        passRate < 80 &&
+                                        "bg-error/10 text-error",
                                     )}
                                   >
+                                    {passRate}%
+                                  </span>
+                                )}
+                              </div>
+
+                              <div className="flex items-center gap-2.5">
+                                {summary && total > 0 ? (
+                                  <>
                                     <div
-                                      className="h-full rounded-full bg-success transition-all"
-                                      style={{ width: `${passRate ?? 0}%` }}
-                                    />
-                                  </div>
-                                  <div className="flex shrink-0 items-center gap-1.5">
-                                    {passed > 0 && (
-                                      <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs text-success tabular-nums">
-                                        {passed}
-                                        <CheckCircleIcon className="size-3" />
-                                      </span>
-                                    )}
-                                    {(summary.failed ?? 0) > 0 && (
-                                      <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs text-error tabular-nums">
-                                        {summary.failed}
-                                        <XCircleIcon className="size-3" />
-                                      </span>
-                                    )}
-                                  </div>
-                                </>
-                              ) : (
-                                <span className="text-[11px] text-base-content/55">
-                                  No results logged
-                                </span>
-                              )}
+                                      className={cn(
+                                        "h-1 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
+                                        hasFailed
+                                          ? "bg-error/20"
+                                          : "bg-success/20",
+                                      )}
+                                    >
+                                      <div
+                                        className="h-full rounded-full bg-success transition-all"
+                                        style={{ width: `${passRate ?? 0}%` }}
+                                      />
+                                    </div>
+                                    <div className="flex shrink-0 items-center gap-1.5">
+                                      {passed > 0 && (
+                                        <span className="flex items-center gap-1 rounded-md bg-success/10 px-2 py-0.5 font-mono text-xs text-success tabular-nums">
+                                          {passed}
+                                          <CheckCircleIcon className="size-3" />
+                                        </span>
+                                      )}
+                                      {(summary.failed ?? 0) > 0 && (
+                                        <span className="flex items-center gap-1 rounded-md bg-error/10 px-2 py-0.5 font-mono text-xs text-error tabular-nums">
+                                          {summary.failed}
+                                          <XCircleIcon className="size-3" />
+                                        </span>
+                                      )}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <span className="text-[11px] text-base-content/55">
+                                    No results logged
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           </Link>
                         </li>

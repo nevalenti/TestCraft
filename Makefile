@@ -1,13 +1,17 @@
 .PHONY: up down clean \
         build load images deploy destroy status \
-        api web e2e openapi \
+        api-github web-github e2e-github \
+        api-gitlab web-gitlab e2e-gitlab \
+        jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins \
         format
 
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
 GATEWAY_IMAGE = testcraft-gateway
+JENKINS_IMAGE = testcraft-jenkins-controller
 KUBECTL = sudo k3s kubectl
 HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
+GITLAB_CI_LOCAL = gitlab-ci-local --ignore-predefined-vars CI,CI_PIPELINE_SOURCE --variable CI_PIPELINE_SOURCE=web --privileged --variable NODE_TLS_REJECT_UNAUTHORIZED=0
 
 up:
 	docker compose up -d
@@ -44,26 +48,43 @@ destroy:
 status:
 	$(KUBECTL) get all -n testcraft
 
-api:
+api-github:
 	act push -W .github/workflows/api.yml -j build-test --secret-file .secrets
 
-web:
+web-github:
 	act push -W .github/workflows/web.yml -j build-test --secret-file .secrets
 
-e2e:
+e2e-github:
 	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets; \
 	docker stop keycloak 2>/dev/null || true
 
-openapi:
-	@mkdir -p apps/Api/openapi
-	ASPNETCORE_ENVIRONMENT=Development dotnet run --no-launch-profile --project apps/Api/src/TestCraft.Api --urls http://localhost:5299 & \
-	echo $$! > /tmp/testcraft-api-openapi.pid; \
-	trap 'kill $$(cat /tmp/testcraft-api-openapi.pid) 2>/dev/null; rm -f /tmp/testcraft-api-openapi.pid' EXIT; \
-	for i in $$(seq 1 60); do \
-		curl -sf http://localhost:5299/api/docs/v1/swagger.json -o apps/Api/openapi/v1.json && break; \
-		sleep 1; \
-	done
-	@test -s apps/Api/openapi/v1.json
+api-gitlab:
+	$(GITLAB_CI_LOCAL) api:build-test
+
+web-gitlab:
+	$(GITLAB_CI_LOCAL) web:build-test
+
+e2e-gitlab:
+	$(GITLAB_CI_LOCAL) e2e
+
+jenkins-image:
+	docker build -t $(JENKINS_IMAGE) -f jenkins/controller/Dockerfile jenkins/controller
+
+jenkins-up:
+	jenkins/controller/run.sh
+
+jenkins-down:
+	docker stop testcraft-jenkins-controller 2>/dev/null || true
+
+api-jenkins:
+	jenkins/controller/run.sh api
+
+web-jenkins:
+	jenkins/controller/run.sh web
+
+e2e-jenkins:
+	jenkins/controller/run.sh e2e; \
+	docker stop keycloak testcraft-e2e-postgres 2>/dev/null || true
 
 format:
 	pnpm format

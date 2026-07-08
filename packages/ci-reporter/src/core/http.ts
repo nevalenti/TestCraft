@@ -19,12 +19,44 @@ export const assertOk = async (
   );
 };
 
+const RETRY_ATTEMPTS = 3;
+const RETRY_DELAY_MS = 1000;
+
+const sleep = (ms: number): Promise<void> =>
+  new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * fetch() wrapper that retries when the request never reaches the server
+ * (DNS failure, connection refused, transient blip) - not when the server
+ * responds with a non-2xx status, since a retry won't fix that.
+ */
+export const fetchWithRetry = async (
+  url: string | URL,
+  init: RequestInit,
+  errorContext: string,
+): Promise<Response> => {
+  for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
+    try {
+      return await fetch(url, init);
+    } catch (err) {
+      if (attempt === RETRY_ATTEMPTS) {
+        const message = err instanceof Error ? err.message : String(err);
+        const cause =
+          err instanceof Error && err.cause ? ` (${String(err.cause)})` : "";
+        throw new Error(`${errorContext}: ${message}${cause}`);
+      }
+      await sleep(RETRY_DELAY_MS * attempt);
+    }
+  }
+  throw new Error(errorContext);
+};
+
 export const fetchJson = async <T>(
   url: string | URL,
   init: RequestInit,
   errorContext: string,
 ): Promise<T> => {
-  const response = await fetch(url, init);
+  const response = await fetchWithRetry(url, init, errorContext);
   await assertOk(response, errorContext);
 
   return (await response.json()) as T;

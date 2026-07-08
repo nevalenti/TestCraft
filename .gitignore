@@ -1,4 +1,5 @@
 node_modules/
+.pnpm-store/
 
 dist/
 packages/*/dist/
@@ -19,6 +20,8 @@ apps/e2e/tests/.auth/
 .env.*
 !.env.example
 .secrets
+.gitlab-ci-local-variables.yml
+.gitlab-ci-local/
 
 *.log
 .eslintcache
@@ -30,6 +33,7 @@ apps/e2e/tests/.auth/
 bin/
 obj/
 *.user
+.nuget/
 
 infrastructure/gateway/tls/
 infrastructure/helm/testcraft/values.secrets.yaml

@@ -4,6 +4,9 @@ variables:
 api:build-test:
   stage: build-test
   image: mcr.microsoft.com/dotnet/sdk:10.0
+  services:
+    - name: docker:27-dind
+      alias: docker
   timeout: 15m
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
@@ -14,8 +17,10 @@ api:build-test:
     NUGET_PACKAGES: $CI_PROJECT_DIR/.nuget/packages
     TESTCRAFT_PROJECT_NAME: TestCraft
     TESTCRAFT_SOURCE: api
-    TESTCRAFT_JUNIT_XML: apps/Api/test-results/junit.xml
+    TESTCRAFT_JUNIT_XML: apps/Api/test-results/*.junit.xml
     TESTCRAFT_RUN_NAME: "#$CI_PIPELINE_IID api ($CI_COMMIT_REF_NAME)"
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
   cache:
     key:
       files:
@@ -45,7 +50,7 @@ api:build-test:
   artifacts:
     when: always
     reports:
-      junit: apps/Api/test-results/junit.xml
+      junit: apps/Api/test-results/*.junit.xml
     paths:
       - apps/Api/test-results/
     expire_in: 7 days
