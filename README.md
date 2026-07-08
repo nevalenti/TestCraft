@@ -1,17 +1,18 @@
 <div align="center">
 
-# 🧪 TestCraft
+# <img src=".github/assets/logo.svg" width="32" height="32" alt="TestCraft logo" align="center" /> TestCraft
 
-**A self-hosted alternative to TestRail/Xray**
-
-Organize projects, suites, and test cases · import JUnit/Allure reports · track runs in real time · get notified via email or webhooks
+**A self-hosted, CI-native alternative to TestRail/Xray**
 
 [![API](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml)
 [![Web](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml)
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<br>
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](apps/web)
+<br>
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+<br>
 
 </div>
 
@@ -19,30 +20,12 @@ Organize projects, suites, and test cases · import JUnit/Allure reports · trac
 
 ## Contents
 
-- [Built With](#built-with)
 - [Features](#features)
+- [Built With](#built-with)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
 - [Production](#production)
 - [License](#license)
-
----
-
-## Built With
-
-| Layer          | Technology                        |
-| -------------- | --------------------------------- |
-| Frontend       | React 19                          |
-| Backend        | ASP.NET Core (.NET 10)            |
-| Database       | PostgreSQL                        |
-| Cache          | Redis                             |
-| Messaging      | MassTransit + RabbitMQ            |
-| Real-time      | SignalR                           |
-| Object storage | MinIO                             |
-| Auth           | Keycloak                          |
-| Reverse proxy  | YARP                              |
-| Observability  | Grafana · Prometheus · Loki · Seq |
-| Deployment     | Helm on k3s                       |
 
 ---
 
@@ -81,43 +64,61 @@ Organize projects, suites, and test cases · import JUnit/Allure reports · trac
 
 ---
 
+## Built With
+
+| Layer          | Technology                        |
+| -------------- | --------------------------------- |
+| Frontend       | React 19                          |
+| Backend        | ASP.NET Core (.NET 10)            |
+| Database       | PostgreSQL                        |
+| Cache          | Redis                             |
+| Messaging      | MassTransit + RabbitMQ            |
+| Real-time      | SignalR                           |
+| Object storage | MinIO                             |
+| Auth           | Keycloak                          |
+| Reverse proxy  | YARP                              |
+| Observability  | Grafana · Prometheus · Loki · Seq |
+| Deployment     | Helm on k3s                       |
+
+---
+
 ## Architecture
 
 ```
 apps/
   Api/src/
-    TestCraft.Domain            # Entities and domain events
-    TestCraft.Application       # CQRS commands/queries (MediatR) and application interfaces
-    TestCraft.Infrastructure     # EF Core, Redis, MinIO, MailKit, and MassTransit integrations
-    TestCraft.Api                 # ASP.NET Core controllers and SignalR hubs
-  Gateway/src/                    # YARP reverse proxy fronting Web and API in production
-  web/                             # React SPA
-    src/api/                      # Axios clients, one file per domain
-    src/hooks/                    # TanStack Query hooks, one file per domain
-    src/stores/                   # Zustand stores (breadcrumbs, notifications, view mode)
-    src/pages/                    # Route components that consume hooks only
-    src/layout/                   # App shell: header, sidebar, account menu, breadcrumbs
-    src/components/               # Shared components and ui/ primitives
-    src/auth/                     # Keycloak provider and client
-    src/contexts/                 # React context providers (theme)
-    src/lib/                      # Shared helpers: cn, env, format, cookie, notify
-    src/types/                    # Shared frontend types
-    src/__tests__/                # Vitest unit and component tests
-  e2e/                             # Playwright end-to-end suite
+    TestCraft.Domain         # Entities, domain events
+    TestCraft.Application    # CQRS (MediatR)
+    TestCraft.Infrastructure # EF Core, Redis, MinIO, MailKit, MassTransit
+    TestCraft.Api            # Controllers, SignalR hubs
+  Gateway/src/               # YARP reverse proxy (Web + API)
+  web/                       # React SPA
+    src/api/                 # Axios clients, one per domain
+    src/hooks/               # TanStack Query hooks, one per domain
+    src/stores/              # Zustand stores
+    src/pages/               # Route components (hooks only)
+    src/layout/              # App shell
+    src/components/          # Shared components, ui/ primitives
+    src/auth/                # Keycloak provider
+    src/contexts/            # React contexts (theme)
+    src/lib/                 # Shared helpers
+    src/types/               # Shared frontend types
+    src/__tests__/           # Vitest tests
+  e2e/                       # Playwright suite
 packages/
-  types/                          # Shared TypeScript types, published to web
-  ci-reporter/                    # CI results reporter (npx/Docker) for GitLab CI and other non-GitHub CI systems
+  types/                     # Shared TS types, published to web
+  ci-reporter/               # CI reporter (npx/Docker) for non-GitHub CI
 infrastructure/
-  helm/                           # Helm chart for Kubernetes deployment
-  keycloak/                       # Realm configuration and custom login theme
-  grafana/                        # Dashboard provisioning
-  prometheus/                     # Scrape configuration
+  helm/                      # Helm chart
+  keycloak/                  # Realm config, login theme
+  grafana/                   # Dashboard provisioning
+  prometheus/                # Scrape config
 .github/
-  actions/testcraft/              # GitHub Action that reports CI results into TestCraft
-  workflows/                      # GitHub Actions pipelines for the API, web, and E2E suites
-jenkins/                          # Example Jenkins pipelines (API, web, E2E) using the CI reporter CLI
-.gitlab-ci.yml                    # Example GitLab CI pipelines (API, web, E2E) using the CI reporter CLI
-.gitlab/ci/                       # Per-suite GitLab CI job definitions
+  actions/testcraft/         # GitHub Action reporting CI results
+  workflows/                 # GitHub Actions pipelines
+jenkins/                     # Example Jenkins pipelines
+.gitlab-ci.yml               # Example GitLab CI pipelines
+.gitlab/ci/                  # Per-suite GitLab CI jobs
 ```
 
 ---
