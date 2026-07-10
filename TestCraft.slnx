@@ -4,11 +4,13 @@
     <Project Path="apps/Api/src/TestCraft.Application/TestCraft.Application.csproj" />
     <Project Path="apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj" />
     <Project Path="apps/Api/src/TestCraft.Infrastructure/TestCraft.Infrastructure.csproj" />
+    <Project Path="apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="apps/Api/tests/TestCraft.Api.IntegrationTests/TestCraft.Api.IntegrationTests.csproj" />
     <Project Path="apps/Api/tests/TestCraft.Domain.UnitTests/TestCraft.Domain.UnitTests.csproj" />
     <Project Path="apps/Api/tests/TestCraft.Application.UnitTests/TestCraft.Application.UnitTests.csproj" />
+    <Project Path="apps/Gateway/tests/TestCraft.Gateway.Tests/TestCraft.Gateway.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
     <Project Path="apps/Api/tools/TestCraft.VSTestLogger/TestCraft.VSTestLogger.csproj" />

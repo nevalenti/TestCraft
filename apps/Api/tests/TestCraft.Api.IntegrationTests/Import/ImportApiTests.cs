@@ -95,6 +95,46 @@ public class ImportApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task ImportJUnit_WithEmptyNameProvided_ReturnsValidationProblem()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/import/junit",
+            new ImportJUnit.Command
+            {
+                Xml = JUnitXml,
+                Environment = "ci",
+                Name = "",
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task ImportJUnit_WithEmptySourceProvided_ReturnsValidationProblem()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/import/junit",
+            new ImportJUnit.Command
+            {
+                Xml = JUnitXml,
+                Environment = "ci",
+                Source = "",
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
     public async Task ImportJUnit_OtherUsersProject_ReturnsNotFound()
     {
         var ownerClient = CreateClient(Guid.NewGuid());
@@ -198,5 +238,43 @@ public class ImportApiTests(ApiFactory factory)
         var run = await client.GetRunAsync(project.Id, completedJob.TestRunId!.Value);
         run.Name.Should().Be(ImportAllure.Command.DefaultRunName);
         run.Status.Should().Be(TestRunStatus.Completed);
+    }
+
+    [Fact]
+    public async Task GetById_NonExistentJob_ReturnsNotFound()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/import/{Guid.NewGuid()}"
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task GetById_OtherUsersProject_ReturnsNotFound()
+    {
+        var owner = CreateClient(Guid.NewGuid());
+        var other = CreateClient(Guid.NewGuid());
+
+        var project = await owner.CreateProjectAsync();
+        var job = await (
+            await owner.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/import/junit",
+                new ImportJUnit.Command
+                {
+                    Xml = JUnitXml,
+                    Environment = "ci",
+                    Name = "Owner Run",
+                }
+            )
+        ).Content.ReadFromJsonAsync<ImportJobResponse>(ApiTestHelpers.JsonOptions);
+
+        var response = await other.GetAsync($"/api/v1/projects/{project.Id}/import/{job!.Id}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 }

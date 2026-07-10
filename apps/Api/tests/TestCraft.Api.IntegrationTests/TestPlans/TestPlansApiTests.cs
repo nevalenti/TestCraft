@@ -252,4 +252,136 @@ public class TestPlansApiTests(ApiFactory factory)
         plans.Should().Contain(p => p.Name == "Plan A");
         plans.Should().Contain(p => p.Name == "Plan B");
     }
+
+    [Fact]
+    public async Task ReorderCases_ChangesCaseOrder()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var case1 = await client.CreateCaseAsync(project.Id, suite.Id, "Case 1");
+        var case2 = await client.CreateCaseAsync(project.Id, suite.Id, "Case 2");
+        var plan = await client.CreatePlanAsync(project.Id);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
+            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case1.Id }
+        );
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
+            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case2.Id }
+        );
+
+        var reorderResponse = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
+            new ReorderPlanCases.Command
+            {
+                TestPlanId = Guid.Empty,
+                Cases =
+                [
+                    new ReorderPlanCases.PlanCaseOrder(case2.Id, 0),
+                    new ReorderPlanCases.PlanCaseOrder(case1.Id, 1),
+                ],
+            }
+        );
+        reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var detail = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
+        ).Content.ReadFromJsonAsync<TestPlanDetailResponse>(ApiTestHelpers.JsonOptions);
+
+        detail!.Cases.Should().HaveCount(2);
+        detail.Cases[0].TestCaseId.Should().Be(case2.Id);
+        detail.Cases[1].TestCaseId.Should().Be(case1.Id);
+    }
+
+    [Fact]
+    public async Task ReorderCases_EmptyList_LeavesExistingOrderUnchanged()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Case 1");
+        var plan = await client.CreatePlanAsync(project.Id);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
+            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+        );
+
+        var reorderResponse = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
+            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+        );
+        reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var detail = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
+        ).Content.ReadFromJsonAsync<TestPlanDetailResponse>(ApiTestHelpers.JsonOptions);
+
+        detail!.Cases.Should().ContainSingle(c => c.TestCaseId == testCase.Id);
+    }
+
+    [Fact]
+    public async Task ReorderCases_UnknownCaseId_IsIgnored()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Case 1");
+        var plan = await client.CreatePlanAsync(project.Id);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
+            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+        );
+
+        var reorderResponse = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
+            new ReorderPlanCases.Command
+            {
+                TestPlanId = Guid.Empty,
+                Cases = [new ReorderPlanCases.PlanCaseOrder(Guid.NewGuid(), 5)],
+            }
+        );
+        reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var detail = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
+        ).Content.ReadFromJsonAsync<TestPlanDetailResponse>(ApiTestHelpers.JsonOptions);
+
+        detail!.Cases.Should().ContainSingle(c => c.TestCaseId == testCase.Id);
+    }
+
+    [Fact]
+    public async Task ReorderCases_NonExistentPlan_ReturnsNotFound()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{Guid.NewGuid()}/cases/order",
+            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task ReorderCases_OtherUsersProject_ReturnsNotFound()
+    {
+        var owner = CreateClient(Guid.NewGuid());
+        var other = CreateClient(Guid.NewGuid());
+
+        var project = await owner.CreateProjectAsync();
+        var plan = await owner.CreatePlanAsync(project.Id);
+
+        var response = await other.PutAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
+            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

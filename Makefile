@@ -1,4 +1,4 @@
-.PHONY: up down clean \
+.PHONY: up down \
         build load images deploy destroy status \
         api-github web-github e2e-github \
         api-gitlab web-gitlab e2e-gitlab \

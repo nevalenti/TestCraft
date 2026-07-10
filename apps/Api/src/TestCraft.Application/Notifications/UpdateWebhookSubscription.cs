@@ -45,7 +45,9 @@ public static class UpdateWebhookSubscription
             RuleFor(x => x.Events).NotEmpty();
         }
 
-        private static bool BeValidUri(string url) => Uri.TryCreate(url, UriKind.Absolute, out _);
+        private static bool BeValidUri(string url) =>
+            Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 
     public sealed class Handler(IApplicationDbContext context)

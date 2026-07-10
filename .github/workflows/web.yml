@@ -82,7 +82,7 @@ jobs:
           source: web
 
       - name: Test
-        run: pnpm --filter testcraft-web run test
+        run: pnpm --filter testcraft-web run test:coverage
         env:
           TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
           TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}

@@ -2,6 +2,7 @@
   "name": "@testcraft/ci-reporter",
   "version": "0.1.0",
   "description": "Reports CI test results (JUnit) into TestCraft from any CI system, e.g. GitLab CI",
+  "type": "module",
   "main": "./src/core/index.ts",
   "types": "./src/core/index.ts",
   "exports": {
@@ -14,13 +15,18 @@
     "dist"
   ],
   "scripts": {
-    "build": "esbuild src/cli.ts --bundle --platform=node --target=node24 --outfile=dist/cli.js --minify --banner:js=\"#!/usr/bin/env node\"",
+    "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node24 --outfile=dist/cli.js --minify --banner:js=\"#!/usr/bin/env node\"",
     "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
+    "@vitest/coverage-v8": "^4.1.9",
     "esbuild": "^0.25.0",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.9"
   }
 }

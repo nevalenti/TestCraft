@@ -328,4 +328,122 @@ public class TestRunsApiTests(ApiFactory factory)
 
         final!.Status.Should().Be(TestRunStatus.Completed);
     }
+
+    [Fact]
+    public async Task AppendLogs_Then_GetLogs_ReturnsLogsInOrder()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+
+        var appendResponse = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs",
+            new AppendRunLogs.Command { Lines = ["first line"] }
+        );
+        appendResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs",
+            new AppendRunLogs.Command { Lines = ["second line"] }
+        );
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs",
+            new AppendRunLogs.Command { Lines = ["third line"] }
+        );
+
+        var getResponse = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs"
+        );
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var logs = await getResponse.Content.ReadFromJsonAsync<List<string>>(
+            ApiTestHelpers.JsonOptions
+        );
+        logs.Should().Equal("first line", "second line", "third line");
+    }
+
+    [Fact]
+    public async Task AppendLogs_EmptyLines_IsNoOp()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+
+        var appendResponse = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs",
+            new AppendRunLogs.Command { Lines = [] }
+        );
+        appendResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+        var getResponse = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs"
+        );
+        var logs = await getResponse.Content.ReadFromJsonAsync<List<string>>(
+            ApiTestHelpers.JsonOptions
+        );
+        logs.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetLogs_NewRun_ReturnsEmptyList()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+
+        var response = await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/logs");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var logs = await response.Content.ReadFromJsonAsync<List<string>>(
+            ApiTestHelpers.JsonOptions
+        );
+        logs.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetLogs_NonExistentRun_ReturnsNotFound()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/runs/{Guid.NewGuid()}/logs"
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task AppendLogs_NonExistentRun_ReturnsNotFound()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{Guid.NewGuid()}/logs",
+            new AppendRunLogs.Command { Lines = ["line"] }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+    }
+
+    [Fact]
+    public async Task AppendLogs_OtherUsersProject_ReturnsNotFound()
+    {
+        var ownerClient = CreateClient(Guid.NewGuid());
+        var otherClient = CreateClient(Guid.NewGuid());
+
+        var project = await ownerClient.CreateProjectAsync();
+        var run = await ownerClient.CreateRunAsync(project.Id);
+
+        var response = await otherClient.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/logs",
+            new AppendRunLogs.Command { Lines = ["snooping"] }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
 }

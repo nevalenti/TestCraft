@@ -92,7 +92,7 @@ jobs:
           source: api
 
       - name: Test
-        run: dotnet test TestCraft.slnx --no-build --configuration Release
+        run: dotnet test TestCraft.slnx --no-build --configuration Release --collect:"XPlat Code Coverage" --settings apps/Api/coverlet.runsettings
         env:
           TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
           TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}

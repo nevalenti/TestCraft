@@ -1,6 +1,8 @@
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.AspNetCore.Mvc.Testing;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Api.System;
 
@@ -79,6 +81,59 @@ public class SystemApiTests(ApiFactory factory)
     public async Task GetMetrics_NoTokenConfigured_ReturnsPrometheusText()
     {
         var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/metrics");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("text/plain");
+    }
+
+    private HttpClient CreateClientWithMetricsToken(string token)
+    {
+        Environment.SetEnvironmentVariable("METRICS_TOKEN", token);
+        try
+        {
+            var tokenFactory = factory.WithWebHostBuilder(_ => { });
+            return tokenFactory.CreateClient();
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("METRICS_TOKEN", null);
+        }
+    }
+
+    [Fact]
+    public async Task GetMetrics_TokenConfigured_WithoutAuth_ReturnsUnauthorized()
+    {
+        var client = CreateClientWithMetricsToken("secret-token");
+
+        var response = await client.GetAsync("/api/metrics");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetMetrics_TokenConfigured_WithWrongToken_ReturnsUnauthorized()
+    {
+        var client = CreateClientWithMetricsToken("secret-token");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            "wrong-token"
+        );
+
+        var response = await client.GetAsync("/api/metrics");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetMetrics_TokenConfigured_WithCorrectToken_ReturnsPrometheusText()
+    {
+        var client = CreateClientWithMetricsToken("secret-token");
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            "secret-token"
+        );
 
         var response = await client.GetAsync("/api/metrics");
 

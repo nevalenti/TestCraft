@@ -34,7 +34,7 @@ interface Options {
   dotenvPath?: string;
 }
 
-const parseArgs = (argv: string[]): Options => {
+export const parseArgs = (argv: string[]): Options => {
   const [maybeCommand, ...rest] = argv;
   const command =
     maybeCommand && !maybeCommand.startsWith("--") ? maybeCommand : "import";
@@ -236,7 +236,9 @@ const run = async (): Promise<void> => {
   await handleImport(ctx, opts);
 };
 
-run().catch((err) => {
-  log.error(err instanceof Error ? err.message : String(err));
-  process.exitCode = 1;
-});
+if (import.meta.url === `file://${process.argv[1]}`) {
+  run().catch((err) => {
+    log.error(err instanceof Error ? err.message : String(err));
+    process.exitCode = 1;
+  });
+}

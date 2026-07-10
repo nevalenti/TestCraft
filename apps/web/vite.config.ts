@@ -63,6 +63,13 @@ export default defineConfig({
       provider: "v8",
       reporter: ["text", "html", "lcov"],
       reportsDirectory: "./test-results/coverage",
+      // Starting ratchet for CI enforcement — raise as coverage improves, never lower.
+      thresholds: {
+        lines: 30,
+        statements: 30,
+        functions: 30,
+        branches: 25,
+      },
     },
   },
 });
