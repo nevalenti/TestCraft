@@ -35,7 +35,7 @@ public class UpdateWebhookSubscriptionValidatorTests
     }
 
     [Fact]
-    public void NonHttpAbsoluteUrl_PassesValidation()
+    public void NonHttpAbsoluteUrl_FailsValidation()
     {
         var result = _validator.TestValidate(
             ValidCommand() with
@@ -43,7 +43,7 @@ public class UpdateWebhookSubscriptionValidatorTests
                 Url = "ftp://example.com/webhook",
             }
         );
-        result.ShouldNotHaveValidationErrorFor(x => x.Url);
+        result.ShouldHaveValidationErrorFor(x => x.Url);
     }
 
     [Fact]
