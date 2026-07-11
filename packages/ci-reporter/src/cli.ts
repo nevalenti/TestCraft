@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
+import { parseArgs as parseNodeArgs } from "node:util";
 
 import { fetchToken } from "./core/auth";
 import { resolveJunitXml } from "./core/junit";
@@ -34,29 +35,47 @@ interface Options {
   dotenvPath?: string;
 }
 
+const FLAG_OPTIONS = {
+  "api-url": { type: "string" },
+  username: { type: "string" },
+  password: { type: "string" },
+  "project-name": { type: "string" },
+  "run-name": { type: "string" },
+  "junit-xml": { type: "string" },
+  "keycloak-authority": { type: "string" },
+  source: { type: "string" },
+  "screenshots-dir": { type: "string" },
+  "run-id": { type: "string" },
+  dotenv: { type: "string" },
+} as const;
+
+const COMMANDS = ["start", "import"] as const;
+
 export const parseArgs = (argv: string[]): Options => {
   const [maybeCommand, ...rest] = argv;
-  const command =
-    maybeCommand && !maybeCommand.startsWith("--") ? maybeCommand : "import";
-  const flagArgs = maybeCommand === command ? rest : argv;
+  const hasCommand =
+    maybeCommand !== undefined && !maybeCommand.startsWith("-");
+  const command = hasCommand ? maybeCommand : "import";
+  const flagArgs = hasCommand ? rest : argv;
 
-  const values = new Map<string, string>();
-  for (let i = 0; i < flagArgs.length; i++) {
-    const arg = flagArgs[i];
-    if (!arg?.startsWith("--")) continue;
-    const key = arg.slice(2);
-    const next = flagArgs[i + 1];
-    if (next === undefined || next.startsWith("--")) {
-      values.set(key, "true");
-    } else {
-      values.set(key, next);
-      i++;
-    }
+  if (!COMMANDS.includes(command as (typeof COMMANDS)[number])) {
+    throw new Error(
+      `Unknown command "${command}" — expected one of: ${COMMANDS.join(", ")}`,
+    );
   }
 
+  const { values } = parseNodeArgs({
+    args: flagArgs,
+    options: FLAG_OPTIONS,
+    strict: true,
+    allowPositionals: false,
+  });
+
   const env = process.env;
-  const opt = (key: string, envVar: string): string | undefined =>
-    values.get(key) ?? env[envVar] ?? undefined;
+  const opt = (
+    key: keyof typeof FLAG_OPTIONS,
+    envVar: string,
+  ): string | undefined => values[key] ?? env[envVar] ?? undefined;
 
   return {
     command,
@@ -115,12 +134,15 @@ const uploadScreenshots = async (
 ): Promise<void> => {
   log.info("Uploading screenshots as attachments…");
   const results = await fetchAllResults(ctx, runId);
+  const screenshotDirs = readdirSync(screenshotsDir, {
+    withFileTypes: true,
+  }).filter((d) => d.isDirectory());
 
   let uploaded = 0;
   for (const result of results) {
     const slug = slugify(result.testCaseName);
-    const pngs = readdirSync(screenshotsDir, { withFileTypes: true })
-      .filter((d) => d.isDirectory() && d.name.toLowerCase().includes(slug))
+    const pngs = screenshotDirs
+      .filter((d) => d.name.toLowerCase().includes(slug))
       .flatMap((d) =>
         readdirSync(join(screenshotsDir, d.name))
           .filter((f) => f.endsWith(".png"))

@@ -79,16 +79,19 @@ describe("parseArgs", () => {
     });
   });
 
-  describe("parseArgs — given a flag with no following value (or followed by another flag) — treats it as a boolean 'true'", () => {
-    it("sets the flag to 'true' when it is the last argument", () => {
-      const opts = parseArgs(["--api-url", "https://x.test", "--dotenv"]);
-      expect(opts.dotenvPath).toBe("true");
+  describe("parseArgs — given a flag with no following value — throws", () => {
+    it("throws when the flag is the last argument", () => {
+      expect(() =>
+        parseArgs(["--api-url", "https://x.test", "--dotenv"]),
+      ).toThrow();
     });
+  });
 
-    it("sets the flag to 'true' when immediately followed by another flag", () => {
-      const opts = parseArgs(["--dotenv", "--api-url", "https://x.test"]);
-      expect(opts.dotenvPath).toBe("true");
-      expect(opts.apiUrl).toBe("https://x.test");
+  describe("parseArgs — given an unknown command — throws", () => {
+    it("throws for a typo'd command", () => {
+      expect(() =>
+        parseArgs(["star", "--api-url", "https://x.test"]),
+      ).toThrow();
     });
   });
 });
