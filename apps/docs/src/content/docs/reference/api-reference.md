@@ -38,8 +38,7 @@ access, see [CI Integration](/docs/guides/ci-integration/).
 ## Resource shape
 
 Everything under `/api/v1` nests below `/projects/{projectId}`, matching the
-"everything lives inside a project" model described in
-[Projects, Suites & Test Cases](/docs/using-testcraft/projects-and-suites/):
+"everything lives inside a project" model:
 
 | Resource                                  | Path prefix                                                                                                                       |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -54,7 +53,7 @@ Everything under `/api/v1` nests below `/projects/{projectId}`, matching the
 | Analytics (trend, flaky, breakdown, diff) | `/api/v1/projects/{projectId}/analytics`                                                                                          |
 | Notifications (webhooks, emails)          | `/api/v1/projects/{projectId}/notifications`                                                                                      |
 | Members                                   | `/api/v1/projects/{projectId}/members`                                                                                            |
-| API tokens                                | `/api/v1/projects/{projectId}/tokens` (see [Settings & Access](/docs/using-testcraft/settings-and-access/))                       |
+| API tokens                                | `/api/v1/projects/{projectId}/tokens`                                                                                             |
 | Public share links                        | `/api/v1/projects/{projectId}/runs/{runId}/share` to create, `/api/v1/share/{token}` to read                                      |
 
 ## Operational endpoints

@@ -15,32 +15,32 @@ apps/
   Gateway/src/               # YARP reverse proxy (Web + API)
   web/                       # React SPA
     src/api/                 # Axios clients, one per domain
-    src/hooks/               # TanStack Query hooks, one per domain
+    src/hooks/                # TanStack Query hooks, one per domain
     src/stores/               # Zustand stores
     src/pages/                # Route components (hooks only)
-    src/layout/                # App shell
-    src/components/            # Shared components, ui/ primitives
-    src/auth/                  # Keycloak provider
-    src/contexts/               # React contexts (theme)
-    src/lib/                    # Shared helpers
-    src/types/                  # Shared frontend types
-    src/__tests__/              # Vitest tests
+    src/layout/               # App shell
+    src/components/           # Shared components, ui/ primitives
+    src/auth/                 # Keycloak provider
+    src/contexts/             # React contexts (theme)
+    src/lib/                  # Shared helpers
+    src/types/                # Shared frontend types
+    src/__tests__/            # Vitest tests
   e2e/                       # Playwright suite
   docs/                      # This site (Starlight)
 packages/
   types/                     # Shared TS types, published to web
-  ci-reporter/                # CI reporter (npx/Docker) for non-GitHub CI
+  ci-reporter/               # CI reporter (npx/Docker) for non-GitHub CI
 infrastructure/
   helm/                      # Helm chart
-  keycloak/                   # Realm config, login theme
-  grafana/                    # Dashboard provisioning
-  prometheus/                 # Scrape config
+  keycloak/                  # Realm config, login theme
+  grafana/                   # Dashboard provisioning
+  prometheus/                # Scrape config
 .github/
-  actions/testcraft/          # CI reporter for GitHub Actions
-  workflows/                  # GitHub Actions pipelines
+  actions/testcraft/         # CI reporter for GitHub Actions
+  workflows/                 # GitHub Actions pipelines
 jenkins/                     # Jenkins pipelines
-.gitlab-ci.yml                # GitLab CI pipelines
-.gitlab/ci/                   # GitLab CI pipelines
+.gitlab-ci.yml               # GitLab CI pipelines
+.gitlab/ci/                  # GitLab CI pipelines
 ```
 
 ## Why these boundaries
@@ -68,8 +68,7 @@ the Gateway never need it.
 Work that shouldn't block a request — JUnit/Allure import parsing, dispatching
 notifications when a run's status changes — is handed off via RabbitMQ using
 MassTransit: an endpoint publishes a message and returns immediately (e.g.
-`202 Accepted` with a job id for imports, see
-[Test Runs & Results](/docs/using-testcraft/test-runs-and-results/#creating-and-importing)),
+`202 Accepted` with a job id for imports),
 and a consumer in `TestCraft.Application` (`Import/Consumers/*`,
 `Notifications/Consumers/RunStatusChangedConsumer`) does the actual work
 asynchronously.

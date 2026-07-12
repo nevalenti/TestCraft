@@ -12,11 +12,17 @@ git clone https://github.com/nevalenti/TestCraft.git
 cd TestCraft
 pnpm install
 cp .env.example .env
+```
+
+`APPLY_MIGRATIONS` defaults to `false` in `.env.example`, so set it to `true`
+in `.env` before starting the stack, or the database schema stays empty and
+the API fails on first request:
+
+```bash
 make up
 ```
 
-Keycloak imports the `testcraft` realm automatically on first start. The API
-applies migrations on startup when `APPLY_MIGRATIONS=true` is set in `.env`.
+Keycloak imports the `testcraft` realm automatically on first start.
 
 Then in separate terminals:
 
@@ -41,7 +47,6 @@ pnpm --filter testcraft-web dev
 | Grafana    | http://localhost:3001          |
 | Prometheus | http://localhost:9090          |
 
-Once Web and API are both up, sign in and head to
-[Projects, Suites & Test Cases](/docs/using-testcraft/projects-and-suites/)
-to start using TestCraft. If something in this stack isn't behaving, check
+Once Web and API are both up, sign in and start creating projects, suites,
+and test cases. If something in this stack isn't behaving, check
 [Troubleshooting](/docs/guides/troubleshooting/) before digging further.

@@ -50,8 +50,7 @@ runner can reach `api-url` but not the Keycloak host that endpoint returns
 
 - Webhooks only fire for events the subscription's checkboxes include
   (`RunCompleted`, `FailureThresholdExceeded`) and only while the
-  subscription is active — see
-  [Settings & Access](/docs/using-testcraft/settings-and-access/#notifications).
+  subscription is active.
 - Delivery failures (non-2xx response, timeout, DNS error) are logged
   server-side and **not retried** — there's no dead-letter queue or backoff,
   so an endpoint that's down when the event fires simply misses it.

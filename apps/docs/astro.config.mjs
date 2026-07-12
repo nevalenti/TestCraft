@@ -6,6 +6,9 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://testcraft.dev",
   base: "/docs",
+  redirects: {
+    "/": "/docs/guides/getting-started/",
+  },
   integrations: [
     starlight({
       title: "TestCraft",
@@ -26,14 +29,6 @@ export default defineConfig({
         },
       ],
       sidebar: [
-        {
-          label: "Introduction",
-          items: [{ label: "Introduction", slug: "index" }],
-        },
-        {
-          label: "Using TestCraft",
-          items: [{ autogenerate: { directory: "using-testcraft" } }],
-        },
         {
           label: "Guides",
           items: [{ autogenerate: { directory: "guides" } }],
