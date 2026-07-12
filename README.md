@@ -6,6 +6,8 @@
 
 [![API](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml)
 [![Web](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml)
+[![Gateway](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml)
+[![Docs](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml)
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 <br>
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
@@ -24,6 +26,7 @@
 - [Built With](#built-with)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
+- [Docs](#docs)
 - [Production](#production)
 - [License](#license)
 
@@ -92,6 +95,7 @@ apps/
     TestCraft.Infrastructure # EF Core, Redis, MinIO, MailKit, MassTransit
     TestCraft.Api            # Controllers, SignalR hubs
   Gateway/src/               # YARP reverse proxy (Web + API)
+  docs/                      # Astro Starlight documentation site
   web/                       # React SPA
     src/api/                 # Axios clients, one per domain
     src/hooks/               # TanStack Query hooks, one per domain
@@ -117,8 +121,8 @@ infrastructure/
   actions/testcraft/         # CI reporter for GitHub Actions
   workflows/                 # GitHub Actions pipelines
 jenkins/                     # Jenkins pipelines
-.gitlab-ci.yml               # GitLab CI pipelines
-.gitlab/ci/                  # GitLab CI pipelines
+.gitlab-ci.yml               # GitLab CI entry pipeline
+.gitlab/ci/                  # GitLab CI includes (API, web, E2E)
 ```
 
 ---
@@ -150,6 +154,7 @@ pnpm --filter testcraft-web dev
 | Service    | URL                           |
 | ---------- | ----------------------------- |
 | Web        | http://localhost:3000         |
+| Docs       | http://localhost:4321         |
 | API        | http://localhost:5000         |
 | Swagger UI | http://localhost:5000/swagger |
 | RabbitMQ   | http://localhost:15672        |
@@ -165,7 +170,7 @@ pnpm --filter testcraft-web dev
 ```bash
 dotnet test TestCraft.slnx         # API (xUnit + Testcontainers)
 pnpm --filter testcraft-web test   # Web (Vitest)
-make e2e                           # End-to-end (Playwright via act)
+make e2e-github                    # End-to-end (Playwright via act)
 ```
 
 ---
