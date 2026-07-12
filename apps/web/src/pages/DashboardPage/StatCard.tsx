@@ -15,7 +15,7 @@ type StatCardProps = {
 };
 
 const cardBase =
-  "relative overflow-hidden rounded-2xl border border-border bg-base-100 p-4 shadow-sm transition-[box-shadow] duration-200 ease-out";
+  "relative overflow-hidden rounded-2xl border border-border bg-base-100 p-5 shadow-sm transition-[background-color,box-shadow] duration-200 ease-out";
 
 export const StatCard = ({
   label,
@@ -46,7 +46,7 @@ export const StatCard = ({
       <p
         data-testid={testId}
         className={cn(
-          "mt-2 font-display text-[2rem] leading-none font-extrabold tabular-nums tracking-tight",
+          "mt-3 font-display text-[2rem] leading-none font-extrabold tabular-nums tracking-tight",
           accent,
         )}
       >
@@ -78,7 +78,7 @@ export const StatCard = ({
         style={{ "--card-glow": `var(${colorVar})` } as React.CSSProperties}
         className={cn(
           cardBase,
-          "group hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
+          "group hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
         )}
       >
         {inner}

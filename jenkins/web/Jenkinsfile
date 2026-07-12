@@ -99,9 +99,19 @@ pipeline {
         }
 
         stage('Test') {
+            environment {
+                TESTCRAFT_PROJECT_NAME = 'TestCraft'
+                TESTCRAFT_SOURCE       = 'web'
+            }
             steps {
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    sh 'pnpm --filter testcraft-web run test'
+                withCredentials([
+                    usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+                    string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+                    string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+                ]) {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        sh 'pnpm --filter testcraft-web run test'
+                    }
                 }
             }
         }

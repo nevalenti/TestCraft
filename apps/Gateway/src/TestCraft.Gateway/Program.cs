@@ -19,6 +19,7 @@ app.Use(
             "/keycloak" => $"https://{context.Request.Host.Host}:8443/",
             "/grafana" => "/grafana/",
             "/seq" => "/seq/",
+            "/docs" => "/docs/",
             _ => null,
         };
 

@@ -11,6 +11,10 @@ images:
     repository: testcraft-gateway
     tag: latest
     pullPolicy: IfNotPresent
+  docs:
+    repository: testcraft-docs
+    tag: latest
+    pullPolicy: IfNotPresent
 
 tls:
   dnsNames:

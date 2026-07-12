@@ -4,22 +4,26 @@ import { useCookieConsent } from "@/hooks/useCookieConsent";
 import { cn } from "@/lib/cn";
 import { useNotificationsStore } from "@/stores/notifications";
 
-const typeConfig: Record<string, { cls: string; dotCls: string }> = {
+const typeConfig: Record<string, { cls: string; dismissCls: string }> = {
   success: {
-    cls: "bg-base-100 border border-success/25 text-base-content shadow-lg",
-    dotCls: "bg-success",
+    cls: "bg-success text-success-content shadow-lg",
+    dismissCls:
+      "text-success-content/70 hover:bg-success-content/15 hover:text-success-content",
   },
   error: {
-    cls: "bg-base-100 border border-error/25 text-base-content shadow-lg",
-    dotCls: "bg-error",
+    cls: "bg-error text-error-content shadow-lg",
+    dismissCls:
+      "text-error-content/70 hover:bg-error-content/15 hover:text-error-content",
   },
   info: {
-    cls: "bg-base-100 border border-info/25 text-base-content shadow-lg",
-    dotCls: "bg-info",
+    cls: "bg-info text-info-content shadow-lg",
+    dismissCls:
+      "text-info-content/70 hover:bg-info-content/15 hover:text-info-content",
   },
   warning: {
-    cls: "bg-base-100 border border-warning/25 text-base-content shadow-lg",
-    dotCls: "bg-warning",
+    cls: "bg-warning text-warning-content shadow-lg",
+    dismissCls:
+      "text-warning-content/70 hover:bg-warning-content/15 hover:text-warning-content",
   },
 };
 
@@ -47,23 +51,19 @@ export const Notifications = () => {
             key={notification.id}
             className={cn(
               "flex max-w-sm items-center gap-2.5 rounded-xl py-2.5 pr-2 pl-3.5",
-              config?.cls ??
-                "bg-base-200 text-base-content border border-border shadow-lg",
+              config?.cls ?? "bg-base-200 text-base-content shadow-lg",
             )}
           >
-            <span
-              className={cn(
-                "size-2 shrink-0 rounded-full",
-                config?.dotCls ?? "bg-base-content/40",
-              )}
-              aria-hidden="true"
-            />
             <span className="flex-1 text-sm font-medium">
               {notification.message}
             </span>
             <button
               onClick={() => remove(notification.id)}
-              className="flex size-6 shrink-0 items-center justify-center rounded-lg text-base-content/60 transition-colors hover:bg-base-200 hover:text-base-content/85"
+              className={cn(
+                "flex size-6 shrink-0 items-center justify-center rounded-lg transition-colors",
+                config?.dismissCls ??
+                  "text-base-content/60 hover:bg-base-200 hover:text-base-content/85",
+              )}
               aria-label="Dismiss notification"
             >
               <XMarkIcon className="size-3.5" aria-hidden="true" />

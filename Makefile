@@ -8,6 +8,7 @@
 API_IMAGE = testcraft-api
 WEB_IMAGE = testcraft-web
 GATEWAY_IMAGE = testcraft-gateway
+DOCS_IMAGE = testcraft-docs
 JENKINS_IMAGE = testcraft-jenkins-controller
 KUBECTL = sudo k3s kubectl
 HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
@@ -23,11 +24,13 @@ build:
 	docker build -t $(API_IMAGE) -f apps/Api/Dockerfile .
 	docker build -t $(WEB_IMAGE) -f apps/web/Dockerfile .
 	docker build -t $(GATEWAY_IMAGE) -f apps/Gateway/Dockerfile .
+	docker build -t $(DOCS_IMAGE) -f apps/docs/Dockerfile .
 
 load:
 	docker save $(API_IMAGE):latest | sudo k3s ctr images import -
 	docker save $(WEB_IMAGE):latest | sudo k3s ctr images import -
 	docker save $(GATEWAY_IMAGE):latest | sudo k3s ctr images import -
+	docker save $(DOCS_IMAGE):latest | sudo k3s ctr images import -
 
 images: build load
 
@@ -39,8 +42,8 @@ deploy: images
 		--cert="$$(mkcert -CAROOT)/rootCA.pem" --key="$$(mkcert -CAROOT)/rootCA-key.pem" \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --values infrastructure/helm/testcraft/values.secrets.yaml
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway -n testcraft --timeout=120s
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
 
 destroy:
 	$(KUBECTL) delete namespace testcraft --ignore-not-found

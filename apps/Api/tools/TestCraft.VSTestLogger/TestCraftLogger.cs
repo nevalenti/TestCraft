@@ -156,7 +156,12 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             duration.TotalSeconds >= 1
                 ? $"{duration.TotalSeconds:0.0}s"
                 : $"{duration.TotalMilliseconds:0}ms";
-        PostLog($"{icon}  {e.Result.TestCase.FullyQualifiedName} ({durationText})");
+        var testName = string.IsNullOrWhiteSpace(e.Result.DisplayName)
+            ? e.Result.TestCase.DisplayName
+            : e.Result.DisplayName;
+        if (string.IsNullOrWhiteSpace(testName))
+            testName = e.Result.TestCase.FullyQualifiedName;
+        PostLog($"{icon}  {testName} ({durationText})");
 
         if (
             e.Result.Outcome == TestOutcome.Failed
@@ -168,22 +173,58 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             PostLog(message.Text!.TrimEnd());
     }
 
-    private void OnTestRunComplete(object? sender, TestRunCompleteEventArgs e) =>
+    private const int BatchSize = 50;
+
+    private readonly Lock _bufferLock = new();
+    private readonly List<string> _buffer = [];
+
+    private void OnTestRunComplete(object? sender, TestRunCompleteEventArgs e)
+    {
+        Flush();
         Task.WaitAll([.. _pending]);
+    }
 
     private void PostLog(string line)
     {
         if (_apiUrl is null || _projectId is null || _runId is null)
             return;
 
-        _pending.Add(SendLogAsync(line));
+        List<string>? batch = null;
+        lock (_bufferLock)
+        {
+            _buffer.Add(line);
+            if (_buffer.Count >= BatchSize)
+            {
+                batch = [.. _buffer];
+                _buffer.Clear();
+            }
+        }
+
+        if (batch is not null)
+            _pending.Add(SendLogsAsync(batch));
     }
 
-    private async Task SendLogAsync(string line)
+    private void Flush()
+    {
+        List<string>? batch = null;
+        lock (_bufferLock)
+        {
+            if (_buffer.Count > 0)
+            {
+                batch = [.. _buffer];
+                _buffer.Clear();
+            }
+        }
+
+        if (batch is not null)
+            _pending.Add(SendLogsAsync(batch));
+    }
+
+    private async Task SendLogsAsync(List<string> lines)
     {
         try
         {
-            var payload = JsonSerializer.Serialize(new { lines = new[] { line } });
+            var payload = JsonSerializer.Serialize(new { lines });
             using var request = new HttpRequestMessage(
                 HttpMethod.Post,
                 $"{_apiUrl}/api/v1/projects/{_projectId}/runs/{_runId}/logs"
@@ -192,13 +233,20 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
                 Content = new StringContent(payload, Encoding.UTF8, "application/json"),
             };
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            await Client.SendAsync(request).ConfigureAwait(false);
+            using var response = await Client.SendAsync(request).ConfigureAwait(false);
+            if (!response.IsSuccessStatusCode)
+            {
+                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                await Console.Error.WriteLineAsync(
+                    $"[TestCraft] Failed to send {lines.Count} log line(s): {(int)response.StatusCode} {body}"
+                );
+            }
         }
         catch (Exception ex)
         {
             // non-critical — swallow, mirrors the Node reporters
             await Console.Error.WriteLineAsync(
-                $"[TestCraft] Failed to send log line: {ex.Message}"
+                $"[TestCraft] Failed to send {lines.Count} log line(s): {ex.Message}"
             );
         }
     }

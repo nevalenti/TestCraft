@@ -249,17 +249,19 @@ export const DashboardPage = () => {
 
                       return (
                         <li key={run.id} className="relative overflow-hidden">
-                          <div
-                            aria-hidden="true"
-                            className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-base-content/[0.05] to-transparent"
-                            style={{
-                              animation: `shine 4s ease-in-out ${index * 0.5}s infinite`,
-                            }}
-                          />
+                          {index < 5 && (
+                            <div
+                              aria-hidden="true"
+                              className="pointer-events-none absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-base-content/[0.05] to-transparent"
+                              style={{
+                                animation: `shine 4s ease-in-out ${index * 0.5}s infinite`,
+                              }}
+                            />
+                          )}
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group relative flex items-center gap-3 px-4 py-1.5 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
+                            className="group relative flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
                           >
                             <span
                               className={cn(
@@ -311,7 +313,7 @@ export const DashboardPage = () => {
                               <div className="flex items-center gap-2.5">
                                 {hasResults ? (
                                   <>
-                                    <div className="h-1 min-w-0 flex-1 overflow-hidden rounded-full bg-warning/15">
+                                    <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-warning/15">
                                       <div
                                         className="h-full rounded-full bg-warning transition-all"
                                         style={{ width: `${passRate}%` }}
@@ -379,7 +381,7 @@ export const DashboardPage = () => {
                           <Link
                             to="/projects/$projectId/runs/$runId"
                             params={{ projectId: run.projectId, runId: run.id }}
-                            className="group flex items-center gap-3 px-4 py-1.5 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
+                            className="group flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
                           >
                             <span
                               className={cn(
@@ -428,7 +430,7 @@ export const DashboardPage = () => {
                                 {passRate !== null && (
                                   <span
                                     className={cn(
-                                      "shrink-0 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
+                                      "flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
                                       passRate === 100 &&
                                         "bg-success/10 text-success",
                                       passRate !== null &&
@@ -440,6 +442,11 @@ export const DashboardPage = () => {
                                         "bg-error/10 text-error",
                                     )}
                                   >
+                                    {hasFailed ? (
+                                      <XCircleIcon className="size-3" />
+                                    ) : (
+                                      <CheckCircleIcon className="size-3" />
+                                    )}
                                     {passRate}%
                                   </span>
                                 )}
@@ -450,14 +457,17 @@ export const DashboardPage = () => {
                                   <>
                                     <div
                                       className={cn(
-                                        "h-1 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
+                                        "h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
                                         hasFailed
                                           ? "bg-error/20"
                                           : "bg-success/20",
                                       )}
                                     >
                                       <div
-                                        className="h-full rounded-full bg-success transition-all"
+                                        className={cn(
+                                          "h-full rounded-full transition-all",
+                                          hasFailed ? "bg-error" : "bg-success",
+                                        )}
                                         style={{ width: `${passRate ?? 0}%` }}
                                       />
                                     </div>

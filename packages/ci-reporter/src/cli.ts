@@ -1,4 +1,4 @@
-import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { basename, join, resolve } from "node:path";
 import { parseArgs as parseNodeArgs } from "node:util";
 
@@ -8,6 +8,7 @@ import * as log from "./core/log";
 import { createStateStore } from "./core/state";
 import {
   ApiContext,
+  appendLogs,
   createRun,
   fetchAllResults,
   importResults,
@@ -33,6 +34,7 @@ interface Options {
   screenshotsDir?: string;
   runId?: string;
   dotenvPath?: string;
+  file?: string;
 }
 
 const FLAG_OPTIONS = {
@@ -47,9 +49,11 @@ const FLAG_OPTIONS = {
   "screenshots-dir": { type: "string" },
   "run-id": { type: "string" },
   dotenv: { type: "string" },
+  file: { type: "string" },
 } as const;
 
-const COMMANDS = ["start", "import"] as const;
+const COMMANDS = ["start", "import", "logs"] as const;
+const LOG_BATCH_SIZE = 300;
 
 export const parseArgs = (argv: string[]): Options => {
   const [maybeCommand, ...rest] = argv;
@@ -93,6 +97,7 @@ export const parseArgs = (argv: string[]): Options => {
     screenshotsDir: opt("screenshots-dir", "TESTCRAFT_SCREENSHOTS_DIR"),
     runId: opt("run-id", "TESTCRAFT_RUN_ID"),
     dotenvPath: opt("dotenv", "TESTCRAFT_DOTENV_PATH"),
+    file: opt("file", "TESTCRAFT_LOG_FILE"),
   };
 };
 
@@ -125,6 +130,36 @@ const handleStart = async (ctx: ApiContext, opts: Options): Promise<void> => {
   log.info(
     `Run ${activeRun.id} is now Active (TESTCRAFT_RUN_ID=${activeRun.id})`,
   );
+};
+
+const handleLogs = async (ctx: ApiContext, opts: Options): Promise<void> => {
+  const runId = opts.runId;
+  if (!runId) {
+    throw new Error(
+      "--run-id (or TESTCRAFT_RUN_ID) is required for the logs command",
+    );
+  }
+  if (!opts.file) {
+    throw new Error(
+      "--file (or TESTCRAFT_LOG_FILE) is required for the logs command",
+    );
+  }
+
+  const filePath = resolve(process.cwd(), opts.file);
+  if (!existsSync(filePath)) {
+    log.warn(`Log file not found at ${filePath} — skipping`);
+    return;
+  }
+
+  const lines = readFileSync(filePath, "utf8")
+    .split("\n")
+    .filter((l) => l.length > 0);
+
+  log.info(`Uploading ${lines.length} log line(s) to run ${runId}…`);
+  for (let i = 0; i < lines.length; i += LOG_BATCH_SIZE) {
+    await appendLogs(ctx, runId, lines.slice(i, i + LOG_BATCH_SIZE));
+  }
+  log.info("Logs uploaded successfully");
 };
 
 const uploadScreenshots = async (
@@ -252,6 +287,11 @@ const run = async (): Promise<void> => {
 
   if (opts.command === "start") {
     await handleStart(ctx, opts);
+    return;
+  }
+
+  if (opts.command === "logs") {
+    await handleLogs(ctx, opts);
     return;
   }
 

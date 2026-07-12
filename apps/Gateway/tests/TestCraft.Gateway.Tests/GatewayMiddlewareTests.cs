@@ -59,6 +59,17 @@ public class GatewayMiddlewareTests
         response.Headers.Location!.ToString().Should().Be("/seq/");
     }
 
+    [Fact]
+    public async Task Get_Docs_RedirectsToDocsPath()
+    {
+        var client = CreateClient();
+
+        var response = await client.GetAsync("/docs");
+
+        response.StatusCode.Should().Be(HttpStatusCode.MovedPermanently);
+        response.Headers.Location!.ToString().Should().Be("/docs/");
+    }
+
     [Theory]
     [InlineData("/.git/config")]
     [InlineData("/.env")]

@@ -32,6 +32,8 @@ jobs:
     name: build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      MSBUILDTERMINALLOGGER: "off"
     steps:
       - name: Checkout
         uses: actions/checkout@v4

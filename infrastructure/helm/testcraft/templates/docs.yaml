@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docs
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docs
+  template:
+    metadata:
+      labels:
+        app: docs
+    spec:
+      containers:
+        - name: docs
+          image: {{ .Values.images.docs.repository }}:{{ .Values.images.docs.tag }}
+          imagePullPolicy: {{ .Values.images.docs.pullPolicy }}
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 16Mi
+              cpu: "50m"
+            limits:
+              memory: 128Mi
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: docs
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: docs
+  ports:
+    - port: 8080
+      targetPort: 8080

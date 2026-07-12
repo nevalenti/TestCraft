@@ -1,4 +1,5 @@
 import {
+  BookOpenIcon,
   Cog6ToothIcon,
   HomeIcon,
   RectangleStackIcon,
@@ -52,6 +53,15 @@ export const Sidebar = () => {
           OutlineIcon={Cog6ToothIcon}
           SolidIcon={Cog6ToothIconSolid}
         />
+        <a
+          href="/docs/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/85 transition-colors hover:bg-base-content/6 hover:text-base-content"
+        >
+          <BookOpenIcon className="size-[18px] shrink-0" />
+          Documentation
+        </a>
       </nav>
     </aside>
   );

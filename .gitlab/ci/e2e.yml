@@ -24,6 +24,8 @@ e2e:
     POSTGRES_PASSWORD: e2e
     POSTGRES_DB: testcraft_e2e
     CI: "true"
+    SEQ_URL: ""
+    MSBUILDTERMINALLOGGER: "off"
     E2E_BASE_URL: http://localhost:4173
     E2E_USERNAME: e2e@testcraft.dev
     E2E_PASSWORD: e2e

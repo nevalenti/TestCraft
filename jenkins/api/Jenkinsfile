@@ -2,7 +2,7 @@ def buildReporterImage() {
     sh "docker build -t ${env.CI_REPORTER_IMAGE} -f packages/ci-reporter/Dockerfile ."
 }
 
-def reportToTestCraft(String junitXml) {
+def startTestCraftRun(String runName) {
     withCredentials([
         usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
         string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
@@ -12,13 +12,60 @@ def reportToTestCraft(String junitXml) {
             docker run --rm \
                 -w /repo -v "\$WORKSPACE:/repo" \
                 -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
+                -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+                ${env.CI_REPORTER_IMAGE} start \
+                --project-name TestCraft \
+                --run-name \"${runName}\" \
+                --source api \
+                --dotenv .testcraft.env
+        """
+    }
+    def dotenv = fileExists('.testcraft.env') ? readFile('.testcraft.env') : ''
+    sh 'rm -f .testcraft.env'
+    def match = (dotenv =~ /TESTCRAFT_RUN_ID=(.*)/)
+    return match ? match[0][1].trim() : ''
+}
+
+def uploadTestCraftLogs(String runName, String logFile) {
+    if (!env.TESTCRAFT_RUN_ID || !fileExists(logFile)) return
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        sh """
+            docker run --rm \
+                -w /repo -v "\$WORKSPACE:/repo" \
+                -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
+                -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
+                ${env.CI_REPORTER_IMAGE} logs \
+                --project-name TestCraft \
+                --run-name \"${runName}\" \
+                --source api \
+                --run-id ${env.TESTCRAFT_RUN_ID} \
+                --file ${logFile}
+        """
+    }
+}
+
+def reportToTestCraft(String junitXml) {
+    withCredentials([
+        usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+        string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+        string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+    ]) {
+        def runIdArg = env.TESTCRAFT_RUN_ID ? "--run-id ${env.TESTCRAFT_RUN_ID}" : ''
+        sh """
+            docker run --rm \
+                -w /repo -v "\$WORKSPACE:/repo" \
+                -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
                 -e CI_PIPELINE_ID="${env.JOB_NAME}" -e CI_JOB_ID="${env.BUILD_NUMBER}" \
                 -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
                 ${env.CI_REPORTER_IMAGE} import \
                 --project-name TestCraft \
                 --junit-xml "${junitXml}" \
-                --run-name "#${env.BUILD_NUMBER} api (${env.BRANCH_NAME ?: env.GIT_BRANCH})" \
-                --source api
+                --run-name "${env.RUN_NAME}" \
+                --source api ${runIdArg}
         """
     }
 }
@@ -34,6 +81,9 @@ pipeline {
     environment {
         IMAGE_NAME        = "ghcr.io/${env.GHCR_OWNER ?: 'nevalenti'}/testcraft-api"
         CI_REPORTER_IMAGE = "testcraft-ci-reporter:build-${env.BUILD_NUMBER}"
+        RUN_NAME          = "#${env.BUILD_NUMBER} api (${env.BRANCH_NAME ?: env.GIT_BRANCH})"
+        TEST_OUTPUT_LOG   = 'test-output.log'
+        MSBUILDTERMINALLOGGER = 'off'
     }
 
     stages {
@@ -78,15 +128,50 @@ pipeline {
             }
         }
 
-        stage('Test') {
+        stage('Start TestCraft run') {
             steps {
-                catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                    sh 'dotnet test TestCraft.slnx --no-build --configuration Release'
+                script {
+                    try {
+                        buildReporterImage()
+                        env.TESTCRAFT_RUN_ID = startTestCraftRun(env.RUN_NAME)
+                    } catch (err) {
+                        echo "WARNING: could not start TestCraft run: ${err}"
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            environment {
+                TESTCRAFT_PROJECT_NAME = 'TestCraft'
+                TESTCRAFT_SOURCE       = 'api'
+            }
+            steps {
+                withCredentials([
+                    usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+                    string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+                    string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+                ]) {
+                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                        sh """
+                            set -o pipefail
+                            dotnet test TestCraft.slnx --no-build --configuration Release 2>&1 | tee ${env.TEST_OUTPUT_LOG}
+                        """
+                    }
                 }
             }
             post {
                 always {
                     junit testResults: 'apps/Api/test-results/*.junit.xml', allowEmptyResults: true
+                    script {
+                        try {
+                            uploadTestCraftLogs(env.RUN_NAME, env.TEST_OUTPUT_LOG)
+                        } catch (err) {
+                            echo "WARNING: TestCraft log upload failed: ${err}"
+                            currentBuild.result = 'UNSTABLE'
+                        }
+                    }
                 }
             }
         }
@@ -95,7 +180,6 @@ pipeline {
             steps {
                 script {
                     try {
-                        buildReporterImage()
                         reportToTestCraft('apps/Api/test-results/*.junit.xml')
                     } catch (err) {
                         echo "WARNING: TestCraft reporting failed: ${err}"
