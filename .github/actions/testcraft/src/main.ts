@@ -15,7 +15,7 @@ import {
   resolveJunitXml,
   slugify,
   uploadAttachment,
-} from "@testcraft/ci-reporter";
+} from "testcraft-ci-reporter";
 
 const { readState, saveState, clearState } = createStateStore(
   `${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}`,

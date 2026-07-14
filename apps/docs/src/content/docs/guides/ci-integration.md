@@ -7,7 +7,7 @@ sidebar:
 
 TestCraft imports JUnit XML results and streams live per-test logs from any CI
 system. There are two ways to report into it: the first-party GitHub Action,
-or the `@testcraft/ci-reporter` CLI for everything else.
+or the `testcraft-ci-reporter` CLI for everything else.
 
 ## Authentication
 
@@ -72,7 +72,7 @@ The `start` command's `run-id` output feeds `TESTCRAFT_RUN_ID` into the test
 step's environment, which the [VSTest logger](#live-test-logs) and Playwright
 reporter pick up automatically to stream live per-test logs.
 
-## `@testcraft/ci-reporter` CLI
+## `testcraft-ci-reporter` CLI
 
 For GitLab CI, Jenkins, or any other CI system, use the CLI equivalent. It
 isn't published to a registry — build it from source in the pipeline, either
@@ -81,7 +81,7 @@ from [`packages/ci-reporter/Dockerfile`](https://github.com/nevalenti/TestCraft/
 
 ```bash
 # build once (or build the Docker image instead — see below)
-pnpm --filter @testcraft/ci-reporter run build
+pnpm --filter testcraft-ci-reporter run build
 
 # start a run before tests
 node packages/ci-reporter/dist/cli.js start \

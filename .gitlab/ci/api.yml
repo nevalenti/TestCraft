@@ -45,8 +45,8 @@ api:build-test:
     - dotnet build TestCraft.slnx --no-restore --configuration Release
     - dotnet test TestCraft.slnx --no-build --configuration Release
   after_script:
-    - pnpm install --frozen-lockfile --filter @testcraft/ci-reporter...
-    - pnpm --filter @testcraft/ci-reporter run build
+    - pnpm install --frozen-lockfile --filter testcraft-ci-reporter...
+    - pnpm --filter testcraft-ci-reporter run build
     - node packages/ci-reporter/dist/cli.js import || true
   artifacts:
     when: always

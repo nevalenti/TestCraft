@@ -47,7 +47,7 @@ importers:
       '@actions/core':
         specifier: ^1.11.1
         version: 1.11.1
-      '@testcraft/ci-reporter':
+      testcraft-ci-reporter:
         specifier: workspace:*
         version: link:../../../packages/ci-reporter
     devDependencies:
@@ -85,12 +85,12 @@ importers:
       '@playwright/test':
         specifier: ^1.61.0
         version: 1.61.0
-      '@testcraft/ci-reporter':
-        specifier: workspace:*
-        version: link:../../packages/ci-reporter
       '@types/node':
         specifier: ^26.0.0
         version: 26.0.0
+      testcraft-ci-reporter:
+        specifier: workspace:*
+        version: link:../../packages/ci-reporter
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -179,9 +179,6 @@ importers:
       '@tanstack/react-query-devtools':
         specifier: ^5.101.1
         version: 5.101.1(@tanstack/react-query@5.101.1(react@19.2.7))(react@19.2.7)
-      '@testcraft/ci-reporter':
-        specifier: workspace:*
-        version: link:../../packages/ci-reporter
       '@testing-library/dom':
         specifier: ^10.4.1
         version: 10.4.1
@@ -242,6 +239,9 @@ importers:
       tailwindcss:
         specifier: ^4.3.1
         version: 4.3.1
+      testcraft-ci-reporter:
+        specifier: workspace:*
+        version: link:../../packages/ci-reporter
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
@@ -6866,7 +6866,7 @@ snapshots:
       obug: 2.1.3
       std-env: 4.1.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@22.20.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1)(vite@8.1.0(@types/node@22.20.0)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vitest: 4.1.9(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
 
   '@vitest/expect@4.1.9':
     dependencies:
@@ -6920,7 +6920,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
-      vitest: 4.1.9(@types/node@22.20.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1)(vite@8.1.0(@types/node@22.20.0)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
+      vitest: 4.1.9(@types/node@26.0.0)(@vitest/coverage-v8@4.1.9)(@vitest/ui@4.1.9)(jsdom@29.1.1)(vite@8.1.0(@types/node@26.0.0)(esbuild@0.28.1)(jiti@2.7.0)(yaml@2.9.0))
 
   '@vitest/utils@4.1.9':
     dependencies:

@@ -1,5 +1,5 @@
 {
-  "name": "@testcraft/ci-reporter",
+  "name": "testcraft-ci-reporter",
   "version": "0.1.0",
   "description": "Reports CI test results (JUnit) into TestCraft from any CI system, e.g. GitLab CI",
   "type": "module",

@@ -57,7 +57,7 @@ e2e:
     - pnpm --filter @testcraft/types run build
     - pnpm --filter testcraft-e2e exec playwright install chromium --with-deps
     - timeout 120 sh -c 'until curl -sf http://docker:9000/health/ready > /dev/null 2>&1; do sleep 3; done'
-    - pnpm --filter @testcraft/ci-reporter run build
+    - pnpm --filter testcraft-ci-reporter run build
     - node packages/ci-reporter/dist/cli.js start --dotenv testcraft.env || true
     - if [ -f testcraft.env ]; then set -a; . ./testcraft.env; set +a; fi
     - pnpm --filter testcraft-e2e run e2e
