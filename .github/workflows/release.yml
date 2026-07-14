@@ -26,7 +26,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           sha="${{ github.sha }}"
-          runs=$(gh api "repos/${{ github.repository }}/commits/$sha/check-runs" --paginate --jq '.check_runs[] | "\(.name)\t\(.status)\t\(.conclusion)"')
+          runs=$(gh api "repos/${{ github.repository }}/commits/$sha/check-runs" --paginate --jq \
+            --arg run_id "${{ github.run_id }}" \
+            '.check_runs[] | select((.details_url // "") | contains("/actions/runs/\($run_id)/") | not) | "\(.name)\t\(.status)\t\(.conclusion)"')
 
           echo "${runs:-<no check runs on this commit>}"
 
