@@ -12,7 +12,7 @@ DOCS_IMAGE = testcraft-docs
 JENKINS_IMAGE = testcraft-jenkins-controller
 KUBECTL = sudo k3s kubectl
 HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
-GITLAB_CI_LOCAL = gitlab-ci-local --ignore-predefined-vars CI,CI_PIPELINE_SOURCE --variable CI_PIPELINE_SOURCE=web --privileged --variable NODE_TLS_REJECT_UNAUTHORIZED=0
+GITLAB_CI_LOCAL = pnpm exec gitlab-ci-local --ignore-predefined-vars CI,CI_PIPELINE_SOURCE --variable CI_PIPELINE_SOURCE=web --privileged --variable NODE_TLS_REJECT_UNAUTHORIZED=0
 
 up:
 	docker compose up -d

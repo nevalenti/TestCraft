@@ -49,10 +49,18 @@ pipeline {
 
     environment {
         IMAGE_NAME = "ghcr.io/${env.GHCR_OWNER ?: 'nevalenti'}/testcraft-web"
-        RUN_NAME   = "#${env.BUILD_NUMBER} web (${env.BRANCH_NAME ?: env.GIT_BRANCH})"
     }
 
     stages {
+        stage('Resolve branch') {
+            steps {
+                script {
+                    env.GIT_LOCAL_BRANCH = sh(script: "git -c safe.directory='*' rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
+                    env.RUN_NAME = "#${env.BUILD_NUMBER} web (${env.GIT_LOCAL_BRANCH})"
+                }
+            }
+        }
+
         stage('Install dependencies') {
             steps {
                 sh 'corepack enable && corepack prepare pnpm@11.3.0 --activate'
@@ -139,7 +147,7 @@ pipeline {
         stage('Publish report') {
             when {
                 allOf {
-                    branch 'main'
+                    expression { env.GIT_LOCAL_BRANCH == 'main' }
                     expression { currentBuild.currentResult == 'SUCCESS' }
                 }
             }
@@ -173,7 +181,7 @@ pipeline {
         stage('Docker push') {
             when {
                 allOf {
-                    branch 'main'
+                    expression { env.GIT_LOCAL_BRANCH == 'main' }
                     expression { currentBuild.currentResult == 'SUCCESS' }
                 }
             }
