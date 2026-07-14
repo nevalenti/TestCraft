@@ -3,7 +3,7 @@ name: testcraft
 description: TestCraft full-stack application
 type: application
 version: 0.1.0
-appVersion: "1.0.0"
+appVersion: "0.1.0"
 annotations:
   artifacthub.io/preInstall: |
     Requires cert-manager >= 1.13 to be installed in the cluster.
