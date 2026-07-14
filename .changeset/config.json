@@ -7,5 +7,11 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["testcraft-web", "testcraft-e2e", "testcraft-docs", "@testcraft/types", "@testcraft/gh-action"]
+  "ignore": [
+    "testcraft-web",
+    "testcraft-e2e",
+    "testcraft-docs",
+    "@testcraft/types",
+    "@testcraft/gh-action"
+  ]
 }
