@@ -26,7 +26,6 @@
 - [Built With](#built-with)
 - [Architecture](#architecture)
 - [Getting Started](#getting-started)
-- [Docs](#docs)
 - [Production](#production)
 - [License](#license)
 
@@ -149,6 +148,9 @@ dotnet run --project apps/Api/src/TestCraft.Api
 
 # Web
 pnpm --filter testcraft-web dev
+
+# Docs
+pnpm --filter testcraft-docs dev
 ```
 
 | Service    | URL                           |
