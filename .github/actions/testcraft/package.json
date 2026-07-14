@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@actions/core": "^1.11.1",
-    "@testcraft/ci-reporter": "workspace:*"
+    "testcraft-ci-reporter": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

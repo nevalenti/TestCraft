@@ -32,7 +32,7 @@ web:build-test:
     - pnpm --filter testcraft-web run lint
     - pnpm --filter testcraft-web run typecheck
     - pnpm turbo build --filter testcraft-web
-    - pnpm --filter @testcraft/ci-reporter run build
+    - pnpm --filter testcraft-ci-reporter run build
     - node packages/ci-reporter/dist/cli.js start --dotenv testcraft.env || true
     - if [ -f testcraft.env ]; then set -a; . ./testcraft.env; set +a; fi
     - pnpm --filter testcraft-web run test

@@ -7,7 +7,7 @@ import {
   fetchToken,
   findProjectId,
   type StdioCapture,
-} from "@testcraft/ci-reporter";
+} from "testcraft-ci-reporter";
 
 interface Ctx extends ApiContext {
   runId: string;

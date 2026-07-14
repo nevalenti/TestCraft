@@ -6,7 +6,7 @@ import {
   fetchToken,
   findProjectId,
   type StdioCapture,
-} from "@testcraft/ci-reporter";
+} from "testcraft-ci-reporter";
 import type { Reporter } from "vitest/node";
 
 interface Ctx extends ApiContext {

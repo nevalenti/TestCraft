@@ -50,7 +50,7 @@
 ### CI integration
 
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
-- **CI reporter CLI** — `@testcraft/ci-reporter`, an npx/Docker equivalent of the GitHub Action for CI systems without native support
+- **CI reporter CLI** — `testcraft-ci-reporter`, an npx/Docker equivalent of the GitHub Action for CI systems without native support
 - **Pipeline examples** — ready-to-use pipelines for [GitHub Actions](.github/workflows), [GitLab CI](.gitlab-ci.yml), and [Jenkins](jenkins) covering API, web, and E2E suites
 - **API tokens** — machine-to-machine access for CI pipelines
 
