@@ -1,5 +1,5 @@
 .PHONY: up down \
-        build load images deploy destroy status \
+        build load images deploy deploy-prod destroy status \
         api-github web-github e2e-github \
         api-gitlab web-gitlab e2e-gitlab \
         jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins \
@@ -42,6 +42,17 @@ deploy: images
 		--cert="$$(mkcert -CAROOT)/rootCA.pem" --key="$$(mkcert -CAROOT)/rootCA-key.pem" \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --values infrastructure/helm/testcraft/values.secrets.yaml
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
+
+deploy-prod: images
+	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
+	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
+	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
+	$(HELM) dependency update infrastructure/helm/testcraft
+	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft \
+		--values infrastructure/helm/testcraft/values.production.yaml \
+		--values infrastructure/helm/testcraft/values.secrets.yaml
 	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
 	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
 

@@ -1,0 +1,23 @@
+tls:
+  provider: letsencrypt
+
+ingress-nginx:
+  enabled: true
+  fullnameOverride: acme-solver
+  controller:
+    service:
+      type: ClusterIP
+    ingressClassResource:
+      name: nginx-acme
+      default: false
+    ingressClass: nginx-acme
+    watchIngressWithoutClass: false
+    admissionWebhooks:
+      enabled: false
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 128Mi

@@ -66,7 +66,7 @@ realm — see `infrastructure/keycloak/realm.json`.
 | `SMTP_HOST`                   | `localhost` (Mailpit in dev) |
 | `SMTP_PORT`                   | `1025`                       |
 | `SMTP_USER` / `SMTP_PASSWORD` | —                            |
-| `SMTP_FROM_ADDRESS`           | `noreply@testcraft.dev`      |
+| `SMTP_FROM_ADDRESS`           | `noreply@testcraft.pro`      |
 
 ## Observability & misc
 

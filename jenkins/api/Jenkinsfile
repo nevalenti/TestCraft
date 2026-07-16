@@ -10,7 +10,7 @@ def startTestCraftRun(String runName) {
     ]) {
         sh """
             docker run --rm \
-                --add-host=testcraft.dev:192.168.0.217 \
+                --add-host=testcraft.pro:192.168.0.217 \
                 -w /repo -v "\$WORKSPACE:/repo" \
                 -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
                 -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
@@ -36,7 +36,7 @@ def uploadTestCraftLogs(String runName, String logFile) {
     ]) {
         sh """
             docker run --rm \
-                --add-host=testcraft.dev:192.168.0.217 \
+                --add-host=testcraft.pro:192.168.0.217 \
                 -w /repo -v "\$WORKSPACE:/repo" \
                 -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
                 -e NODE_TLS_REJECT_UNAUTHORIZED=0 \
@@ -59,7 +59,7 @@ def reportToTestCraft(String junitXml) {
         def runIdArg = env.TESTCRAFT_RUN_ID ? "--run-id ${env.TESTCRAFT_RUN_ID}" : ''
         sh """
             docker run --rm \
-                --add-host=testcraft.dev:192.168.0.217 \
+                --add-host=testcraft.pro:192.168.0.217 \
                 -w /repo -v "\$WORKSPACE:/repo" \
                 -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL -e TESTCRAFT_KEYCLOAK_AUTHORITY \
                 -e CI_PIPELINE_ID="${env.JOB_NAME}" -e CI_JOB_ID="${env.BUILD_NUMBER}" \

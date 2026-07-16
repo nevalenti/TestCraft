@@ -4,7 +4,7 @@ import { defineConfig } from "astro/config";
 
 // https://astro.build/config
 export default defineConfig({
-  site: "https://testcraft.dev",
+  site: "https://testcraft.pro",
   base: "/docs",
   redirects: {
     "/": "/docs/guides/getting-started/",
