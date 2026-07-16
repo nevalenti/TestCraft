@@ -1,6 +1,6 @@
 ---
-TESTCRAFT_KEYCLOAK_AUTHORITY: https://testcraft.dev:8443/realms/testcraft
-TESTCRAFT_API_URL: https://testcraft.dev
+TESTCRAFT_KEYCLOAK_AUTHORITY: https://testcraft.pro:8443/realms/testcraft
+TESTCRAFT_API_URL: https://testcraft.pro
 
-TESTCRAFT_USERNAME: e2e@testcraft.dev
+TESTCRAFT_USERNAME: e2e@testcraft.pro
 TESTCRAFT_PASSWORD: e2e

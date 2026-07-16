@@ -13,8 +13,8 @@ COPY packages/types/ ./packages/types/
 COPY apps/web/ ./apps/web/
 COPY apps/Api/openapi/ ./apps/Api/openapi/
 
-ARG VITE_API_URL=https://testcraft.dev
-ARG VITE_KEYCLOAK_URL=https://testcraft.dev:8443
+ARG VITE_API_URL=https://testcraft.pro
+ARG VITE_KEYCLOAK_URL=https://testcraft.pro:8443
 ARG VITE_KEYCLOAK_REALM=testcraft
 ARG VITE_KEYCLOAK_CLIENT_ID=testcraft-web
 

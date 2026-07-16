@@ -17,11 +17,16 @@ images:
     pullPolicy: IfNotPresent
 
 tls:
+  provider: mkcert
+  acmeEmail: ""
   dnsNames:
-    - testcraft.dev
+    - testcraft.pro
+
+ingress-nginx:
+  enabled: false
 
 keycloak:
-  hostname: https://testcraft.dev:8443
+  hostname: https://testcraft.pro:8443
 
 storage:
   postgres: 5Gi

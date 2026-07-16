@@ -26,6 +26,7 @@ coverage/
 dist/
 e2e-results/
 infrastructure/gateway/tls/
+infrastructure/helm/testcraft/charts/
 infrastructure/helm/testcraft/values.secrets.yaml
 node_modules/
 obj/

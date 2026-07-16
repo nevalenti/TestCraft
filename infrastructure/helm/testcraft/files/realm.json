@@ -17,12 +17,12 @@
       "redirectUris": [
         "http://localhost:3000/*",
         "https://localhost/*",
-        "https://testcraft.dev/*"
+        "https://testcraft.pro/*"
       ],
       "webOrigins": [
         "http://localhost:3000",
         "https://localhost",
-        "https://testcraft.dev"
+        "https://testcraft.pro"
       ],
       "attributes": {
         "post.logout.redirect.uris": "+",
@@ -45,8 +45,8 @@
   ],
   "users": [
     {
-      "username": "e2e@testcraft.dev",
-      "email": "e2e@testcraft.dev",
+      "username": "e2e@testcraft.pro",
+      "email": "e2e@testcraft.pro",
       "emailVerified": true,
       "enabled": true,
       "firstName": "E2E",
