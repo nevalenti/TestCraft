@@ -24,7 +24,7 @@ public class GatewayMiddlewareTests
         );
 
     [Fact]
-    public async Task Get_Keycloak_RedirectsToKeycloakHttpsPort()
+    public async Task Get_Keycloak_RedirectsToAuthSubdomain()
     {
         var client = CreateClient();
 
@@ -34,7 +34,7 @@ public class GatewayMiddlewareTests
         response
             .Headers.Location!.ToString()
             .Should()
-            .Be("https://localhost:8443/");
+            .Be("https://auth.testcraft.pro/");
     }
 
     [Fact]
