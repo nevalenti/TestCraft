@@ -56,7 +56,7 @@ deploy-prod:
 		$(KUBECTL) create secret tls testcraft-tls -n testcraft --cert=$$TMPDIR/tls.crt --key=$$TMPDIR/tls.key && \
 		rm -rf $$TMPDIR \
 	)
-	$(HELM) dependency update infrastructure/helm/testcraft
+	helm dependency update infrastructure/helm/testcraft
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft \
 		--values infrastructure/helm/testcraft/values.production.yaml \
 		--values infrastructure/helm/testcraft/values.secrets.yaml
