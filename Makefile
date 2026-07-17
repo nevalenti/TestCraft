@@ -49,6 +49,13 @@ deploy-prod: images
 	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
 	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
+	$(KUBECTL) get secret testcraft-tls -n testcraft >/dev/null 2>&1 || ( \
+		TMPDIR=$$(mktemp -d) && \
+		openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
+			-keyout $$TMPDIR/tls.key -out $$TMPDIR/tls.crt -subj "/CN=bootstrap" && \
+		$(KUBECTL) create secret tls testcraft-tls -n testcraft --cert=$$TMPDIR/tls.crt --key=$$TMPDIR/tls.key && \
+		rm -rf $$TMPDIR \
+	)
 	$(HELM) dependency update infrastructure/helm/testcraft
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft \
 		--values infrastructure/helm/testcraft/values.production.yaml \

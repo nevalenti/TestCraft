@@ -21,12 +21,13 @@ tls:
   acmeEmail: ""
   dnsNames:
     - testcraft.pro
+    - auth.testcraft.pro
 
 ingress-nginx:
   enabled: false
 
 keycloak:
-  hostname: https://testcraft.pro:8443
+  hostname: https://auth.testcraft.pro
 
 storage:
   postgres: 5Gi
