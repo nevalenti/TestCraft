@@ -19,6 +19,15 @@ export default defineConfig({
       },
       expressiveCode: {
         themes: ["dracula"],
+        styleOverrides: {
+          frames: {
+            inlineButtonForeground: "var(--sl-color-accent)",
+            inlineButtonBackgroundIdleOpacity: "0.1",
+            inlineButtonBackgroundHoverOrFocusOpacity: "0.22",
+            inlineButtonBackgroundActiveOpacity: "0.32",
+            inlineButtonBorderOpacity: "0.6",
+          },
+        },
       },
       customCss: ["./src/styles/custom.css"],
       social: [

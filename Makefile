@@ -45,7 +45,7 @@ deploy: images
 	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
 	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
 
-deploy-prod: images
+deploy-prod:
 	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
 	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
