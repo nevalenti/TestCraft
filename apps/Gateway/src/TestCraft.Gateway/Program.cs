@@ -1,22 +1,32 @@
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddHttpsRedirection(options => options.HttpsPort = 443);
 builder
     .Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-
 app.Use(
     async (context, next) =>
     {
         var path = context.Request.Path.Value ?? string.Empty;
+        var isAcmeChallenge = path.StartsWith(
+            "/.well-known/acme-challenge",
+            StringComparison.Ordinal
+        );
+
+        if (!context.Request.IsHttps && !isAcmeChallenge)
+        {
+            context.Response.StatusCode =
+                StatusCodes.Status307TemporaryRedirect;
+            context.Response.Headers.Location =
+                $"https://{context.Request.Host.Host}{context.Request.Path}{context.Request.QueryString}";
+            return;
+        }
 
         string? redirect = path switch
         {
-            "/keycloak" => $"https://{context.Request.Host.Host}:8443/",
+            "/keycloak" => "https://auth.testcraft.pro/",
             "/grafana" => "/grafana/",
             "/seq" => "/seq/",
             "/docs" => "/docs/",
@@ -29,10 +39,12 @@ app.Use(
             return;
         }
 
-        if (
-            path.StartsWith("/.", StringComparison.Ordinal)
-            && !path.StartsWith("/.well-known", StringComparison.Ordinal)
-        )
+        var isDotPath = path.StartsWith("/.", StringComparison.Ordinal);
+        var isWellKnown = path.StartsWith(
+            "/.well-known",
+            StringComparison.Ordinal
+        );
+        if (isDotPath && !isWellKnown)
         {
             context.Response.StatusCode = StatusCodes.Status403Forbidden;
             return;
