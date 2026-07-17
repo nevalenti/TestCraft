@@ -1,3 +1,17 @@
+images:
+  api:
+    repository: ghcr.io/nevalenti/testcraft-api
+    pullPolicy: Always
+  web:
+    repository: ghcr.io/nevalenti/testcraft-web
+    pullPolicy: Always
+  gateway:
+    repository: ghcr.io/nevalenti/testcraft-gateway
+    pullPolicy: Always
+  docs:
+    repository: ghcr.io/nevalenti/testcraft-docs
+    pullPolicy: Always
+
 tls:
   provider: letsencrypt
 

@@ -15,8 +15,9 @@ Gateway), so the whole app is reachable from one domain.
 
 - A running k3s cluster (`sudo k3s kubectl` and `sudo helm` must work)
 - [mkcert](https://github.com/FiloSottile/mkcert) for local/internal TLS
-  certificates
-- Docker, to build and load images into k3s's containerd
+  certificates (only needed for `make deploy`, not production)
+- Docker, only needed for `make deploy`'s local image build — production
+  pulls prebuilt images from GHCR instead
 
 ## Configure secrets
 
@@ -36,17 +37,32 @@ OAuth client secrets (GitHub/Google social login) — see
 ## Deploy
 
 ```bash
-make deploy
+make deploy-prod
 ```
 
-This builds the `api`, `web`, `gateway`, and `docs` Docker images, imports
-them into k3s's containerd via `k3s ctr images import`, then runs
-`helm upgrade --install` and does a rolling restart of every Deployment. Check
-progress at any time with:
+This runs `helm upgrade --install` against `values.production.yaml` (Let's
+Encrypt TLS, GHCR image pulls) and `values.secrets.yaml`, then does a rolling
+restart of every Deployment so each pod re-pulls its `:latest` image from
+`ghcr.io/nevalenti`. Check progress at any time with:
 
 ```bash
 make status
 ```
+
+For a local/internal cluster instead of production — mkcert TLS, images
+built and imported from source rather than pulled from GHCR — use
+`make deploy` instead.
+
+## Continuous deployment
+
+Pushing to `main` deploys automatically: the `api`/`web`/`gateway`/`docs`
+GitHub Actions workflows build and push `:latest` images to GHCR on every
+push to `main`, and `.github/workflows/deploy.yml` runs `make deploy-prod`
+on completion (via `workflow_run`) on a self-hosted runner registered on the
+production box. The runner needs Docker-free access to `k3s kubectl` and
+`helm` (matching the `KUBECTL`/`HELM` variables in the `Makefile`), and its
+workspace must keep `infrastructure/helm/testcraft/values.secrets.yaml` in
+place between runs — it's gitignored and never checked out from the repo.
 
 ## Routing
 
