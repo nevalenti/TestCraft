@@ -20,7 +20,11 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-          clean: false
+
+      - name: Restore production secrets
+        run: |
+          cp /home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml \
+             infrastructure/helm/testcraft/values.secrets.yaml
 
       - name: Deploy
         run: make deploy-prod
