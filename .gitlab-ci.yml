@@ -16,3 +16,4 @@ include:
   - local: .gitlab/ci/api.yml
   - local: .gitlab/ci/web.yml
   - local: .gitlab/ci/e2e.yml
+  - local: .gitlab/ci/docs.yml

@@ -52,11 +52,40 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Start TestCraft run
+        id: testcraft-start
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/testcraft
+        with:
+          command: start
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          project-name: TestCraft
+          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
+          source: docs
+
       - name: Typecheck
         run: pnpm --filter testcraft-docs run typecheck
 
       - name: Build
         run: pnpm turbo build --filter testcraft-docs
+
+      - name: Import results to TestCraft
+        if: always()
+        continue-on-error: true
+        uses: ./.github/actions/testcraft
+        with:
+          username: ${{ secrets.TESTCRAFT_USERNAME }}
+          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          api-url: ${{ secrets.TESTCRAFT_API_URL }}
+          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
+          project-name: TestCraft
+          junit-xml: apps/docs/test-results/*.junit.xml
+          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
+          source: docs
 
   docker:
     name: docker build & push
