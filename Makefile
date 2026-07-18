@@ -1,8 +1,8 @@
 .PHONY: up down \
         build load images deploy deploy-prod destroy status \
-        api-github web-github e2e-github \
-        api-gitlab web-gitlab e2e-gitlab \
-        jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins \
+        api-github web-github e2e-github docs-github \
+        api-gitlab web-gitlab e2e-gitlab docs-gitlab \
+        jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins docs-jenkins \
         format
 
 API_IMAGE = testcraft-api
@@ -79,6 +79,9 @@ e2e-github:
 	act push -W .github/workflows/e2e.yml -j e2e --secret-file .secrets; \
 	docker stop keycloak 2>/dev/null || true
 
+docs-github:
+	act push -W .github/workflows/docs.yml -j build-test --secret-file .secrets
+
 api-gitlab:
 	$(GITLAB_CI_LOCAL) api:build-test
 
@@ -87,6 +90,9 @@ web-gitlab:
 
 e2e-gitlab:
 	$(GITLAB_CI_LOCAL) e2e
+
+docs-gitlab:
+	$(GITLAB_CI_LOCAL) docs:build-test
 
 jenkins-image:
 	docker build -t $(JENKINS_IMAGE) -f jenkins/controller/Dockerfile jenkins/controller
@@ -106,6 +112,9 @@ web-jenkins:
 e2e-jenkins:
 	jenkins/controller/run.sh e2e; \
 	docker stop keycloak testcraft-e2e-postgres 2>/dev/null || true
+
+docs-jenkins:
+	jenkins/controller/run.sh docs
 
 format:
 	pnpm format

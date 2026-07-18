@@ -1,5 +1,5 @@
 def buildCiReporter() {
-    sh 'pnpm --filter @testcraft/ci-reporter run build'
+    sh 'pnpm --filter testcraft-ci-reporter run build'
 }
 
 def reporterCli(String args) {

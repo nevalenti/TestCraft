@@ -35,7 +35,7 @@ credentials:
 jobs:
   - script: |
       def workspaceRoot = System.getenv('TESTCRAFT_WORKSPACE_ROOT')
-      ['api', 'web', 'e2e'].each { name ->
+      ['api', 'web', 'e2e', 'docs'].each { name ->
         pipelineJob(name) {
           definition {
             cps {

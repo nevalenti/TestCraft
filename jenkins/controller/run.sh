@@ -15,7 +15,7 @@ ensure_image() {
 
 ensure_workspace_symlinks() {
   mkdir -p "$WORKSPACE_ROOT/workspace"
-  for name in api web e2e; do
+  for name in api web e2e docs; do
     ln -sfn "$ROOT" "$WORKSPACE_ROOT/workspace/$name"
   done
 }
