@@ -45,30 +45,6 @@
         --radius-box: 1rem;
       }
 
-      [data-theme="dracula"] {
-        --color-base-100: oklch(0.169 0.019 251);
-        --color-base-200: oklch(0.133 0.017 251);
-        --color-base-300: oklch(0.215 0.021 251);
-        --color-base-content: oklch(0.878 0.014 251);
-        --color-primary: oklch(0.645 0.218 278);
-        --color-primary-content: oklch(1 0 0);
-        --color-secondary: oklch(0.598 0.18 290);
-        --color-secondary-content: oklch(1 0 0);
-        --color-accent: oklch(0.672 0.158 215);
-        --color-accent-content: oklch(0.1 0 0);
-        --color-neutral: oklch(0.278 0.022 251);
-        --color-neutral-content: oklch(0.878 0.014 251);
-        --color-info: oklch(0.624 0.19 232);
-        --color-info-content: oklch(0.1 0 0);
-        --color-success: oklch(0.618 0.178 145);
-        --color-success-content: oklch(0.1 0 0);
-        --color-warning: oklch(0.744 0.182 85);
-        --color-warning-content: oklch(0.1 0 0);
-        --color-error: oklch(0.638 0.22 28);
-        --color-error-content: oklch(0.1 0 0);
-        --color-border: oklch(1 0 0 / 0.32);
-      }
-
       html, body {
         margin: 0;
         padding: 0;
