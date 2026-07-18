@@ -6,15 +6,22 @@ namespace TestCraft.Infrastructure.Configuration;
 public sealed class InfrastructureOptions
 {
     [Required]
+    [Sensitive]
     public string DatabaseUrl { get; init; } = string.Empty;
 
+    [Sensitive]
     public string? RedisUrl { get; init; }
 
+    [Sensitive]
     public string? RabbitMqUrl { get; init; }
 
     public string MinioEndpoint { get; init; } = "localhost:9000";
     public string MinioPublicEndpoint { get; init; } = string.Empty;
+
+    [Sensitive]
     public string MinioAccessKey { get; init; } = string.Empty;
+
+    [Sensitive]
     public string MinioSecretKey { get; init; } = string.Empty;
     public string MinioBucket { get; init; } = "testcraft";
     public bool MinioUseSsl { get; init; }
@@ -22,12 +29,16 @@ public sealed class InfrastructureOptions
     public string? SmtpHost { get; init; }
     public int SmtpPort { get; init; } = 587;
     public string? SmtpUser { get; init; }
+
+    [Sensitive]
     public string? SmtpPassword { get; init; }
     public string SmtpFromAddress { get; init; } = "noreply@testcraft.local";
 
     public string KeycloakBaseUrl { get; init; } = string.Empty;
     public string KeycloakRealm { get; init; } = "testcraft";
     public string KeycloakAdminUsername { get; init; } = string.Empty;
+
+    [Sensitive]
     public string KeycloakAdminPassword { get; init; } = string.Empty;
 
     public static InfrastructureOptions Bind(IConfiguration configuration)

@@ -1,3 +1,5 @@
+using TestCraft.Gateway.Configuration;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder
@@ -5,6 +7,8 @@ builder
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 var app = builder.Build();
+
+app.Logger.LogStartupConfiguration(builder.Configuration);
 
 app.Use(
     async (context, next) =>

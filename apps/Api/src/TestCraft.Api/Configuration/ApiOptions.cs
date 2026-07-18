@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
@@ -21,14 +22,17 @@ public sealed class ApiOptions
 
     public string? SeqUrl { get; init; }
 
+    [Sensitive]
     public string? SeqApiKey { get; init; }
 
     public bool ApplyMigrations { get; init; }
 
+    [Sensitive]
     public string? MetricsToken { get; init; }
 
     public string? SwaggerBasicAuthUsername { get; init; }
 
+    [Sensitive]
     public string? SwaggerBasicAuthPassword { get; init; }
 
     public static ApiOptions Bind(IConfiguration configuration)
