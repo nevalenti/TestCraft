@@ -111,7 +111,7 @@ pipeline {
                 MSBUILDTERMINALLOGGER           = 'off'
                 E2E_BASE_URL                    = 'http://localhost:4173'
                 E2E_USERNAME                    = 'e2e@testcraft.pro'
-                E2E_PASSWORD                    = 'e2e'
+                E2E_PASSWORD                    = 'e2e-test-password'
                 DATABASE_URL                    = 'postgresql://e2e:e2e@localhost:5433/testcraft_e2e'
                 KEYCLOAK_AUTHORITY              = 'http://localhost:8080/realms/testcraft'
                 KEYCLOAK_AUDIENCE               = 'testcraft-web'

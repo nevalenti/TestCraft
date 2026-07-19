@@ -4,6 +4,7 @@
   "sslRequired": "none",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
+  "passwordPolicy": "length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)",
   "accessTokenLifespan": 900,
   "ssoSessionIdleTimeout": 1800,
   "ssoSessionMaxLifespan": 36000,
@@ -54,7 +55,7 @@
       "credentials": [
         {
           "type": "password",
-          "value": "e2e",
+          "value": "e2e-test-password",
           "temporary": false
         }
       ]
