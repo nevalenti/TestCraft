@@ -33,7 +33,8 @@
 
       <div>
         <label for="password" class="block text-xs font-semibold mb-1.5 text-base-content">Password</label>
-        <input id="password" name="password" type="password" autocomplete="new-password" placeholder="••••••••" class="input input-bordered w-full h-10 text-sm" />
+        <input id="password" name="password" type="password" autocomplete="new-password" placeholder="••••••••" minlength="12" class="input input-bordered w-full h-10 text-sm" />
+        <p class="mt-1 text-xs text-base-content/55">At least 12 characters.</p>
       </div>
 
       <div>
