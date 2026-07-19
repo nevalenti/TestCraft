@@ -182,3 +182,27 @@ jobs:
           cache-from: type=gha,scope=gateway
           cache-to: type=gha,mode=max,scope=gateway
           provenance: false
+
+  deploy:
+    name: deploy to production
+    needs: docker
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, testcraft-production]
+    timeout-minutes: 10
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Restore production secrets
+        run: |
+          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
+          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
+          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
+
+      - name: Deploy gateway
+        run: make deploy-app APP=gateway TAG=${{ github.sha }}

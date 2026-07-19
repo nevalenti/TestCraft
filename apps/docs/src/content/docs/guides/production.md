@@ -36,14 +36,31 @@ OAuth client secrets (GitHub/Google social login) — see
 
 ## Deploy
 
+Each service is pinned to an explicit, immutable image tag (a commit SHA or a
+released version like `v1.2.3`) rather than `:latest`, so a Helm revision
+always records exactly what's running and `helm rollback` actually reverts
+the image, not just the chart. Deploy one service at a time:
+
+```bash
+make deploy-app APP=api TAG=<sha-or-version>
+```
+
+This runs `helm upgrade --install --reuse-values` against
+`values.production.yaml`/`values.secrets.yaml`, overriding only
+`images.<app>.tag`, then restarts and waits on that one Deployment. Every
+other service keeps whatever tag it was last deployed with. If the rollout
+doesn't become healthy within the timeout, it automatically runs
+`helm rollback` to undo it.
+
+For chart/template/config changes that aren't tied to a specific app image
+(PVC sizes, ingress, dashboards, initial bootstrap, disaster recovery), use:
+
 ```bash
 make deploy-prod
 ```
 
-This runs `helm upgrade --install` against `values.production.yaml` (Let's
-Encrypt TLS, GHCR image pulls) and `values.secrets.yaml`, then does a rolling
-restart of every Deployment so each pod re-pulls its `:latest` image from
-`ghcr.io/nevalenti`. Check progress at any time with:
+This re-applies the full chart with `--reuse-values`, so it won't disturb
+any app's currently pinned tag. Check progress at any time with:
 
 ```bash
 make status
@@ -56,13 +73,19 @@ built and imported from source rather than pulled from GHCR — use
 ## Continuous deployment
 
 Pushing to `main` deploys automatically: the `api`/`web`/`gateway`/`docs`
-GitHub Actions workflows build and push `:latest` images to GHCR on every
-push to `main`, and `.github/workflows/deploy.yml` runs `make deploy-prod`
-on completion (via `workflow_run`) on a self-hosted runner registered on the
-production box. The runner needs Docker-free access to `k3s kubectl` and
-`helm` (matching the `KUBECTL`/`HELM` variables in the `Makefile`), and its
-workspace must keep `infrastructure/helm/testcraft/values.secrets.yaml` in
-place between runs — it's gitignored and never checked out from the repo.
+GitHub Actions workflows each build and push a `:<commit-sha>` image to GHCR,
+then, in the same workflow, run `make deploy-app APP=<app> TAG=<sha>` on a
+self-hosted runner registered on the production box — only that one service
+restarts, and only after its own tests and image push succeeded. Changes
+under `infrastructure/helm/**` are deployed by `.github/workflows/infra.yml`,
+which runs `make deploy-prod`. To (re)deploy a specific released version on
+demand, run `.github/workflows/deploy-version.yml` manually and pick the app
+and version tag.
+
+The runner needs Docker-free access to `k3s kubectl` and `helm` (matching the
+`KUBECTL`/`HELM` variables in the `Makefile`), and its workspace must keep
+`infrastructure/helm/testcraft/values.secrets.yaml` in place between runs —
+it's gitignored and never checked out from the repo.
 
 ## Routing
 

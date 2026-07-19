@@ -1,0 +1,42 @@
+name: deploy version
+
+on:
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "app to deploy"
+        required: true
+        type: choice
+        options:
+          - api
+          - web
+          - gateway
+          - docs
+      version:
+        description: "image tag to deploy, e.g. a released version (v1.2.3) or a commit SHA"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: deploy ${{ inputs.app }}@${{ inputs.version }} to production
+    runs-on: [self-hosted, testcraft-production]
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Restore production secrets
+        run: |
+          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
+          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
+          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
+
+      - name: Deploy
+        run: make deploy-app APP=${{ inputs.app }} TAG=${{ inputs.version }}

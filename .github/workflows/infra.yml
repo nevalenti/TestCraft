@@ -1,0 +1,34 @@
+name: infra
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "infrastructure/helm/**"
+      - ".github/workflows/infra.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: apply chart changes to production
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    runs-on: [self-hosted, testcraft-production]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Restore production secrets
+        run: |
+          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
+          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
+          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
+
+      - name: Deploy
+        run: make deploy-prod
