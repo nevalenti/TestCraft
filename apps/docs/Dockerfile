@@ -12,7 +12,7 @@ COPY apps/docs/ ./apps/docs/
 
 RUN pnpm --filter testcraft-docs run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.31-alpine AS runtime
 
 RUN rm /etc/nginx/conf.d/default.conf
 
