@@ -205,4 +205,4 @@ jobs:
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
       - name: Deploy gateway
-        run: make deploy-app APP=gateway TAG=${{ github.sha }}
+        run: make deploy-app APP=gateway TAG=sha-${{ github.sha }}

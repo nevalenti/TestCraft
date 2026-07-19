@@ -13,7 +13,7 @@ on:
           - gateway
           - docs
       version:
-        description: "image tag to deploy, e.g. a released version (v1.2.3) or a commit SHA"
+        description: "image tag to deploy: a released version (v1.2.3) or a commit SHA"
         required: true
         type: string
 
@@ -38,5 +38,14 @@ jobs:
           test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
+      - name: Normalize tag
+        id: normalize
+        run: |
+          version="${{ inputs.version }}"
+          if [[ "$version" =~ ^[0-9a-f]{40}$ ]]; then
+            version="sha-$version"
+          fi
+          echo "tag=$version" >> "$GITHUB_OUTPUT"
+
       - name: Deploy
-        run: make deploy-app APP=${{ inputs.app }} TAG=${{ inputs.version }}
+        run: make deploy-app APP=${{ inputs.app }} TAG=${{ steps.normalize.outputs.tag }}

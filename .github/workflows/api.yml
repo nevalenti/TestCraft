@@ -213,4 +213,4 @@ jobs:
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
       - name: Deploy api
-        run: make deploy-app APP=api TAG=${{ github.sha }}
+        run: make deploy-app APP=api TAG=sha-${{ github.sha }}

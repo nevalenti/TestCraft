@@ -10,6 +10,7 @@ WEB_IMAGE = testcraft-web
 GATEWAY_IMAGE = testcraft-gateway
 DOCS_IMAGE = testcraft-docs
 JENKINS_IMAGE = testcraft-jenkins-controller
+GHCR_OWNER = nevalenti
 KUBECTL = sudo k3s kubectl
 HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
 GITLAB_CI_LOCAL = pnpm exec gitlab-ci-local --ignore-predefined-vars CI,CI_PIPELINE_SOURCE --variable CI_PIPELINE_SOURCE=web --privileged --variable NODE_TLS_REJECT_UNAUTHORIZED=0
@@ -49,14 +50,15 @@ deploy: images namespace
 	scripts/rollout.sh deployment/api deployment/web deployment/gateway deployment/docs
 
 deploy-prod: namespace tls-secret
-	helm dependency update infrastructure/helm/testcraft
+	sudo helm dependency update infrastructure/helm/testcraft
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft $(HELM_PROD_VALUES)
 	scripts/rollout.sh deployment/api deployment/web deployment/gateway deployment/docs
 
 deploy-app: namespace tls-secret
 	@test -n "$(APP)" || { echo "APP is required, e.g. make deploy-app APP=api TAG=<sha>" >&2; exit 1; }
 	@test -n "$(TAG)" || { echo "TAG is required, e.g. make deploy-app APP=api TAG=<sha>" >&2; exit 1; }
-	helm dependency update infrastructure/helm/testcraft
+	scripts/image-exists.sh $(GHCR_OWNER)/testcraft-$(APP) $(TAG) || { echo "ghcr.io/$(GHCR_OWNER)/testcraft-$(APP):$(TAG) does not exist - refusing to deploy" >&2; exit 1; }
+	sudo helm dependency update infrastructure/helm/testcraft
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft $(HELM_PROD_VALUES) \
 		--set images.$(APP).tag=$(TAG) \
 		--set images.$(APP).pullPolicy=IfNotPresent
