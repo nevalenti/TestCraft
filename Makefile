@@ -42,8 +42,8 @@ deploy: images
 		--cert="$$(mkcert -CAROOT)/rootCA.pem" --key="$$(mkcert -CAROOT)/rootCA-key.pem" \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --values infrastructure/helm/testcraft/values.secrets.yaml
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft --timeout=120s
 
 deploy-prod:
 	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
@@ -60,8 +60,8 @@ deploy-prod:
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft \
 		--values infrastructure/helm/testcraft/values.production.yaml \
 		--values infrastructure/helm/testcraft/values.secrets.yaml
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs -n testcraft --timeout=120s
+	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft
+	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft --timeout=120s
 
 destroy:
 	$(KUBECTL) delete namespace testcraft --ignore-not-found

@@ -1,4 +1,4 @@
-apps/api/src/generated/
+packages/types/src/generated/
 dist/
 helm/
 node_modules/

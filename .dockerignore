@@ -22,14 +22,10 @@ apps/Api/**/bin/
 apps/Api/**/obj/
 apps/Api/test-results/
 apps/Api/tests/
-apps/api/src/__tests__/
-apps/api/test-results/
 apps/Gateway/**/bin/
 apps/Gateway/**/obj/
-apps/web/e2e/
 apps/web/test-results/
 docker-compose*.yml
-infra/
 LICENSE
 Makefile
 node_modules

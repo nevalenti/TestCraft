@@ -20,8 +20,23 @@ updates:
     schedule:
       interval: "weekly"
 
+  - package-ecosystem: "docker"
+    directory: "/apps/Gateway"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "docker"
+    directory: "/apps/docs"
+    schedule:
+      interval: "weekly"
+
   - package-ecosystem: "nuget"
     directory: "/apps/Api"
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "nuget"
+    directory: "/apps/Gateway"
     schedule:
       interval: "weekly"
 
