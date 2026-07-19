@@ -15,40 +15,34 @@
       :root {
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-        --color-border: oklch(1 0 0 / 0.4);
+        --color-border: oklch(1 0 0 / 0.32);
       }
 
       [data-theme="testcraft-light"] {
-        --color-border: oklch(0 0 0 / 0.35);
-
         --color-base-100: oklch(0.99 0.006 277.5);
         --color-base-200: oklch(0.944 0.014 277.5);
         --color-base-300: oklch(0.885 0.02 277.5);
         --color-base-content: oklch(0.24 0.032 277.5);
-
         --color-primary: oklch(0.58 0.2 346.8);
         --color-primary-content: oklch(1 0 0);
-
         --color-secondary: oklch(0.55 0.17 301.9);
         --color-secondary-content: oklch(1 0 0);
-
         --color-accent: oklch(0.63 0.16 66.6);
         --color-accent-content: oklch(0.18 0.02 66.6);
-
         --color-neutral: oklch(0.35 0.032 277.8);
         --color-neutral-content: oklch(0.97 0.006 277.8);
-
         --color-info: oklch(0.56 0.13 212.8);
         --color-info-content: oklch(1 0 0);
-
         --color-success: oklch(0.5 0.19 148);
         --color-success-content: oklch(1 0 0);
-
         --color-warning: oklch(0.64 0.15 112.8);
         --color-warning-content: oklch(0.18 0.02 112.8);
-
         --color-error: oklch(0.56 0.22 24.4);
         --color-error-content: oklch(1 0 0);
+        --color-border: oklch(0 0 0 / 0.35);
+        --radius-selector: 1rem;
+        --radius-field: 0.5rem;
+        --radius-box: 1rem;
       }
 
       html, body {
@@ -59,8 +53,34 @@
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        background-color: var(--color-base-300);
+        background-color: var(--color-base-100);
         overflow: hidden;
+      }
+
+      .kc-shell {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        max-width: 90rem;
+        height: 100vh;
+        margin-left: auto;
+        margin-right: auto;
+        overflow: hidden;
+      }
+
+      @media (min-width: 640px) {
+        .kc-shell {
+          margin-top: 0.75rem;
+          margin-bottom: 0.75rem;
+          height: calc(100vh - 1.5rem);
+          border-radius: 1rem;
+        }
+      }
+
+      .kc-main {
+        flex: 1 1 0%;
+        min-height: 0;
+        overflow-y: auto;
       }
 
       #icon-moon { display: none; }
@@ -102,18 +122,6 @@
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: var(--color-base-300); border-radius: 999px; }
-
-      @media (min-width: 640px) {
-        .app-border {
-          border: 1px solid var(--color-border);
-        }
-
-        .app-shadow {
-          box-shadow:
-            0 25px 50px -12px oklch(0 0 0 / 0.35),
-            0 10px 20px -6px oklch(0 0 0 / 0.2);
-        }
-      }
     </style>
     <script>
       const THEME_KEY = 'app-theme';
@@ -150,9 +158,9 @@
     </script>
   </head>
   <body class="text-base-content">
-    <div class="app-border app-shadow mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-3 sm:h-[calc(100vh-1.5rem)] sm:rounded-2xl">
+    <div class="kc-shell bg-base-100 sm:rounded-2xl" style="border: 1px solid var(--color-border);">
 
-      <nav class="navbar bg-base-200 header-stripes h-14 shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; border-bottom: 1px solid var(--color-border);">
+      <nav class="navbar bg-base-200 header-stripes shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; height: 3.5rem; border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">
           <a href="https://testcraft.pro" class="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 shrink-0 text-primary" aria-hidden="true">
@@ -173,7 +181,7 @@
         </div>
       </nav>
 
-      <main class="flex flex-1 flex-col items-center justify-start overflow-y-auto pt-[10vh] px-4 pb-8" style="background-image: inherit;">
+      <main class="kc-main flex flex-col items-center justify-start pt-[10vh] px-4 pb-8" style="background-image: inherit;">
         <div class="w-full max-w-sm card-enter">
           <#nested "header">
         </div>
