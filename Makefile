@@ -1,5 +1,5 @@
 .PHONY: up down \
-        build load images deploy deploy-prod destroy status \
+        build load images deploy deploy-prod deploy-app namespace tls-secret destroy status \
         api-github web-github e2e-github docs-github \
         api-gitlab web-gitlab e2e-gitlab docs-gitlab \
         jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins docs-jenkins \
@@ -10,9 +10,11 @@ WEB_IMAGE = testcraft-web
 GATEWAY_IMAGE = testcraft-gateway
 DOCS_IMAGE = testcraft-docs
 JENKINS_IMAGE = testcraft-jenkins-controller
+GHCR_OWNER = nevalenti
 KUBECTL = sudo k3s kubectl
 HELM = sudo helm --kubeconfig /etc/rancher/k3s/k3s.yaml
 GITLAB_CI_LOCAL = pnpm exec gitlab-ci-local --ignore-predefined-vars CI,CI_PIPELINE_SOURCE --variable CI_PIPELINE_SOURCE=web --privileged --variable NODE_TLS_REJECT_UNAUTHORIZED=0
+HELM_PROD_VALUES = --values infrastructure/helm/testcraft/values.production.yaml --values infrastructure/helm/testcraft/values.secrets.yaml --reuse-values
 
 up:
 	docker compose up -d
@@ -34,34 +36,33 @@ load:
 
 images: build load
 
-deploy: images
-	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
-	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
-	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
+namespace:
+	scripts/k8s-namespace.sh
+
+tls-secret: namespace
+	scripts/k8s-tls-bootstrap.sh
+
+deploy: images namespace
 	$(KUBECTL) create secret tls testcraft-ca-tls -n testcraft \
 		--cert="$$(mkcert -CAROOT)/rootCA.pem" --key="$$(mkcert -CAROOT)/rootCA-key.pem" \
 		--dry-run=client -o yaml | $(KUBECTL) apply -f -
 	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft --values infrastructure/helm/testcraft/values.secrets.yaml
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft --timeout=120s
+	scripts/rollout.sh deployment/api deployment/web deployment/gateway deployment/docs
 
-deploy-prod:
-	$(KUBECTL) create namespace testcraft --dry-run=client -o yaml | $(KUBECTL) apply -f -
-	$(KUBECTL) label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
-	$(KUBECTL) annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft --overwrite
-	$(KUBECTL) get secret testcraft-tls -n testcraft >/dev/null 2>&1 || ( \
-		TMPDIR=$$(mktemp -d) && \
-		openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
-			-keyout $$TMPDIR/tls.key -out $$TMPDIR/tls.crt -subj "/CN=bootstrap" && \
-		$(KUBECTL) create secret tls testcraft-tls -n testcraft --cert=$$TMPDIR/tls.crt --key=$$TMPDIR/tls.key && \
-		rm -rf $$TMPDIR \
-	)
+deploy-prod: namespace tls-secret
 	helm dependency update infrastructure/helm/testcraft
-	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft \
-		--values infrastructure/helm/testcraft/values.production.yaml \
-		--values infrastructure/helm/testcraft/values.secrets.yaml
-	$(KUBECTL) rollout restart deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft
-	$(KUBECTL) rollout status deployment/api deployment/web deployment/gateway deployment/docs deployment/keycloak -n testcraft --timeout=120s
+	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft $(HELM_PROD_VALUES)
+	scripts/rollout.sh deployment/api deployment/web deployment/gateway deployment/docs
+
+deploy-app: namespace tls-secret
+	@test -n "$(APP)" || { echo "APP is required, e.g. make deploy-app APP=api TAG=<sha>" >&2; exit 1; }
+	@test -n "$(TAG)" || { echo "TAG is required, e.g. make deploy-app APP=api TAG=<sha>" >&2; exit 1; }
+	scripts/image-exists.sh $(GHCR_OWNER)/testcraft-$(APP) $(TAG) || { echo "ghcr.io/$(GHCR_OWNER)/testcraft-$(APP):$(TAG) does not exist - refusing to deploy" >&2; exit 1; }
+	helm dependency update infrastructure/helm/testcraft
+	$(HELM) upgrade --install testcraft infrastructure/helm/testcraft --namespace testcraft $(HELM_PROD_VALUES) \
+		--set images.$(APP).tag=$(TAG) \
+		--set images.$(APP).pullPolicy=IfNotPresent
+	scripts/rollout.sh deployment/$(APP)
 
 destroy:
 	$(KUBECTL) delete namespace testcraft --ignore-not-found
