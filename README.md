@@ -6,9 +6,9 @@
 
 [![API](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/api.yml)
 [![Web](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/web.yml)
+[![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 [![Gateway](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml)
 [![Docs](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml)
-[![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 <br>
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](apps/web)
@@ -56,7 +56,7 @@
 
 ### Accounts & access
 
-- **Keycloak auth** — SSO with optional GitHub social login
+- **Keycloak auth** — SSO with optional GitHub and Google social login
 - **Project members** — invite collaborators to projects for shared access
 - **Accounts** — profile settings with avatar upload
 
