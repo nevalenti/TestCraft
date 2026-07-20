@@ -1,8 +1,8 @@
-.PHONY: up down \
-        build load images deploy deploy-prod deploy-app namespace tls-secret destroy status \
+.PHONY: up down build load images \
+        deploy deploy-prod deploy-app namespace tls-secret destroy status \
         api-github web-github e2e-github docs-github \
         api-gitlab web-gitlab e2e-gitlab docs-gitlab \
-        jenkins-image jenkins-up jenkins-down api-jenkins web-jenkins e2e-jenkins docs-jenkins \
+        api-jenkins web-jenkins e2e-jenkins docs-jenkins jenkins-image jenkins-up jenkins-down \
         format
 
 API_IMAGE = testcraft-api

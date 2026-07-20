@@ -102,7 +102,9 @@ service — nothing but the Gateway is exposed outside the cluster:
 | `/grafana/*` | Grafana                        |
 | `/seq/*`     | Seq                            |
 | `/storage/*` | MinIO                          |
-| `:8443`      | Keycloak (separate HTTPS port) |
+
+Keycloak is routed separately, by Host header rather than path: requests to
+`auth.testcraft.pro` go to Keycloak instead of the Web SPA.
 
 When adding a new service behind the Gateway, follow the existing pattern:
 a `PathRemovePrefix` transform strips the route prefix before forwarding, so
@@ -124,6 +126,36 @@ responsibility to snapshot. At minimum, back up:
 
 Losing Keycloak's PVC loses realm/user config, but that's reproducible from
 `infrastructure/keycloak/realm.json` — it doesn't need routine backups.
+
+### Restore
+
+**Postgres** — copy the dump into the pod and restore it with `psql` (the
+`pg_dump` above produces a plain SQL file, not a custom-format archive, so
+`pg_restore` isn't used):
+
+```bash
+sudo k3s kubectl cp backup.sql testcraft/$(sudo k3s kubectl get pod -n testcraft -l app=postgres -o jsonpath='{.items[0].metadata.name}'):/tmp/backup.sql
+sudo k3s kubectl exec -n testcraft deploy/postgres -- psql -U testcraft -d testcraft_db -f /tmp/backup.sql
+```
+
+Restoring into a database that already has data will fail on conflicting
+rows/constraints — either restore into a freshly created database, or drop
+and recreate `testcraft_db` first.
+
+**MinIO** — point the `mc` client at the in-cluster service and mirror the
+bucket back:
+
+```bash
+mc alias set testcraft-minio http://localhost:9000 <MINIO_ROOT_USER> <MINIO_ROOT_PASSWORD>
+mc mirror ./attachments-backup testcraft-minio/testcraft-attachments
+```
+
+(`kubectl port-forward svc/minio 9000:9000 -n testcraft` first if running
+this from outside the cluster.) Restoring the underlying PVC snapshot instead
+works too, and doesn't require `mc`.
+
+After restoring Postgres, restart the API so it drops any cached state:
+`sudo k3s kubectl rollout restart deployment/api -n testcraft`.
 
 ## Teardown
 
