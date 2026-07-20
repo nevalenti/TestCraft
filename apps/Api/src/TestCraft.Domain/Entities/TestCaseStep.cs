@@ -1,6 +1,6 @@
 namespace TestCraft.Domain.Entities;
 
-public class TestCaseStep : IAuditableEntity
+public class TestCaseStep : IAuditableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
     public int Order { get; set; }

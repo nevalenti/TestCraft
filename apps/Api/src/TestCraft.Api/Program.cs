@@ -11,7 +11,12 @@ builder.ConfigureServices();
 var app = builder.Build();
 
 app.Logger.LogStartupConfiguration(
-    app.Services.GetRequiredService<ApiOptions>(),
+    app.Services.GetRequiredService<KeycloakAuthOptions>(),
+    app.Services.GetRequiredService<CorsOptions>(),
+    app.Services.GetRequiredService<ApiLoggingOptions>(),
+    app.Services.GetRequiredService<DatabaseMigrationOptions>(),
+    app.Services.GetRequiredService<MetricsOptions>(),
+    app.Services.GetRequiredService<SwaggerBasicAuthOptions>(),
     app.Services.GetRequiredService<InfrastructureOptions>()
 );
 

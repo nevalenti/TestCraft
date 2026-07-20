@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.Users;
 
-namespace TestCraft.Api.Account;
+namespace TestCraft.Api.Users;
 
 [Authorize]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/account")]
-public class AccountController(ISender sender) : ControllerBase
+public class UsersController(ISender sender) : ControllerBase
 {
     /// <summary>Returns a presigned URL for the current user's avatar.</summary>
     [HttpGet("avatar")]

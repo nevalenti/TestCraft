@@ -1,9 +1,8 @@
-using System.Security.Cryptography;
-using System.Text;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using TestCraft.Api.Middleware;
 
 namespace TestCraft.Api.Configuration;
 
@@ -53,33 +52,11 @@ public static class SwaggerExtensions
 
         if (app.Environment.IsProduction())
         {
-            var apiOptions = app.Services.GetRequiredService<ApiOptions>();
-
             app.UseWhen(
                 context => context.Request.Path.StartsWithSegments(ApiPaths.DocsPrefix),
                 branch =>
                 {
-                    branch.Use(
-                        async (context, next) =>
-                        {
-                            if (
-                                IsBasicAuthValid(
-                                    context.Request.Headers.Authorization.ToString(),
-                                    apiOptions.SwaggerBasicAuthUsername,
-                                    apiOptions.SwaggerBasicAuthPassword
-                                )
-                            )
-                            {
-                                await next();
-                                return;
-                            }
-
-                            context.Response.Headers.WWWAuthenticate =
-                                "Basic realm=\"TestCraft API Docs\", charset=\"UTF-8\"";
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        }
-                    );
-
+                    branch.UseSwaggerBasicAuth();
                     branch.UseSwaggerMiddleware(apiVersionDescriptionProvider);
                 }
             );
@@ -118,57 +95,6 @@ public static class SwaggerExtensions
             options.RoutePrefix = ApiPaths.DocsPrefix.TrimStart('/');
             options.DocumentTitle = "TestCraft API";
         });
-    }
-
-    private static bool IsBasicAuthValid(
-        string authorizationHeader,
-        string? expectedUsername,
-        string? expectedPassword
-    )
-    {
-        if (string.IsNullOrEmpty(expectedUsername) || string.IsNullOrEmpty(expectedPassword))
-        {
-            return false;
-        }
-
-        const string prefix = "Basic ";
-        if (!authorizationHeader.StartsWith(prefix, StringComparison.Ordinal))
-        {
-            return false;
-        }
-
-        string credentials;
-        try
-        {
-            credentials = Encoding.UTF8.GetString(
-                Convert.FromBase64String(authorizationHeader[prefix.Length..])
-            );
-        }
-        catch (FormatException)
-        {
-            return false;
-        }
-
-        var separatorIndex = credentials.IndexOf(':', StringComparison.Ordinal);
-        if (separatorIndex < 0)
-        {
-            return false;
-        }
-
-        var username = credentials[..separatorIndex];
-        var password = credentials[(separatorIndex + 1)..];
-
-        return FixedTimeEquals(username, expectedUsername)
-            && FixedTimeEquals(password, expectedPassword);
-    }
-
-    private static bool FixedTimeEquals(string actual, string expected)
-    {
-        var actualBytes = Encoding.UTF8.GetBytes(actual);
-        var expectedBytes = Encoding.UTF8.GetBytes(expected);
-
-        return actualBytes.Length == expectedBytes.Length
-            && CryptographicOperations.FixedTimeEquals(actualBytes, expectedBytes);
     }
 }
 

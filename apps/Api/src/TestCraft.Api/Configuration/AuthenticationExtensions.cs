@@ -10,27 +10,27 @@ public static class AuthenticationExtensions
 {
     public static WebApplicationBuilder AddKeycloakAuthentication(
         this WebApplicationBuilder builder,
-        ApiOptions apiOptions
+        KeycloakAuthOptions keycloakOptions
     )
     {
         builder
             .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
-                options.Authority = apiOptions.KeycloakAuthority;
-                options.Audience = apiOptions.KeycloakAudience;
-                options.RequireHttpsMetadata = apiOptions.KeycloakRequireHttpsMetadata;
+                options.Authority = keycloakOptions.KeycloakAuthority;
+                options.Audience = keycloakOptions.KeycloakAudience;
+                options.RequireHttpsMetadata = keycloakOptions.KeycloakRequireHttpsMetadata;
 
                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                    $"{apiOptions.KeycloakAuthority}/protocol/openid-connect/certs",
+                    $"{keycloakOptions.KeycloakAuthority}/protocol/openid-connect/certs",
                     new JwksOnlyConfigurationRetriever(),
                     new HttpDocumentRetriever
                     {
-                        RequireHttps = apiOptions.KeycloakRequireHttpsMetadata,
+                        RequireHttps = keycloakOptions.KeycloakRequireHttpsMetadata,
                     }
                 );
                 options.TokenValidationParameters.ValidIssuer =
-                    apiOptions.KeycloakIssuer ?? apiOptions.KeycloakAuthority;
+                    keycloakOptions.KeycloakIssuer ?? keycloakOptions.KeycloakAuthority;
 
                 options.Events = new JwtBearerEvents
                 {

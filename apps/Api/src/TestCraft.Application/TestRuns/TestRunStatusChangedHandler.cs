@@ -1,6 +1,7 @@
 using MassTransit;
 using MediatR;
 using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Notifications.Contracts;
 using TestCraft.Domain.Events;
@@ -10,22 +11,24 @@ namespace TestCraft.Application.TestRuns;
 public sealed class TestRunStatusChangedHandler(
     ICacheService cache,
     IPublishEndpoint publishEndpoint
-) : INotificationHandler<TestRunStatusChangedEvent>
+) : INotificationHandler<DomainEventNotification<TestRunStatusChangedEvent>>
 {
     public async Task Handle(
-        TestRunStatusChangedEvent notification,
+        DomainEventNotification<TestRunStatusChangedEvent> notification,
         CancellationToken cancellationToken
     )
     {
-        await cache.RemoveAsync(CacheKeys.TestRunResponse(notification.RunId), cancellationToken);
+        var domainEvent = notification.DomainEvent;
+
+        await cache.RemoveAsync(CacheKeys.TestRunResponse(domainEvent.RunId), cancellationToken);
 
         await publishEndpoint.Publish(
             new RunStatusChanged(
-                notification.RunId,
-                notification.ProjectId,
-                notification.RunName,
-                notification.NewStatus.ToString(),
-                notification.OldStatus.ToString()
+                domainEvent.RunId,
+                domainEvent.ProjectId,
+                domainEvent.RunName,
+                domainEvent.NewStatus.ToString(),
+                domainEvent.OldStatus.ToString()
             ),
             cancellationToken
         );

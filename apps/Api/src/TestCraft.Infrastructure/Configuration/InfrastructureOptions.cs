@@ -70,21 +70,6 @@ public sealed class InfrastructureOptions
             KeycloakAdminPassword = configuration["KEYCLOAK_ADMIN_PASSWORD"] ?? string.Empty,
         };
 
-        var results = new List<ValidationResult>();
-        if (
-            !Validator.TryValidateObject(
-                options,
-                new ValidationContext(options),
-                results,
-                validateAllProperties: true
-            )
-        )
-        {
-            throw new InvalidOperationException(
-                $"Invalid infrastructure configuration: {string.Join("; ", results.Select(r => r.ErrorMessage))}"
-            );
-        }
-
-        return options;
+        return OptionsValidator.ValidateAndThrow(options, "infrastructure");
     }
 }

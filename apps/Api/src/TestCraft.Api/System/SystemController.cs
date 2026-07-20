@@ -1,12 +1,11 @@
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
 using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Prometheus;
 using TestCraft.Api.Configuration;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Infrastructure.Security;
 
 namespace TestCraft.Api.System;
 
@@ -14,13 +13,16 @@ namespace TestCraft.Api.System;
 [ApiController]
 [ApiVersionNeutral]
 [Route("api")]
-public class SystemController(ApiOptions apiOptions, IApplicationDbContext dbContext)
-    : ControllerBase
+public class SystemController(
+    KeycloakAuthOptions keycloakOptions,
+    MetricsOptions metricsOptions,
+    IApplicationDbContext dbContext
+) : ControllerBase
 {
     /// <summary>Gets the Keycloak authority used by clients to authenticate.</summary>
     [HttpGet("auth-config")]
     public ActionResult<AuthConfigResponse> GetAuthConfig() =>
-        Ok(new AuthConfigResponse(apiOptions.KeycloakAuthority));
+        Ok(new AuthConfigResponse(keycloakOptions.KeycloakAuthority));
 
     /// <summary>Returns whether the API process has started.</summary>
     [HttpGet("ready")]
@@ -67,7 +69,7 @@ public class SystemController(ApiOptions apiOptions, IApplicationDbContext dbCon
         [FromHeader(Name = "Authorization")] string? authorization
     )
     {
-        var metricsToken = apiOptions.MetricsToken;
+        var metricsToken = metricsOptions.MetricsToken;
         if (!string.IsNullOrEmpty(metricsToken) && !IsBearerTokenValid(authorization, metricsToken))
         {
             return Unauthorized();
@@ -96,13 +98,7 @@ public class SystemController(ApiOptions apiOptions, IApplicationDbContext dbCon
         }
     }
 
-    private static bool IsBearerTokenValid(string? authHeader, string token)
-    {
-        var providedBytes = Encoding.UTF8.GetBytes(authHeader ?? string.Empty);
-        var expectedBytes = Encoding.UTF8.GetBytes($"Bearer {token}");
-
-        return providedBytes.Length == expectedBytes.Length
-            && CryptographicOperations.FixedTimeEquals(providedBytes, expectedBytes);
-    }
+    private static bool IsBearerTokenValid(string? authHeader, string token) =>
+        FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
 }
 #pragma warning restore S6960

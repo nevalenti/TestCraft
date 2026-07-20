@@ -1,0 +1,17 @@
+using TestCraft.Infrastructure.Configuration;
+
+namespace TestCraft.Api.Configuration;
+
+public sealed class DatabaseMigrationOptions
+{
+    public bool ApplyMigrations { get; init; }
+
+    public static DatabaseMigrationOptions Bind(IConfiguration configuration) =>
+        OptionsValidator.ValidateAndThrow(
+            new DatabaseMigrationOptions
+            {
+                ApplyMigrations = configuration.GetValue<bool>("APPLY_MIGRATIONS"),
+            },
+            "database migration"
+        );
+}

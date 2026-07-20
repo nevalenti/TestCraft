@@ -5,10 +5,10 @@ using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Users;
 
-namespace TestCraft.Api.IntegrationTests.Account;
+namespace TestCraft.Api.IntegrationTests.Users;
 
 [Collection(ApiCollection.Name)]
-public class AccountApiTests(ApiFactory factory)
+public class UsersApiTests(ApiFactory factory)
 {
     private HttpClient CreateClient(Guid userId)
     {

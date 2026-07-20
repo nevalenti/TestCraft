@@ -5,10 +5,10 @@ using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.ShareTokens;
 
-namespace TestCraft.Api.IntegrationTests.Share;
+namespace TestCraft.Api.IntegrationTests.ShareTokens;
 
 [Collection(ApiCollection.Name)]
-public class ShareApiTests(ApiFactory factory)
+public class ShareTokensApiTests(ApiFactory factory)
 {
     private HttpClient CreateClient(Guid userId)
     {

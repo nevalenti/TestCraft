@@ -4,7 +4,7 @@ using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestRun : IAuditableEntity, IHasDomainEvents
+public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
 {
     private static readonly Dictionary<TestRunStatus, int> StatusOrder = new()
     {

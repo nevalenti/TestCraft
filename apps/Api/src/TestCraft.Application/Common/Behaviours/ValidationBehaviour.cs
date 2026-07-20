@@ -18,10 +18,12 @@ public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRe
             return await next(cancellationToken);
         }
 
-        var context = new ValidationContext<TRequest>(request);
-
         var failures = (
-            await Task.WhenAll(validators.Select(v => v.ValidateAsync(context, cancellationToken)))
+            await Task.WhenAll(
+                validators.Select(v =>
+                    v.ValidateAsync(new ValidationContext<TRequest>(request), cancellationToken)
+                )
+            )
         )
             .SelectMany(result => result.Errors)
             .Where(failure => failure is not null)

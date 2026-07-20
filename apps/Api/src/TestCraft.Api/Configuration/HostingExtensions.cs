@@ -5,7 +5,7 @@ using TestCraft.Api.Errors;
 using TestCraft.Api.Hubs;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
-using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.TestRuns;
 using TestCraft.Infrastructure;
 
 namespace TestCraft.Api.Configuration;
@@ -22,8 +22,19 @@ public static class HostingExtensions
             }
         );
 
-        var apiOptions = ApiOptions.Bind(builder.Configuration);
-        builder.Services.AddSingleton(apiOptions);
+        var keycloakAuthOptions = KeycloakAuthOptions.Bind(builder.Configuration);
+        var corsOptions = CorsOptions.Bind(builder.Configuration);
+        var loggingOptions = ApiLoggingOptions.Bind(builder.Configuration);
+        var migrationOptions = DatabaseMigrationOptions.Bind(builder.Configuration);
+        var metricsOptions = MetricsOptions.Bind(builder.Configuration);
+        var swaggerBasicAuthOptions = SwaggerBasicAuthOptions.Bind(builder.Configuration);
+
+        builder.Services.AddSingleton(keycloakAuthOptions);
+        builder.Services.AddSingleton(corsOptions);
+        builder.Services.AddSingleton(loggingOptions);
+        builder.Services.AddSingleton(migrationOptions);
+        builder.Services.AddSingleton(metricsOptions);
+        builder.Services.AddSingleton(swaggerBasicAuthOptions);
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
@@ -47,12 +58,12 @@ public static class HostingExtensions
         builder.Services.AddScoped<ITestRunNotifier, SignalRTestRunNotifier>();
 
         return builder
-            .AddSerilogLogging(apiOptions)
-            .AddKeycloakAuthentication(apiOptions)
+            .AddSerilogLogging(loggingOptions)
+            .AddKeycloakAuthentication(keycloakAuthOptions)
             .AddApiControllers()
             .AddApiVersioningSupport()
             .AddErrorHandling()
-            .AddCorsPolicy(apiOptions)
+            .AddCorsPolicy(corsOptions)
             .AddApiRateLimiting()
             .AddSwaggerDocs();
     }

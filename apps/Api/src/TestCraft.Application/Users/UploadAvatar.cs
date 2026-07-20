@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 
@@ -12,7 +13,7 @@ public record AvatarUrlResponse
     public required string Url { get; init; }
 }
 
-public static class UploadAvatar
+public static partial class UploadAvatar
 {
     /// <summary>Uploads a new avatar for the current user, replacing any existing one.</summary>
     public sealed record Command : IRequest<AvatarUrlResponse>
@@ -27,10 +28,11 @@ public static class UploadAvatar
         public required Stream Content { get; init; }
     }
 
-    public sealed class Handler(
+    public sealed partial class Handler(
         IApplicationDbContext context,
         ICurrentUser currentUser,
-        IStorageService storage
+        IStorageService storage,
+        ILogger<Handler> logger
     ) : IRequestHandler<Command, AvatarUrlResponse>
     {
         public async Task<AvatarUrlResponse> Handle(
@@ -53,7 +55,7 @@ public static class UploadAvatar
                 }
                 catch (Exception ex)
                 {
-                    _ = ex;
+                    LogOldAvatarDeleteFailed(logger, ex, profile.AvatarKey);
                 }
             }
 
@@ -75,7 +77,6 @@ public static class UploadAvatar
             else
             {
                 profile.AvatarKey = storageKey;
-                profile.UpdatedAt = DateTimeOffset.UtcNow;
             }
 
             await context.SaveChangesAsync(cancellationToken);
@@ -88,5 +89,15 @@ public static class UploadAvatar
 
             return new AvatarUrlResponse { Url = url };
         }
+
+        [LoggerMessage(
+            Level = LogLevel.Warning,
+            Message = "Failed to delete old avatar {AvatarKey}"
+        )]
+        private static partial void LogOldAvatarDeleteFailed(
+            ILogger logger,
+            Exception exception,
+            string avatarKey
+        );
     }
 }

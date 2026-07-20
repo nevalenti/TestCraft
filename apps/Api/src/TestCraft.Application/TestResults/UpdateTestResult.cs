@@ -5,6 +5,7 @@ using TestCraft.Application.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestResults;

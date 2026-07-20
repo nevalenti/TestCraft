@@ -1,9 +1,10 @@
 using FluentAssertions;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;
 
-namespace TestCraft.Application.UnitTests.Common;
+namespace TestCraft.Application.UnitTests.Common.Security;
 
 public class ProjectOwnershipGuardTests
 {

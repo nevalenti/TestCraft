@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
-using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.ProjectMembers;
 

@@ -1,7 +1,7 @@
 using FluentAssertions;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.TestResults;
-using TestCraft.Application.UnitTests.Common;
+using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;

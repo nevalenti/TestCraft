@@ -13,6 +13,7 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
         builder.HasKey(p => p.UserId);
         builder.Property(p => p.UserId).HasColumnName("user_id").ValueGeneratedNever();
         builder.Property(p => p.AvatarKey).HasColumnName("avatar_key").HasMaxLength(500);
+        builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
         builder.Property(p => p.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
     }
 }

@@ -1,6 +1,6 @@
 namespace TestCraft.Domain.Entities;
 
-public class Project : IAuditableEntity
+public class Project : IAuditableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
     public required string Name { get; set; }

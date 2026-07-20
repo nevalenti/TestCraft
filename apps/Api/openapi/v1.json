@@ -8,7 +8,7 @@
   "paths": {
     "/api/v1/account/avatar": {
       "get": {
-        "tags": ["Account"],
+        "tags": ["Users"],
         "summary": "Returns a presigned URL for the current user's avatar.",
         "responses": {
           "200": {
@@ -77,7 +77,7 @@
         }
       },
       "put": {
-        "tags": ["Account"],
+        "tags": ["Users"],
         "summary": "Uploads a new avatar for the current user.",
         "requestBody": {
           "content": {
@@ -4363,7 +4363,7 @@
     },
     "/api/v1/share/{token}": {
       "get": {
-        "tags": ["PublicShare"],
+        "tags": ["PublicShareTokens"],
         "summary": "Returns a shared test run view without authentication.",
         "parameters": [
           {
@@ -4412,7 +4412,7 @@
     },
     "/api/v1/projects/{projectId}/runs/{runId}/share": {
       "post": {
-        "tags": ["Share"],
+        "tags": ["ShareTokens"],
         "summary": "Creates a shareable link token for a test run.",
         "parameters": [
           {
@@ -4557,7 +4557,7 @@
         }
       },
       "get": {
-        "tags": ["Share"],
+        "tags": ["ShareTokens"],
         "summary": "Lists all share tokens for a test run.",
         "parameters": [
           {
@@ -4674,7 +4674,7 @@
     },
     "/api/v1/projects/{projectId}/runs/{runId}/share/{id}": {
       "delete": {
-        "tags": ["Share"],
+        "tags": ["ShareTokens"],
         "summary": "Revokes a share token.",
         "parameters": [
           {
