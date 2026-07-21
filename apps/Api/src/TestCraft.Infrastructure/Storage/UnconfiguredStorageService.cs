@@ -2,7 +2,7 @@ using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Infrastructure.Storage;
 
-public class NoOpStorageService : IStorageService
+public class UnconfiguredStorageService : IStorageService
 {
     private const string Message =
         "Storage is not configured. Set MINIO_ENDPOINT, MINIO_ACCESS_KEY, and MINIO_SECRET_KEY.";

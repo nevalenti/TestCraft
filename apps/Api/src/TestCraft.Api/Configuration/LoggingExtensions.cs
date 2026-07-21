@@ -12,7 +12,7 @@ public static class LoggingExtensions
 {
     public static WebApplicationBuilder AddSerilogLogging(
         this WebApplicationBuilder builder,
-        ApiOptions apiOptions
+        ApiLoggingOptions loggingOptions
     )
     {
         var environmentName = builder.Environment.EnvironmentName;
@@ -31,24 +31,24 @@ public static class LoggingExtensions
                     .Enrich.WithSpan()
                     .Enrich.WithProperty("environment", environmentName);
 
-                if (!string.IsNullOrEmpty(apiOptions.LokiUrl))
+                if (!string.IsNullOrEmpty(loggingOptions.LokiUrl))
                 {
                     loggerConfig.WriteTo.GrafanaLoki(
-                        apiOptions.LokiUrl,
+                        loggingOptions.LokiUrl,
                         labels:
                         [
-                            new LokiLabel { Key = "app", Value = apiOptions.OtelServiceName },
+                            new LokiLabel { Key = "app", Value = loggingOptions.OtelServiceName },
                             new LokiLabel { Key = "environment", Value = environmentName },
                         ],
                         handleLogLevelAsLabel: true
                     );
                 }
 
-                if (!string.IsNullOrEmpty(apiOptions.SeqUrl))
+                if (!string.IsNullOrEmpty(loggingOptions.SeqUrl))
                 {
                     loggerConfig.WriteTo.Seq(
-                        apiOptions.SeqUrl,
-                        apiKey: apiOptions.SeqApiKey,
+                        loggingOptions.SeqUrl,
+                        apiKey: loggingOptions.SeqApiKey,
                         formatProvider: CultureInfo.InvariantCulture
                     );
                 }

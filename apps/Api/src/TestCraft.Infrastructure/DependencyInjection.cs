@@ -86,9 +86,17 @@ public static class DependencyInjection
         }
         else
         {
-            services.AddScoped<IStorageService, NoOpStorageService>();
+            services.AddScoped<IStorageService, UnconfiguredStorageService>();
         }
-        services.AddScoped<IEmailService, MailKitEmailService>();
+
+        if (!string.IsNullOrEmpty(options.SmtpHost))
+        {
+            services.AddScoped<IEmailService, MailKitEmailService>();
+        }
+        else
+        {
+            services.AddScoped<IEmailService, NoOpEmailService>();
+        }
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddSingleton<IApiTokenHasher, ApiTokenHasher>();
 

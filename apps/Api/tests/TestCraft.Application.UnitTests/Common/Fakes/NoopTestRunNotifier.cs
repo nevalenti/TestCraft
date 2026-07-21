@@ -1,33 +1,37 @@
 using TestCraft.Application.TestResults;
+using TestCraft.Application.TestRuns;
 
-namespace TestCraft.Application.Common.Interfaces;
+namespace TestCraft.Application.UnitTests.Common.Fakes;
 
-public interface ITestRunNotifier
+internal sealed class NoopTestRunNotifier : ITestRunNotifier
 {
-    Task ResultAddedAsync(
+    public Task ResultAddedAsync(
         Guid runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
-    );
-    Task ResultUpdatedAsync(
+    ) => Task.CompletedTask;
+
+    public Task ResultUpdatedAsync(
         Guid runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
-    );
-    Task ResultDeletedAsync(
+    ) => Task.CompletedTask;
+
+    public Task ResultDeletedAsync(
         Guid runId,
         Guid resultId,
         CancellationToken cancellationToken = default
-    );
-    Task RunStatusChangedAsync(
+    ) => Task.CompletedTask;
+
+    public Task RunStatusChangedAsync(
         Guid runId,
         string newStatus,
         CancellationToken cancellationToken = default
-    );
+    ) => Task.CompletedTask;
 
-    Task LogsAppendedAsync(
+    public Task LogsAppendedAsync(
         Guid runId,
         IReadOnlyList<string> lines,
         CancellationToken cancellationToken = default
-    );
+    ) => Task.CompletedTask;
 }

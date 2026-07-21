@@ -1,6 +1,6 @@
 using TestCraft.Application.Common.Interfaces;
 
-namespace TestCraft.Application.UnitTests.Common;
+namespace TestCraft.Application.UnitTests.Common.Fakes;
 
 internal sealed class FakeCurrentUser : ICurrentUser
 {

@@ -2,7 +2,7 @@ using System.Security.Claims;
 
 namespace TestCraft.Api.Extensions;
 
-internal static class ClaimsPrincipalExtensions
+internal static class ClaimsPrincipalLogExtensions
 {
     public static string? GetUserId(this ClaimsPrincipal user) =>
         user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");

@@ -1,6 +1,6 @@
 using TestCraft.Application.Caching;
 
-namespace TestCraft.Application.UnitTests.Common;
+namespace TestCraft.Application.UnitTests.Common.Fakes;
 
 internal sealed class NoopCacheService : ICacheService
 {

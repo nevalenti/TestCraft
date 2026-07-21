@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Infrastructure.Security;
 
 namespace TestCraft.Infrastructure.Auth;
 
@@ -20,7 +21,7 @@ public class ApiTokenHasher : IApiTokenHasher
     }
 
     public bool Verify(string token, string hash) =>
-        CryptographicOperations.FixedTimeEquals(
+        FixedTimeCredentialComparer.Equals(
             Convert.FromHexString(Hash(token)),
             Convert.FromHexString(hash)
         );

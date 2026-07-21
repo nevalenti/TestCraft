@@ -1,5 +1,8 @@
+using System.Collections.Concurrent;
+using System.Linq.Expressions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Events;
@@ -67,6 +70,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
         }
     }
 
+    private static readonly ConcurrentDictionary<
+        Type,
+        Func<IDomainEvent, INotification>
+    > NotificationFactories = new();
+
     private async Task DispatchDomainEventsAsync(CancellationToken ct)
     {
         var entities = ChangeTracker.Entries<IHasDomainEvents>().Select(e => e.Entity).ToList();
@@ -75,8 +83,27 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
         {
             foreach (var domainEvent in entity.PopDomainEvents())
             {
-                await publisher.Publish(domainEvent, ct);
+                var factory = NotificationFactories.GetOrAdd(
+                    domainEvent.GetType(),
+                    CreateNotificationFactory
+                );
+
+                await publisher.Publish(factory(domainEvent), ct);
             }
         }
+    }
+
+    // Builds and caches a compiled `e => new DomainEventNotification<TEvent>(e)` per event
+    // type, so the reflection cost of bridging Domain events to MediatR is paid once per
+    // event type rather than on every SaveChangesAsync.
+    private static Func<IDomainEvent, INotification> CreateNotificationFactory(Type domainEventType)
+    {
+        var notificationType = typeof(DomainEventNotification<>).MakeGenericType(domainEventType);
+        var constructor = notificationType.GetConstructors().Single();
+
+        var parameter = Expression.Parameter(typeof(IDomainEvent), "domainEvent");
+        var body = Expression.New(constructor, Expression.Convert(parameter, domainEventType));
+
+        return Expression.Lambda<Func<IDomainEvent, INotification>>(body, parameter).Compile();
     }
 }

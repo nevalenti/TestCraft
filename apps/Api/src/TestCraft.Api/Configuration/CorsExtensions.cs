@@ -6,7 +6,7 @@ public static class CorsExtensions
 
     public static WebApplicationBuilder AddCorsPolicy(
         this WebApplicationBuilder builder,
-        ApiOptions apiOptions
+        CorsOptions corsOptions
     )
     {
         builder.Services.AddCors(options =>
@@ -15,7 +15,7 @@ public static class CorsExtensions
                 DefaultPolicyName,
                 policy =>
                     policy
-                        .WithOrigins(apiOptions.CorsAllowedOrigins)
+                        .WithOrigins(corsOptions.CorsAllowedOrigins)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials()

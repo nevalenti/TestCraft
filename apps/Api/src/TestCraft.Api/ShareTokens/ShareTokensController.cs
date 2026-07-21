@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Application.ShareTokens;
 
-namespace TestCraft.Api.Share;
+namespace TestCraft.Api.ShareTokens;
 
 [Authorize]
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/share")]
-public class ShareController(ISender sender) : ControllerBase
+public class ShareTokensController(ISender sender) : ControllerBase
 {
     /// <summary>Creates a shareable link token for a test run.</summary>
     [HttpPost]
@@ -68,17 +68,4 @@ public class ShareController(ISender sender) : ControllerBase
 
         return NoContent();
     }
-}
-
-[AllowAnonymous]
-[ApiController]
-[Route("api/v1/share")]
-public class PublicShareController(ISender sender) : ControllerBase
-{
-    /// <summary>Returns a shared test run view without authentication.</summary>
-    [HttpGet("{token}")]
-    public async Task<ActionResult<SharedRunResponse>> GetByToken(
-        string token,
-        CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetRunByShareToken.Query(token), cancellationToken));
 }

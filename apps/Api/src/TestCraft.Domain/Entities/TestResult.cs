@@ -2,7 +2,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestResult : IAuditableEntity
+public class TestResult : IAuditableEntity, ISoftDeletableEntity
 {
     public Guid Id { get; set; }
     public TestResultStatus Status { get; set; }
