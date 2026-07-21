@@ -15,6 +15,9 @@ images:
 tls:
   provider: letsencrypt
 
+storage:
+  tempo: 5Gi
+
 ingress-nginx:
   enabled: true
   fullnameOverride: acme-solver
