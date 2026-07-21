@@ -11,6 +11,7 @@ import { TestRunStatus } from "@testcraft/types";
 import { useState } from "react";
 
 import { testRunQueries } from "@/api/testRuns";
+import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
@@ -44,10 +45,12 @@ export const RunsTab = () => {
   const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete, openImport } =
     useModal<TestRun>();
-  const { data: runs, isPending } = useTestRuns(
-    projectId,
-    debouncedSearch || undefined,
-  );
+  const {
+    data: runs,
+    isPending,
+    isError,
+    error,
+  } = useTestRuns(projectId, debouncedSearch || undefined);
   const createRun = useCreateTestRun(projectId);
   const updateRun = useUpdateTestRun(projectId);
   const deleteRun = useDeleteTestRun(projectId);
@@ -122,6 +125,8 @@ export const RunsTab = () => {
           <span className="loading loading-lg loading-spinner text-primary" />
         </div>
       );
+
+    if (isError) return <ErrorState error={error} />;
 
     if (runs?.length === 0)
       return (
