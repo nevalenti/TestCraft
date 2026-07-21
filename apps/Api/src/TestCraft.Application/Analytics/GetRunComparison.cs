@@ -63,16 +63,22 @@ public static class GetRunComparison
         public async Task<RunComparison> Handle(Query request, CancellationToken cancellationToken)
         {
             var runA =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.RunAId && r.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException("Run A not found");
+                await context
+                    .TestRuns.AsNoTracking()
+                    .FirstOrDefaultAsync(
+                        r => r.Id == request.RunAId && r.ProjectId == request.ProjectId,
+                        cancellationToken
+                    )
+                ?? throw new NotFoundException("Run A not found");
 
             var runB =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.RunBId && r.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException("Run B not found");
+                await context
+                    .TestRuns.AsNoTracking()
+                    .FirstOrDefaultAsync(
+                        r => r.Id == request.RunBId && r.ProjectId == request.ProjectId,
+                        cancellationToken
+                    )
+                ?? throw new NotFoundException("Run B not found");
 
             var resultsA = await context
                 .TestResults.Where(r => r.TestRunId == request.RunAId)

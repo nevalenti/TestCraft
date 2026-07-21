@@ -26,7 +26,8 @@ public static class GetWebhookSubscriptions
         )
         {
             var rows = await context
-                .WebhookSubscriptions.Where(w => w.ProjectId == request.ProjectId)
+                .WebhookSubscriptions.AsNoTracking()
+                .Where(w => w.ProjectId == request.ProjectId)
                 .ToListAsync(cancellationToken);
 
             return rows.Select(w => new WebhookSubscriptionResponse

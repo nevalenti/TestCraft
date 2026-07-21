@@ -33,14 +33,17 @@ public static class GetAttachmentDownloadUrl
         )
         {
             var attachment =
-                await context.Attachments.FirstOrDefaultAsync(
-                    a =>
-                        a.Id == request.AttachmentId
-                        && a.TestResultId == request.ResultId
-                        && a.TestResult!.TestRunId == request.RunId
-                        && a.TestResult.TestRun!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+                await context
+                    .Attachments.AsNoTracking()
+                    .FirstOrDefaultAsync(
+                        a =>
+                            a.Id == request.AttachmentId
+                            && a.TestResultId == request.ResultId
+                            && a.TestResult!.TestRunId == request.RunId
+                            && a.TestResult.TestRun!.ProjectId == request.ProjectId,
+                        cancellationToken
+                    )
+                ?? throw new NotFoundException();
 
             var url = await storage.GetPresignedUrlAsync(
                 attachment.StorageKey,

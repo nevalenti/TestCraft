@@ -38,6 +38,7 @@ storage:
   grafana: 1Gi
   keycloak: 1Gi
   minio: 10Gi
+  tempo: 5Gi
 
 secrets:
   postgresUser: ""
