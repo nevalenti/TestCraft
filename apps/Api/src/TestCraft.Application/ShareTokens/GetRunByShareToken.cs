@@ -75,10 +75,9 @@ public static class GetRunByShareToken
             CancellationToken cancellationToken
         )
         {
-            var shareToken = await context.ShareTokens.FirstOrDefaultAsync(
-                st => st.Token == request.Token,
-                cancellationToken
-            );
+            var shareToken = await context
+                .ShareTokens.AsNoTracking()
+                .FirstOrDefaultAsync(st => st.Token == request.Token, cancellationToken);
 
             if (
                 shareToken is null
@@ -89,10 +88,10 @@ public static class GetRunByShareToken
             }
 
             var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == shareToken.TestRunId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+                await context
+                    .TestRuns.AsNoTracking()
+                    .FirstOrDefaultAsync(r => r.Id == shareToken.TestRunId, cancellationToken)
+                ?? throw new NotFoundException();
 
             var results = await context
                 .TestResults.Where(r => r.TestRunId == run.Id)

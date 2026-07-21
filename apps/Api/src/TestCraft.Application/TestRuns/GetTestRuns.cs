@@ -91,7 +91,8 @@ public static class GetTestRuns
             return;
 
         var avatarKeys = await context
-            .UserProfiles.Where(p => executorIds.Contains(p.UserId) && p.AvatarKey != null)
+            .UserProfiles.AsNoTracking()
+            .Where(p => executorIds.Contains(p.UserId) && p.AvatarKey != null)
             .ToDictionaryAsync(p => p.UserId, p => p.AvatarKey!, cancellationToken);
 
         if (avatarKeys.Count == 0)

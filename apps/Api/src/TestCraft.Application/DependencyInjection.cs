@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Application.Common.Behaviours;
+using TestCraft.Application.ShareTokens;
 
 namespace TestCraft.Application;
 
@@ -16,6 +17,8 @@ public static class DependencyInjection
             cfg.AddOpenBehavior(typeof(ProjectAuthorizationBehaviour<,>));
             cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
         });
+
+        services.AddScoped<ExpiredShareTokenCleanupJob>();
 
         return services;
     }

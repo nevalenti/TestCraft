@@ -55,19 +55,7 @@ public static class CreateTestRun
             context.TestRuns.Add(run);
             await context.SaveChangesAsync(cancellationToken);
 
-            return new TestRunResponse
-            {
-                Id = run.Id,
-                ProjectId = run.ProjectId,
-                Name = run.Name,
-                Environment = run.Environment,
-                Status = run.Status,
-                Source = run.Source,
-                ExecutedById = run.ExecutedById,
-                ExecutedByName = run.ExecutedByName,
-                CreatedAt = run.CreatedAt,
-                UpdatedAt = run.UpdatedAt,
-            };
+            return TestRunResponse.FromEntity(run);
         }
     }
 }
