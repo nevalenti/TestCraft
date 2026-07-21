@@ -79,7 +79,8 @@ public partial class NotificationDispatcher(
     )
     {
         var webhooks = await context
-            .WebhookSubscriptions.Where(w =>
+            .WebhookSubscriptions.AsNoTracking()
+            .Where(w =>
                 w.ProjectId == projectId && w.IsActive && w.Events.Contains($"\"{eventType}\"")
             )
             .ToListAsync(cancellationToken);

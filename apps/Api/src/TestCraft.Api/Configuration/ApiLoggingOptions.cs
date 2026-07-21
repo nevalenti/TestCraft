@@ -8,6 +8,8 @@ public sealed class ApiLoggingOptions
 
     public string OtelServiceName { get; init; } = "testcraft-api";
 
+    public string? OtelExporterEndpoint { get; init; }
+
     public string? SeqUrl { get; init; }
 
     [Sensitive]
@@ -19,6 +21,7 @@ public sealed class ApiLoggingOptions
             {
                 LokiUrl = configuration["LOKI_URL"],
                 OtelServiceName = configuration["OTEL_SERVICE_NAME"] ?? "testcraft-api",
+                OtelExporterEndpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"],
                 SeqUrl = configuration["SEQ_URL"],
                 SeqApiKey = configuration["SEQ_API_KEY"],
             },

@@ -1,3 +1,4 @@
+using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.TestRuns;
@@ -5,6 +6,22 @@ namespace TestCraft.Application.TestRuns;
 /// <summary>A test run: an execution pass over a set of test cases.</summary>
 public record TestRunResponse
 {
+    /// <summary>Maps a persisted run to its response representation.</summary>
+    public static TestRunResponse FromEntity(TestRun run) =>
+        new()
+        {
+            Id = run.Id,
+            ProjectId = run.ProjectId,
+            Name = run.Name,
+            Environment = run.Environment,
+            Status = run.Status,
+            Source = run.Source,
+            ExecutedById = run.ExecutedById,
+            ExecutedByName = run.ExecutedByName,
+            CreatedAt = run.CreatedAt,
+            UpdatedAt = run.UpdatedAt,
+        };
+
     /// <summary>The run's identifier.</summary>
     public required Guid Id { get; init; }
 

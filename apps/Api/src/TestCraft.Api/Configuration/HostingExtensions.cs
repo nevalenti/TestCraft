@@ -59,13 +59,16 @@ public static class HostingExtensions
 
         return builder
             .AddSerilogLogging(loggingOptions)
+            .AddOpenTelemetryTracing(loggingOptions)
             .AddKeycloakAuthentication(keycloakAuthOptions)
             .AddApiControllers()
             .AddApiVersioningSupport()
             .AddErrorHandling()
             .AddCorsPolicy(corsOptions)
             .AddApiRateLimiting()
-            .AddSwaggerDocs();
+            .AddSwaggerDocs()
+            .AddHangfireJobs()
+            .AddOutputCaching();
     }
 
     public static WebApplication ConfigureApplication(this WebApplication app)
@@ -96,9 +99,12 @@ public static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
+        app.UseOutputCache();
+
         app.UseUserLogContext();
 
         app.UseSwaggerDocs();
+        app.UseHangfireJobs();
 
         app.MapControllers();
         app.MapHub<TestRunHub>("/hubs/test-run");
