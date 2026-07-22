@@ -27,7 +27,7 @@ public class ValidationBehaviourTests
     public async Task Handle_ValidatorsPass_InvokesNext()
     {
         var validator = new InlineValidator<TestRequest>();
-        validator.RuleFor(x => x.Name).NotEmpty();
+        validator.RuleFor(request => request.Name).NotEmpty();
 
         var behaviour = new ValidationBehaviour<TestRequest, string>([validator]);
 
@@ -44,7 +44,7 @@ public class ValidationBehaviourTests
     public async Task Handle_ValidatorFails_ThrowsValidationException()
     {
         var validator = new InlineValidator<TestRequest>();
-        validator.RuleFor(x => x.Name).NotEmpty();
+        validator.RuleFor(request => request.Name).NotEmpty();
 
         var behaviour = new ValidationBehaviour<TestRequest, string>([validator]);
 
@@ -62,10 +62,10 @@ public class ValidationBehaviourTests
     public async Task Handle_MultipleValidatorsOneFails_ThrowsValidationExceptionWithFailure()
     {
         var nameValidator = new InlineValidator<TestRequest>();
-        nameValidator.RuleFor(x => x.Name).NotEmpty();
+        nameValidator.RuleFor(request => request.Name).NotEmpty();
 
         var lengthValidator = new InlineValidator<TestRequest>();
-        lengthValidator.RuleFor(x => x.Name).MaximumLength(3);
+        lengthValidator.RuleFor(request => request.Name).MaximumLength(3);
 
         var behaviour = new ValidationBehaviour<TestRequest, string>([
             nameValidator,

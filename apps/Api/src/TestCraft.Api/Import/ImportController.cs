@@ -19,13 +19,15 @@ public class ImportController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetImportJobById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Queues an asynchronous import of JUnit XML test results.</summary>
     [HttpPost("junit")]

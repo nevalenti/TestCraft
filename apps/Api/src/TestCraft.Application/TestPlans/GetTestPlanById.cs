@@ -27,15 +27,17 @@ public static class GetTestPlanById
         )
         {
             return await context
-                    .TestPlans.Where(p => p.Id == request.Id && p.ProjectId == request.ProjectId)
-                    .Select(p => new TestPlanDetailResponse
+                    .TestPlans.Where(plan =>
+                        plan.Id == request.Id && plan.ProjectId == request.ProjectId
+                    )
+                    .Select(plan => new TestPlanDetailResponse
                     {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Description = p.Description,
-                        ProjectId = p.ProjectId,
-                        CreatedAt = p.CreatedAt,
-                        Cases = p
+                        Id = plan.Id,
+                        Name = plan.Name,
+                        Description = plan.Description,
+                        ProjectId = plan.ProjectId,
+                        CreatedAt = plan.CreatedAt,
+                        Cases = plan
                             .TestPlanCases.Where(tpc => tpc.TestCase != null)
                             .OrderBy(tpc => tpc.Order)
                             .Select(tpc => new TestPlanCaseResponse

@@ -75,10 +75,10 @@ public static class UploadAttachment
         )
         {
             var resultExists = await context.TestResults.AnyAsync(
-                r =>
-                    r.Id == request.ResultId
-                    && r.TestRunId == request.RunId
-                    && r.TestRun!.ProjectId == request.ProjectId,
+                testResult =>
+                    testResult.Id == request.ResultId
+                    && testResult.TestRunId == request.RunId
+                    && testResult.TestRun!.ProjectId == request.ProjectId,
                 cancellationToken
             );
             if (!resultExists)

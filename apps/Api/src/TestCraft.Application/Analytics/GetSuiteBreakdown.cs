@@ -45,29 +45,38 @@ public static class GetSuiteBreakdown
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestResults.Where(r =>
-                    r.TestRunId == request.RunId && r.TestRun!.ProjectId == request.ProjectId
+                .TestResults.Where(result =>
+                    result.TestRunId == request.RunId
+                    && result.TestRun!.ProjectId == request.ProjectId
                 )
                 .Join(
                     context.TestCases,
-                    r => r.TestCaseId,
-                    tc => tc.Id,
-                    (r, tc) => new { r.Status, tc.SuiteId }
+                    result => result.TestCaseId,
+                    testCase => testCase.Id,
+                    (result, testCase) => new { result.Status, testCase.SuiteId }
                 )
                 .Join(
                     context.TestSuites,
-                    x => x.SuiteId,
-                    s => s.Id,
-                    (x, s) => new { x.Status, SuiteName = s.Name }
+                    resultSuiteId => resultSuiteId.SuiteId,
+                    suite => suite.Id,
+                    (resultSuiteId, suite) => new { resultSuiteId.Status, SuiteName = suite.Name }
                 )
-                .GroupBy(x => x.SuiteName)
-                .Select(g => new SuiteBreakdown
+                .GroupBy(resultSuiteName => resultSuiteName.SuiteName)
+                .Select(group => new SuiteBreakdown
                 {
-                    SuiteName = g.Key,
-                    Passed = g.Count(x => x.Status == TestResultStatus.Passed),
-                    Failed = g.Count(x => x.Status == TestResultStatus.Failed),
-                    Blocked = g.Count(x => x.Status == TestResultStatus.Blocked),
-                    Skipped = g.Count(x => x.Status == TestResultStatus.Skipped),
+                    SuiteName = group.Key,
+                    Passed = group.Count(resultSuiteName =>
+                        resultSuiteName.Status == TestResultStatus.Passed
+                    ),
+                    Failed = group.Count(resultSuiteName =>
+                        resultSuiteName.Status == TestResultStatus.Failed
+                    ),
+                    Blocked = group.Count(resultSuiteName =>
+                        resultSuiteName.Status == TestResultStatus.Blocked
+                    ),
+                    Skipped = group.Count(resultSuiteName =>
+                        resultSuiteName.Status == TestResultStatus.Skipped
+                    ),
                 })
                 .ToListAsync(cancellationToken);
     }

@@ -57,7 +57,7 @@ export const FileDropZone = ({
   hasError,
   color = "primary",
 }: FileDropZoneProps) => {
-  const c = colorClasses[color];
+  const colorTheme = colorClasses[color];
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = useRef(0);
@@ -106,12 +106,15 @@ export const FileDropZone = ({
       aria-label="File upload area"
       className={cn(
         "rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
-        c.ring,
-        isDragging && c.drag,
+        colorTheme.ring,
+        isDragging && colorTheme.drag,
         !isDragging && hasError && "border-error/50 bg-error/5",
         !isDragging &&
           !hasError &&
-          cn("border-base-300 bg-base-200/40 transition-colors", c.hover),
+          cn(
+            "border-base-300 bg-base-200/40 transition-colors",
+            colorTheme.hover,
+          ),
       )}
       onClick={openPicker}
       onKeyDown={(event) =>
@@ -141,7 +144,9 @@ export const FileDropZone = ({
           </div>
           <div>
             <p className="text-sm text-base-content/85">
-              <span className={cn("font-medium", c.text)}>Click to upload</span>{" "}
+              <span className={cn("font-medium", colorTheme.text)}>
+                Click to upload
+              </span>{" "}
               or drag & drop
             </p>
             {hint && (
@@ -181,7 +186,7 @@ export const FileDropZone = ({
             type="button"
             className={cn(
               "mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors",
-              c.textMuted,
+              colorTheme.textMuted,
             )}
             onClick={openPicker}
           >

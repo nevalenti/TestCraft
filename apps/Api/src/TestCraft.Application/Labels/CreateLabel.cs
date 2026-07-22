@@ -41,8 +41,11 @@ public static class CreateLabel
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
-            RuleFor(x => x.Color).NotEmpty().MaximumLength(7).Matches("^#[0-9A-Fa-f]{6}$");
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(50);
+            RuleFor(command => command.Color)
+                .NotEmpty()
+                .MaximumLength(7)
+                .Matches("^#[0-9A-Fa-f]{6}$");
         }
     }
 

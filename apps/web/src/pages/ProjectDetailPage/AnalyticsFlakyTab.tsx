@@ -10,16 +10,20 @@ export const AnalyticsFlakyTab = () => {
   const { data: flakyTests } = useFlakyTests(projectId);
 
   const sortedTests = useMemo(
-    () => [...(flakyTests ?? [])].toSorted((a, b) => b.flakRate - a.flakRate),
+    () =>
+      [...(flakyTests ?? [])].toSorted(
+        (testA, testB) => testB.flakRate - testA.flakRate,
+      ),
     [flakyTests],
   );
 
   const severity = useMemo(
     () => ({
-      high: sortedTests.filter((t) => t.flakRate >= 0.6).length,
-      medium: sortedTests.filter((t) => t.flakRate >= 0.3 && t.flakRate < 0.6)
-        .length,
-      low: sortedTests.filter((t) => t.flakRate < 0.3).length,
+      high: sortedTests.filter((test) => test.flakRate >= 0.6).length,
+      medium: sortedTests.filter(
+        (test) => test.flakRate >= 0.3 && test.flakRate < 0.6,
+      ).length,
+      low: sortedTests.filter((test) => test.flakRate < 0.3).length,
     }),
     [sortedTests],
   );
@@ -78,7 +82,7 @@ export const AnalyticsFlakyTab = () => {
             </tr>
           </thead>
           <tbody>
-            {sortedTests.map((stat, i) => {
+            {sortedTests.map((stat, index) => {
               const pct = Math.round(stat.flakRate * 100);
               let barColor = "bg-info";
               if (pct >= 60) barColor = "bg-error";
@@ -91,7 +95,7 @@ export const AnalyticsFlakyTab = () => {
                   <td
                     className={`text-center text-xs font-bold tabular-nums ${rankColor}`}
                   >
-                    {i + 1}
+                    {index + 1}
                   </td>
                   <td className="max-w-xs">
                     <p className="truncate text-sm font-medium">

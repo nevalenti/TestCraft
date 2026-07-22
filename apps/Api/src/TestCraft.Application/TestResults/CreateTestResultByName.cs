@@ -51,10 +51,10 @@ public static class CreateTestResultByName
     {
         public Validator()
         {
-            RuleFor(x => x.SuiteName).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.TestCaseName).NotEmpty().MaximumLength(500);
-            RuleFor(x => x.Status).IsInEnum();
-            RuleFor(x => x.Notes).MaximumLength(5000);
+            RuleFor(command => command.SuiteName).NotEmpty().MaximumLength(500);
+            RuleFor(command => command.TestCaseName).NotEmpty().MaximumLength(500);
+            RuleFor(command => command.Status).IsInEnum();
+            RuleFor(command => command.Notes).MaximumLength(5000);
         }
     }
 
@@ -72,14 +72,18 @@ public static class CreateTestResultByName
         {
             var run =
                 await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
+                    existingRun =>
+                        existingRun.Id == request.RunId
+                        && existingRun.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
             run.EnsureCanAddResult();
 
             var suite = await context.TestSuites.FirstOrDefaultAsync(
-                s => s.ProjectId == request.ProjectId && s.Name == request.SuiteName,
+                existingSuite =>
+                    existingSuite.ProjectId == request.ProjectId
+                    && existingSuite.Name == request.SuiteName,
                 cancellationToken
             );
 
@@ -96,7 +100,9 @@ public static class CreateTestResultByName
             }
 
             var testCase = await context.TestCases.FirstOrDefaultAsync(
-                c => c.SuiteId == suite.Id && c.Name == request.TestCaseName,
+                existingTestCase =>
+                    existingTestCase.SuiteId == suite.Id
+                    && existingTestCase.Name == request.TestCaseName,
                 cancellationToken
             );
 
@@ -122,22 +128,22 @@ public static class CreateTestResultByName
             await context.SaveChangesAsync(cancellationToken);
 
             var summary = await context
-                .TestResults.Where(r => r.Id == result.Id)
-                .Select(r => new TestResultResponse
+                .TestResults.Where(createdResult => createdResult.Id == result.Id)
+                .Select(createdResult => new TestResultResponse
                 {
-                    Id = r.Id,
-                    TestRunId = r.TestRunId,
-                    TestCaseId = r.TestCaseId,
-                    SuiteId = r.TestCase!.SuiteId,
-                    TestCaseName = r.TestCase.Name,
-                    Status = r.Status,
-                    Notes = r.Notes,
-                    DurationMs = r.DurationMs,
-                    DefectType = r.DefectType,
-                    ExecutedAt = r.ExecutedAt,
-                    ExecutedById = r.ExecutedById,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = createdResult.Id,
+                    TestRunId = createdResult.TestRunId,
+                    TestCaseId = createdResult.TestCaseId,
+                    SuiteId = createdResult.TestCase!.SuiteId,
+                    TestCaseName = createdResult.TestCase.Name,
+                    Status = createdResult.Status,
+                    Notes = createdResult.Notes,
+                    DurationMs = createdResult.DurationMs,
+                    DefectType = createdResult.DefectType,
+                    ExecutedAt = createdResult.ExecutedAt,
+                    ExecutedById = createdResult.ExecutedById,
+                    CreatedAt = createdResult.CreatedAt,
+                    UpdatedAt = createdResult.UpdatedAt,
                 })
                 .FirstAsync(cancellationToken);
 

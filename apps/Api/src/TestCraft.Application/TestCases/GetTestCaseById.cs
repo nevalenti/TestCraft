@@ -30,18 +30,20 @@ public static class GetTestCaseById
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestCases.Where(c => c.Id == request.Id && c.SuiteId == request.SuiteId)
-                .Select(c => new TestCaseResponse
+                .TestCases.Where(testCase =>
+                    testCase.Id == request.Id && testCase.SuiteId == request.SuiteId
+                )
+                .Select(testCase => new TestCaseResponse
                 {
-                    Id = c.Id,
-                    SuiteId = c.SuiteId,
-                    Name = c.Name,
-                    Description = c.Description,
-                    Priority = c.Priority,
-                    StepCount = c.Steps.Count(s => !s.IsDeleted),
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    Labels = c
+                    Id = testCase.Id,
+                    SuiteId = testCase.SuiteId,
+                    Name = testCase.Name,
+                    Description = testCase.Description,
+                    Priority = testCase.Priority,
+                    StepCount = testCase.Steps.Count(step => !step.IsDeleted),
+                    CreatedAt = testCase.CreatedAt,
+                    UpdatedAt = testCase.UpdatedAt,
+                    Labels = testCase
                         .TestCaseLabels.Select(tcl => new LabelResponse
                         {
                             Id = tcl.Label!.Id,

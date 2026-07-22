@@ -15,8 +15,8 @@ test.describe("Test Case Steps", () => {
 
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(90_000);
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
@@ -42,23 +42,23 @@ test.describe("Test Case Steps", () => {
     });
     casePath = new URL(page.url()).pathname;
 
-    await ctx.close();
+    await context.close();
   });
 
   test.afterAll(async ({ browser }) => {
     if (!casePath) return;
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
     if ((await projects.getCard(projectName).count()) === 0) {
-      await ctx.close();
+      await context.close();
       return;
     }
     await projects.delete(projectName);
 
-    await ctx.close();
+    await context.close();
   });
 
   test.beforeEach(async ({ testStepsPage }) => {
@@ -114,9 +114,11 @@ test.describe("Test Case Steps", () => {
   }) => {
     const actions = ["First action", "Second action", "Third action"];
 
-    for (const [i, action] of actions.entries()) {
-      await testStepsPage.addStep(action, `Result ${i + 1}`);
-      await expect(testStepsPage.rows).toHaveCount(i + 1, { timeout: 10_000 });
+    for (const [index, action] of actions.entries()) {
+      await testStepsPage.addStep(action, `Result ${index + 1}`);
+      await expect(testStepsPage.rows).toHaveCount(index + 1, {
+        timeout: 10_000,
+      });
     }
 
     await expect(

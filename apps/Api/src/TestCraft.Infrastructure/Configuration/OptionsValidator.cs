@@ -18,7 +18,7 @@ public static class OptionsValidator
         )
         {
             throw new InvalidOperationException(
-                $"Invalid {contextName} configuration: {string.Join("; ", results.Select(r => r.ErrorMessage))}"
+                $"Invalid {contextName} configuration: {string.Join("; ", results.Select(result => result.ErrorMessage))}"
             );
         }
 

@@ -90,22 +90,27 @@ public static class GetRunByShareToken
             var run =
                 await context
                     .TestRuns.AsNoTracking()
-                    .FirstOrDefaultAsync(r => r.Id == shareToken.TestRunId, cancellationToken)
+                    .FirstOrDefaultAsync(
+                        testRun => testRun.Id == shareToken.TestRunId,
+                        cancellationToken
+                    )
                 ?? throw new NotFoundException();
 
             var results = await context
-                .TestResults.Where(r => r.TestRunId == run.Id)
-                .Select(r => new SharedResultItem
+                .TestResults.Where(result => result.TestRunId == run.Id)
+                .Select(result => new SharedResultItem
                 {
-                    TestCaseName = r.TestCase!.Name,
-                    Status = r.Status.ToString(),
-                    Notes = r.Notes,
-                    DurationMs = r.DurationMs,
-                    ExecutedAt = r.ExecutedAt,
+                    TestCaseName = result.TestCase!.Name,
+                    Status = result.Status.ToString(),
+                    Notes = result.Notes,
+                    DurationMs = result.DurationMs,
+                    ExecutedAt = result.ExecutedAt,
                 })
                 .ToListAsync(cancellationToken);
 
-            var counts = results.GroupBy(r => r.Status).ToDictionary(g => g.Key, g => g.Count());
+            var counts = results
+                .GroupBy(result => result.Status)
+                .ToDictionary(group => group.Key, group => group.Count());
 
             var passed = counts.GetValueOrDefault(TestResultStatus.Passed.ToString(), 0);
             var failed = counts.GetValueOrDefault(TestResultStatus.Failed.ToString(), 0);

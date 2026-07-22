@@ -17,7 +17,7 @@ public class TestPlanCaseConfiguration : IEntityTypeConfiguration<TestPlanCase>
 
         builder
             .HasOne(tpc => tpc.TestPlan)
-            .WithMany(p => p.TestPlanCases)
+            .WithMany(testPlan => testPlan.TestPlanCases)
             .HasForeignKey(tpc => tpc.TestPlanId)
             .OnDelete(DeleteBehavior.Cascade);
 

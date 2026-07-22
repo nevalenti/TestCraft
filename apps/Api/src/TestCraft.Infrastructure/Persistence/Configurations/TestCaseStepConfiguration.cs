@@ -10,19 +10,28 @@ public class TestCaseStepConfiguration : IEntityTypeConfiguration<TestCaseStep>
     {
         builder.ToTable("test_case_steps");
 
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(s => s.Order).HasColumnName("order");
-        builder.Property(s => s.Action).HasColumnName("action").IsRequired();
-        builder.Property(s => s.ExpectedResult).HasColumnName("expected_result").IsRequired();
-        builder.Property(s => s.TestCaseId).HasColumnName("test_case_id");
-        builder.Property(s => s.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(s => s.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(s => s.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(s => s.DeletedAt).HasColumnName("deleted_at");
+        builder.HasKey(step => step.Id);
+        builder
+            .Property(step => step.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(step => step.Order).HasColumnName("order");
+        builder.Property(step => step.Action).HasColumnName("action").IsRequired();
+        builder.Property(step => step.ExpectedResult).HasColumnName("expected_result").IsRequired();
+        builder.Property(step => step.TestCaseId).HasColumnName("test_case_id");
+        builder
+            .Property(step => step.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(step => step.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder.Property(step => step.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
+        builder.Property(step => step.DeletedAt).HasColumnName("deleted_at");
 
-        builder.HasIndex(s => s.TestCaseId);
+        builder.HasIndex(step => step.TestCaseId);
 
-        builder.HasQueryFilter(s => !s.IsDeleted);
+        builder.HasQueryFilter(step => !step.IsDeleted);
     }
 }

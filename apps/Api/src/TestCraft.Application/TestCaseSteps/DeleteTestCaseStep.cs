@@ -27,7 +27,8 @@ public static class DeleteTestCaseStep
         {
             var step =
                 await context.TestCaseSteps.FirstOrDefaultAsync(
-                    s => s.Id == request.Id && s.TestCaseId == request.CaseId,
+                    existingStep =>
+                        existingStep.Id == request.Id && existingStep.TestCaseId == request.CaseId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

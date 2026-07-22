@@ -17,7 +17,12 @@ public class ApiTokensController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<ApiTokenResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetApiTokens.Query { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(new GetApiTokens.Query { ProjectId = projectId }, cancellationToken)
+        );
+    }
 
     /// <summary>Creates a new API token. The raw token is returned once — store it securely.</summary>
     [HttpPost]

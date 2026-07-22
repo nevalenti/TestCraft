@@ -47,7 +47,7 @@ public class ProjectMembersApiTests(ApiFactory factory)
 
         var listResponse = await ownerClient.GetAsync($"/api/v1/projects/{project.Id}/members");
         var list = await listResponse.Content.ReadFromJsonAsync<List<ProjectMemberResponse>>();
-        list.Should().ContainSingle(m => m.Email == "member@example.com");
+        list.Should().ContainSingle(projectMember => projectMember.Email == "member@example.com");
     }
 
     [Fact]

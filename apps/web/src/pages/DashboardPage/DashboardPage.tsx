@@ -26,7 +26,7 @@ const getInitials = (name: string) =>
   name
     .trim()
     .split(/\s+/)
-    .map((p) => p[0])
+    .map((word) => word[0])
     .slice(0, 2)
     .join("")
     .toUpperCase();
@@ -78,9 +78,9 @@ const RunAvatar = ({
 };
 
 const getGreeting = () => {
-  const h = new Date().getHours();
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
   return "Good evening";
 };
 
@@ -110,16 +110,16 @@ export const DashboardPage = () => {
         return {
           activeRuns: allRuns
             .filter((run) => run.status === TestRunStatus.Active)
-            .toSorted((a, b) =>
-              compareDesc(new Date(a.createdAt), new Date(b.createdAt)),
+            .toSorted((runA, runB) =>
+              compareDesc(new Date(runA.createdAt), new Date(runB.createdAt)),
             )
             .slice(0, 10),
           recentlyCompletedRuns: allRuns
             .filter((run) => run.status === TestRunStatus.Completed)
-            .toSorted((a, b) =>
+            .toSorted((runA, runB) =>
               compareDesc(
-                new Date(a.updatedAt ?? a.createdAt),
-                new Date(b.updatedAt ?? b.createdAt),
+                new Date(runA.updatedAt ?? runA.createdAt),
+                new Date(runB.updatedAt ?? runB.createdAt),
               ),
             )
             .slice(0, 10),
@@ -139,7 +139,12 @@ export const DashboardPage = () => {
       testRunQueries.summary(run.projectId, run.id),
     ),
     combine: (results) =>
-      new Map(recentlyCompletedRuns.map((run, i) => [run.id, results[i].data])),
+      new Map(
+        recentlyCompletedRuns.map((run, index) => [
+          run.id,
+          results[index].data,
+        ]),
+      ),
   });
 
   const activeRunSummaries = useQueries({
@@ -147,7 +152,7 @@ export const DashboardPage = () => {
       testRunQueries.summary(run.projectId, run.id),
     ),
     combine: (results) =>
-      new Map(activeRuns.map((run, i) => [run.id, results[i].data])),
+      new Map(activeRuns.map((run, index) => [run.id, results[index].data])),
   });
 
   useBreadcrumbs([{ label: "Dashboard", href: "/" }]);

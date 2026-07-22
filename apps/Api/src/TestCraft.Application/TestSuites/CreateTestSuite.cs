@@ -50,8 +50,8 @@ public static class CreateTestSuite
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Description).MaximumLength(2000);
         }
     }
 

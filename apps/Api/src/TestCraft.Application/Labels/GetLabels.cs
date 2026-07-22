@@ -23,14 +23,14 @@ public static class GetLabels
         )
         {
             return await context
-                .Labels.Where(l => l.ProjectId == request.ProjectId)
-                .OrderBy(l => l.Name)
-                .Select(l => new LabelResponse
+                .Labels.Where(label => label.ProjectId == request.ProjectId)
+                .OrderBy(label => label.Name)
+                .Select(label => new LabelResponse
                 {
-                    Id = l.Id,
-                    Name = l.Name,
-                    Color = l.Color,
-                    ProjectId = l.ProjectId,
+                    Id = label.Id,
+                    Name = label.Name,
+                    Color = label.Color,
+                    ProjectId = label.ProjectId,
                 })
                 .ToListAsync(cancellationToken);
         }

@@ -32,7 +32,9 @@ public static class RemoveProjectMember
 
             var member =
                 await context.ProjectMembers.FirstOrDefaultAsync(
-                    m => m.Id == request.Id && m.ProjectId == request.ProjectId,
+                    existingMember =>
+                        existingMember.Id == request.Id
+                        && existingMember.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

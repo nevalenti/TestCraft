@@ -26,7 +26,7 @@ public class ShareTokenConfiguration : IEntityTypeConfiguration<ShareToken>
 
         builder
             .HasOne(st => st.TestRun)
-            .WithMany(r => r.ShareTokens)
+            .WithMany(testRun => testRun.ShareTokens)
             .HasForeignKey(st => st.TestRunId)
             .OnDelete(DeleteBehavior.Cascade);
     }

@@ -27,7 +27,9 @@ public static class DeleteTestCase
         {
             var testCase =
                 await context.TestCases.FirstOrDefaultAsync(
-                    c => c.Id == request.Id && c.SuiteId == request.SuiteId,
+                    existingTestCase =>
+                        existingTestCase.Id == request.Id
+                        && existingTestCase.SuiteId == request.SuiteId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

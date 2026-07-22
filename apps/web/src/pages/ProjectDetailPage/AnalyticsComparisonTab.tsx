@@ -37,8 +37,10 @@ export const AnalyticsComparisonTab = () => {
 
   const counts = useMemo(() => {
     if (!comparison) return null;
-    const regressions = comparison.results.filter((r) => r.isRegression).length;
-    const fixes = comparison.results.filter((r) => r.isFix).length;
+    const regressions = comparison.results.filter(
+      (result) => result.isRegression,
+    ).length;
+    const fixes = comparison.results.filter((result) => result.isFix).length;
     return {
       regressions,
       fixes,
@@ -49,7 +51,9 @@ export const AnalyticsComparisonTab = () => {
   const visibleRows = useMemo(() => {
     if (!comparison) return [];
     if (filter === "changes")
-      return comparison.results.filter((r) => r.isRegression || r.isFix);
+      return comparison.results.filter(
+        (result) => result.isRegression || result.isFix,
+      );
     return comparison.results;
   }, [comparison, filter]);
 
@@ -69,15 +73,15 @@ export const AnalyticsComparisonTab = () => {
             id="run-a"
             className="select-bordered select w-full select-sm"
             value={runA}
-            onChange={(e) => {
-              setRunA(e.target.value);
+            onChange={(event) => {
+              setRunA(event.target.value);
               setSubmitted(false);
             }}
           >
             <option value="">Select…</option>
-            {(runs ?? []).map((r) => (
-              <option key={r.id} value={r.id} disabled={r.id === runB}>
-                {r.name}
+            {(runs ?? []).map((run) => (
+              <option key={run.id} value={run.id} disabled={run.id === runB}>
+                {run.name}
               </option>
             ))}
           </select>
@@ -98,15 +102,15 @@ export const AnalyticsComparisonTab = () => {
             id="run-b"
             className="select-bordered select w-full select-sm"
             value={runB}
-            onChange={(e) => {
-              setRunB(e.target.value);
+            onChange={(event) => {
+              setRunB(event.target.value);
               setSubmitted(false);
             }}
           >
             <option value="">Select…</option>
-            {(runs ?? []).map((r) => (
-              <option key={r.id} value={r.id} disabled={r.id === runA}>
-                {r.name}
+            {(runs ?? []).map((run) => (
+              <option key={run.id} value={run.id} disabled={run.id === runA}>
+                {run.name}
               </option>
             ))}
           </select>

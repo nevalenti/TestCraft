@@ -19,5 +19,8 @@ public class ProjectTestCasesController(ISender sender) : ControllerBase
         Guid projectId,
         [FromQuery] GetTestCasesByProject.Query query,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    }
 }

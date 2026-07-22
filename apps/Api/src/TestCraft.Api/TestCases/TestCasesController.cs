@@ -20,8 +20,9 @@ public class TestCasesController(ISender sender) : ControllerBase
         Guid suiteId,
         [FromQuery] GetTestCases.Query query,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 query with
                 {
@@ -31,6 +32,7 @@ public class TestCasesController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Gets a test case by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -39,8 +41,9 @@ public class TestCasesController(ISender sender) : ControllerBase
         Guid suiteId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestCaseById.Query
                 {
@@ -51,6 +54,7 @@ public class TestCasesController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates a new test case in a suite.</summary>
     [HttpPost]
@@ -90,8 +94,9 @@ public class TestCasesController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestCase.Command command,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 command with
                 {
@@ -102,6 +107,7 @@ public class TestCasesController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Deletes a test case.</summary>
     [HttpDelete("{id:guid}")]

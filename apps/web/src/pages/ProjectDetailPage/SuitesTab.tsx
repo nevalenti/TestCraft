@@ -54,16 +54,18 @@ export const SuitesTab = () => {
 
   const allSuites = suites ?? [];
   const sources = [
-    ...new Set(allSuites.map((s) => s.source).filter(Boolean) as string[]),
-  ].toSorted((a, b) => a.localeCompare(b));
+    ...new Set(
+      allSuites.map((suite) => suite.source).filter(Boolean) as string[],
+    ),
+  ].toSorted((sourceA, sourceB) => sourceA.localeCompare(sourceB));
   const sourceCounts = Object.fromEntries(
     sources.map((src) => [
       src,
-      allSuites.filter((s) => s.source === src).length,
+      allSuites.filter((suite) => suite.source === src).length,
     ]),
   );
   const visibleSuites = sourceFilter
-    ? allSuites.filter((s) => s.source === sourceFilter)
+    ? allSuites.filter((suite) => suite.source === sourceFilter)
     : suites;
 
   const renderSuites = () => {

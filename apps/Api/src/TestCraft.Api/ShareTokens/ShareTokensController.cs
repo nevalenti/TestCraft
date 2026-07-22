@@ -39,13 +39,15 @@ public class ShareTokensController(ISender sender) : ControllerBase
         Guid projectId,
         Guid runId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetShareTokens.Query { ProjectId = projectId, RunId = runId },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Revokes a share token.</summary>
     [HttpDelete("{id:guid}")]

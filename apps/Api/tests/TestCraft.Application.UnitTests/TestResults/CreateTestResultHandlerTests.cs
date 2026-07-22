@@ -69,7 +69,7 @@ public class CreateTestResultHandlerTests
         response.TestRunId.Should().Be(run.Id);
         response.TestCaseId.Should().Be(testCase.Id);
         response.Status.Should().Be(TestResultStatus.Passed);
-        context.TestResults.Should().ContainSingle(r => r.Id == response.Id);
+        context.TestResults.Should().ContainSingle(result => result.Id == response.Id);
     }
 
     [Fact]

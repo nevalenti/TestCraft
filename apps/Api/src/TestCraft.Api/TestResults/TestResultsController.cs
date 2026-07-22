@@ -20,8 +20,9 @@ public class TestResultsController(ISender sender) : ControllerBase
         Guid runId,
         [FromQuery] GetTestResults.Query query,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 query with
                 {
@@ -31,6 +32,7 @@ public class TestResultsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Gets a test result by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -39,8 +41,9 @@ public class TestResultsController(ISender sender) : ControllerBase
         Guid runId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestResultById.Query
                 {
@@ -51,6 +54,7 @@ public class TestResultsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Records a test result for a run.</summary>
     [HttpPost]
@@ -120,8 +124,9 @@ public class TestResultsController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestResult.Command command,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 command with
                 {
@@ -132,6 +137,7 @@ public class TestResultsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Deletes a test result.</summary>
     [HttpDelete("{id:guid}")]

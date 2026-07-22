@@ -32,11 +32,11 @@ public static class GetTestSuites
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestSuites.Where(s => s.ProjectId == request.ProjectId);
+            var query = context.TestSuites.Where(suite => suite.ProjectId == request.ProjectId);
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(s => EF.Functions.ILike(s.Name, $"%{request.Search}%"));
+                query = query.Where(suite => EF.Functions.ILike(suite.Name, $"%{request.Search}%"));
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);
@@ -44,18 +44,18 @@ public static class GetTestSuites
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderBy(s => s.CreatedAt)
+                .OrderBy(suite => suite.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(s => new TestSuiteResponse
+                .Select(suite => new TestSuiteResponse
                 {
-                    Id = s.Id,
-                    ProjectId = s.ProjectId,
-                    Name = s.Name,
-                    Description = s.Description,
-                    Source = s.Source,
-                    CreatedAt = s.CreatedAt,
-                    UpdatedAt = s.UpdatedAt,
+                    Id = suite.Id,
+                    ProjectId = suite.ProjectId,
+                    Name = suite.Name,
+                    Description = suite.Description,
+                    Source = suite.Source,
+                    CreatedAt = suite.CreatedAt,
+                    UpdatedAt = suite.UpdatedAt,
                 })
                 .ToListAsync(cancellationToken);
 

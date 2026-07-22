@@ -24,7 +24,9 @@ public static class DeleteTestPlan
         {
             var plan =
                 await context.TestPlans.FirstOrDefaultAsync(
-                    p => p.Id == request.Id && p.ProjectId == request.ProjectId,
+                    existingPlan =>
+                        existingPlan.Id == request.Id
+                        && existingPlan.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

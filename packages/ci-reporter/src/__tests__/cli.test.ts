@@ -16,7 +16,9 @@ describe("parseArgs", () => {
   let savedEnv: Record<string, string | undefined>;
 
   beforeEach(() => {
-    savedEnv = Object.fromEntries(ENV_KEYS.map((k) => [k, process.env[k]]));
+    savedEnv = Object.fromEntries(
+      ENV_KEYS.map((envKey) => [envKey, process.env[envKey]]),
+    );
     for (const key of ENV_KEYS) delete process.env[key];
   });
 

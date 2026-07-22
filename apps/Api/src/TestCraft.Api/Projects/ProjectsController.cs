@@ -18,14 +18,20 @@ public class ProjectsController(ISender sender) : ControllerBase
     public async Task<ActionResult<Paginated<ProjectResponse>>> GetAll(
         [FromQuery] GetProjects.Query query,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(query, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(query, cancellationToken));
+    }
 
     /// <summary>Gets a project by ID.</summary>
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ProjectResponse>> GetById(
         Guid id,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetProjectById.Query { Id = id }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(new GetProjectById.Query { Id = id }, cancellationToken));
+    }
 
     /// <summary>Creates a new project.</summary>
     [HttpPost]
@@ -45,7 +51,10 @@ public class ProjectsController(ISender sender) : ControllerBase
         Guid id,
         UpdateProject.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { Id = id }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(command with { Id = id }, cancellationToken));
+    }
 
     /// <summary>Deletes a project.</summary>
     [HttpDelete("{id:guid}")]

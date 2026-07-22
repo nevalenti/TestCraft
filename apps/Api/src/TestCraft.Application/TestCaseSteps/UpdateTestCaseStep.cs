@@ -35,9 +35,9 @@ public static class UpdateTestCaseStep
     {
         public Validator()
         {
-            RuleFor(x => x.Order).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.Action).NotEmpty().MaximumLength(2000);
-            RuleFor(x => x.ExpectedResult).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.Order).GreaterThanOrEqualTo(1);
+            RuleFor(command => command.Action).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(2000);
         }
     }
 
@@ -51,7 +51,8 @@ public static class UpdateTestCaseStep
         {
             var step =
                 await context.TestCaseSteps.FirstOrDefaultAsync(
-                    s => s.Id == request.Id && s.TestCaseId == request.CaseId,
+                    existingStep =>
+                        existingStep.Id == request.Id && existingStep.TestCaseId == request.CaseId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

@@ -24,7 +24,10 @@ public static class GetAvatarUrl
 
             var profile = await context
                 .UserProfiles.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
+                .FirstOrDefaultAsync(
+                    userProfile => userProfile.UserId == userId,
+                    cancellationToken
+                );
 
             if (profile?.AvatarKey is null)
                 return null;

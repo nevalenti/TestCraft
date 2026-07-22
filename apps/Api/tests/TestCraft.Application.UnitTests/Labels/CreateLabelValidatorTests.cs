@@ -28,14 +28,14 @@ public class CreateLabelValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NameExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 51) });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Theory]
@@ -47,7 +47,7 @@ public class CreateLabelValidatorTests
     public void InvalidColor_FailsValidation(string color)
     {
         var result = _validator.TestValidate(ValidCommand() with { Color = color });
-        result.ShouldHaveValidationErrorFor(x => x.Color);
+        result.ShouldHaveValidationErrorFor(command => command.Color);
     }
 
     [Theory]
@@ -57,6 +57,6 @@ public class CreateLabelValidatorTests
     public void ValidHexColor_PassesValidation(string color)
     {
         var result = _validator.TestValidate(ValidCommand() with { Color = color });
-        result.ShouldNotHaveValidationErrorFor(x => x.Color);
+        result.ShouldNotHaveValidationErrorFor(command => command.Color);
     }
 }

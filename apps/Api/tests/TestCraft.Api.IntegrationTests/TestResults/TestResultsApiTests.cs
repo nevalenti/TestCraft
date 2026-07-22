@@ -107,7 +107,7 @@ public class TestResultsApiTests(ApiFactory factory)
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestResultResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        page!.Items.Should().OnlyContain(r => r.Status == TestResultStatus.Failed);
+        page!.Items.Should().OnlyContain(result => result.Status == TestResultStatus.Failed);
     }
 
     [Fact]

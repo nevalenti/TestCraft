@@ -28,7 +28,7 @@ public static class UpdateProject
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
         }
     }
 
@@ -45,7 +45,7 @@ public static class UpdateProject
         {
             var project =
                 await context.Projects.FirstOrDefaultAsync(
-                    p => p.Id == request.Id,
+                    existingProject => existingProject.Id == request.Id,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -62,17 +62,17 @@ public static class UpdateProject
             }
 
             return await context
-                .Projects.Where(p => p.Id == project.Id)
-                .Select(p => new ProjectResponse
+                .Projects.Where(updatedProject => updatedProject.Id == project.Id)
+                .Select(updatedProject => new ProjectResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                    SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
-                    RunCount = p.TestRuns.Count(r => !r.IsDeleted),
-                    IsOwner = p.UserId == currentUser.UserId,
+                    Id = updatedProject.Id,
+                    Name = updatedProject.Name,
+                    Description = updatedProject.Description,
+                    CreatedAt = updatedProject.CreatedAt,
+                    UpdatedAt = updatedProject.UpdatedAt,
+                    SuiteCount = updatedProject.TestSuites.Count(suite => !suite.IsDeleted),
+                    RunCount = updatedProject.TestRuns.Count(run => !run.IsDeleted),
+                    IsOwner = updatedProject.UserId == currentUser.UserId,
                 })
                 .FirstAsync(cancellationToken);
         }

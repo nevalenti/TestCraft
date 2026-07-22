@@ -26,7 +26,8 @@ public static class DeleteTestRun
         {
             var run =
                 await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.Id && r.ProjectId == request.ProjectId,
+                    existingRun =>
+                        existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

@@ -16,9 +16,9 @@ public class TestRunHub(IApplicationDbContext db) : Hub
             return;
         }
 
-        var hasAccess = await db.Projects.AnyAsync(p =>
-            (p.UserId == userId || p.Members.Any(m => m.UserId == userId))
-            && db.TestRuns.Any(r => r.Id == runGuid && r.ProjectId == p.Id)
+        var hasAccess = await db.Projects.AnyAsync(project =>
+            (project.UserId == userId || project.Members.Any(member => member.UserId == userId))
+            && db.TestRuns.Any(testRun => testRun.Id == runGuid && testRun.ProjectId == project.Id)
         );
 
         if (!hasAccess)

@@ -61,41 +61,46 @@ public static class GetRunTrend
         )
         {
             var runs = await context
-                .TestRuns.Where(r => r.ProjectId == request.ProjectId)
-                .OrderByDescending(r => r.CreatedAt)
+                .TestRuns.Where(testRun => testRun.ProjectId == request.ProjectId)
+                .OrderByDescending(testRun => testRun.CreatedAt)
                 .Take(request.Limit)
-                .Select(r => new
+                .Select(testRun => new
                 {
-                    r.Id,
-                    r.Name,
-                    r.CreatedAt,
-                    r.Source,
-                    Passed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Passed),
-                    Failed = r.TestResults.Count(tr => tr.Status == TestResultStatus.Failed),
-                    Blocked = r.TestResults.Count(tr => tr.Status == TestResultStatus.Blocked),
-                    Skipped = r.TestResults.Count(tr => tr.Status == TestResultStatus.Skipped),
+                    testRun.Id,
+                    testRun.Name,
+                    testRun.CreatedAt,
+                    testRun.Source,
+                    Passed = testRun.TestResults.Count(tr => tr.Status == TestResultStatus.Passed),
+                    Failed = testRun.TestResults.Count(tr => tr.Status == TestResultStatus.Failed),
+                    Blocked = testRun.TestResults.Count(tr =>
+                        tr.Status == TestResultStatus.Blocked
+                    ),
+                    Skipped = testRun.TestResults.Count(tr =>
+                        tr.Status == TestResultStatus.Skipped
+                    ),
                 })
                 .ToListAsync(cancellationToken);
 
             return runs.AsEnumerable()
                 .Reverse()
-                .Select(r =>
+                .Select(run =>
                 {
-                    var total = r.Passed + r.Failed + r.Blocked + r.Skipped;
-                    var passRate = total > 0 ? Math.Round((double)r.Passed / total * 100, 1) : 0.0;
+                    var total = run.Passed + run.Failed + run.Blocked + run.Skipped;
+                    var passRate =
+                        total > 0 ? Math.Round((double)run.Passed / total * 100, 1) : 0.0;
 
                     return new TrendPoint
                     {
-                        RunId = r.Id,
-                        RunName = r.Name,
-                        CreatedAt = r.CreatedAt,
+                        RunId = run.Id,
+                        RunName = run.Name,
+                        CreatedAt = run.CreatedAt,
                         Total = total,
-                        Passed = r.Passed,
-                        Failed = r.Failed,
-                        Blocked = r.Blocked,
-                        Skipped = r.Skipped,
+                        Passed = run.Passed,
+                        Failed = run.Failed,
+                        Blocked = run.Blocked,
+                        Skipped = run.Skipped,
                         PassRate = passRate,
-                        Source = r.Source,
+                        Source = run.Source,
                     };
                 })
                 .ToList();

@@ -13,8 +13,8 @@ test.describe("Test Suites tab", () => {
 
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(60_000);
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
@@ -23,23 +23,23 @@ test.describe("Test Suites tab", () => {
     await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
     projectPath = new URL(page.url()).pathname.replace(/\/runs$/, "/suites");
 
-    await ctx.close();
+    await context.close();
   });
 
   test.afterAll(async ({ browser }) => {
     if (!projectPath) return;
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
     if ((await projects.getCard(projectName).count()) === 0) {
-      await ctx.close();
+      await context.close();
       return;
     }
     await projects.delete(projectName);
 
-    await ctx.close();
+    await context.close();
   });
 
   test.beforeEach(async ({ suitesPage }) => {

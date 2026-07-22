@@ -30,7 +30,7 @@ public class BulkReorderStepsValidatorTests
     public void EmptySteps_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Steps = [] });
-        result.ShouldHaveValidationErrorFor(x => x.Steps);
+        result.ShouldHaveValidationErrorFor(command => command.Steps);
     }
 
     [Fact]
@@ -59,13 +59,13 @@ public class BulkReorderStepsValidatorTests
         };
 
         var result = _validator.TestValidate(command);
-        result.ShouldHaveValidationErrorFor(x => x.Steps);
+        result.ShouldHaveValidationErrorFor(stepsCommand => stepsCommand.Steps);
     }
 
     [Fact]
     public void DistinctStepIds_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand());
-        result.ShouldNotHaveValidationErrorFor(x => x.Steps);
+        result.ShouldNotHaveValidationErrorFor(command => command.Steps);
     }
 }

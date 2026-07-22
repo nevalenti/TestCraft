@@ -18,8 +18,8 @@ test.describe("Test Results", () => {
 
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(120_000);
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
@@ -49,23 +49,23 @@ test.describe("Test Results", () => {
     });
     runPath = new URL(page.url()).pathname;
 
-    await ctx.close();
+    await context.close();
   });
 
   test.afterAll(async ({ browser }) => {
     if (!projectPath) return;
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
     if ((await projects.getCard(projectName).count()) === 0) {
-      await ctx.close();
+      await context.close();
       return;
     }
     await projects.delete(projectName);
 
-    await ctx.close();
+    await context.close();
   });
 
   test.beforeEach(async ({ testResultsPage }) => {

@@ -19,11 +19,11 @@ public class ProjectAuthorizationBehaviour<TRequest, TResponse>(
     )
     {
         var hasAccess = await context.Projects.AnyAsync(
-            p =>
-                p.Id == request.ProjectId
+            project =>
+                project.Id == request.ProjectId
                 && (
-                    p.UserId == currentUser.UserId
-                    || p.Members.Any(m => m.UserId == currentUser.UserId)
+                    project.UserId == currentUser.UserId
+                    || project.Members.Any(member => member.UserId == currentUser.UserId)
                 ),
             cancellationToken
         );

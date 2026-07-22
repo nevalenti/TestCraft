@@ -29,7 +29,7 @@ public class UpdateLabelValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Theory]
@@ -39,6 +39,6 @@ public class UpdateLabelValidatorTests
     public void InvalidColor_FailsValidation(string color)
     {
         var result = _validator.TestValidate(ValidCommand() with { Color = color });
-        result.ShouldHaveValidationErrorFor(x => x.Color);
+        result.ShouldHaveValidationErrorFor(command => command.Color);
     }
 }

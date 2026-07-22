@@ -37,16 +37,22 @@ public static class ImportJUnit
     {
         public Validator()
         {
-            RuleFor(x => x.Xml)
+            RuleFor(command => command.Xml)
                 .NotEmpty()
                 .WithMessage("XML content is required")
                 .MaximumLength(4_500_000);
-            RuleFor(x => x.Environment)
+            RuleFor(command => command.Environment)
                 .NotEmpty()
                 .WithMessage("Environment is required")
                 .MaximumLength(255);
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255).When(x => x.Name is not null);
-            RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
+            RuleFor(command => command.Name)
+                .NotEmpty()
+                .MaximumLength(255)
+                .When(command => command.Name is not null);
+            RuleFor(command => command.Source)
+                .NotEmpty()
+                .MaximumLength(100)
+                .When(command => command.Source is not null);
         }
     }
 

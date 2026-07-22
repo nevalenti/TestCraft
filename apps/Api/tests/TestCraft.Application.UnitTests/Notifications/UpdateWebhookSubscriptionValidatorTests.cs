@@ -31,7 +31,7 @@ public class UpdateWebhookSubscriptionValidatorTests
     public void EmptyOrRelativeUrl_FailsValidation(string url)
     {
         var result = _validator.TestValidate(ValidCommand() with { Url = url });
-        result.ShouldHaveValidationErrorFor(x => x.Url);
+        result.ShouldHaveValidationErrorFor(command => command.Url);
     }
 
     [Fact]
@@ -43,20 +43,20 @@ public class UpdateWebhookSubscriptionValidatorTests
                 Url = "ftp://example.com/webhook",
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Url);
+        result.ShouldHaveValidationErrorFor(command => command.Url);
     }
 
     [Fact]
     public void SecretExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Secret = new string('a', 201) });
-        result.ShouldHaveValidationErrorFor(x => x.Secret);
+        result.ShouldHaveValidationErrorFor(command => command.Secret);
     }
 
     [Fact]
     public void EmptyEvents_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Events = [] });
-        result.ShouldHaveValidationErrorFor(x => x.Events);
+        result.ShouldHaveValidationErrorFor(command => command.Events);
     }
 }

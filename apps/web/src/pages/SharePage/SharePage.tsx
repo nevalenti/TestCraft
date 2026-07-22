@@ -91,10 +91,10 @@ export const SharePage = () => {
               </tr>
             </thead>
             <tbody>
-              {(run.results ?? []).map((result, idx) => (
-                <tr key={idx} className="hover">
+              {(run.results ?? []).map((result, index) => (
+                <tr key={index} className="hover">
                   <td className="text-xs text-base-content/65 tabular-nums">
-                    {idx + 1}
+                    {index + 1}
                   </td>
                   <td className="text-sm font-medium">{result.testCaseName}</td>
                   <td>

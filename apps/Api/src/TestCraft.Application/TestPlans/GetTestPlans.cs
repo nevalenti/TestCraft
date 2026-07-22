@@ -23,18 +23,18 @@ public static class GetTestPlans
         )
         {
             return await context
-                .TestPlans.Where(p => p.ProjectId == request.ProjectId)
-                .OrderByDescending(p => p.CreatedAt)
-                .Select(p => new TestPlanResponse
+                .TestPlans.Where(plan => plan.ProjectId == request.ProjectId)
+                .OrderByDescending(plan => plan.CreatedAt)
+                .Select(plan => new TestPlanResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    ProjectId = p.ProjectId,
-                    CaseCount = p.TestPlanCases.Count(tpc =>
+                    Id = plan.Id,
+                    Name = plan.Name,
+                    Description = plan.Description,
+                    ProjectId = plan.ProjectId,
+                    CaseCount = plan.TestPlanCases.Count(tpc =>
                         tpc.TestCase != null && !tpc.TestCase.IsDeleted
                     ),
-                    CreatedAt = p.CreatedAt,
+                    CreatedAt = plan.CreatedAt,
                 })
                 .ToListAsync(cancellationToken);
         }

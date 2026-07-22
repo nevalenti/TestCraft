@@ -13,7 +13,9 @@ public sealed partial class ExpiredShareTokenCleanupJob(
     public async Task RunAsync(CancellationToken cancellationToken)
     {
         var deleted = await context
-            .ShareTokens.Where(t => t.ExpiresAt != null && t.ExpiresAt < DateTimeOffset.UtcNow)
+            .ShareTokens.Where(token =>
+                token.ExpiresAt != null && token.ExpiresAt < DateTimeOffset.UtcNow
+            )
             .ExecuteDeleteAsync(cancellationToken);
 
         if (deleted > 0)

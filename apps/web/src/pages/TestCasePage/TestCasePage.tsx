@@ -111,11 +111,11 @@ export const TestCasePage = () => {
   const handleDragOver = ({ active, over }: DragOverEvent) => {
     if (!over || active.id === over.id) return;
 
-    const prev = localStepsRef.current;
-    const oldIndex = prev.findIndex((step) => step.id === active.id);
-    const newIndex = prev.findIndex((step) => step.id === over.id);
+    const previousSteps = localStepsRef.current;
+    const oldIndex = previousSteps.findIndex((step) => step.id === active.id);
+    const newIndex = previousSteps.findIndex((step) => step.id === over.id);
 
-    localStepsRef.current = arrayMove(prev, oldIndex, newIndex);
+    localStepsRef.current = arrayMove(previousSteps, oldIndex, newIndex);
   };
 
   const handleDragEnd = ({ over }: DragEndEvent) => {

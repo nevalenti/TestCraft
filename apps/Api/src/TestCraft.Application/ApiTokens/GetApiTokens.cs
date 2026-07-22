@@ -22,17 +22,17 @@ public static class GetApiTokens
             CancellationToken cancellationToken
         ) =>
             await context
-                .ApiTokens.Where(t => t.ProjectId == request.ProjectId)
-                .OrderByDescending(t => t.CreatedAt)
-                .Select(t => new ApiTokenResponse
+                .ApiTokens.Where(token => token.ProjectId == request.ProjectId)
+                .OrderByDescending(token => token.CreatedAt)
+                .Select(token => new ApiTokenResponse
                 {
-                    Id = t.Id,
-                    Name = t.Name,
-                    ProjectId = t.ProjectId,
-                    LastUsedAt = t.LastUsedAt,
-                    ExpiresAt = t.ExpiresAt,
-                    IsRevoked = t.IsRevoked,
-                    CreatedAt = t.CreatedAt,
+                    Id = token.Id,
+                    Name = token.Name,
+                    ProjectId = token.ProjectId,
+                    LastUsedAt = token.LastUsedAt,
+                    ExpiresAt = token.ExpiresAt,
+                    IsRevoked = token.IsRevoked,
+                    CreatedAt = token.CreatedAt,
                 })
                 .ToListAsync(cancellationToken);
     }

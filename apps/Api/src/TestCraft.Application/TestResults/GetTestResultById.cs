@@ -29,22 +29,24 @@ public static class GetTestResultById
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestResults.Where(r => r.Id == request.Id && r.TestRunId == request.RunId)
-                .Select(r => new TestResultResponse
+                .TestResults.Where(result =>
+                    result.Id == request.Id && result.TestRunId == request.RunId
+                )
+                .Select(result => new TestResultResponse
                 {
-                    Id = r.Id,
-                    TestRunId = r.TestRunId,
-                    TestCaseId = r.TestCaseId,
-                    SuiteId = r.TestCase!.SuiteId,
-                    TestCaseName = r.TestCase.Name,
-                    Status = r.Status,
-                    Notes = r.Notes,
-                    DurationMs = r.DurationMs,
-                    DefectType = r.DefectType,
-                    ExecutedAt = r.ExecutedAt,
-                    ExecutedById = r.ExecutedById,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = result.Id,
+                    TestRunId = result.TestRunId,
+                    TestCaseId = result.TestCaseId,
+                    SuiteId = result.TestCase!.SuiteId,
+                    TestCaseName = result.TestCase.Name,
+                    Status = result.Status,
+                    Notes = result.Notes,
+                    DurationMs = result.DurationMs,
+                    DefectType = result.DefectType,
+                    ExecutedAt = result.ExecutedAt,
+                    ExecutedById = result.ExecutedById,
+                    CreatedAt = result.CreatedAt,
+                    UpdatedAt = result.UpdatedAt,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();

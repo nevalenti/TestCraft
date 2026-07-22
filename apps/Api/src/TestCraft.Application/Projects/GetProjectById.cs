@@ -25,17 +25,17 @@ public static class GetProjectById
             CancellationToken cancellationToken
         ) =>
             await context
-                .Projects.Where(p => p.Id == request.Id)
-                .Select(p => new ProjectResponse
+                .Projects.Where(project => project.Id == request.Id)
+                .Select(project => new ProjectResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                    SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
-                    RunCount = p.TestRuns.Count(r => !r.IsDeleted),
-                    IsOwner = p.UserId == currentUser.UserId,
+                    Id = project.Id,
+                    Name = project.Name,
+                    Description = project.Description,
+                    CreatedAt = project.CreatedAt,
+                    UpdatedAt = project.UpdatedAt,
+                    SuiteCount = project.TestSuites.Count(suite => !suite.IsDeleted),
+                    RunCount = project.TestRuns.Count(run => !run.IsDeleted),
+                    IsOwner = project.UserId == currentUser.UserId,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
