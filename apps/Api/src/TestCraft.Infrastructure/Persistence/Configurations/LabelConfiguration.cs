@@ -10,13 +10,19 @@ public class LabelConfiguration : IEntityTypeConfiguration<Label>
     {
         builder.ToTable("labels");
 
-        builder.HasKey(l => l.Id);
-        builder.Property(l => l.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(l => l.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
-        builder.Property(l => l.Color).HasColumnName("color").HasMaxLength(7).IsRequired();
-        builder.Property(l => l.ProjectId).HasColumnName("project_id");
-        builder.Property(l => l.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.HasKey(label => label.Id);
+        builder
+            .Property(label => label.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(label => label.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
+        builder.Property(label => label.Color).HasColumnName("color").HasMaxLength(7).IsRequired();
+        builder.Property(label => label.ProjectId).HasColumnName("project_id");
+        builder
+            .Property(label => label.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(l => new { l.ProjectId, l.Name }).IsUnique();
+        builder.HasIndex(label => new { label.ProjectId, label.Name }).IsUnique();
     }
 }

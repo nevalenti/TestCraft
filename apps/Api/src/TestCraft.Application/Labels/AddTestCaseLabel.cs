@@ -36,7 +36,7 @@ public static class AddTestCaseLabel
             }
 
             var labelExists = await context.Labels.AnyAsync(
-                l => l.Id == request.LabelId && l.ProjectId == request.ProjectId,
+                label => label.Id == request.LabelId && label.ProjectId == request.ProjectId,
                 cancellationToken
             );
             if (!labelExists)

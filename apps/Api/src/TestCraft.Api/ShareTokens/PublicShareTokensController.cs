@@ -18,5 +18,8 @@ public class PublicShareTokensController(ISender sender) : ControllerBase
     public async Task<ActionResult<SharedRunResponse>> GetByToken(
         string token,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetRunByShareToken.Query(token), cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(new GetRunByShareToken.Query(token), cancellationToken));
+    }
 }

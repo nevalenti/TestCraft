@@ -29,7 +29,7 @@ public static class UpdateTestPlan
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
         }
     }
 
@@ -43,7 +43,9 @@ public static class UpdateTestPlan
         {
             var plan =
                 await context.TestPlans.FirstOrDefaultAsync(
-                    p => p.Id == request.Id && p.ProjectId == request.ProjectId,
+                    existingPlan =>
+                        existingPlan.Id == request.Id
+                        && existingPlan.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -53,17 +55,17 @@ public static class UpdateTestPlan
             await context.SaveChangesAsync(cancellationToken);
 
             return await context
-                .TestPlans.Where(p => p.Id == plan.Id)
-                .Select(p => new TestPlanResponse
+                .TestPlans.Where(updatedPlan => updatedPlan.Id == plan.Id)
+                .Select(updatedPlan => new TestPlanResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    ProjectId = p.ProjectId,
-                    CaseCount = p.TestPlanCases.Count(tpc =>
+                    Id = updatedPlan.Id,
+                    Name = updatedPlan.Name,
+                    Description = updatedPlan.Description,
+                    ProjectId = updatedPlan.ProjectId,
+                    CaseCount = updatedPlan.TestPlanCases.Count(tpc =>
                         tpc.TestCase != null && !tpc.TestCase.IsDeleted
                     ),
-                    CreatedAt = p.CreatedAt,
+                    CreatedAt = updatedPlan.CreatedAt,
                 })
                 .FirstAsync(cancellationToken);
         }

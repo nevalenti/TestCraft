@@ -27,17 +27,17 @@ public static class GetEmailSubscriptions
         {
             var rows = await context
                 .EmailSubscriptions.AsNoTracking()
-                .Where(e => e.ProjectId == request.ProjectId)
+                .Where(subscription => subscription.ProjectId == request.ProjectId)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(e => new EmailSubscriptionResponse
+            return rows.Select(subscription => new EmailSubscriptionResponse
                 {
-                    Id = e.Id,
-                    ProjectId = e.ProjectId,
-                    Email = e.Email,
-                    IsActive = e.IsActive,
-                    Events = JsonSerializer.Deserialize<List<string>>(e.Events) ?? [],
-                    CreatedAt = e.CreatedAt,
+                    Id = subscription.Id,
+                    ProjectId = subscription.ProjectId,
+                    Email = subscription.Email,
+                    IsActive = subscription.IsActive,
+                    Events = JsonSerializer.Deserialize<List<string>>(subscription.Events) ?? [],
+                    CreatedAt = subscription.CreatedAt,
                 })
                 .ToList();
         }

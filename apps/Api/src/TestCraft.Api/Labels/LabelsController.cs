@@ -17,7 +17,12 @@ public class LabelsController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<LabelResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetLabels.Query { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(new GetLabels.Query { ProjectId = projectId }, cancellationToken)
+        );
+    }
 
     /// <summary>Creates a label.</summary>
     [HttpPost]
@@ -25,7 +30,10 @@ public class LabelsController(ISender sender) : ControllerBase
         Guid projectId,
         CreateLabel.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    }
 
     /// <summary>Updates a label.</summary>
     [HttpPut("{id:guid}")]
@@ -34,7 +42,12 @@ public class LabelsController(ISender sender) : ControllerBase
         Guid id,
         UpdateLabel.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Deletes a label.</summary>
     [HttpDelete("{id:guid}")]

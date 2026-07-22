@@ -58,7 +58,7 @@ public class ApiTokensApiTests(ApiFactory factory)
         var tokens = await response.Content.ReadFromJsonAsync<IReadOnlyList<ApiTokenResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        tokens.Should().ContainSingle(t => t.Name == "My Token" && !t.IsRevoked);
+        tokens.Should().ContainSingle(token => token.Name == "My Token" && !token.IsRevoked);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class ApiTokensApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{project.Id}/tokens")
         ).Content.ReadFromJsonAsync<IReadOnlyList<ApiTokenResponse>>(ApiTestHelpers.JsonOptions);
 
-        tokens.Should().ContainSingle(t => t.Id == created.Id && t.IsRevoked);
+        tokens.Should().ContainSingle(token => token.Id == created.Id && token.IsRevoked);
     }
 
     [Fact]

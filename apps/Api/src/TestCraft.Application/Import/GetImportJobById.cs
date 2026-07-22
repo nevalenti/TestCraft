@@ -26,16 +26,16 @@ public static class GetImportJobById
             CancellationToken cancellationToken
         ) =>
             await context
-                .ImportJobs.Where(j => j.Id == request.Id && j.ProjectId == request.ProjectId)
-                .Select(j => new ImportJobResponse
+                .ImportJobs.Where(job => job.Id == request.Id && job.ProjectId == request.ProjectId)
+                .Select(job => new ImportJobResponse
                 {
-                    Id = j.Id,
-                    ProjectId = j.ProjectId,
-                    Status = j.Status,
-                    TestRunId = j.TestRunId,
-                    Error = j.Error,
-                    CreatedAt = j.CreatedAt,
-                    UpdatedAt = j.UpdatedAt,
+                    Id = job.Id,
+                    ProjectId = job.ProjectId,
+                    Status = job.Status,
+                    TestRunId = job.TestRunId,
+                    Error = job.Error,
+                    CreatedAt = job.CreatedAt,
+                    UpdatedAt = job.UpdatedAt,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();

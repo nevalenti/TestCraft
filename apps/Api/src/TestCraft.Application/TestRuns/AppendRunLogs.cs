@@ -28,7 +28,7 @@ public static class AppendRunLogs
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var exists = await context.TestRuns.AnyAsync(
-                r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
+                run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
 
@@ -39,7 +39,7 @@ public static class AppendRunLogs
                 return;
 
             var entries = request
-                .Lines.Select(msg => new RunLog { RunId = request.RunId, Message = msg })
+                .Lines.Select(line => new RunLog { RunId = request.RunId, Message = line })
                 .ToList();
 
             context.RunLogs.AddRange(entries);

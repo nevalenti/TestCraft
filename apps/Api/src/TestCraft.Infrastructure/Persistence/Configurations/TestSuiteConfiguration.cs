@@ -10,21 +10,36 @@ public class TestSuiteConfiguration : IEntityTypeConfiguration<TestSuite>
     {
         builder.ToTable("test_suites");
 
-        builder.HasKey(s => s.Id);
-        builder.Property(s => s.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(s => s.Name).HasColumnName("name").IsRequired();
-        builder.Property(s => s.Description).HasColumnName("description");
-        builder.Property(s => s.Source).HasColumnName("source");
-        builder.Property(s => s.ProjectId).HasColumnName("project_id");
-        builder.Property(s => s.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(s => s.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(s => s.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(s => s.DeletedAt).HasColumnName("deleted_at");
+        builder.HasKey(testSuite => testSuite.Id);
+        builder
+            .Property(testSuite => testSuite.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(testSuite => testSuite.Name).HasColumnName("name").IsRequired();
+        builder.Property(testSuite => testSuite.Description).HasColumnName("description");
+        builder.Property(testSuite => testSuite.Source).HasColumnName("source");
+        builder.Property(testSuite => testSuite.ProjectId).HasColumnName("project_id");
+        builder
+            .Property(testSuite => testSuite.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testSuite => testSuite.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testSuite => testSuite.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(testSuite => testSuite.DeletedAt).HasColumnName("deleted_at");
 
-        builder.HasIndex(s => s.ProjectId);
+        builder.HasIndex(testSuite => testSuite.ProjectId);
 
-        builder.HasQueryFilter(s => !s.IsDeleted);
+        builder.HasQueryFilter(testSuite => !testSuite.IsDeleted);
 
-        builder.HasMany(s => s.TestCases).WithOne(c => c.Suite).HasForeignKey(c => c.SuiteId);
+        builder
+            .HasMany(testSuite => testSuite.TestCases)
+            .WithOne(testCase => testCase.Suite)
+            .HasForeignKey(testCase => testCase.SuiteId);
     }
 }

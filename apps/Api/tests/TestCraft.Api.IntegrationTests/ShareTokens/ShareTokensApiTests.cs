@@ -49,7 +49,7 @@ public class ShareTokensApiTests(ApiFactory factory)
         var tokens = await listResponse.Content.ReadFromJsonAsync<
             IReadOnlyList<ShareTokenResponse>
         >(ApiTestHelpers.JsonOptions);
-        tokens.Should().ContainSingle(t => t.Id == created.Id);
+        tokens.Should().ContainSingle(token => token.Id == created.Id);
     }
 
     [Fact]

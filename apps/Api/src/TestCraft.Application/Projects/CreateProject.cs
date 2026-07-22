@@ -51,7 +51,7 @@ public static class CreateProject
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
         }
     }
 

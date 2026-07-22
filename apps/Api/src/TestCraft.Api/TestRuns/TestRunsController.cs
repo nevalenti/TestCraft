@@ -19,7 +19,10 @@ public class TestRunsController(ISender sender) : ControllerBase
         Guid projectId,
         [FromQuery] GetTestRuns.Query query,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    }
 
     /// <summary>Gets a test run by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -27,13 +30,15 @@ public class TestRunsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestRunById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Gets the result counts (passed/failed/skipped/etc.) for a test run.</summary>
     [HttpGet("{id:guid}/summary")]
@@ -41,13 +46,15 @@ public class TestRunsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestRunSummary.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates a new test run.</summary>
     [HttpPost]
@@ -69,7 +76,12 @@ public class TestRunsController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestRun.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Gets persisted log lines for a test run.</summary>
     [HttpGet("{id:guid}/logs")]
@@ -77,13 +89,15 @@ public class TestRunsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetRunLogs.Query { ProjectId = projectId, RunId = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Appends log lines to the live feed for a test run.</summary>
     [HttpPost("{id:guid}/logs")]

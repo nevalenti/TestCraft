@@ -36,7 +36,7 @@ function EventCheckboxes({
   const toggle = (event: string) =>
     onChange(
       selected.includes(event)
-        ? selected.filter((e) => e !== event)
+        ? selected.filter((selectedEvent) => selectedEvent !== event)
         : [...selected, event],
     );
 
@@ -128,8 +128,8 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
     createToken.mutate(
       { name: data.name, expiresAt: data.expiresAt || undefined },
       {
-        onSuccess: (res) => {
-          setNewToken(res);
+        onSuccess: (response) => {
+          setNewToken(response);
           setRevealed(false);
           reset();
         },
@@ -153,7 +153,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             />
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => setRevealed((r) => !r)}
+              onClick={() => setRevealed((previous) => !previous)}
             >
               <EyeIcon className="size-4" />
             </button>
@@ -206,24 +206,26 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
 
       {tokens && tokens.length > 0 && (
         <ul className="space-y-2">
-          {tokens.map((t) => (
+          {tokens.map((token) => (
             <li
-              key={t.id}
+              key={token.id}
               className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
             >
               <div>
-                <p className="text-sm font-medium">{t.name}</p>
+                <p className="text-sm font-medium">{token.name}</p>
                 <p className="text-xs text-base-content/65">
-                  Created {formatDate(t.createdAt)}
-                  {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
-                  {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
-                  {t.isRevoked && " · revoked"}
+                  Created {formatDate(token.createdAt)}
+                  {token.lastUsedAt &&
+                    ` · last used ${formatDate(token.lastUsedAt)}`}
+                  {token.expiresAt &&
+                    ` · expires ${formatDate(token.expiresAt)}`}
+                  {token.isRevoked && " · revoked"}
                 </p>
               </div>
-              {!t.isRevoked && (
+              {!token.isRevoked && (
                 <button
                   className="btn text-error btn-ghost btn-xs"
-                  onClick={() => revokeToken.mutate(t.id)}
+                  onClick={() => revokeToken.mutate(token.id)}
                   aria-label="Revoke token"
                 >
                   <TrashIcon className="size-3.5" />
@@ -267,7 +269,7 @@ function MembersSection({ projectId }: { projectId: string }) {
             className="input-bordered input input-sm w-full"
             placeholder="teammate@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
           />
         </div>
         <button
@@ -354,13 +356,13 @@ function WebhooksSection({ projectId }: { projectId: string }) {
           className="input-bordered input input-sm w-full"
           placeholder="https://hooks.example.com/testcraft"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(event) => setUrl(event.target.value)}
         />
         <input
           className="input-bordered input input-sm w-full"
           placeholder="Secret (optional, for HMAC verification)"
           value={secret}
-          onChange={(e) => setSecret(e.target.value)}
+          onChange={(event) => setSecret(event.target.value)}
         />
         <EventCheckboxes selected={events} onChange={setEvents} />
         <button
@@ -429,7 +431,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
           className="input-bordered input input-sm w-full"
           placeholder="alerts@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
         />
         <EventCheckboxes selected={events} onChange={setEvents} />
         <button

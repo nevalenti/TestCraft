@@ -81,7 +81,7 @@ internal static class ImportRunWriter
 
         var run =
             await context.TestRuns.FirstOrDefaultAsync(
-                r => r.Id == runId && r.ProjectId == projectId,
+                testRun => testRun.Id == runId && testRun.ProjectId == projectId,
                 cancellationToken
             )
             ?? throw new InvalidOperationException($"Run {runId} not found in project {projectId}");
@@ -149,17 +149,23 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        var uniqueSuiteNames = cases.Select(c => c.SuiteName).Distinct().ToList();
+        var uniqueSuiteNames = cases.Select(parsedCase => parsedCase.SuiteName).Distinct().ToList();
 
         var existingSuites = await context
-            .TestSuites.Where(s => s.ProjectId == projectId && uniqueSuiteNames.Contains(s.Name))
+            .TestSuites.Where(suite =>
+                suite.ProjectId == projectId && uniqueSuiteNames.Contains(suite.Name)
+            )
             .ToListAsync(cancellationToken);
 
-        var suiteMap = existingSuites.ToDictionary(s => s.Name, s => s.Id);
+        var suiteMap = existingSuites.ToDictionary(suite => suite.Name, suite => suite.Id);
 
         if (!string.IsNullOrEmpty(source))
         {
-            foreach (var suite in existingSuites.Where(s => string.IsNullOrEmpty(s.Source)))
+            foreach (
+                var suite in existingSuites.Where(existingSuite =>
+                    string.IsNullOrEmpty(existingSuite.Source)
+                )
+            )
             {
                 suite.Source = source;
             }
@@ -205,13 +211,18 @@ internal static class ImportRunWriter
     )
     {
         var suiteIds = suiteMap.Values.ToList();
-        var uniqueCaseNames = cases.Select(c => c.CaseName).Distinct().ToList();
+        var uniqueCaseNames = cases.Select(parsedCase => parsedCase.CaseName).Distinct().ToList();
 
         var existingCases = await context
-            .TestCases.Where(c => suiteIds.Contains(c.SuiteId) && uniqueCaseNames.Contains(c.Name))
+            .TestCases.Where(testCase =>
+                suiteIds.Contains(testCase.SuiteId) && uniqueCaseNames.Contains(testCase.Name)
+            )
             .ToListAsync(cancellationToken);
 
-        var caseMap = existingCases.ToDictionary(c => (c.SuiteId, c.Name), c => c.Id);
+        var caseMap = existingCases.ToDictionary(
+            testCase => (testCase.SuiteId, testCase.Name),
+            testCase => testCase.Id
+        );
 
         var newCases = new Dictionary<(Guid SuiteId, string Name), TestCase>();
         foreach (var parsedCase in cases)

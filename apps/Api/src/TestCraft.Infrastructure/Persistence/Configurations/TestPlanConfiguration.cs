@@ -10,18 +10,34 @@ public class TestPlanConfiguration : IEntityTypeConfiguration<TestPlan>
     {
         builder.ToTable("test_plans");
 
-        builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(p => p.Name).HasColumnName("name").HasMaxLength(255).IsRequired();
-        builder.Property(p => p.Description).HasColumnName("description");
-        builder.Property(p => p.ProjectId).HasColumnName("project_id");
-        builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(p => p.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(p => p.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(p => p.DeletedAt).HasColumnName("deleted_at");
+        builder.HasKey(testPlan => testPlan.Id);
+        builder
+            .Property(testPlan => testPlan.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(testPlan => testPlan.Name)
+            .HasColumnName("name")
+            .HasMaxLength(255)
+            .IsRequired();
+        builder.Property(testPlan => testPlan.Description).HasColumnName("description");
+        builder.Property(testPlan => testPlan.ProjectId).HasColumnName("project_id");
+        builder
+            .Property(testPlan => testPlan.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testPlan => testPlan.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testPlan => testPlan.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(testPlan => testPlan.DeletedAt).HasColumnName("deleted_at");
 
-        builder.HasIndex(p => p.ProjectId);
+        builder.HasIndex(testPlan => testPlan.ProjectId);
 
-        builder.HasQueryFilter(p => !p.IsDeleted);
+        builder.HasQueryFilter(testPlan => !testPlan.IsDeleted);
     }
 }

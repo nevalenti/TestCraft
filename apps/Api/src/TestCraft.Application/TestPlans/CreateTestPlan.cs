@@ -86,7 +86,7 @@ public static class CreateTestPlan
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
         }
     }
 
@@ -109,15 +109,15 @@ public static class CreateTestPlan
             await context.SaveChangesAsync(cancellationToken);
 
             return await context
-                .TestPlans.Where(p => p.Id == plan.Id)
-                .Select(p => new TestPlanResponse
+                .TestPlans.Where(createdPlan => createdPlan.Id == plan.Id)
+                .Select(createdPlan => new TestPlanResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    ProjectId = p.ProjectId,
+                    Id = createdPlan.Id,
+                    Name = createdPlan.Name,
+                    Description = createdPlan.Description,
+                    ProjectId = createdPlan.ProjectId,
                     CaseCount = 0,
-                    CreatedAt = p.CreatedAt,
+                    CreatedAt = createdPlan.CreatedAt,
                 })
                 .FirstAsync(cancellationToken);
         }

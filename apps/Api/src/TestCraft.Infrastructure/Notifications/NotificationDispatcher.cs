@@ -80,8 +80,10 @@ public partial class NotificationDispatcher(
     {
         var webhooks = await context
             .WebhookSubscriptions.AsNoTracking()
-            .Where(w =>
-                w.ProjectId == projectId && w.IsActive && w.Events.Contains($"\"{eventType}\"")
+            .Where(webhookSubscription =>
+                webhookSubscription.ProjectId == projectId
+                && webhookSubscription.IsActive
+                && webhookSubscription.Events.Contains($"\"{eventType}\"")
             )
             .ToListAsync(cancellationToken);
 
@@ -123,10 +125,12 @@ public partial class NotificationDispatcher(
     )
     {
         var recipients = await context
-            .EmailSubscriptions.Where(e =>
-                e.ProjectId == projectId && e.IsActive && e.Events.Contains($"\"{eventType}\"")
+            .EmailSubscriptions.Where(emailSubscription =>
+                emailSubscription.ProjectId == projectId
+                && emailSubscription.IsActive
+                && emailSubscription.Events.Contains($"\"{eventType}\"")
             )
-            .Select(e => e.Email)
+            .Select(emailSubscription => emailSubscription.Email)
             .ToListAsync(cancellationToken);
 
         foreach (var recipient in recipients)

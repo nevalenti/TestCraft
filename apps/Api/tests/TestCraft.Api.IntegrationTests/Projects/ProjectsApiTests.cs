@@ -68,8 +68,8 @@ public class ProjectsApiTests(ApiFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var page = await response.Content.ReadFromJsonAsync<Paginated<ProjectResponse>>();
-        page!.Items.Should().ContainSingle(p => p.Name == "Owner Project");
-        page.Items.Should().NotContain(p => p.Name == "Other Project");
+        page!.Items.Should().ContainSingle(project => project.Name == "Owner Project");
+        page.Items.Should().NotContain(project => project.Name == "Other Project");
     }
 
     [Fact]

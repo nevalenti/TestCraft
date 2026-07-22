@@ -19,7 +19,10 @@ public class TestSuitesController(ISender sender) : ControllerBase
         Guid projectId,
         [FromQuery] GetTestSuites.Query query,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+    }
 
     /// <summary>Gets a test suite by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -27,13 +30,15 @@ public class TestSuitesController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestSuiteById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates a new test suite.</summary>
     [HttpPost]
@@ -55,7 +60,12 @@ public class TestSuitesController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestSuite.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Deletes a test suite.</summary>
     [HttpDelete("{id:guid}")]

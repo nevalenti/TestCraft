@@ -225,8 +225,8 @@ describe("useBulkReorderSteps", () => {
       let resolveApi!: () => void;
       vi.mocked(testCaseStepsApi.bulkReorder).mockImplementation(
         () =>
-          new Promise((res) => {
-            resolveApi = () => res(undefined as any);
+          new Promise((resolve) => {
+            resolveApi = () => resolve(undefined as any);
           }),
       );
 

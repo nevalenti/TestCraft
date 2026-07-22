@@ -31,7 +31,7 @@ export const LabelSelect = ({
   const add = useAddTestCaseLabel(projectId, suiteId, caseId);
   const remove = useRemoveTestCaseLabel(projectId, suiteId, caseId);
 
-  const assignedIds = new Set(assigned.map((l) => l.id));
+  const assignedIds = new Set(assigned.map((label) => label.id));
   const isPending = add.isPending || remove.isPending;
   const hasLabels = assigned.length > 0;
 
@@ -50,7 +50,7 @@ export const LabelSelect = ({
         <button
           type="button"
           className="btn text-base-content/55 btn-ghost btn-xs hover:text-base-content/85"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((prevOpen) => !prevOpen)}
           aria-label="Manage labels"
         >
           <PencilSquareIcon className="size-3" />
@@ -59,7 +59,7 @@ export const LabelSelect = ({
         <button
           type="button"
           className="flex items-center gap-1.5 rounded-md border border-dashed border-base-content/20 px-2 py-1 text-[11px] font-medium text-base-content/65 transition-colors hover:border-base-content/40 hover:text-base-content/85"
-          onClick={() => setOpen((v) => !v)}
+          onClick={() => setOpen((prevOpen) => !prevOpen)}
           aria-label="Add labels"
         >
           <TagIcon className="size-3" />

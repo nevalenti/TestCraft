@@ -17,13 +17,15 @@ public class NotificationsController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<WebhookSubscriptionResponse>>> GetWebhooks(
         Guid projectId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetWebhookSubscriptions.Query { ProjectId = projectId },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates a webhook subscription.</summary>
     [HttpPost("webhooks")]
@@ -31,7 +33,10 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid projectId,
         CreateWebhookSubscription.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    }
 
     /// <summary>Updates a webhook subscription.</summary>
     [HttpPut("webhooks/{id:guid}")]
@@ -40,7 +45,12 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid id,
         UpdateWebhookSubscription.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Deletes a webhook subscription.</summary>
     [HttpDelete("webhooks/{id:guid}")]
@@ -63,13 +73,15 @@ public class NotificationsController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<EmailSubscriptionResponse>>> GetEmails(
         Guid projectId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetEmailSubscriptions.Query { ProjectId = projectId },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates an email subscription.</summary>
     [HttpPost("emails")]
@@ -77,7 +89,10 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid projectId,
         CreateEmailSubscription.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+    }
 
     /// <summary>Updates an email subscription.</summary>
     [HttpPut("emails/{id:guid}")]
@@ -86,7 +101,12 @@ public class NotificationsController(ISender sender) : ControllerBase
         Guid id,
         UpdateEmailSubscription.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Deletes an email subscription.</summary>
     [HttpDelete("emails/{id:guid}")]

@@ -63,7 +63,7 @@ public static class CreateApiToken
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(100);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(100);
         }
     }
 

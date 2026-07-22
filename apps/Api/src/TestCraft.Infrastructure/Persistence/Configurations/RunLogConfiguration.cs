@@ -10,18 +10,24 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
     {
         builder.ToTable("run_logs");
 
-        builder.HasKey(l => l.Id);
-        builder.Property(l => l.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(l => l.RunId).HasColumnName("run_id");
-        builder.Property(l => l.Message).HasColumnName("message").IsRequired();
-        builder.Property(l => l.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.HasKey(runLog => runLog.Id);
+        builder
+            .Property(runLog => runLog.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(runLog => runLog.RunId).HasColumnName("run_id");
+        builder.Property(runLog => runLog.Message).HasColumnName("message").IsRequired();
+        builder
+            .Property(runLog => runLog.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(l => new { l.RunId, l.CreatedAt });
+        builder.HasIndex(runLog => new { runLog.RunId, runLog.CreatedAt });
 
         builder
-            .HasOne(l => l.Run)
+            .HasOne(runLog => runLog.Run)
             .WithMany()
-            .HasForeignKey(l => l.RunId)
+            .HasForeignKey(runLog => runLog.RunId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

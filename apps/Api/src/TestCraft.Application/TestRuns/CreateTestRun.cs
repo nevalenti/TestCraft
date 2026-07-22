@@ -28,9 +28,12 @@ public static class CreateTestRun
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Environment).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Environment).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Source)
+                .NotEmpty()
+                .MaximumLength(100)
+                .When(command => command.Source is not null);
         }
     }
 

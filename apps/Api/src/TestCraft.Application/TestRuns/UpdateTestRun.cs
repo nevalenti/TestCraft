@@ -33,9 +33,9 @@ public static class UpdateTestRun
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Environment).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Status).IsInEnum();
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Environment).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Status).IsInEnum();
         }
     }
 
@@ -49,7 +49,8 @@ public static class UpdateTestRun
         {
             var run =
                 await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.Id && r.ProjectId == request.ProjectId,
+                    existingRun =>
+                        existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -60,18 +61,18 @@ public static class UpdateTestRun
             await context.SaveChangesAsync(cancellationToken);
 
             return await context
-                .TestRuns.Where(r => r.Id == run.Id)
-                .Select(r => new TestRunResponse
+                .TestRuns.Where(updatedRun => updatedRun.Id == run.Id)
+                .Select(updatedRun => new TestRunResponse
                 {
-                    Id = r.Id,
-                    ProjectId = r.ProjectId,
-                    Name = r.Name,
-                    Environment = r.Environment,
-                    Status = r.Status,
-                    Source = r.Source,
-                    ExecutedById = r.ExecutedById,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = updatedRun.Id,
+                    ProjectId = updatedRun.ProjectId,
+                    Name = updatedRun.Name,
+                    Environment = updatedRun.Environment,
+                    Status = updatedRun.Status,
+                    Source = updatedRun.Source,
+                    ExecutedById = updatedRun.ExecutedById,
+                    CreatedAt = updatedRun.CreatedAt,
+                    UpdatedAt = updatedRun.UpdatedAt,
                 })
                 .FirstAsync(cancellationToken);
         }

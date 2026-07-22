@@ -10,22 +10,35 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
     {
         builder.ToTable("api_tokens");
 
-        builder.HasKey(t => t.Id);
-        builder.Property(t => t.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(t => t.Name).HasColumnName("name").HasMaxLength(100).IsRequired();
+        builder.HasKey(apiToken => apiToken.Id);
         builder
-            .Property(t => t.TokenHash)
+            .Property(apiToken => apiToken.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(apiToken => apiToken.Name)
+            .HasColumnName("name")
+            .HasMaxLength(100)
+            .IsRequired();
+        builder
+            .Property(apiToken => apiToken.TokenHash)
             .HasColumnName("token_hash")
             .HasMaxLength(64)
             .IsRequired();
-        builder.Property(t => t.ProjectId).HasColumnName("project_id");
-        builder.Property(t => t.CreatedById).HasColumnName("created_by_id");
-        builder.Property(t => t.LastUsedAt).HasColumnName("last_used_at");
-        builder.Property(t => t.ExpiresAt).HasColumnName("expires_at");
-        builder.Property(t => t.IsRevoked).HasColumnName("is_revoked").HasDefaultValue(false);
-        builder.Property(t => t.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.Property(apiToken => apiToken.ProjectId).HasColumnName("project_id");
+        builder.Property(apiToken => apiToken.CreatedById).HasColumnName("created_by_id");
+        builder.Property(apiToken => apiToken.LastUsedAt).HasColumnName("last_used_at");
+        builder.Property(apiToken => apiToken.ExpiresAt).HasColumnName("expires_at");
+        builder
+            .Property(apiToken => apiToken.IsRevoked)
+            .HasColumnName("is_revoked")
+            .HasDefaultValue(false);
+        builder
+            .Property(apiToken => apiToken.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(t => t.TokenHash).IsUnique();
-        builder.HasIndex(t => t.ProjectId);
+        builder.HasIndex(apiToken => apiToken.TokenHash).IsUnique();
+        builder.HasIndex(apiToken => apiToken.ProjectId);
     }
 }

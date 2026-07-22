@@ -69,8 +69,8 @@ public class TestRunsApiTests(ApiFactory factory)
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestRunResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        page!.Items.Should().ContainSingle(r => r.Name == "Smoke Run");
-        page.Items.Should().NotContain(r => r.Name == "Regression Run");
+        page!.Items.Should().ContainSingle(run => run.Name == "Smoke Run");
+        page.Items.Should().NotContain(run => run.Name == "Regression Run");
     }
 
     [Fact]
@@ -308,8 +308,8 @@ public class TestRunsApiTests(ApiFactory factory)
         var contextA = scopeA.ServiceProvider.GetRequiredService<AppDbContext>();
         var contextB = scopeB.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var runA = await contextA.TestRuns.SingleAsync(r => r.Id == run.Id);
-        var runB = await contextB.TestRuns.SingleAsync(r => r.Id == run.Id);
+        var runA = await contextA.TestRuns.SingleAsync(testRun => testRun.Id == run.Id);
+        var runB = await contextB.TestRuns.SingleAsync(testRun => testRun.Id == run.Id);
 
         runB.TransitionTo(TestRunStatus.Archived);
         await contextB.SaveChangesAsync();

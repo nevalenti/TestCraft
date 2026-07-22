@@ -24,7 +24,7 @@ public class AddProjectMemberValidatorTests
     public void InvalidEmail_FailsValidation(string email)
     {
         var result = _validator.TestValidate(ValidCommand() with { Email = email });
-        result.ShouldHaveValidationErrorFor(x => x.Email);
+        result.ShouldHaveValidationErrorFor(command => command.Email);
     }
 
     [Fact]
@@ -37,6 +37,6 @@ public class AddProjectMemberValidatorTests
                 Email = $"{longLocalPart}@example.com",
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Email);
+        result.ShouldHaveValidationErrorFor(command => command.Email);
     }
 }

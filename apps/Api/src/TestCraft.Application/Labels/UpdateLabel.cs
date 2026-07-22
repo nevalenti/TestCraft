@@ -29,8 +29,11 @@ public static class UpdateLabel
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(50);
-            RuleFor(x => x.Color).NotEmpty().MaximumLength(7).Matches("^#[0-9A-Fa-f]{6}$");
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(50);
+            RuleFor(command => command.Color)
+                .NotEmpty()
+                .MaximumLength(7)
+                .Matches("^#[0-9A-Fa-f]{6}$");
         }
     }
 
@@ -44,7 +47,7 @@ public static class UpdateLabel
         {
             var label =
                 await context.Labels.FirstOrDefaultAsync(
-                    l => l.Id == request.Id && l.ProjectId == request.ProjectId,
+                    label => label.Id == request.Id && label.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

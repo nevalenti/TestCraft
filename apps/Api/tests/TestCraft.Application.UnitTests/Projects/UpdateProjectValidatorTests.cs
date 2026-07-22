@@ -23,13 +23,13 @@ public class UpdateProjectValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NameExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 256) });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 }

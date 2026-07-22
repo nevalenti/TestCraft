@@ -1,7 +1,7 @@
 import { authHeaders, fetchJson } from "./http";
 
-export const slugify = (s: string): string =>
-  s
+export const slugify = (text: string): string =>
+  text
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
@@ -30,7 +30,7 @@ export const findProjectId = async (
     { headers: authHeaders(token) },
     "Failed to fetch projects",
   );
-  const project = data.items.find((p) => p.name === projectName);
+  const project = data.items.find((item) => item.name === projectName);
 
   if (!project) {
     throw new Error(`Project "${projectName}" not found`);

@@ -24,7 +24,9 @@ public static class DeleteTestSuite
         {
             var suite =
                 await context.TestSuites.FirstOrDefaultAsync(
-                    s => s.Id == request.Id && s.ProjectId == request.ProjectId,
+                    existingSuite =>
+                        existingSuite.Id == request.Id
+                        && existingSuite.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

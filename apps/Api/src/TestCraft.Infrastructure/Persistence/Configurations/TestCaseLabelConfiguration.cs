@@ -22,7 +22,7 @@ public class TestCaseLabelConfiguration : IEntityTypeConfiguration<TestCaseLabel
 
         builder
             .HasOne(tcl => tcl.Label)
-            .WithMany(l => l.TestCaseLabels)
+            .WithMany(label => label.TestCaseLabels)
             .HasForeignKey(tcl => tcl.LabelId)
             .OnDelete(DeleteBehavior.Cascade);
     }

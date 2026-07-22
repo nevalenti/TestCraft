@@ -18,13 +18,15 @@ public class AnalyticsController(ISender sender) : ControllerBase
         Guid projectId,
         [FromQuery] int limit = 20,
         CancellationToken cancellationToken = default
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetRunTrend.Query { ProjectId = projectId, Limit = limit },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Returns result counts grouped by suite for a test run.</summary>
     [HttpGet("runs/{runId:guid}/suite-breakdown")]
@@ -32,13 +34,15 @@ public class AnalyticsController(ISender sender) : ControllerBase
         Guid projectId,
         Guid runId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetSuiteBreakdown.Query { ProjectId = projectId, RunId = runId },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Returns test cases with inconsistent results across runs (flaky tests).</summary>
     [HttpGet("flaky")]
@@ -46,13 +50,15 @@ public class AnalyticsController(ISender sender) : ControllerBase
         Guid projectId,
         [FromQuery] int minRuns = 3,
         CancellationToken cancellationToken = default
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetFlakyTests.Query { ProjectId = projectId, MinRuns = minRuns },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Compares results between two test runs.</summary>
     [HttpGet("runs/compare")]
@@ -61,8 +67,9 @@ public class AnalyticsController(ISender sender) : ControllerBase
         [FromQuery] Guid runAId,
         [FromQuery] Guid runBId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetRunComparison.Query
                 {
@@ -73,4 +80,5 @@ public class AnalyticsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 }

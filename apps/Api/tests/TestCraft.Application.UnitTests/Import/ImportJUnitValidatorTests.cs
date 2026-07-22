@@ -28,7 +28,7 @@ public class ImportJUnitValidatorTests
     public void EmptyOrWhitespaceXml_FailsValidation(string xml)
     {
         var result = _validator.TestValidate(ValidCommand() with { Xml = xml });
-        result.ShouldHaveValidationErrorFor(x => x.Xml);
+        result.ShouldHaveValidationErrorFor(command => command.Xml);
     }
 
     [Fact]
@@ -40,7 +40,7 @@ public class ImportJUnitValidatorTests
                 Xml = new string('a', 4_500_001),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Xml);
+        result.ShouldHaveValidationErrorFor(command => command.Xml);
     }
 
     [Theory]
@@ -49,34 +49,34 @@ public class ImportJUnitValidatorTests
     public void EmptyOrWhitespaceEnvironment_FailsValidation(string environment)
     {
         var result = _validator.TestValidate(ValidCommand() with { Environment = environment });
-        result.ShouldHaveValidationErrorFor(x => x.Environment);
+        result.ShouldHaveValidationErrorFor(command => command.Environment);
     }
 
     [Fact]
     public void NullName_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = null });
-        result.ShouldNotHaveValidationErrorFor(x => x.Name);
+        result.ShouldNotHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void EmptyName_FailsValidationOnlyWhenProvided()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = "" });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NullSource_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Source = null });
-        result.ShouldNotHaveValidationErrorFor(x => x.Source);
+        result.ShouldNotHaveValidationErrorFor(command => command.Source);
     }
 
     [Fact]
     public void SourceExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Source = new string('a', 101) });
-        result.ShouldHaveValidationErrorFor(x => x.Source);
+        result.ShouldHaveValidationErrorFor(command => command.Source);
     }
 }

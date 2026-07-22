@@ -31,7 +31,7 @@ public static class DeleteProject
 
             var project =
                 await context.Projects.FirstOrDefaultAsync(
-                    p => p.Id == request.Id,
+                    existingProject => existingProject.Id == request.Id,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

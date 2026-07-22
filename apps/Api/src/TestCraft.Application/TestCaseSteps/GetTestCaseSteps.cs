@@ -32,25 +32,25 @@ public static class GetTestCaseSteps
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestCaseSteps.Where(s => s.TestCaseId == request.CaseId);
+            var query = context.TestCaseSteps.Where(step => step.TestCaseId == request.CaseId);
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);
 
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderBy(s => s.Order)
+                .OrderBy(step => step.Order)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(s => new TestCaseStepResponse
+                .Select(step => new TestCaseStepResponse
                 {
-                    Id = s.Id,
-                    TestCaseId = s.TestCaseId,
-                    Order = s.Order,
-                    Action = s.Action,
-                    ExpectedResult = s.ExpectedResult,
-                    CreatedAt = s.CreatedAt,
-                    UpdatedAt = s.UpdatedAt,
+                    Id = step.Id,
+                    TestCaseId = step.TestCaseId,
+                    Order = step.Order,
+                    Action = step.Action,
+                    ExpectedResult = step.ExpectedResult,
+                    CreatedAt = step.CreatedAt,
+                    UpdatedAt = step.UpdatedAt,
                 })
                 .ToListAsync(cancellationToken);
 

@@ -26,16 +26,18 @@ public static class GetTestSuiteById
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestSuites.Where(s => s.Id == request.Id && s.ProjectId == request.ProjectId)
-                .Select(s => new TestSuiteResponse
+                .TestSuites.Where(suite =>
+                    suite.Id == request.Id && suite.ProjectId == request.ProjectId
+                )
+                .Select(suite => new TestSuiteResponse
                 {
-                    Id = s.Id,
-                    ProjectId = s.ProjectId,
-                    Name = s.Name,
-                    Description = s.Description,
-                    Source = s.Source,
-                    CreatedAt = s.CreatedAt,
-                    UpdatedAt = s.UpdatedAt,
+                    Id = suite.Id,
+                    ProjectId = suite.ProjectId,
+                    Name = suite.Name,
+                    Description = suite.Description,
+                    Source = suite.Source,
+                    CreatedAt = suite.CreatedAt,
+                    UpdatedAt = suite.UpdatedAt,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();

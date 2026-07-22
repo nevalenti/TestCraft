@@ -28,20 +28,20 @@ public static class GetAttachments
             CancellationToken cancellationToken
         ) =>
             await context
-                .Attachments.Where(a =>
-                    a.TestResultId == request.ResultId
-                    && a.TestResult!.TestRunId == request.RunId
-                    && a.TestResult.TestRun!.ProjectId == request.ProjectId
+                .Attachments.Where(attachment =>
+                    attachment.TestResultId == request.ResultId
+                    && attachment.TestResult!.TestRunId == request.RunId
+                    && attachment.TestResult.TestRun!.ProjectId == request.ProjectId
                 )
-                .OrderBy(a => a.CreatedAt)
-                .Select(a => new AttachmentResponse
+                .OrderBy(attachment => attachment.CreatedAt)
+                .Select(attachment => new AttachmentResponse
                 {
-                    Id = a.Id,
-                    TestResultId = a.TestResultId,
-                    FileName = a.FileName,
-                    ContentType = a.ContentType,
-                    SizeBytes = a.SizeBytes,
-                    CreatedAt = a.CreatedAt,
+                    Id = attachment.Id,
+                    TestResultId = attachment.TestResultId,
+                    FileName = attachment.FileName,
+                    ContentType = attachment.ContentType,
+                    SizeBytes = attachment.SizeBytes,
+                    CreatedAt = attachment.CreatedAt,
                 })
                 .ToListAsync(cancellationToken);
     }

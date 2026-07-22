@@ -49,34 +49,38 @@ public static class GetFlakyTests
         )
         {
             var rows = await context
-                .TestResults.Where(r =>
-                    r.TestRun != null && r.TestRun.ProjectId == request.ProjectId
+                .TestResults.Where(testResult =>
+                    testResult.TestRun != null && testResult.TestRun.ProjectId == request.ProjectId
                 )
-                .GroupBy(r => new { r.TestCaseId, TestCaseName = r.TestCase!.Name })
-                .Where(g =>
-                    g.Count() >= request.MinRuns
-                    && g.Any(r => r.Status == TestResultStatus.Passed)
-                    && g.Any(r => r.Status == TestResultStatus.Failed)
-                )
-                .Select(g => new
+                .GroupBy(testResult => new
                 {
-                    g.Key.TestCaseId,
-                    g.Key.TestCaseName,
-                    TotalRuns = g.Count(),
-                    PassCount = g.Count(r => r.Status == TestResultStatus.Passed),
-                    FailCount = g.Count(r => r.Status == TestResultStatus.Failed),
+                    testResult.TestCaseId,
+                    TestCaseName = testResult.TestCase!.Name,
                 })
-                .OrderByDescending(s => (double)s.FailCount / s.TotalRuns)
+                .Where(group =>
+                    group.Count() >= request.MinRuns
+                    && group.Any(result => result.Status == TestResultStatus.Passed)
+                    && group.Any(result => result.Status == TestResultStatus.Failed)
+                )
+                .Select(group => new
+                {
+                    group.Key.TestCaseId,
+                    group.Key.TestCaseName,
+                    TotalRuns = group.Count(),
+                    PassCount = group.Count(result => result.Status == TestResultStatus.Passed),
+                    FailCount = group.Count(result => result.Status == TestResultStatus.Failed),
+                })
+                .OrderByDescending(stat => (double)stat.FailCount / stat.TotalRuns)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(s => new FlakyTestStat
+            return rows.Select(row => new FlakyTestStat
                 {
-                    TestCaseId = s.TestCaseId,
-                    TestCaseName = s.TestCaseName,
-                    TotalRuns = s.TotalRuns,
-                    PassCount = s.PassCount,
-                    FailCount = s.FailCount,
-                    FlakRate = Math.Round((double)s.FailCount / s.TotalRuns * 100, 1),
+                    TestCaseId = row.TestCaseId,
+                    TestCaseName = row.TestCaseName,
+                    TotalRuns = row.TotalRuns,
+                    PassCount = row.PassCount,
+                    FailCount = row.FailCount,
+                    FlakRate = Math.Round((double)row.FailCount / row.TotalRuns * 100, 1),
                 })
                 .ToList();
         }

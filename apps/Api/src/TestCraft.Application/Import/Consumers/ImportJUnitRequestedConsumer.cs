@@ -20,7 +20,7 @@ public partial class ImportJUnitRequestedConsumer(
         var cancellationToken = context.CancellationToken;
 
         var job = await dbContext.ImportJobs.FirstOrDefaultAsync(
-            j => j.Id == message.JobId,
+            importJob => importJob.Id == message.JobId,
             cancellationToken
         );
 

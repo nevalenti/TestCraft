@@ -36,7 +36,7 @@ public static class BulkReorderSteps
     {
         public StepOrderValidator()
         {
-            RuleFor(x => x.Order).GreaterThanOrEqualTo(1);
+            RuleFor(stepOrder => stepOrder.Order).GreaterThanOrEqualTo(1);
         }
     }
 
@@ -44,12 +44,14 @@ public static class BulkReorderSteps
     {
         public Validator()
         {
-            RuleFor(x => x.Steps).NotEmpty();
-            RuleForEach(x => x.Steps).SetValidator(new StepOrderValidator());
-            RuleFor(x => x.Steps)
-                .Must(steps => steps.Select(s => s.Id).Distinct().Count() == steps.Count)
+            RuleFor(command => command.Steps).NotEmpty();
+            RuleForEach(command => command.Steps).SetValidator(new StepOrderValidator());
+            RuleFor(command => command.Steps)
+                .Must(steps =>
+                    steps.Select(stepOrder => stepOrder.Id).Distinct().Count() == steps.Count
+                )
                 .WithMessage("Duplicate step IDs are not allowed")
-                .When(x => x.Steps.Count > 0);
+                .When(command => command.Steps.Count > 0);
         }
     }
 
@@ -57,11 +59,13 @@ public static class BulkReorderSteps
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var ids = request.Steps.Select(s => s.Id).ToList();
+            var ids = request.Steps.Select(stepOrder => stepOrder.Id).ToList();
 
             var found = await context
-                .TestCaseSteps.Where(s => s.TestCaseId == request.CaseId && ids.Contains(s.Id))
-                .Select(s => s.Id)
+                .TestCaseSteps.Where(step =>
+                    step.TestCaseId == request.CaseId && ids.Contains(step.Id)
+                )
+                .Select(step => step.Id)
                 .ToListAsync(cancellationToken);
 
             if (found.Count != ids.Count)
@@ -70,9 +74,12 @@ public static class BulkReorderSteps
             }
 
             var entities = await context
-                .TestCaseSteps.Where(s => ids.Contains(s.Id))
+                .TestCaseSteps.Where(step => ids.Contains(step.Id))
                 .ToListAsync(cancellationToken);
-            var orderById = request.Steps.ToDictionary(s => s.Id, s => s.Order);
+            var orderById = request.Steps.ToDictionary(
+                stepOrder => stepOrder.Id,
+                stepOrder => stepOrder.Order
+            );
 
             foreach (var entity in entities)
             {

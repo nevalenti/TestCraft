@@ -73,24 +73,26 @@ const TrendTooltip = ({
   payload?: { payload: TrendEntry }[];
 }) => {
   if (!active || !payload?.length) return null;
-  const d = payload[0].payload;
+  const entry = payload[0].payload;
   return (
     <div className="min-w-48 rounded-xl border border-border bg-base-100 px-3.5 py-2.5 text-sm shadow-xl">
-      <p className="mb-0.5 max-w-52 truncate font-semibold">{d.fullName}</p>
-      <p className="mb-2 text-xs text-base-content/65">{d.date}</p>
+      <p className="mb-0.5 max-w-52 truncate font-semibold">{entry.fullName}</p>
+      <p className="mb-2 text-xs text-base-content/65">{entry.date}</p>
       <div className="flex items-center justify-between gap-8">
         <span className="text-xs text-base-content/85">Pass rate</span>
-        <span className={`font-bold tabular-nums ${passRateClass(d.passRate)}`}>
-          {d.passRate}%
+        <span
+          className={`font-bold tabular-nums ${passRateClass(entry.passRate)}`}
+        >
+          {entry.passRate}%
         </span>
       </div>
       <div className="my-1.5 border-t border-border/50" />
       {(
         [
-          { label: "Passed", value: d.passed, cls: "bg-success" },
-          { label: "Failed", value: d.failed, cls: "bg-error" },
-          { label: "Blocked", value: d.blocked, cls: "bg-warning" },
-          { label: "Skipped", value: d.skipped, cls: "bg-base-content/30" },
+          { label: "Passed", value: entry.passed, cls: "bg-success" },
+          { label: "Failed", value: entry.failed, cls: "bg-error" },
+          { label: "Blocked", value: entry.blocked, cls: "bg-warning" },
+          { label: "Skipped", value: entry.skipped, cls: "bg-base-content/30" },
         ] as const
       ).map(({ label, value, cls }) => (
         <div key={label} className="flex items-center justify-between gap-8">
@@ -103,14 +105,14 @@ const TrendTooltip = ({
       ))}
       <div className="mt-1.5 flex items-center justify-between border-t border-border/50 pt-1.5">
         <span className="text-xs text-base-content/65">Total</span>
-        <span className="text-xs font-medium tabular-nums">{d.total}</span>
+        <span className="text-xs font-medium tabular-nums">{entry.total}</span>
       </div>
     </div>
   );
 };
 
-const truncate = (s: string, n: number) =>
-  s.length > n ? s.slice(0, n) + "…" : s;
+const truncate = (text: string, maxLength: number) =>
+  text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
 
 type SourceGroup = {
   source: string | undefined;
@@ -127,14 +129,15 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
   const stats = useMemo(() => {
     if (data.length === 0) return null;
     const latest = data.at(-1)!;
-    const prev = data.length > 1 ? data.at(-2)! : null;
-    const delta = prev === null ? null : latest.passRate - prev.passRate;
+    const previousPoint = data.length > 1 ? data.at(-2)! : null;
+    const delta =
+      previousPoint === null ? null : latest.passRate - previousPoint.passRate;
     let sum = 0;
-    for (const p of data) sum += p.passRate;
+    for (const point of data) sum += point.passRate;
     const avg = Math.round(sum / data.length);
     let best = latest;
-    for (const p of data) {
-      if (p.passRate > best.passRate) best = p;
+    for (const point of data) {
+      if (point.passRate > best.passRate) best = point;
     }
     return { latest, delta, avg, best, count: data.length };
   }, [data]);
@@ -273,26 +276,26 @@ export const AnalyticsTrendTab = () => {
     const raw = [...(trend ?? [])].toReversed();
     const map = new Map<string, TrendEntry[]>();
 
-    for (const p of raw) {
-      const key = p.source ?? "__manual__";
+    for (const point of raw) {
+      const key = point.source ?? "__manual__";
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push({
-        name: truncate(p.runName, 18),
-        fullName: p.runName,
-        date: formatDate(p.createdAt),
-        passRate: p.passRate,
-        passed: p.passed,
-        failed: p.failed,
-        blocked: p.blocked,
-        skipped: p.skipped,
-        total: p.total,
+        name: truncate(point.runName, 18),
+        fullName: point.runName,
+        date: formatDate(point.createdAt),
+        passRate: point.passRate,
+        passed: point.passed,
+        failed: point.failed,
+        blocked: point.blocked,
+        skipped: point.skipped,
+        total: point.total,
       });
     }
 
-    const sorted = [...map].toSorted((a, b) => {
-      if (a[0] === "__manual__") return 1;
-      if (b[0] === "__manual__") return -1;
-      return a[0].localeCompare(b[0]);
+    const sorted = [...map].toSorted((groupA, groupB) => {
+      if (groupA[0] === "__manual__") return 1;
+      if (groupB[0] === "__manual__") return -1;
+      return groupA[0].localeCompare(groupB[0]);
     });
 
     return sorted.map(([key, data], index) => ({

@@ -38,8 +38,8 @@ public static class UpdateTestResult
     {
         public Validator()
         {
-            RuleFor(x => x.Status).IsInEnum();
-            RuleFor(x => x.Notes).MaximumLength(5000);
+            RuleFor(command => command.Status).IsInEnum();
+            RuleFor(command => command.Notes).MaximumLength(5000);
         }
     }
 
@@ -56,7 +56,9 @@ public static class UpdateTestResult
         {
             var run =
                 await context.TestRuns.FirstOrDefaultAsync(
-                    r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
+                    existingRun =>
+                        existingRun.Id == request.RunId
+                        && existingRun.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -64,7 +66,9 @@ public static class UpdateTestResult
 
             var result =
                 await context.TestResults.FirstOrDefaultAsync(
-                    r => r.Id == request.Id && r.TestRunId == request.RunId,
+                    existingResult =>
+                        existingResult.Id == request.Id
+                        && existingResult.TestRunId == request.RunId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -74,22 +78,22 @@ public static class UpdateTestResult
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
             var summary = await context
-                .TestResults.Where(r => r.Id == result.Id)
-                .Select(r => new TestResultResponse
+                .TestResults.Where(updatedResult => updatedResult.Id == result.Id)
+                .Select(updatedResult => new TestResultResponse
                 {
-                    Id = r.Id,
-                    TestRunId = r.TestRunId,
-                    TestCaseId = r.TestCaseId,
-                    SuiteId = r.TestCase!.SuiteId,
-                    TestCaseName = r.TestCase.Name,
-                    Status = r.Status,
-                    Notes = r.Notes,
-                    DurationMs = r.DurationMs,
-                    DefectType = r.DefectType,
-                    ExecutedAt = r.ExecutedAt,
-                    ExecutedById = r.ExecutedById,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = updatedResult.Id,
+                    TestRunId = updatedResult.TestRunId,
+                    TestCaseId = updatedResult.TestCaseId,
+                    SuiteId = updatedResult.TestCase!.SuiteId,
+                    TestCaseName = updatedResult.TestCase.Name,
+                    Status = updatedResult.Status,
+                    Notes = updatedResult.Notes,
+                    DurationMs = updatedResult.DurationMs,
+                    DefectType = updatedResult.DefectType,
+                    ExecutedAt = updatedResult.ExecutedAt,
+                    ExecutedById = updatedResult.ExecutedById,
+                    CreatedAt = updatedResult.CreatedAt,
+                    UpdatedAt = updatedResult.UpdatedAt,
                 })
                 .FirstAsync(cancellationToken);
 

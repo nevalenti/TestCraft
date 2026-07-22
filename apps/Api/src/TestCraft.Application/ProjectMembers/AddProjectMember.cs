@@ -39,7 +39,7 @@ public static class AddProjectMember
     {
         public Validator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
         }
     }
 

@@ -113,8 +113,8 @@ public static class JUnitParser
 
     private static List<ParsedStep> ParseSteps(string caseName)
     {
-        var idx = caseName.LastIndexOf(Separator, StringComparison.Ordinal);
-        if (idx == -1)
+        var separatorIndex = caseName.LastIndexOf(Separator, StringComparison.Ordinal);
+        if (separatorIndex == -1)
         {
             return [];
         }
@@ -124,8 +124,8 @@ public static class JUnitParser
             new ParsedStep
             {
                 Order = 1,
-                Action = caseName[..idx],
-                ExpectedResult = caseName[(idx + Separator.Length)..],
+                Action = caseName[..separatorIndex],
+                ExpectedResult = caseName[(separatorIndex + Separator.Length)..],
             },
         ];
     }

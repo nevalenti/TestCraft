@@ -85,8 +85,8 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         var response = Client.GetAsync($"{apiUrl}/api/auth-config").GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        using var doc = JsonDocument.Parse(body);
-        return doc.RootElement.GetProperty("authority").GetString()!;
+        using var document = JsonDocument.Parse(body);
+        return document.RootElement.GetProperty("authority").GetString()!;
     }
 
     private static string FetchToken(string authority, string username, string password)
@@ -106,8 +106,8 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             .GetResult();
         response.EnsureSuccessStatusCode();
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        using var doc = JsonDocument.Parse(body);
-        return doc.RootElement.GetProperty("access_token").GetString()!;
+        using var document = JsonDocument.Parse(body);
+        return document.RootElement.GetProperty("access_token").GetString()!;
     }
 
     private string FindProjectId(string apiUrl, string projectName)
@@ -119,9 +119,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         var response = Client.SendAsync(request).GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
         var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        using var doc = JsonDocument.Parse(body);
+        using var document = JsonDocument.Parse(body);
 
-        var match = doc
+        var match = document
             .RootElement.GetProperty("items")
             .EnumerateArray()
             .FirstOrDefault(item => item.GetProperty("name").GetString() == projectName);
@@ -132,45 +132,49 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         return match.GetProperty("id").GetString()!;
     }
 
-    private void OnTestRunMessage(object? sender, TestRunMessageEventArgs e)
+    private void OnTestRunMessage(object? sender, TestRunMessageEventArgs eventArgs)
     {
-        var prefix = e.Level switch
+        var prefix = eventArgs.Level switch
         {
             TestMessageLevel.Error => "[error]",
             TestMessageLevel.Warning => "[warn]",
             _ => "[info]",
         };
-        PostLog($"{prefix} {e.Message}");
+        PostLog($"{prefix} {eventArgs.Message}");
     }
 
-    private void OnTestResult(object? sender, TestResultEventArgs e)
+    private void OnTestResult(object? sender, TestResultEventArgs eventArgs)
     {
-        var icon = e.Result.Outcome switch
+        var icon = eventArgs.Result.Outcome switch
         {
             TestOutcome.Passed => "✓",
             TestOutcome.Skipped or TestOutcome.NotFound => "-",
             _ => "✗",
         };
-        var duration = e.Result.Duration;
+        var duration = eventArgs.Result.Duration;
         var durationText =
             duration.TotalSeconds >= 1
                 ? $"{duration.TotalSeconds:0.0}s"
                 : $"{duration.TotalMilliseconds:0}ms";
-        var testName = string.IsNullOrWhiteSpace(e.Result.DisplayName)
-            ? e.Result.TestCase.DisplayName
-            : e.Result.DisplayName;
+        var testName = string.IsNullOrWhiteSpace(eventArgs.Result.DisplayName)
+            ? eventArgs.Result.TestCase.DisplayName
+            : eventArgs.Result.DisplayName;
         if (string.IsNullOrWhiteSpace(testName))
-            testName = e.Result.TestCase.FullyQualifiedName;
+            testName = eventArgs.Result.TestCase.FullyQualifiedName;
         PostLog($"{icon}  {testName} ({durationText})");
 
         if (
-            e.Result.Outcome == TestOutcome.Failed
-            && !string.IsNullOrWhiteSpace(e.Result.ErrorMessage)
+            eventArgs.Result.Outcome == TestOutcome.Failed
+            && !string.IsNullOrWhiteSpace(eventArgs.Result.ErrorMessage)
         )
-            PostLog($"    {e.Result.ErrorMessage}");
+            PostLog($"    {eventArgs.Result.ErrorMessage}");
 
-        foreach (var message in e.Result.Messages.Where(m => !string.IsNullOrWhiteSpace(m.Text)))
-            PostLog(message.Text!.TrimEnd());
+        foreach (
+            var resultMessage in eventArgs.Result.Messages.Where(candidateMessage =>
+                !string.IsNullOrWhiteSpace(candidateMessage.Text)
+            )
+        )
+            PostLog(resultMessage.Text!.TrimEnd());
     }
 
     private const int BatchSize = 50;
@@ -178,7 +182,7 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     private readonly Lock _bufferLock = new();
     private readonly List<string> _buffer = [];
 
-    private void OnTestRunComplete(object? sender, TestRunCompleteEventArgs e)
+    private void OnTestRunComplete(object? sender, TestRunCompleteEventArgs eventArgs)
     {
         Flush();
         Task.WaitAll([.. _pending]);

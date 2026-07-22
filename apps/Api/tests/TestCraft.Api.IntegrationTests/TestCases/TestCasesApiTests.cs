@@ -99,8 +99,8 @@ public class TestCasesApiTests(ApiFactory factory)
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestCaseResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        page!.Items.Should().ContainSingle(c => c.Name == "Successful login");
-        page.Items.Should().NotContain(c => c.Name == "Failed checkout");
+        page!.Items.Should().ContainSingle(testCase => testCase.Name == "Successful login");
+        page.Items.Should().NotContain(testCase => testCase.Name == "Failed checkout");
     }
 
     [Fact]

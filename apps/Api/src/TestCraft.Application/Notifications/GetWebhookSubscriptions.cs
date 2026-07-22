@@ -27,17 +27,17 @@ public static class GetWebhookSubscriptions
         {
             var rows = await context
                 .WebhookSubscriptions.AsNoTracking()
-                .Where(w => w.ProjectId == request.ProjectId)
+                .Where(subscription => subscription.ProjectId == request.ProjectId)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(w => new WebhookSubscriptionResponse
+            return rows.Select(subscription => new WebhookSubscriptionResponse
                 {
-                    Id = w.Id,
-                    ProjectId = w.ProjectId,
-                    Url = w.Url,
-                    IsActive = w.IsActive,
-                    Events = JsonSerializer.Deserialize<List<string>>(w.Events) ?? [],
-                    CreatedAt = w.CreatedAt,
+                    Id = subscription.Id,
+                    ProjectId = subscription.ProjectId,
+                    Url = subscription.Url,
+                    IsActive = subscription.IsActive,
+                    Events = JsonSerializer.Deserialize<List<string>>(subscription.Events) ?? [],
+                    CreatedAt = subscription.CreatedAt,
                 })
                 .ToList();
         }

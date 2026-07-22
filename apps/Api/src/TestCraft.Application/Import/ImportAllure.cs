@@ -70,36 +70,42 @@ public static class ImportAllure
 
         public Validator()
         {
-            RuleFor(x => x.Results)
+            RuleFor(command => command.Results)
                 .NotEmpty()
                 .WithMessage("At least one result is required")
                 .Must(results => results.Count <= 10_000)
                 .WithMessage("Too many results — split into smaller batches");
 
-            RuleFor(x => x.Environment)
+            RuleFor(command => command.Environment)
                 .NotEmpty()
                 .WithMessage("Environment is required")
                 .MaximumLength(255);
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255).When(x => x.Name is not null);
-            RuleFor(x => x.Source).NotEmpty().MaximumLength(100).When(x => x.Source is not null);
+            RuleFor(command => command.Name)
+                .NotEmpty()
+                .MaximumLength(255)
+                .When(command => command.Name is not null);
+            RuleFor(command => command.Source)
+                .NotEmpty()
+                .MaximumLength(100)
+                .When(command => command.Source is not null);
 
-            RuleForEach(x => x.Results)
+            RuleForEach(command => command.Results)
                 .ChildRules(result =>
                 {
                     result
-                        .RuleFor(r => r.Status)
+                        .RuleFor(item => item.Status)
                         .Must(status => ValidStatuses.Contains(status))
-                        .When(r => r.Status is not null);
+                        .When(item => item.Status is not null);
 
                     result
-                        .RuleFor(r => r.StatusDetails!.Message)
+                        .RuleFor(item => item.StatusDetails!.Message)
                         .MaximumLength(5000)
-                        .When(r => r.StatusDetails?.Message is not null);
+                        .When(item => item.StatusDetails?.Message is not null);
 
                     result
-                        .RuleFor(r => r.StatusDetails!.Trace)
+                        .RuleFor(item => item.StatusDetails!.Trace)
                         .MaximumLength(5000)
-                        .When(r => r.StatusDetails?.Trace is not null);
+                        .When(item => item.StatusDetails?.Trace is not null);
                 });
         }
     }

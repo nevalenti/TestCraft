@@ -10,30 +10,45 @@ public class TestRunConfiguration : IEntityTypeConfiguration<TestRun>
     {
         builder.ToTable("test_runs");
 
-        builder.HasKey(r => r.Id);
-        builder.Property(r => r.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(r => r.Name).HasColumnName("name").IsRequired();
-        builder.Property(r => r.Environment).HasColumnName("environment").IsRequired();
+        builder.HasKey(testRun => testRun.Id);
         builder
-            .Property(r => r.Status)
+            .Property(testRun => testRun.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(testRun => testRun.Name).HasColumnName("name").IsRequired();
+        builder.Property(testRun => testRun.Environment).HasColumnName("environment").IsRequired();
+        builder
+            .Property(testRun => testRun.Status)
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(20);
-        builder.Property(r => r.Source).HasColumnName("source");
-        builder.Property(r => r.ExecutedById).HasColumnName("executed_by_id");
-        builder.Property(r => r.ExecutedByName).HasColumnName("executed_by_name").HasMaxLength(255);
-        builder.Property(r => r.ProjectId).HasColumnName("project_id");
-        builder.Property(r => r.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(r => r.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(r => r.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(r => r.DeletedAt).HasColumnName("deleted_at");
+        builder.Property(testRun => testRun.Source).HasColumnName("source");
+        builder.Property(testRun => testRun.ExecutedById).HasColumnName("executed_by_id");
+        builder
+            .Property(testRun => testRun.ExecutedByName)
+            .HasColumnName("executed_by_name")
+            .HasMaxLength(255);
+        builder.Property(testRun => testRun.ProjectId).HasColumnName("project_id");
+        builder
+            .Property(testRun => testRun.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testRun => testRun.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testRun => testRun.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(testRun => testRun.DeletedAt).HasColumnName("deleted_at");
 
-        builder.HasIndex(r => r.ProjectId);
+        builder.HasIndex(testRun => testRun.ProjectId);
 
-        builder.HasQueryFilter(r => !r.IsDeleted);
+        builder.HasQueryFilter(testRun => !testRun.IsDeleted);
 
         builder
-            .HasMany(r => r.TestResults)
+            .HasMany(testRun => testRun.TestResults)
             .WithOne(tr => tr.TestRun)
             .HasForeignKey(tr => tr.TestRunId);
     }

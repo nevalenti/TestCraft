@@ -48,7 +48,7 @@ public static partial class ConfigurationLogging
         value switch
         {
             null => true,
-            string s => string.IsNullOrEmpty(s),
+            string stringValue => string.IsNullOrEmpty(stringValue),
             string[] { Length: 0 } => true,
             _ => false,
         };

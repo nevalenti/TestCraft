@@ -31,14 +31,14 @@ public class UpdateTestCaseValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NameExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 256) });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
@@ -50,7 +50,7 @@ public class UpdateTestCaseValidatorTests
                 Description = new string('a', 2001),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Description);
+        result.ShouldHaveValidationErrorFor(command => command.Description);
     }
 
     [Fact]
@@ -62,6 +62,6 @@ public class UpdateTestCaseValidatorTests
                 Priority = (TestCasePriority)999,
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Priority);
+        result.ShouldHaveValidationErrorFor(command => command.Priority);
     }
 }

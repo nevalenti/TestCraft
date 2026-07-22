@@ -72,7 +72,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var detail = await getResponse.Content.ReadFromJsonAsync<TestPlanDetailResponse>(
             ApiTestHelpers.JsonOptions
         );
-        detail!.Cases.Should().ContainSingle(c => c.TestCaseId == testCase.Id);
+        detail!.Cases.Should().ContainSingle(planCase => planCase.TestCaseId == testCase.Id);
     }
 
     [Fact]
@@ -249,8 +249,8 @@ public class TestPlansApiTests(ApiFactory factory)
             ApiTestHelpers.JsonOptions
         );
         plans.Should().HaveCountGreaterThanOrEqualTo(2);
-        plans.Should().Contain(p => p.Name == "Plan A");
-        plans.Should().Contain(p => p.Name == "Plan B");
+        plans.Should().Contain(plan => plan.Name == "Plan A");
+        plans.Should().Contain(plan => plan.Name == "Plan B");
     }
 
     [Fact]
@@ -319,7 +319,7 @@ public class TestPlansApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
         ).Content.ReadFromJsonAsync<TestPlanDetailResponse>(ApiTestHelpers.JsonOptions);
 
-        detail!.Cases.Should().ContainSingle(c => c.TestCaseId == testCase.Id);
+        detail!.Cases.Should().ContainSingle(planCase => planCase.TestCaseId == testCase.Id);
     }
 
     [Fact]
@@ -350,7 +350,7 @@ public class TestPlansApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
         ).Content.ReadFromJsonAsync<TestPlanDetailResponse>(ApiTestHelpers.JsonOptions);
 
-        detail!.Cases.Should().ContainSingle(c => c.TestCaseId == testCase.Id);
+        detail!.Cases.Should().ContainSingle(planCase => planCase.TestCaseId == testCase.Id);
     }
 
     [Fact]

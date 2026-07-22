@@ -28,7 +28,7 @@ public class ImportAllureValidatorTests
     public void EmptyResults_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Results = [] });
-        result.ShouldHaveValidationErrorFor(x => x.Results);
+        result.ShouldHaveValidationErrorFor(command => command.Results);
     }
 
     [Fact]
@@ -36,7 +36,7 @@ public class ImportAllureValidatorTests
     {
         var results = Enumerable.Range(0, 10_001).Select(_ => PassingResult()).ToList();
         var result = _validator.TestValidate(ValidCommand() with { Results = results });
-        result.ShouldHaveValidationErrorFor(x => x.Results);
+        result.ShouldHaveValidationErrorFor(command => command.Results);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class ImportAllureValidatorTests
     {
         var results = Enumerable.Range(0, 10_000).Select(_ => PassingResult()).ToList();
         var result = _validator.TestValidate(ValidCommand() with { Results = results });
-        result.ShouldNotHaveValidationErrorFor(x => x.Results);
+        result.ShouldNotHaveValidationErrorFor(command => command.Results);
     }
 
     [Theory]
@@ -53,7 +53,7 @@ public class ImportAllureValidatorTests
     public void EmptyOrWhitespaceEnvironment_FailsValidation(string environment)
     {
         var result = _validator.TestValidate(ValidCommand() with { Environment = environment });
-        result.ShouldHaveValidationErrorFor(x => x.Environment);
+        result.ShouldHaveValidationErrorFor(command => command.Environment);
     }
 
     [Fact]

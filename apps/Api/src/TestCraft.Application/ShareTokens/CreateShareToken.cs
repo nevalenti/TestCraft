@@ -51,7 +51,7 @@ public static class CreateShareToken
         )
         {
             var runExists = await context.TestRuns.AnyAsync(
-                r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
+                run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
 

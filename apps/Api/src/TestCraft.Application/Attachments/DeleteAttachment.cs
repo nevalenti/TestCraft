@@ -31,11 +31,11 @@ public static class DeleteAttachment
         {
             var attachment =
                 await context.Attachments.FirstOrDefaultAsync(
-                    a =>
-                        a.Id == request.AttachmentId
-                        && a.TestResultId == request.ResultId
-                        && a.TestResult!.TestRunId == request.RunId
-                        && a.TestResult.TestRun!.ProjectId == request.ProjectId,
+                    attachmentEntity =>
+                        attachmentEntity.Id == request.AttachmentId
+                        && attachmentEntity.TestResultId == request.ResultId
+                        && attachmentEntity.TestResult!.TestRunId == request.RunId
+                        && attachmentEntity.TestResult.TestRun!.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

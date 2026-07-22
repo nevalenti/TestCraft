@@ -55,7 +55,7 @@ public static class GetTestRunSummary
             }
 
             var exists = await context.TestRuns.AnyAsync(
-                r => r.Id == request.Id && r.ProjectId == request.ProjectId,
+                run => run.Id == request.Id && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
             if (!exists)
@@ -64,19 +64,21 @@ public static class GetTestRunSummary
             }
 
             var counts = await context
-                .TestResults.Where(r => r.TestRunId == request.Id)
-                .GroupBy(r => r.Status)
-                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .TestResults.Where(result => result.TestRunId == request.Id)
+                .GroupBy(result => result.Status)
+                .Select(group => new { Status = group.Key, Count = group.Count() })
                 .ToListAsync(cancellationToken);
 
             var passed =
-                counts.FirstOrDefault(c => c.Status == TestResultStatus.Passed)?.Count ?? 0;
+                counts.FirstOrDefault(count => count.Status == TestResultStatus.Passed)?.Count ?? 0;
             var failed =
-                counts.FirstOrDefault(c => c.Status == TestResultStatus.Failed)?.Count ?? 0;
+                counts.FirstOrDefault(count => count.Status == TestResultStatus.Failed)?.Count ?? 0;
             var blocked =
-                counts.FirstOrDefault(c => c.Status == TestResultStatus.Blocked)?.Count ?? 0;
+                counts.FirstOrDefault(count => count.Status == TestResultStatus.Blocked)?.Count
+                ?? 0;
             var skipped =
-                counts.FirstOrDefault(c => c.Status == TestResultStatus.Skipped)?.Count ?? 0;
+                counts.FirstOrDefault(count => count.Status == TestResultStatus.Skipped)?.Count
+                ?? 0;
             var total = passed + failed + blocked + skipped;
             var passRate = total > 0 ? (int)Math.Round(passed * 100.0 / total) : 0;
 

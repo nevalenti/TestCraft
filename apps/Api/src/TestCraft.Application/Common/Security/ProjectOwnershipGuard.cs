@@ -14,7 +14,7 @@ internal static class ProjectOwnershipGuard
     )
     {
         var isOwner = await context.Projects.AnyAsync(
-            p => p.Id == projectId && p.UserId == userId,
+            project => project.Id == projectId && project.UserId == userId,
             cancellationToken
         );
 

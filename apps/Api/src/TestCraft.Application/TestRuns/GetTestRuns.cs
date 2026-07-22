@@ -32,11 +32,11 @@ public static class GetTestRuns
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestRuns.Where(r => r.ProjectId == request.ProjectId);
+            var query = context.TestRuns.Where(run => run.ProjectId == request.ProjectId);
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(r => EF.Functions.ILike(r.Name, $"%{request.Search}%"));
+                query = query.Where(run => EF.Functions.ILike(run.Name, $"%{request.Search}%"));
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);
@@ -44,21 +44,21 @@ public static class GetTestRuns
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderByDescending(r => r.CreatedAt)
+                .OrderByDescending(run => run.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(r => new TestRunResponse
+                .Select(run => new TestRunResponse
                 {
-                    Id = r.Id,
-                    ProjectId = r.ProjectId,
-                    Name = r.Name,
-                    Environment = r.Environment,
-                    Status = r.Status,
-                    Source = r.Source,
-                    ExecutedById = r.ExecutedById,
-                    ExecutedByName = r.ExecutedByName,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = run.Id,
+                    ProjectId = run.ProjectId,
+                    Name = run.Name,
+                    Environment = run.Environment,
+                    Status = run.Status,
+                    Source = run.Source,
+                    ExecutedById = run.ExecutedById,
+                    ExecutedByName = run.ExecutedByName,
+                    CreatedAt = run.CreatedAt,
+                    UpdatedAt = run.UpdatedAt,
                 })
                 .ToListAsync(cancellationToken);
 
@@ -82,8 +82,8 @@ public static class GetTestRuns
     )
     {
         var executorIds = items
-            .Where(i => i.ExecutedById is not null)
-            .Select(i => i.ExecutedById!.Value)
+            .Where(item => item.ExecutedById is not null)
+            .Select(item => item.ExecutedById!.Value)
             .Distinct()
             .ToList();
 
@@ -92,8 +92,12 @@ public static class GetTestRuns
 
         var avatarKeys = await context
             .UserProfiles.AsNoTracking()
-            .Where(p => executorIds.Contains(p.UserId) && p.AvatarKey != null)
-            .ToDictionaryAsync(p => p.UserId, p => p.AvatarKey!, cancellationToken);
+            .Where(profile => executorIds.Contains(profile.UserId) && profile.AvatarKey != null)
+            .ToDictionaryAsync(
+                profile => profile.UserId,
+                profile => profile.AvatarKey!,
+                cancellationToken
+            );
 
         if (avatarKeys.Count == 0)
             return;
