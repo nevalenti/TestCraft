@@ -6,6 +6,7 @@ import type {
 } from "@testcraft/types";
 import { useState } from "react";
 
+import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
@@ -35,10 +36,12 @@ export const SuitesTab = () => {
   const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestSuite>();
-  const { data: suites, isPending } = useTestSuites(
-    projectId,
-    debouncedSearch || undefined,
-  );
+  const {
+    data: suites,
+    isPending,
+    isError,
+    error,
+  } = useTestSuites(projectId, debouncedSearch || undefined);
   const createSuite = useCreateTestSuite(projectId);
   const updateSuite = useUpdateTestSuite(projectId);
   const deleteSuite = useDeleteTestSuite(projectId);
@@ -75,6 +78,8 @@ export const SuitesTab = () => {
           <span className="loading loading-lg loading-spinner text-primary" />
         </div>
       );
+
+    if (isError) return <ErrorState error={error} />;
 
     if (suites?.length === 0)
       return (

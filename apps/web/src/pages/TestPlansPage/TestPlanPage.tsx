@@ -26,6 +26,7 @@ import type { TestPlanCase } from "@testcraft/types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { ErrorState } from "@/components/ErrorState";
 import { Modal } from "@/components/ui/Modal";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useProject } from "@/hooks/useProjects";
@@ -97,7 +98,12 @@ export const TestPlanPage = () => {
 
   const { data: project } = useProject(projectId);
   const { data: plan } = useTestPlan(projectId, planId);
-  const { data: cases, isPending } = useTestPlanCases(projectId, planId);
+  const {
+    data: cases,
+    isPending,
+    isError,
+    error,
+  } = useTestPlanCases(projectId, planId);
   const { data: allCases } = useProjectTestCases(projectId);
   const addCase = useAddCaseToPlan(projectId, planId);
   const removeCase = useRemoveCaseFromPlan(projectId, planId);
@@ -178,6 +184,7 @@ export const TestPlanPage = () => {
         </div>
       );
     }
+    if (isError) return <ErrorState error={error} />;
     if (sortedCases.length === 0) {
       return (
         <p className="text-sm text-base-content/65">

@@ -156,10 +156,12 @@ export const TestRunPage = () => {
   const debouncedSearch = useDebounce(search, 300);
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
-  const { data: runSummary, isPending: isSummaryPending } = useTestRunSummary(
-    projectId,
-    runId,
-  );
+  const {
+    data: runSummary,
+    isPending: isSummaryPending,
+    isError: isSummaryError,
+    error: summaryError,
+  } = useTestRunSummary(projectId, runId);
   const {
     data: resultsPage,
     isPending,
@@ -231,15 +233,20 @@ export const TestRunPage = () => {
   } else {
     viewContent = (
       <>
-        {runSummary && runSummary.total > 0 && (
-          <RunSummaryBar
-            runSummary={runSummary}
-            statusFilter={statusFilter}
-            onStatusFilter={setStatusFilter}
-            search={search}
-            onSearch={setSearch}
-            onAdd={openCreate}
-          />
+        {isSummaryError ? (
+          <ErrorState title="Failed to load run summary" error={summaryError} />
+        ) : (
+          runSummary &&
+          runSummary.total > 0 && (
+            <RunSummaryBar
+              runSummary={runSummary}
+              statusFilter={statusFilter}
+              onStatusFilter={setStatusFilter}
+              search={search}
+              onSearch={setSearch}
+              onAdd={openCreate}
+            />
+          )
         )}
         <div className="min-h-80">
           <ResultsContent

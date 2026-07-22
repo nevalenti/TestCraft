@@ -1,12 +1,13 @@
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
 import type { TestPlan } from "@testcraft/types";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { ErrorState } from "@/components/ErrorState";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useModal } from "@/hooks/useModal";
 import { useProject } from "@/hooks/useProjects";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 import {
@@ -17,19 +18,14 @@ import {
 } from "@/hooks/useTestPlans";
 import { formatDate } from "@/lib/format";
 
-type ModalState =
-  | { type: "closed" }
-  | { type: "create" }
-  | { type: "edit"; plan: TestPlan };
-
 export const TestPlansPage = () => {
   const projectId = useRequiredParam("projectId");
   const { data: project } = useProject(projectId);
-  const { data: plans, isPending } = useTestPlans(projectId);
+  const { data: plans, isPending, isError, error } = useTestPlans(projectId);
   const createPlan = useCreateTestPlan(projectId);
   const updatePlan = useUpdateTestPlan(projectId);
   const deletePlan = useDeleteTestPlan(projectId);
-  const [modal, setModal] = useState<ModalState>({ type: "closed" });
+  const { modal, close, openCreate, openEdit } = useModal<TestPlan>();
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
@@ -59,12 +55,17 @@ export const TestPlansPage = () => {
       </div>
     );
 
-  const openEdit = (plan: TestPlan) => {
-    resetEdit({ name: plan.name, description: plan.description ?? "" });
-    setModal({ type: "edit", plan });
+  if (isError) return <ErrorState error={error} />;
+
+  const startCreate = () => {
+    resetCreate({ name: "", description: "" });
+    openCreate();
   };
 
-  const close = () => setModal({ type: "closed" });
+  const startEdit = (plan: TestPlan) => {
+    resetEdit({ name: plan.name, description: plan.description ?? "" });
+    openEdit(plan);
+  };
 
   return (
     <div className="flex min-h-0 w-full flex-col">
@@ -77,10 +78,7 @@ export const TestPlansPage = () => {
         </div>
         <button
           className="btn gap-1.5 btn-sm btn-primary"
-          onClick={() => {
-            resetCreate({ name: "", description: "" });
-            setModal({ type: "create" });
-          }}
+          onClick={startCreate}
         >
           <PlusIcon className="size-4" />
           New Plan
@@ -116,7 +114,7 @@ export const TestPlansPage = () => {
                 <div className="flex items-center gap-1.5">
                   <button
                     className="btn btn-ghost btn-xs"
-                    onClick={() => openEdit(plan)}
+                    onClick={() => startEdit(plan)}
                     aria-label="Edit plan"
                   >
                     <PencilIcon className="size-3.5" />
@@ -139,7 +137,7 @@ export const TestPlansPage = () => {
             action={
               <button
                 className="btn gap-1.5 btn-sm btn-primary"
-                onClick={() => setModal({ type: "create" })}
+                onClick={startCreate}
               >
                 <PlusIcon className="size-4" />
                 New Plan
@@ -216,7 +214,7 @@ export const TestPlansPage = () => {
           <form
             onSubmit={handleEdit((data) =>
               updatePlan.mutate(
-                { id: modal.plan.id, ...data },
+                { id: modal.item.id, ...data },
                 { onSuccess: close },
               ),
             )}

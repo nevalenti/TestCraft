@@ -1,8 +1,8 @@
 import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
 import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { ErrorState } from "@/components/ErrorState";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LabelBadge } from "@/components/ui/LabelBadge";
 import { Modal } from "@/components/ui/Modal";
@@ -12,6 +12,7 @@ import {
   useLabels,
   useUpdateLabel,
 } from "@/hooks/useLabels";
+import { useModal } from "@/hooks/useModal";
 import { useRequiredParam } from "@/hooks/useRequiredParam";
 
 const PRESET_COLORS = [
@@ -129,25 +130,21 @@ const LabelForm = ({
 
 export const LabelsTab = () => {
   const projectId = useRequiredParam("projectId");
-  const { data: labels, isPending } = useLabels(projectId);
+  const { data: labels, isPending, isError, error } = useLabels(projectId);
   const createLabel = useCreateLabel(projectId);
   const updateLabel = useUpdateLabel(projectId);
   const deleteLabel = useDeleteLabel(projectId);
-
-  const [createOpen, setCreateOpen] = useState(false);
-  const [editTarget, setEditTarget] = useState<Label | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Label | null>(null);
+  const { modal, close, openCreate, openEdit, openDelete } = useModal<Label>();
 
   const handleCreate = (data: CreateLabel) =>
-    createLabel.mutate(data, { onSuccess: () => setCreateOpen(false) });
+    createLabel.mutate(data, { onSuccess: close });
 
   const handleUpdate = (data: UpdateLabel) => {
-    if (!editTarget) return;
-    updateLabel.mutate(
-      { id: editTarget.id, ...data },
-      { onSuccess: () => setEditTarget(null) },
-    );
+    if (modal.type !== "edit") return;
+    updateLabel.mutate({ id: modal.item.id, ...data }, { onSuccess: close });
   };
+
+  const deleteTarget = modal.type === "delete" ? modal.item : null;
 
   const renderLabels = () => {
     if (isPending)
@@ -156,6 +153,7 @@ export const LabelsTab = () => {
           <span className="loading loading-md loading-spinner text-primary" />
         </div>
       );
+    if (isError) return <ErrorState error={error} />;
     if (!labels || labels.length === 0)
       return (
         <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-center">
@@ -196,14 +194,14 @@ export const LabelsTab = () => {
                   <div className="flex justify-end gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       className="btn btn-ghost btn-xs"
-                      onClick={() => setEditTarget(label)}
+                      onClick={() => openEdit(label)}
                       aria-label="Edit label"
                     >
                       <PencilIcon className="size-3.5" />
                     </button>
                     <button
                       className="btn text-error btn-ghost btn-xs"
-                      onClick={() => setDeleteTarget(label)}
+                      onClick={() => openDelete(label)}
                       aria-label="Delete label"
                     >
                       <TrashIcon className="size-3.5" />
@@ -224,10 +222,7 @@ export const LabelsTab = () => {
         <p className="text-sm text-base-content/85">
           Labels let you tag test cases for filtering and reporting.
         </p>
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => setCreateOpen(true)}
-        >
+        <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" />
           New Label
         </button>
@@ -235,30 +230,22 @@ export const LabelsTab = () => {
 
       {renderLabels()}
 
-      <Modal
-        isOpen={createOpen}
-        onClose={() => setCreateOpen(false)}
-        title="New Label"
-      >
+      <Modal isOpen={modal.type === "create"} onClose={close} title="New Label">
         <LabelForm
           onSubmit={handleCreate}
-          onCancel={() => setCreateOpen(false)}
+          onCancel={close}
           isLoading={createLabel.isPending}
           submitLabel="Create"
         />
       </Modal>
 
-      <Modal
-        isOpen={editTarget !== null}
-        onClose={() => setEditTarget(null)}
-        title="Edit Label"
-      >
-        {editTarget && (
+      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Label">
+        {modal.type === "edit" && (
           <LabelForm
-            key={editTarget.id}
-            defaultValues={{ name: editTarget.name, color: editTarget.color }}
+            key={modal.item.id}
+            defaultValues={{ name: modal.item.name, color: modal.item.color }}
             onSubmit={handleUpdate}
-            onCancel={() => setEditTarget(null)}
+            onCancel={close}
             isLoading={updateLabel.isPending}
             submitLabel="Save"
           />
@@ -266,12 +253,11 @@ export const LabelsTab = () => {
       </Modal>
 
       <ConfirmDialog
-        isOpen={deleteTarget !== null}
-        onClose={() => setDeleteTarget(null)}
+        isOpen={modal.type === "delete"}
+        onClose={close}
         onConfirm={() =>
-          deleteLabel.mutate(deleteTarget!.id, {
-            onSuccess: () => setDeleteTarget(null),
-          })
+          deleteTarget &&
+          deleteLabel.mutate(deleteTarget.id, { onSuccess: close })
         }
         title="Delete label"
         description={`"${deleteTarget?.name}" will be permanently removed and untagged from all test cases.`}

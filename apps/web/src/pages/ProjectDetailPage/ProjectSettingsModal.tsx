@@ -1,9 +1,10 @@
-import { EyeIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { EyeIcon } from "@heroicons/react/24/solid";
 import type { CreateApiTokenResponse } from "@testcraft/types";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { Modal } from "@/components/ui/Modal";
+import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
 import {
   useApiTokens,
   useCreateApiToken,
@@ -204,38 +205,23 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
         </button>
       </form>
 
-      {tokens && tokens.length > 0 && (
-        <ul className="space-y-2">
-          {tokens.map((token) => (
-            <li
-              key={token.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
-            >
-              <div>
-                <p className="text-sm font-medium">{token.name}</p>
-                <p className="text-xs text-base-content/65">
-                  Created {formatDate(token.createdAt)}
-                  {token.lastUsedAt &&
-                    ` · last used ${formatDate(token.lastUsedAt)}`}
-                  {token.expiresAt &&
-                    ` · expires ${formatDate(token.expiresAt)}`}
-                  {token.isRevoked && " · revoked"}
-                </p>
-              </div>
-              {!token.isRevoked && (
-                <button
-                  className="btn text-error btn-ghost btn-xs"
-                  onClick={() => revokeToken.mutate(token.id)}
-                  aria-label="Revoke token"
-                >
-                  <TrashIcon className="size-3.5" />
-                  Revoke
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      <SettingsEntityList
+        items={tokens ?? []}
+        getKey={(t) => t.id}
+        renderPrimary={(t) => t.name}
+        renderSecondary={(t) => (
+          <>
+            Created {formatDate(t.createdAt)}
+            {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
+            {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
+            {t.isRevoked && " · revoked"}
+          </>
+        )}
+        onRemove={(t) => revokeToken.mutate(t.id)}
+        removeAriaLabel={() => "Revoke token"}
+        removeLabel="Revoke"
+        isRemoveHidden={(t) => t.isRevoked}
+      />
     </div>
   );
 }
@@ -285,32 +271,16 @@ function MembersSection({ projectId }: { projectId: string }) {
         </button>
       </div>
 
-      {members && members.length > 0 && (
-        <ul className="space-y-2">
-          {members.map((member) => (
-            <li
-              key={member.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">
-                  {member.displayName ?? member.email}
-                </p>
-                <p className="truncate text-xs text-base-content/65">
-                  {member.email} · added {formatDate(member.createdAt)}
-                </p>
-              </div>
-              <button
-                className="btn text-error btn-ghost btn-xs"
-                onClick={() => removeMember.mutate(member.id)}
-                aria-label={`Remove ${member.email}`}
-              >
-                <TrashIcon className="size-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SettingsEntityList
+        items={members ?? []}
+        getKey={(member) => member.id}
+        renderPrimary={(member) => member.displayName ?? member.email}
+        renderSecondary={(member) =>
+          `${member.email} · added ${formatDate(member.createdAt)}`
+        }
+        onRemove={(member) => removeMember.mutate(member.id)}
+        removeAriaLabel={(member) => `Remove ${member.email}`}
+      />
     </div>
   );
 }
@@ -373,29 +343,14 @@ function WebhooksSection({ projectId }: { projectId: string }) {
           Add Webhook
         </button>
       </div>
-      {webhooks && webhooks.length > 0 && (
-        <ul className="space-y-2">
-          {webhooks.map((wh) => (
-            <li
-              key={wh.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-sm font-medium">{wh.url}</p>
-                <p className="text-xs text-base-content/65">
-                  {wh.events.join(", ")}
-                </p>
-              </div>
-              <button
-                className="btn text-error btn-ghost btn-xs"
-                onClick={() => deleteWebhook.mutate(wh.id)}
-              >
-                <TrashIcon className="size-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SettingsEntityList
+        items={webhooks ?? []}
+        getKey={(wh) => wh.id}
+        renderPrimary={(wh) => wh.url}
+        renderSecondary={(wh) => wh.events.join(", ")}
+        onRemove={(wh) => deleteWebhook.mutate(wh.id)}
+        removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
+      />
     </div>
   );
 }
@@ -442,29 +397,14 @@ function EmailsSection({ projectId }: { projectId: string }) {
           Add Email
         </button>
       </div>
-      {emailSubs && emailSubs.length > 0 && (
-        <ul className="space-y-2">
-          {emailSubs.map((sub) => (
-            <li
-              key={sub.id}
-              className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
-            >
-              <div>
-                <p className="text-sm font-medium">{sub.email}</p>
-                <p className="text-xs text-base-content/65">
-                  {sub.events.join(", ")}
-                </p>
-              </div>
-              <button
-                className="btn text-error btn-ghost btn-xs"
-                onClick={() => deleteEmail.mutate(sub.id)}
-              >
-                <TrashIcon className="size-3.5" />
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      <SettingsEntityList
+        items={emailSubs ?? []}
+        getKey={(sub) => sub.id}
+        renderPrimary={(sub) => sub.email}
+        renderSecondary={(sub) => sub.events.join(", ")}
+        onRemove={(sub) => deleteEmail.mutate(sub.id)}
+        removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
+      />
     </div>
   );
 }
