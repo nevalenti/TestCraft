@@ -132,23 +132,32 @@ export const TestPlanPage = () => {
     }),
   );
 
-  const sortedCases = [...(cases ?? [])].toSorted((a, b) => a.order - b.order);
-  const caseIds = sortedCases.map((c) => c.testCaseId);
+  const sortedCases = [...(cases ?? [])].toSorted(
+    (caseA, caseB) => caseA.order - caseB.order,
+  );
+  const caseIds = sortedCases.map((planCase) => planCase.testCaseId);
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
-    const oldIndex = sortedCases.findIndex((c) => c.testCaseId === active.id);
-    const newIndex = sortedCases.findIndex((c) => c.testCaseId === over.id);
+    const oldIndex = sortedCases.findIndex(
+      (planCase) => planCase.testCaseId === active.id,
+    );
+    const newIndex = sortedCases.findIndex(
+      (planCase) => planCase.testCaseId === over.id,
+    );
     const reordered = arrayMove(sortedCases, oldIndex, newIndex);
     reorderCases.mutate(
-      reordered.map((c, i) => ({ testCaseId: c.testCaseId, order: i + 1 })),
+      reordered.map((planCase, index) => ({
+        testCaseId: planCase.testCaseId,
+        order: index + 1,
+      })),
     );
   };
 
   const availableToAdd = (allCases ?? []).filter(
-    (c) =>
-      !caseIds.includes(c.id) &&
-      c.name.toLowerCase().includes(addSearch.toLowerCase()),
+    (testCase) =>
+      !caseIds.includes(testCase.id) &&
+      testCase.name.toLowerCase().includes(addSearch.toLowerCase()),
   );
 
   const handleRunFromPlan = (data: { name: string; environment: string }) => {
@@ -244,7 +253,7 @@ export const TestPlanPage = () => {
                 className="input-bordered input input-sm w-full pl-8"
                 placeholder="Search test cases…"
                 value={addSearch}
-                onChange={(e) => setAddSearch(e.target.value)}
+                onChange={(event) => setAddSearch(event.target.value)}
               />
             </div>
             {availableToAdd.length === 0 ? (
@@ -253,15 +262,15 @@ export const TestPlanPage = () => {
               </p>
             ) : (
               <ul className="max-h-96 space-y-2 overflow-y-auto">
-                {availableToAdd.map((c) => (
+                {availableToAdd.map((testCase) => (
                   <li
-                    key={c.id}
+                    key={testCase.id}
                     className="flex items-center justify-between gap-3 rounded-lg border border-border bg-base-100 px-4 py-2.5"
                   >
-                    <span className="text-sm font-medium">{c.name}</span>
+                    <span className="text-sm font-medium">{testCase.name}</span>
                     <button
                       className="btn text-primary btn-ghost btn-xs"
-                      onClick={() => addCase.mutate(c.id)}
+                      onClick={() => addCase.mutate(testCase.id)}
                     >
                       Add
                     </button>

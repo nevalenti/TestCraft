@@ -93,7 +93,7 @@ export const ImportForm = ({
 
   const handleFilesChange = (newFiles: File[]) => {
     setFiles(newFiles);
-    setErrors((prev) => ({ ...prev, files: undefined }));
+    setErrors((previous) => ({ ...previous, files: undefined }));
   };
 
   const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
@@ -116,7 +116,7 @@ export const ImportForm = ({
       const allureData = await parseAllureFiles(files);
 
       if ("fileError" in allureData) {
-        setErrors((prev) => ({ ...prev, files: allureData.fileError }));
+        setErrors((previous) => ({ ...previous, files: allureData.fileError }));
 
         return;
       }

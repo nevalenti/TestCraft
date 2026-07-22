@@ -29,7 +29,7 @@ public static class ReorderPlanCases
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var planExists = await context.TestPlans.AnyAsync(
-                p => p.Id == request.TestPlanId && p.ProjectId == request.ProjectId,
+                plan => plan.Id == request.TestPlanId && plan.ProjectId == request.ProjectId,
                 cancellationToken
             );
             if (!planExists)
@@ -37,14 +37,17 @@ public static class ReorderPlanCases
                 throw new NotFoundException();
             }
 
-            var caseIds = request.Cases.Select(c => c.TestCaseId).ToList();
+            var caseIds = request.Cases.Select(caseOrder => caseOrder.TestCaseId).ToList();
             var entries = await context
                 .TestPlanCases.Where(tpc =>
                     tpc.TestPlanId == request.TestPlanId && caseIds.Contains(tpc.TestCaseId)
                 )
                 .ToListAsync(cancellationToken);
 
-            var orderMap = request.Cases.ToDictionary(c => c.TestCaseId, c => c.Order);
+            var orderMap = request.Cases.ToDictionary(
+                caseOrder => caseOrder.TestCaseId,
+                caseOrder => caseOrder.Order
+            );
             foreach (var entry in entries)
             {
                 if (orderMap.TryGetValue(entry.TestCaseId, out var newOrder))

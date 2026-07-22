@@ -29,7 +29,7 @@ public static class GetTestPlanCases
         )
         {
             var planExists = await context.TestPlans.AnyAsync(
-                p => p.Id == request.TestPlanId && p.ProjectId == request.ProjectId,
+                plan => plan.Id == request.TestPlanId && plan.ProjectId == request.ProjectId,
                 cancellationToken
             );
 

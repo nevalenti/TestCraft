@@ -14,7 +14,7 @@ interface Ctx extends ApiContext {
 }
 
 class TestCraftReporter implements Reporter {
-  private ctx: Ctx | null = null;
+  private context: Ctx | null = null;
   private initPromise: Promise<void> | null = null;
   private readonly pending: Promise<void>[] = [];
   private capture: StdioCapture | null = null;
@@ -54,22 +54,22 @@ class TestCraftReporter implements Reporter {
       const token = await fetchToken(authority, username, password);
       const projectId = await findProjectId(apiUrl, token, projectName);
 
-      this.ctx = { apiUrl, projectId, token, runId };
-    } catch (err) {
-      console.warn(`[TestCraft] Reporter init failed: ${err}`);
+      this.context = { apiUrl, projectId, token, runId };
+    } catch (error) {
+      console.warn(`[TestCraft] Reporter init failed: ${error}`);
     }
   }
 
   private postLog(lines: string[]): void {
     if (!this.initPromise || lines.length === 0) return;
-    const p = this.initPromise.then(() => this.sendLogs(lines));
-    this.pending.push(p);
+    const logPromise = this.initPromise.then(() => this.sendLogs(lines));
+    this.pending.push(logPromise);
   }
 
   private async sendLogs(lines: string[]): Promise<void> {
-    if (!this.ctx) return;
+    if (!this.context) return;
     try {
-      await appendLogs(this.ctx, this.ctx.runId, lines);
+      await appendLogs(this.context, this.context.runId, lines);
     } catch {
       // non-critical — swallow silently
     }

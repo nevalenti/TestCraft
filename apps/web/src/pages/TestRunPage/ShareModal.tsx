@@ -94,7 +94,7 @@ export function ShareModal({
                 type="date"
                 className="input-bordered input input-sm w-full"
                 value={expiresAt}
-                onChange={(e) => setExpiresAt(e.target.value)}
+                onChange={(event) => setExpiresAt(event.target.value)}
                 min={new Date().toISOString().split("T", 1)[0]}
               />
             </div>

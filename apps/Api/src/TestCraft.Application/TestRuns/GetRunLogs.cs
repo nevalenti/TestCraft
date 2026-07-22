@@ -27,7 +27,7 @@ public static class GetRunLogs
         )
         {
             var exists = await context.TestRuns.AnyAsync(
-                r => r.Id == request.RunId && r.ProjectId == request.ProjectId,
+                run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
 
@@ -35,9 +35,9 @@ public static class GetRunLogs
                 throw new NotFoundException();
 
             return await context
-                .RunLogs.Where(l => l.RunId == request.RunId)
-                .OrderBy(l => l.CreatedAt)
-                .Select(l => l.Message)
+                .RunLogs.Where(log => log.RunId == request.RunId)
+                .OrderBy(log => log.CreatedAt)
+                .Select(log => log.Message)
                 .ToListAsync(cancellationToken);
         }
     }

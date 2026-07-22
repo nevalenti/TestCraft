@@ -10,40 +10,52 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
     {
         builder.ToTable("test_results");
 
-        builder.HasKey(r => r.Id);
-        builder.Property(r => r.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+        builder.HasKey(testResult => testResult.Id);
         builder
-            .Property(r => r.Status)
+            .Property(testResult => testResult.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(testResult => testResult.Status)
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(20);
-        builder.Property(r => r.Notes).HasColumnName("notes");
-        builder.Property(r => r.ExecutedAt).HasColumnName("executed_at");
-        builder.Property(r => r.ExecutedById).HasColumnName("executed_by_id");
-        builder.Property(r => r.TestRunId).HasColumnName("test_run_id");
-        builder.Property(r => r.TestCaseId).HasColumnName("test_case_id");
-        builder.Property(r => r.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(r => r.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(r => r.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(r => r.DeletedAt).HasColumnName("deleted_at");
-
-        builder.Property(r => r.DurationMs).HasColumnName("duration_ms");
+        builder.Property(testResult => testResult.Notes).HasColumnName("notes");
+        builder.Property(testResult => testResult.ExecutedAt).HasColumnName("executed_at");
+        builder.Property(testResult => testResult.ExecutedById).HasColumnName("executed_by_id");
+        builder.Property(testResult => testResult.TestRunId).HasColumnName("test_run_id");
+        builder.Property(testResult => testResult.TestCaseId).HasColumnName("test_case_id");
         builder
-            .Property(r => r.DefectType)
+            .Property(testResult => testResult.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testResult => testResult.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testResult => testResult.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(testResult => testResult.DeletedAt).HasColumnName("deleted_at");
+
+        builder.Property(testResult => testResult.DurationMs).HasColumnName("duration_ms");
+        builder
+            .Property(testResult => testResult.DefectType)
             .HasColumnName("defect_type")
             .HasConversion<string>()
             .HasMaxLength(20);
 
-        builder.HasIndex(r => r.TestRunId);
-        builder.HasIndex(r => r.Status);
-        builder.HasIndex(r => r.ExecutedAt);
+        builder.HasIndex(testResult => testResult.TestRunId);
+        builder.HasIndex(testResult => testResult.Status);
+        builder.HasIndex(testResult => testResult.ExecutedAt);
 
         builder
-            .HasMany(r => r.Attachments)
-            .WithOne(a => a.TestResult)
-            .HasForeignKey(a => a.TestResultId)
+            .HasMany(testResult => testResult.Attachments)
+            .WithOne(attachment => attachment.TestResult)
+            .HasForeignKey(attachment => attachment.TestResultId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasQueryFilter(r => !r.IsDeleted);
+        builder.HasQueryFilter(testResult => !testResult.IsDeleted);
     }
 }

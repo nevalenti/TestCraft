@@ -95,9 +95,9 @@ describe("FileDropZone", () => {
         name: /file upload area/i,
       });
       const image = makeFile("shot.png", "image/png");
-      const doc = makeFile("notes.txt", "text/plain");
+      const textFile = makeFile("notes.txt", "text/plain");
 
-      fireEvent.drop(dropzone, { dataTransfer: { files: [image, doc] } });
+      fireEvent.drop(dropzone, { dataTransfer: { files: [image, textFile] } });
 
       expect(onFilesChange).toHaveBeenCalledWith([image]);
     });

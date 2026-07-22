@@ -40,8 +40,8 @@ public class ProjectTestCasesApiTests(ApiFactory factory)
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestCaseResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        page!.Items.Should().Contain(c => c.Name == "Successful login");
-        page.Items.Should().Contain(c => c.Name == "Successful checkout");
+        page!.Items.Should().Contain(testCase => testCase.Name == "Successful login");
+        page.Items.Should().Contain(testCase => testCase.Name == "Successful checkout");
     }
 
     [Fact]
@@ -60,7 +60,7 @@ public class ProjectTestCasesApiTests(ApiFactory factory)
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestCaseResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        page!.Items.Should().ContainSingle(c => c.Name == "Successful login");
+        page!.Items.Should().ContainSingle(testCase => testCase.Name == "Successful login");
     }
 
     [Fact]

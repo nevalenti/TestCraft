@@ -33,10 +33,10 @@ public static class DeleteTestResult
         {
             var result =
                 await context.TestResults.FirstOrDefaultAsync(
-                    r =>
-                        r.Id == request.Id
-                        && r.TestRunId == request.RunId
-                        && r.TestRun!.ProjectId == request.ProjectId,
+                    existingResult =>
+                        existingResult.Id == request.Id
+                        && existingResult.TestRunId == request.RunId
+                        && existingResult.TestRun!.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

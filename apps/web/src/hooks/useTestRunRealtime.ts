@@ -40,7 +40,7 @@ export const useTestRunRealtime = (projectId: string, runId: string) => {
       LogsAppended: (data) => {
         queryClient.setQueryData<string[]>(
           queryKeys.testRuns.logs(projectId, runId),
-          (prev = []) => [...prev, ...(data as string[])],
+          (previous = []) => [...previous, ...(data as string[])],
         );
       },
     },

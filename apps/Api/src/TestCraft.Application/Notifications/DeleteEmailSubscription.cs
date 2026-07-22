@@ -24,7 +24,9 @@ public static class DeleteEmailSubscription
         {
             var subscription =
                 await context.EmailSubscriptions.FirstOrDefaultAsync(
-                    e => e.Id == request.Id && e.ProjectId == request.ProjectId,
+                    emailSubscription =>
+                        emailSubscription.Id == request.Id
+                        && emailSubscription.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

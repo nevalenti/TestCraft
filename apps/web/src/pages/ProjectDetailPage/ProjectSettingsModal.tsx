@@ -37,7 +37,7 @@ function EventCheckboxes({
   const toggle = (event: string) =>
     onChange(
       selected.includes(event)
-        ? selected.filter((e) => e !== event)
+        ? selected.filter((selectedEvent) => selectedEvent !== event)
         : [...selected, event],
     );
 
@@ -129,8 +129,8 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
     createToken.mutate(
       { name: data.name, expiresAt: data.expiresAt || undefined },
       {
-        onSuccess: (res) => {
-          setNewToken(res);
+        onSuccess: (response) => {
+          setNewToken(response);
           setRevealed(false);
           reset();
         },
@@ -154,7 +154,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             />
             <button
               className="btn btn-ghost btn-sm"
-              onClick={() => setRevealed((r) => !r)}
+              onClick={() => setRevealed((previous) => !previous)}
             >
               <EyeIcon className="size-4" />
             </button>
@@ -255,7 +255,7 @@ function MembersSection({ projectId }: { projectId: string }) {
             className="input-bordered input input-sm w-full"
             placeholder="teammate@example.com"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(event) => setEmail(event.target.value)}
           />
         </div>
         <button
@@ -326,13 +326,13 @@ function WebhooksSection({ projectId }: { projectId: string }) {
           className="input-bordered input input-sm w-full"
           placeholder="https://hooks.example.com/testcraft"
           value={url}
-          onChange={(e) => setUrl(e.target.value)}
+          onChange={(event) => setUrl(event.target.value)}
         />
         <input
           className="input-bordered input input-sm w-full"
           placeholder="Secret (optional, for HMAC verification)"
           value={secret}
-          onChange={(e) => setSecret(e.target.value)}
+          onChange={(event) => setSecret(event.target.value)}
         />
         <EventCheckboxes selected={events} onChange={setEvents} />
         <button
@@ -386,7 +386,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
           className="input-bordered input input-sm w-full"
           placeholder="alerts@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(event) => setEmail(event.target.value)}
         />
         <EventCheckboxes selected={events} onChange={setEvents} />
         <button

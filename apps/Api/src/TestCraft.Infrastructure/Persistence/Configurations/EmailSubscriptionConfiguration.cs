@@ -10,14 +10,32 @@ public class EmailSubscriptionConfiguration : IEntityTypeConfiguration<EmailSubs
     {
         builder.ToTable("email_subscriptions");
 
-        builder.HasKey(e => e.Id);
-        builder.Property(e => e.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(e => e.ProjectId).HasColumnName("project_id");
-        builder.Property(e => e.Email).HasColumnName("email").HasMaxLength(254).IsRequired();
-        builder.Property(e => e.Events).HasColumnName("events").IsRequired();
-        builder.Property(e => e.IsActive).HasColumnName("is_active").HasDefaultValue(true);
-        builder.Property(e => e.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.HasKey(emailSubscription => emailSubscription.Id);
+        builder
+            .Property(emailSubscription => emailSubscription.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(emailSubscription => emailSubscription.ProjectId)
+            .HasColumnName("project_id");
+        builder
+            .Property(emailSubscription => emailSubscription.Email)
+            .HasColumnName("email")
+            .HasMaxLength(254)
+            .IsRequired();
+        builder
+            .Property(emailSubscription => emailSubscription.Events)
+            .HasColumnName("events")
+            .IsRequired();
+        builder
+            .Property(emailSubscription => emailSubscription.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true);
+        builder
+            .Property(emailSubscription => emailSubscription.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(e => e.ProjectId);
+        builder.HasIndex(emailSubscription => emailSubscription.ProjectId);
     }
 }

@@ -21,12 +21,17 @@ public class SystemController(
 {
     /// <summary>Gets the Keycloak authority used by clients to authenticate.</summary>
     [HttpGet("auth-config")]
-    public ActionResult<AuthConfigResponse> GetAuthConfig() =>
-        Ok(new AuthConfigResponse(keycloakOptions.KeycloakAuthority));
+    public ActionResult<AuthConfigResponse> GetAuthConfig()
+    {
+        return Ok(new AuthConfigResponse(keycloakOptions.KeycloakAuthority));
+    }
 
     /// <summary>Returns whether the API process has started.</summary>
     [HttpGet("ready")]
-    public ActionResult<StatusResponse> GetReady() => Ok(new StatusResponse("ok"));
+    public ActionResult<StatusResponse> GetReady()
+    {
+        return Ok(new StatusResponse("ok"));
+    }
 
     /// <summary>Returns the API's health, including database connectivity.</summary>
     [HttpGet("health")]
@@ -98,7 +103,9 @@ public class SystemController(
         }
     }
 
-    private static bool IsBearerTokenValid(string? authHeader, string token) =>
-        FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
+    private static bool IsBearerTokenValid(string? authHeader, string token)
+    {
+        return FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
+    }
 }
 #pragma warning restore S6960

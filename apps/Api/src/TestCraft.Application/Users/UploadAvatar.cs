@@ -43,7 +43,7 @@ public static partial class UploadAvatar
             var userId = currentUser.UserId;
 
             var profile = await context.UserProfiles.FirstOrDefaultAsync(
-                p => p.UserId == userId,
+                userProfile => userProfile.UserId == userId,
                 cancellationToken
             );
 

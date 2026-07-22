@@ -37,9 +37,9 @@ public static class UpdateTestCase
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Description).MaximumLength(2000);
-            RuleFor(x => x.Priority).IsInEnum();
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Priority).IsInEnum();
         }
     }
 
@@ -53,7 +53,9 @@ public static class UpdateTestCase
         {
             var testCase =
                 await context.TestCases.FirstOrDefaultAsync(
-                    c => c.Id == request.Id && c.SuiteId == request.SuiteId,
+                    existingTestCase =>
+                        existingTestCase.Id == request.Id
+                        && existingTestCase.SuiteId == request.SuiteId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
@@ -62,18 +64,18 @@ public static class UpdateTestCase
             await context.SaveChangesAsync(cancellationToken);
 
             return await context
-                .TestCases.Where(c => c.Id == testCase.Id)
-                .Select(c => new TestCaseResponse
+                .TestCases.Where(updatedTestCase => updatedTestCase.Id == testCase.Id)
+                .Select(updatedTestCase => new TestCaseResponse
                 {
-                    Id = c.Id,
-                    SuiteId = c.SuiteId,
-                    Name = c.Name,
-                    Description = c.Description,
-                    Priority = c.Priority,
-                    StepCount = c.Steps.Count(s => !s.IsDeleted),
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    Labels = c
+                    Id = updatedTestCase.Id,
+                    SuiteId = updatedTestCase.SuiteId,
+                    Name = updatedTestCase.Name,
+                    Description = updatedTestCase.Description,
+                    Priority = updatedTestCase.Priority,
+                    StepCount = updatedTestCase.Steps.Count(step => !step.IsDeleted),
+                    CreatedAt = updatedTestCase.CreatedAt,
+                    UpdatedAt = updatedTestCase.UpdatedAt,
+                    Labels = updatedTestCase
                         .TestCaseLabels.Select(tcl => new LabelResponse
                         {
                             Id = tcl.Label!.Id,

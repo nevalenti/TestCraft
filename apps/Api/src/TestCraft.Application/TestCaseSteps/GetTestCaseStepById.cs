@@ -29,16 +29,18 @@ public static class GetTestCaseStepById
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestCaseSteps.Where(s => s.Id == request.Id && s.TestCaseId == request.CaseId)
-                .Select(s => new TestCaseStepResponse
+                .TestCaseSteps.Where(step =>
+                    step.Id == request.Id && step.TestCaseId == request.CaseId
+                )
+                .Select(step => new TestCaseStepResponse
                 {
-                    Id = s.Id,
-                    TestCaseId = s.TestCaseId,
-                    Order = s.Order,
-                    Action = s.Action,
-                    ExpectedResult = s.ExpectedResult,
-                    CreatedAt = s.CreatedAt,
-                    UpdatedAt = s.UpdatedAt,
+                    Id = step.Id,
+                    TestCaseId = step.TestCaseId,
+                    Order = step.Order,
+                    Action = step.Action,
+                    ExpectedResult = step.ExpectedResult,
+                    CreatedAt = step.CreatedAt,
+                    UpdatedAt = step.UpdatedAt,
                 })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();

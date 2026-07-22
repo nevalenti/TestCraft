@@ -12,22 +12,22 @@ public partial class RunStatusChangedConsumer(
 {
     public async Task Consume(ConsumeContext<RunStatusChanged> context)
     {
-        var msg = context.Message;
+        var message = context.Message;
 
-        if (msg.NewStatus == "Completed")
+        if (message.NewStatus == "Completed")
         {
             try
             {
                 await dispatcher.DispatchRunCompletedAsync(
-                    msg.ProjectId,
-                    msg.RunId,
-                    msg.RunName,
+                    message.ProjectId,
+                    message.RunId,
+                    message.RunName,
                     context.CancellationToken
                 );
             }
             catch (Exception ex)
             {
-                LogDispatchFailed(logger, ex, msg.RunId);
+                LogDispatchFailed(logger, ex, message.RunId);
             }
         }
     }

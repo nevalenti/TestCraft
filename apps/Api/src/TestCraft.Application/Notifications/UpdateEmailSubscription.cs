@@ -33,8 +33,8 @@ public static class UpdateEmailSubscription
     {
         public Validator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(254);
-            RuleFor(x => x.Events).NotEmpty();
+            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Events).NotEmpty();
         }
     }
 
@@ -48,7 +48,9 @@ public static class UpdateEmailSubscription
         {
             var subscription =
                 await context.EmailSubscriptions.FirstOrDefaultAsync(
-                    e => e.Id == request.Id && e.ProjectId == request.ProjectId,
+                    emailSubscription =>
+                        emailSubscription.Id == request.Id
+                        && emailSubscription.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

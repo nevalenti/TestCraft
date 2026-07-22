@@ -62,8 +62,8 @@ public class TestSuitesApiTests(ApiFactory factory)
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var page = await response.Content.ReadFromJsonAsync<Paginated<TestSuiteResponse>>();
-        page!.Items.Should().ContainSingle(s => s.Name == "Login Suite");
-        page.Items.Should().NotContain(s => s.Name == "Checkout Suite");
+        page!.Items.Should().ContainSingle(suite => suite.Name == "Login Suite");
+        page.Items.Should().NotContain(suite => suite.Name == "Checkout Suite");
     }
 
     [Fact]

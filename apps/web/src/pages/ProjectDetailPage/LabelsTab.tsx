@@ -72,17 +72,20 @@ const LabelForm = ({
           Color
         </label>
         <div className="flex flex-wrap gap-2">
-          {PRESET_COLORS.map((c) => (
+          {PRESET_COLORS.map((presetColor) => (
             <button
-              key={c}
+              key={presetColor}
               type="button"
               className="size-6 rounded-full ring-offset-2 transition-all"
               style={{
-                backgroundColor: c,
-                boxShadow: color === c ? `0 0 0 2px ${c}` : undefined,
+                backgroundColor: presetColor,
+                boxShadow:
+                  color === presetColor
+                    ? `0 0 0 2px ${presetColor}`
+                    : undefined,
               }}
-              onClick={() => setValue("color", c)}
-              aria-label={c}
+              onClick={() => setValue("color", presetColor)}
+              aria-label={presetColor}
             />
           ))}
           <input

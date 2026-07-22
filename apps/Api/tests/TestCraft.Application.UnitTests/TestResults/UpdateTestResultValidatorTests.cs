@@ -33,20 +33,20 @@ public class UpdateTestResultValidatorTests
                 Status = (TestResultStatus)999,
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Status);
+        result.ShouldHaveValidationErrorFor(command => command.Status);
     }
 
     [Fact]
     public void NotesExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Notes = new string('a', 5001) });
-        result.ShouldHaveValidationErrorFor(x => x.Notes);
+        result.ShouldHaveValidationErrorFor(command => command.Notes);
     }
 
     [Fact]
     public void NullDefectType_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { DefectType = null });
-        result.ShouldNotHaveValidationErrorFor(x => x.DefectType);
+        result.ShouldNotHaveValidationErrorFor(command => command.DefectType);
     }
 }

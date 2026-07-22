@@ -77,7 +77,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
 
     private async Task DispatchDomainEventsAsync(CancellationToken ct)
     {
-        var entities = ChangeTracker.Entries<IHasDomainEvents>().Select(e => e.Entity).ToList();
+        var entities = ChangeTracker
+            .Entries<IHasDomainEvents>()
+            .Select(entry => entry.Entity)
+            .ToList();
 
         foreach (var entity in entities)
         {

@@ -199,7 +199,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{project.Id}/suites")
         ).Content.ReadFromJsonAsync<TestCraft.Application.Common.Pagination.Paginated<TestSuiteResponse>>();
 
-        suites!.Items.Should().ContainSingle(s => s.Name == "Auth");
+        suites!.Items.Should().ContainSingle(suite => suite.Name == "Auth");
     }
 
     [Fact]

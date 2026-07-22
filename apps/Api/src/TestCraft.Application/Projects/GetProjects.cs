@@ -28,13 +28,16 @@ public static class GetProjects
             CancellationToken cancellationToken
         )
         {
-            var query = context.Projects.Where(p =>
-                p.UserId == currentUser.UserId || p.Members.Any(m => m.UserId == currentUser.UserId)
+            var query = context.Projects.Where(project =>
+                project.UserId == currentUser.UserId
+                || project.Members.Any(member => member.UserId == currentUser.UserId)
             );
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(p => EF.Functions.ILike(p.Name, $"%{request.Search}%"));
+                query = query.Where(project =>
+                    EF.Functions.ILike(project.Name, $"%{request.Search}%")
+                );
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);
@@ -42,19 +45,19 @@ public static class GetProjects
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderByDescending(p => p.CreatedAt)
+                .OrderByDescending(project => project.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(p => new ProjectResponse
+                .Select(project => new ProjectResponse
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Description = p.Description,
-                    CreatedAt = p.CreatedAt,
-                    UpdatedAt = p.UpdatedAt,
-                    SuiteCount = p.TestSuites.Count(s => !s.IsDeleted),
-                    RunCount = p.TestRuns.Count(r => !r.IsDeleted),
-                    IsOwner = p.UserId == currentUser.UserId,
+                    Id = project.Id,
+                    Name = project.Name,
+                    Description = project.Description,
+                    CreatedAt = project.CreatedAt,
+                    UpdatedAt = project.UpdatedAt,
+                    SuiteCount = project.TestSuites.Count(suite => !suite.IsDeleted),
+                    RunCount = project.TestRuns.Count(run => !run.IsDeleted),
+                    IsOwner = project.UserId == currentUser.UserId,
                 })
                 .ToListAsync(cancellationToken);
 

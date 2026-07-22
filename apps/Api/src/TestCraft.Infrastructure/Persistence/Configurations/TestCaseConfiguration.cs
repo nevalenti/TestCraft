@@ -10,35 +10,47 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
     {
         builder.ToTable("test_cases");
 
-        builder.HasKey(c => c.Id);
-        builder.Property(c => c.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(c => c.Name).HasColumnName("name").IsRequired();
-        builder.Property(c => c.Description).HasColumnName("description");
+        builder.HasKey(testCase => testCase.Id);
         builder
-            .Property(c => c.Priority)
+            .Property(testCase => testCase.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(testCase => testCase.Name).HasColumnName("name").IsRequired();
+        builder.Property(testCase => testCase.Description).HasColumnName("description");
+        builder
+            .Property(testCase => testCase.Priority)
             .HasColumnName("priority")
             .HasConversion<string>()
             .HasMaxLength(20);
-        builder.Property(c => c.SuiteId).HasColumnName("suite_id");
-        builder.Property(c => c.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(c => c.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(c => c.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(c => c.DeletedAt).HasColumnName("deleted_at");
+        builder.Property(testCase => testCase.SuiteId).HasColumnName("suite_id");
+        builder
+            .Property(testCase => testCase.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testCase => testCase.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(testCase => testCase.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(testCase => testCase.DeletedAt).HasColumnName("deleted_at");
 
-        builder.HasIndex(c => c.SuiteId);
-        builder.HasIndex(c => c.Priority);
+        builder.HasIndex(testCase => testCase.SuiteId);
+        builder.HasIndex(testCase => testCase.Priority);
 
-        builder.HasQueryFilter(c => !c.IsDeleted);
+        builder.HasQueryFilter(testCase => !testCase.IsDeleted);
 
         builder
-            .HasMany(c => c.Steps)
-            .WithOne(s => s.TestCase)
-            .HasForeignKey(s => s.TestCaseId)
+            .HasMany(testCase => testCase.Steps)
+            .WithOne(testCaseStep => testCaseStep.TestCase)
+            .HasForeignKey(testCaseStep => testCaseStep.TestCaseId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasMany(c => c.TestResults)
-            .WithOne(r => r.TestCase)
-            .HasForeignKey(r => r.TestCaseId);
+            .HasMany(testCase => testCase.TestResults)
+            .WithOne(testResult => testResult.TestCase)
+            .HasForeignKey(testResult => testResult.TestCaseId);
     }
 }

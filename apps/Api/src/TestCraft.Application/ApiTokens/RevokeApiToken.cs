@@ -24,7 +24,8 @@ public static class RevokeApiToken
         {
             var token =
                 await context.ApiTokens.FirstOrDefaultAsync(
-                    t => t.Id == request.Id && t.ProjectId == request.ProjectId,
+                    apiToken =>
+                        apiToken.Id == request.Id && apiToken.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

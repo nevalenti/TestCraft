@@ -21,8 +21,9 @@ public class AttachmentsController(ISender sender) : ControllerBase
         Guid runId,
         Guid resultId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetAttachments.Query
                 {
@@ -33,6 +34,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Uploads an attachment to a test result.</summary>
     [HttpPost]

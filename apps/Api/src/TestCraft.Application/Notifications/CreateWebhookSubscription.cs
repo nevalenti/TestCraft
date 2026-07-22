@@ -51,13 +51,13 @@ public static class CreateWebhookSubscription
     {
         public Validator()
         {
-            RuleFor(x => x.Url)
+            RuleFor(command => command.Url)
                 .NotEmpty()
                 .MaximumLength(2000)
                 .Must(BeValidUri)
                 .WithMessage("Must be a valid URL");
-            RuleFor(x => x.Secret).MaximumLength(200);
-            RuleFor(x => x.Events).NotEmpty();
+            RuleFor(command => command.Secret).MaximumLength(200);
+            RuleFor(command => command.Events).NotEmpty();
         }
 
         private static bool BeValidUri(string url) =>

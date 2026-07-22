@@ -14,8 +14,8 @@ test.describe("Cross-page business journey", () => {
   const runName = "E2E Journey Run";
 
   test.afterAll(async ({ browser }) => {
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
@@ -23,7 +23,7 @@ test.describe("Cross-page business journey", () => {
       await projects.delete(projectName);
     }
 
-    await ctx.close();
+    await context.close();
   });
 
   test("create project, suite, case, run a result, and see it reflected in analytics", async ({

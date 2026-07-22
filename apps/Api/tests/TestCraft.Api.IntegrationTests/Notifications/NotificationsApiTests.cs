@@ -52,7 +52,7 @@ public class NotificationsApiTests(ApiFactory factory)
             IReadOnlyList<WebhookSubscriptionResponse>
         >(ApiTestHelpers.JsonOptions);
 
-        webhooks.Should().ContainSingle(w => w.Id == created.Id);
+        webhooks.Should().ContainSingle(webhook => webhook.Id == created.Id);
     }
 
     [Fact]
@@ -83,7 +83,7 @@ public class NotificationsApiTests(ApiFactory factory)
         ).Content.ReadFromJsonAsync<IReadOnlyList<WebhookSubscriptionResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        webhooks.Should().NotContain(w => w.Id == created.Id);
+        webhooks.Should().NotContain(webhook => webhook.Id == created.Id);
     }
 
     [Fact]
@@ -174,7 +174,7 @@ public class NotificationsApiTests(ApiFactory factory)
         ).Content.ReadFromJsonAsync<IReadOnlyList<EmailSubscriptionResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        emails.Should().ContainSingle(e => e.Id == created.Id);
+        emails.Should().ContainSingle(email => email.Id == created.Id);
     }
 
     [Fact]
@@ -204,7 +204,7 @@ public class NotificationsApiTests(ApiFactory factory)
         ).Content.ReadFromJsonAsync<IReadOnlyList<EmailSubscriptionResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        emails.Should().NotContain(e => e.Id == created.Id);
+        emails.Should().NotContain(email => email.Id == created.Id);
     }
 
     [Fact]

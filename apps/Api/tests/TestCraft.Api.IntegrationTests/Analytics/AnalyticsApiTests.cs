@@ -83,7 +83,7 @@ public class AnalyticsApiTests(ApiFactory factory)
         var breakdown = await response.Content.ReadFromJsonAsync<IReadOnlyList<SuiteBreakdown>>(
             ApiTestHelpers.JsonOptions
         );
-        breakdown.Should().ContainSingle(b => b.SuiteName == "Suite A" && b.Passed == 1);
+        breakdown.Should().ContainSingle(item => item.SuiteName == "Suite A" && item.Passed == 1);
     }
 
     [Fact]
@@ -138,7 +138,7 @@ public class AnalyticsApiTests(ApiFactory factory)
         var comparison = await response.Content.ReadFromJsonAsync<RunComparison>(
             ApiTestHelpers.JsonOptions
         );
-        comparison!.Results.Should().ContainSingle(r => r.IsRegression);
+        comparison!.Results.Should().ContainSingle(result => result.IsRegression);
     }
 
     [Fact]

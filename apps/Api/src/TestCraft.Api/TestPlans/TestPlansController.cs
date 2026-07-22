@@ -18,7 +18,12 @@ public class TestPlansController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<TestPlanResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(new GetTestPlans.Query { ProjectId = projectId }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(new GetTestPlans.Query { ProjectId = projectId }, cancellationToken)
+        );
+    }
 
     /// <summary>Gets a test plan by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -26,13 +31,15 @@ public class TestPlansController(ISender sender) : ControllerBase
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestPlanById.Query { ProjectId = projectId, Id = id },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Creates a test plan.</summary>
     [HttpPost]
@@ -54,7 +61,12 @@ public class TestPlansController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestPlan.Command command,
         CancellationToken cancellationToken
-    ) => Ok(await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken));
+    )
+    {
+        return Ok(
+            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
+        );
+    }
 
     /// <summary>Deletes a test plan.</summary>
     [HttpDelete("{id:guid}")]

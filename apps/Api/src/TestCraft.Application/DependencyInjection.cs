@@ -11,11 +11,11 @@ public static class DependencyInjection
     {
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
 
-        services.AddMediatR(cfg =>
+        services.AddMediatR(config =>
         {
-            cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
-            cfg.AddOpenBehavior(typeof(ProjectAuthorizationBehaviour<,>));
-            cfg.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+            config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
+            config.AddOpenBehavior(typeof(ProjectAuthorizationBehaviour<,>));
+            config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
         });
 
         services.AddScoped<ExpiredShareTokenCleanupJob>();

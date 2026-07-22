@@ -122,9 +122,12 @@ const buildContext = async (opts: Options): Promise<ApiContext> => {
   return { apiUrl: opts.apiUrl, projectId, token };
 };
 
-const handleStart = async (ctx: ApiContext, opts: Options): Promise<void> => {
+const handleStart = async (
+  context: ApiContext,
+  opts: Options,
+): Promise<void> => {
   log.info("Creating Active run…");
-  const activeRun = await createRun(ctx, opts.runName, "ci", opts.source);
+  const activeRun = await createRun(context, opts.runName, "ci", opts.source);
   saveState(activeRun.id);
   if (opts.dotenvPath) writeDotenv(opts.dotenvPath, activeRun.id);
   log.info(
@@ -132,7 +135,10 @@ const handleStart = async (ctx: ApiContext, opts: Options): Promise<void> => {
   );
 };
 
-const handleLogs = async (ctx: ApiContext, opts: Options): Promise<void> => {
+const handleLogs = async (
+  context: ApiContext,
+  opts: Options,
+): Promise<void> => {
   const runId = opts.runId;
   if (!runId) {
     throw new Error(
@@ -153,39 +159,39 @@ const handleLogs = async (ctx: ApiContext, opts: Options): Promise<void> => {
 
   const lines = readFileSync(filePath, "utf8")
     .split("\n")
-    .filter((l) => l.length > 0);
+    .filter((line) => line.length > 0);
 
   log.info(`Uploading ${lines.length} log line(s) to run ${runId}…`);
   for (let i = 0; i < lines.length; i += LOG_BATCH_SIZE) {
-    await appendLogs(ctx, runId, lines.slice(i, i + LOG_BATCH_SIZE));
+    await appendLogs(context, runId, lines.slice(i, i + LOG_BATCH_SIZE));
   }
   log.info("Logs uploaded successfully");
 };
 
 const uploadScreenshots = async (
-  ctx: ApiContext,
+  context: ApiContext,
   runId: string,
   screenshotsDir: string,
 ): Promise<void> => {
   log.info("Uploading screenshots as attachments…");
-  const results = await fetchAllResults(ctx, runId);
+  const results = await fetchAllResults(context, runId);
   const screenshotDirs = readdirSync(screenshotsDir, {
     withFileTypes: true,
-  }).filter((d) => d.isDirectory());
+  }).filter((entry) => entry.isDirectory());
 
   let uploaded = 0;
   for (const result of results) {
     const slug = slugify(result.testCaseName);
     const pngs = screenshotDirs
-      .filter((d) => d.name.toLowerCase().includes(slug))
-      .flatMap((d) =>
-        readdirSync(join(screenshotsDir, d.name))
-          .filter((f) => f.endsWith(".png"))
-          .map((f) => join(screenshotsDir, d.name, f)),
+      .filter((dir) => dir.name.toLowerCase().includes(slug))
+      .flatMap((dir) =>
+        readdirSync(join(screenshotsDir, dir.name))
+          .filter((file) => file.endsWith(".png"))
+          .map((file) => join(screenshotsDir, dir.name, file)),
       );
 
     for (const png of pngs) {
-      await uploadAttachment(ctx, runId, result.id, png, basename(png));
+      await uploadAttachment(context, runId, result.id, png, basename(png));
       uploaded++;
     }
   }
@@ -193,7 +199,10 @@ const uploadScreenshots = async (
   log.info(`Uploaded ${uploaded} screenshot(s)`);
 };
 
-const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
+const handleImport = async (
+  context: ApiContext,
+  opts: Options,
+): Promise<void> => {
   if (!opts.junitXml) {
     throw new Error(
       "--junit-xml (or TESTCRAFT_JUNIT_XML) is required for the import command",
@@ -212,13 +221,13 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
       const emptyXml =
         '<?xml version="1.0" encoding="UTF-8"?><testsuites name="empty" tests="0"/>';
       const job = await importResults(
-        ctx,
+        context,
         opts.runName,
         emptyXml,
         opts.source,
         savedRunId,
       );
-      await pollJob(ctx, job.id);
+      await pollJob(context, job.id);
       clearState();
     } else {
       log.warn(`JUnit XML not found at ${junitXml} — skipping import`);
@@ -234,7 +243,7 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
 
   log.info("Importing results…");
   const job = await importResults(
-    ctx,
+    context,
     opts.runName,
     xml,
     opts.source,
@@ -242,7 +251,7 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
   );
 
   log.info("Waiting for import job to complete…");
-  const completedRunId = await pollJob(ctx, job.id);
+  const completedRunId = await pollJob(context, job.id);
   if (opts.dotenvPath) writeDotenv(opts.dotenvPath, completedRunId ?? "");
   log.info(
     `Results imported successfully (TESTCRAFT_RUN_ID=${completedRunId ?? ""})`,
@@ -260,7 +269,7 @@ const handleImport = async (ctx: ApiContext, opts: Options): Promise<void> => {
     return;
   }
 
-  await uploadScreenshots(ctx, completedRunId, screenshotsDir);
+  await uploadScreenshots(context, completedRunId, screenshotsDir);
 };
 
 const run = async (): Promise<void> => {
@@ -283,24 +292,24 @@ const run = async (): Promise<void> => {
     throw new Error("--run-name (or TESTCRAFT_RUN_NAME) is required");
   }
 
-  const ctx = await buildContext(opts);
+  const context = await buildContext(opts);
 
   if (opts.command === "start") {
-    await handleStart(ctx, opts);
+    await handleStart(context, opts);
     return;
   }
 
   if (opts.command === "logs") {
-    await handleLogs(ctx, opts);
+    await handleLogs(context, opts);
     return;
   }
 
-  await handleImport(ctx, opts);
+  await handleImport(context, opts);
 };
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  run().catch((err) => {
-    log.error(err instanceof Error ? err.message : String(err));
+  run().catch((error) => {
+    log.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
   });
 }

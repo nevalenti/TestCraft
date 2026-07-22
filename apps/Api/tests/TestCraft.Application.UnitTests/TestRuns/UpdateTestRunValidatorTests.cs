@@ -31,7 +31,7 @@ public class UpdateTestRunValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Theory]
@@ -40,13 +40,13 @@ public class UpdateTestRunValidatorTests
     public void EmptyOrWhitespaceEnvironment_FailsValidation(string environment)
     {
         var result = _validator.TestValidate(ValidCommand() with { Environment = environment });
-        result.ShouldHaveValidationErrorFor(x => x.Environment);
+        result.ShouldHaveValidationErrorFor(command => command.Environment);
     }
 
     [Fact]
     public void OutOfRangeStatus_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Status = (TestRunStatus)999 });
-        result.ShouldHaveValidationErrorFor(x => x.Status);
+        result.ShouldHaveValidationErrorFor(command => command.Status);
     }
 }

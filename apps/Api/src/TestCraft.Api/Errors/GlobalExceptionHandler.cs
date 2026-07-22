@@ -38,9 +38,9 @@ public partial class GlobalExceptionHandler(
                     httpContext,
                     Problems.Validation(
                         validationException
-                            .Errors.Select(e => new FieldError(
-                                FieldNameConverter.ToCamelCase(e.PropertyName),
-                                e.ErrorMessage
+                            .Errors.Select(error => new FieldError(
+                                FieldNameConverter.ToCamelCase(error.PropertyName),
+                                error.ErrorMessage
                             ))
                             .ToList()
                     )

@@ -28,7 +28,9 @@ export const useNotificationsStore = create<NotificationsState>((set) => {
   const dismiss = (id: string) => {
     timers.delete(id);
     set((state) => ({
-      notifications: state.notifications.filter((n) => n.id !== id),
+      notifications: state.notifications.filter(
+        (notification) => notification.id !== id,
+      ),
     }));
   };
 

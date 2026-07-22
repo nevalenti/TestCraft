@@ -36,17 +36,21 @@ public static class GetTestCasesByProject
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestCases.Where(c => c.Suite!.ProjectId == request.ProjectId);
+            var query = context.TestCases.Where(testCase =>
+                testCase.Suite!.ProjectId == request.ProjectId
+            );
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(c => EF.Functions.ILike(c.Name, $"%{request.Search}%"));
+                query = query.Where(testCase =>
+                    EF.Functions.ILike(testCase.Name, $"%{request.Search}%")
+                );
             }
 
             if (request.LabelId.HasValue)
             {
-                query = query.Where(c =>
-                    c.TestCaseLabels.Any(tcl => tcl.LabelId == request.LabelId.Value)
+                query = query.Where(testCase =>
+                    testCase.TestCaseLabels.Any(tcl => tcl.LabelId == request.LabelId.Value)
                 );
             }
 
@@ -55,20 +59,20 @@ public static class GetTestCasesByProject
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderBy(c => c.CreatedAt)
+                .OrderBy(testCase => testCase.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(c => new TestCaseResponse
+                .Select(testCase => new TestCaseResponse
                 {
-                    Id = c.Id,
-                    SuiteId = c.SuiteId,
-                    Name = c.Name,
-                    Description = c.Description,
-                    Priority = c.Priority,
-                    StepCount = c.Steps.Count(s => !s.IsDeleted),
-                    CreatedAt = c.CreatedAt,
-                    UpdatedAt = c.UpdatedAt,
-                    Labels = c
+                    Id = testCase.Id,
+                    SuiteId = testCase.SuiteId,
+                    Name = testCase.Name,
+                    Description = testCase.Description,
+                    Priority = testCase.Priority,
+                    StepCount = testCase.Steps.Count(step => !step.IsDeleted),
+                    CreatedAt = testCase.CreatedAt,
+                    UpdatedAt = testCase.UpdatedAt,
+                    Labels = testCase
                         .TestCaseLabels.Select(tcl => new LabelResponse
                         {
                             Id = tcl.Label!.Id,

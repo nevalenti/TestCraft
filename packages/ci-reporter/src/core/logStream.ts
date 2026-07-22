@@ -22,7 +22,7 @@ export const createStdioCapture = (
     if (isErr) stderrBuffer = remainder;
     else stdoutBuffer = remainder;
 
-    const lines = parts.filter((l) => l.length > 0);
+    const lines = parts.filter((line) => line.length > 0);
     if (lines.length) onLines(lines);
   };
 
@@ -44,7 +44,9 @@ export const createStdioCapture = (
       process.stderr.write = origStderrWrite;
     },
     flush: () => {
-      const trailing = [stdoutBuffer, stderrBuffer].filter((l) => l.length > 0);
+      const trailing = [stdoutBuffer, stderrBuffer].filter(
+        (line) => line.length > 0,
+      );
       stdoutBuffer = "";
       stderrBuffer = "";
       if (trailing.length) onLines(trailing);

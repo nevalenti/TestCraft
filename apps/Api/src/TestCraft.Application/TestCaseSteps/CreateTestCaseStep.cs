@@ -56,9 +56,9 @@ public static class CreateTestCaseStep
     {
         public Validator()
         {
-            RuleFor(x => x.Order).GreaterThanOrEqualTo(1);
-            RuleFor(x => x.Action).NotEmpty().MaximumLength(2000);
-            RuleFor(x => x.ExpectedResult).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.Order).GreaterThanOrEqualTo(1);
+            RuleFor(command => command.Action).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(2000);
         }
     }
 

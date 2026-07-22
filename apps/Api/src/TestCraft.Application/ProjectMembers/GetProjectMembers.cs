@@ -24,14 +24,14 @@ public static class GetProjectMembers
             CancellationToken cancellationToken
         ) =>
             await context
-                .ProjectMembers.Where(m => m.ProjectId == request.ProjectId)
-                .OrderBy(m => m.CreatedAt)
-                .Select(m => new ProjectMemberResponse
+                .ProjectMembers.Where(member => member.ProjectId == request.ProjectId)
+                .OrderBy(member => member.CreatedAt)
+                .Select(member => new ProjectMemberResponse
                 {
-                    Id = m.Id,
-                    Email = m.Email,
-                    DisplayName = m.DisplayName,
-                    CreatedAt = m.CreatedAt,
+                    Id = member.Id,
+                    Email = member.Email,
+                    DisplayName = member.DisplayName,
+                    CreatedAt = member.CreatedAt,
                 })
                 .ToListAsync(cancellationToken);
     }

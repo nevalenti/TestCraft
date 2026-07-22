@@ -39,7 +39,7 @@ public class LabelsApiTests(ApiFactory factory)
         var labels = await response.Content.ReadFromJsonAsync<IReadOnlyList<LabelResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        labels.Should().ContainSingle(l => l.Id == created.Id);
+        labels.Should().ContainSingle(label => label.Id == created.Id);
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class LabelsApiTests(ApiFactory factory)
         var labels = await listResponse.Content.ReadFromJsonAsync<IReadOnlyList<LabelResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        labels.Should().NotContain(l => l.Id == label.Id);
+        labels.Should().NotContain(remainingLabel => remainingLabel.Id == label.Id);
     }
 
     [Fact]

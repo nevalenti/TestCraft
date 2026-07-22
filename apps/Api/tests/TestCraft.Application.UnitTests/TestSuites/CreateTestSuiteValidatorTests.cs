@@ -23,21 +23,21 @@ public class CreateTestSuiteValidatorTests
     public void EmptyOrWhitespaceName_FailsValidation(string name)
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = name });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NameExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 256) });
-        result.ShouldHaveValidationErrorFor(x => x.Name);
+        result.ShouldHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
     public void NameAtMaxLength_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Name = new string('a', 255) });
-        result.ShouldNotHaveValidationErrorFor(x => x.Name);
+        result.ShouldNotHaveValidationErrorFor(command => command.Name);
     }
 
     [Fact]
@@ -49,13 +49,13 @@ public class CreateTestSuiteValidatorTests
                 Description = new string('a', 2001),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Description);
+        result.ShouldHaveValidationErrorFor(command => command.Description);
     }
 
     [Fact]
     public void NullDescription_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Description = null });
-        result.ShouldNotHaveValidationErrorFor(x => x.Description);
+        result.ShouldNotHaveValidationErrorFor(command => command.Description);
     }
 }

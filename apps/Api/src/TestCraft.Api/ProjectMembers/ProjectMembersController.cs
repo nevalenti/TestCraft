@@ -17,13 +17,15 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     public async Task<ActionResult<IReadOnlyList<ProjectMemberResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetProjectMembers.Query { ProjectId = projectId },
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Adds a user to a project by email. Owner-only.</summary>
     [HttpPost]

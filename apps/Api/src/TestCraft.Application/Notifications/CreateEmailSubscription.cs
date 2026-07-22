@@ -48,8 +48,8 @@ public static class CreateEmailSubscription
     {
         public Validator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress().MaximumLength(254);
-            RuleFor(x => x.Events).NotEmpty();
+            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Events).NotEmpty();
         }
     }
 

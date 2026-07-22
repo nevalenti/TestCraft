@@ -32,8 +32,8 @@ public static class CreateRunFromPlan
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Environment).NotEmpty().MaximumLength(100);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Environment).NotEmpty().MaximumLength(100);
         }
     }
 
@@ -47,7 +47,9 @@ public static class CreateRunFromPlan
         {
             var plan =
                 await context.TestPlans.FirstOrDefaultAsync(
-                    p => p.Id == request.TestPlanId && p.ProjectId == request.ProjectId,
+                    existingPlan =>
+                        existingPlan.Id == request.TestPlanId
+                        && existingPlan.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

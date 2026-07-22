@@ -64,9 +64,11 @@ public static class CreateTestCase
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Description).MaximumLength(2000);
-            RuleFor(x => x.Priority).IsInEnum().When(x => x.Priority is not null);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Priority)
+                .IsInEnum()
+                .When(command => command.Priority is not null);
         }
     }
 

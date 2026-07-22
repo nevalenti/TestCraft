@@ -39,19 +39,19 @@ public static class GetTestResults
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestResults.Where(r =>
-                r.TestRunId == request.RunId && r.TestRun!.ProjectId == request.ProjectId
+            var query = context.TestResults.Where(result =>
+                result.TestRunId == request.RunId && result.TestRun!.ProjectId == request.ProjectId
             );
 
             if (request.Status is not null)
             {
-                query = query.Where(r => r.Status == request.Status);
+                query = query.Where(result => result.Status == request.Status);
             }
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(r =>
-                    EF.Functions.ILike(r.TestCase!.Name, $"%{request.Search}%")
+                query = query.Where(result =>
+                    EF.Functions.ILike(result.TestCase!.Name, $"%{request.Search}%")
                 );
             }
 
@@ -60,24 +60,24 @@ public static class GetTestResults
             var total = await query.CountAsync(cancellationToken);
 
             var items = await query
-                .OrderBy(r => r.CreatedAt)
+                .OrderBy(result => result.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(r => new TestResultResponse
+                .Select(result => new TestResultResponse
                 {
-                    Id = r.Id,
-                    TestRunId = r.TestRunId,
-                    TestCaseId = r.TestCaseId,
-                    SuiteId = r.TestCase!.SuiteId,
-                    TestCaseName = r.TestCase.Name,
-                    Status = r.Status,
-                    Notes = r.Notes,
-                    DurationMs = r.DurationMs,
-                    DefectType = r.DefectType,
-                    ExecutedAt = r.ExecutedAt,
-                    ExecutedById = r.ExecutedById,
-                    CreatedAt = r.CreatedAt,
-                    UpdatedAt = r.UpdatedAt,
+                    Id = result.Id,
+                    TestRunId = result.TestRunId,
+                    TestCaseId = result.TestCaseId,
+                    SuiteId = result.TestCase!.SuiteId,
+                    TestCaseName = result.TestCase.Name,
+                    Status = result.Status,
+                    Notes = result.Notes,
+                    DurationMs = result.DurationMs,
+                    DefectType = result.DefectType,
+                    ExecutedAt = result.ExecutedAt,
+                    ExecutedById = result.ExecutedById,
+                    CreatedAt = result.CreatedAt,
+                    UpdatedAt = result.UpdatedAt,
                 })
                 .ToListAsync(cancellationToken);
 

@@ -36,7 +36,7 @@ const SuiteTooltip = ({
   label?: string;
 }) => {
   if (!active || !payload?.length) return null;
-  const total = payload.reduce((s, e) => s + (e.value ?? 0), 0);
+  const total = payload.reduce((sum, entry) => sum + (entry.value ?? 0), 0);
   return (
     <div className="min-w-40 rounded-xl border border-border bg-base-100 px-3.5 py-2.5 text-sm shadow-xl">
       <p className="mb-2 max-w-52 truncate font-semibold">{label}</p>
@@ -65,8 +65,8 @@ const SuiteTooltip = ({
   );
 };
 
-const truncate = (s: string, n: number) =>
-  s.length > n ? s.slice(0, n) + "…" : s;
+const truncate = (text: string, maxLength: number) =>
+  text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
 
 export const AnalyticsSuiteTab = () => {
   const projectId = useRequiredParam("projectId");
@@ -77,15 +77,15 @@ export const AnalyticsSuiteTab = () => {
 
   const suiteData = useMemo(
     () =>
-      (suiteBreakdown ?? []).map((s) => ({
-        ...s,
-        suiteName: truncate(s.suiteName, 14),
-        suiteNameFull: s.suiteName,
+      (suiteBreakdown ?? []).map((suite) => ({
+        ...suite,
+        suiteName: truncate(suite.suiteName, 14),
+        suiteNameFull: suite.suiteName,
       })),
     [suiteBreakdown],
   );
 
-  const selectedRun = runs?.find((r) => r.id === suiteRunId);
+  const selectedRun = runs?.find((run) => run.id === suiteRunId);
 
   return (
     <div className="space-y-4 pb-10">
@@ -101,12 +101,12 @@ export const AnalyticsSuiteTab = () => {
             id="suite-run-select"
             className="select-bordered select w-full max-w-sm select-sm"
             value={suiteRunId}
-            onChange={(e) => setSuiteRunId(e.target.value)}
+            onChange={(event) => setSuiteRunId(event.target.value)}
           >
             <option value="">Choose a run to inspect…</option>
-            {(runs ?? []).map((r) => (
-              <option key={r.id} value={r.id}>
-                {r.name} · {formatDate(r.createdAt)}
+            {(runs ?? []).map((run) => (
+              <option key={run.id} value={run.id}>
+                {run.name} · {formatDate(run.createdAt)}
               </option>
             ))}
           </select>

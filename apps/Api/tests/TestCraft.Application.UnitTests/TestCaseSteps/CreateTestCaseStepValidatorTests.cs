@@ -28,14 +28,14 @@ public class CreateTestCaseStepValidatorTests
     public void OrderZero_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Order = 0 });
-        result.ShouldHaveValidationErrorFor(x => x.Order);
+        result.ShouldHaveValidationErrorFor(command => command.Order);
     }
 
     [Fact]
     public void OrderOne_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Order = 1 });
-        result.ShouldNotHaveValidationErrorFor(x => x.Order);
+        result.ShouldNotHaveValidationErrorFor(command => command.Order);
     }
 
     [Theory]
@@ -44,7 +44,7 @@ public class CreateTestCaseStepValidatorTests
     public void EmptyOrWhitespaceAction_FailsValidation(string action)
     {
         var result = _validator.TestValidate(ValidCommand() with { Action = action });
-        result.ShouldHaveValidationErrorFor(x => x.Action);
+        result.ShouldHaveValidationErrorFor(command => command.Action);
     }
 
     [Fact]
@@ -56,7 +56,7 @@ public class CreateTestCaseStepValidatorTests
                 Action = new string('a', 2001),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Action);
+        result.ShouldHaveValidationErrorFor(command => command.Action);
     }
 
     [Theory]
@@ -70,7 +70,7 @@ public class CreateTestCaseStepValidatorTests
                 ExpectedResult = expectedResult,
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.ExpectedResult);
+        result.ShouldHaveValidationErrorFor(command => command.ExpectedResult);
     }
 
     [Fact]
@@ -82,6 +82,6 @@ public class CreateTestCaseStepValidatorTests
                 ExpectedResult = new string('a', 2001),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.ExpectedResult);
+        result.ShouldHaveValidationErrorFor(command => command.ExpectedResult);
     }
 }

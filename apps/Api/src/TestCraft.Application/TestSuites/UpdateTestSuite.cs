@@ -29,8 +29,8 @@ public static class UpdateTestSuite
     {
         public Validator()
         {
-            RuleFor(x => x.Name).NotEmpty().MaximumLength(255);
-            RuleFor(x => x.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Description).MaximumLength(2000);
         }
     }
 
@@ -44,7 +44,9 @@ public static class UpdateTestSuite
         {
             var suite =
                 await context.TestSuites.FirstOrDefaultAsync(
-                    s => s.Id == request.Id && s.ProjectId == request.ProjectId,
+                    existingSuite =>
+                        existingSuite.Id == request.Id
+                        && existingSuite.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

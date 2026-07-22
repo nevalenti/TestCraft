@@ -20,8 +20,11 @@ public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRe
 
         var failures = (
             await Task.WhenAll(
-                validators.Select(v =>
-                    v.ValidateAsync(new ValidationContext<TRequest>(request), cancellationToken)
+                validators.Select(validator =>
+                    validator.ValidateAsync(
+                        new ValidationContext<TRequest>(request),
+                        cancellationToken
+                    )
                 )
             )
         )

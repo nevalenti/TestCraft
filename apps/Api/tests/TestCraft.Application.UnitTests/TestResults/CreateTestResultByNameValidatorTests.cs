@@ -32,7 +32,7 @@ public class CreateTestResultByNameValidatorTests
     public void EmptyOrWhitespaceSuiteName_FailsValidation(string suiteName)
     {
         var result = _validator.TestValidate(ValidCommand() with { SuiteName = suiteName });
-        result.ShouldHaveValidationErrorFor(x => x.SuiteName);
+        result.ShouldHaveValidationErrorFor(command => command.SuiteName);
     }
 
     [Fact]
@@ -44,7 +44,7 @@ public class CreateTestResultByNameValidatorTests
                 SuiteName = new string('a', 501),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.SuiteName);
+        result.ShouldHaveValidationErrorFor(command => command.SuiteName);
     }
 
     [Theory]
@@ -53,7 +53,7 @@ public class CreateTestResultByNameValidatorTests
     public void EmptyOrWhitespaceTestCaseName_FailsValidation(string testCaseName)
     {
         var result = _validator.TestValidate(ValidCommand() with { TestCaseName = testCaseName });
-        result.ShouldHaveValidationErrorFor(x => x.TestCaseName);
+        result.ShouldHaveValidationErrorFor(command => command.TestCaseName);
     }
 
     [Fact]
@@ -65,7 +65,7 @@ public class CreateTestResultByNameValidatorTests
                 TestCaseName = new string('a', 501),
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.TestCaseName);
+        result.ShouldHaveValidationErrorFor(command => command.TestCaseName);
     }
 
     [Fact]
@@ -77,13 +77,13 @@ public class CreateTestResultByNameValidatorTests
                 Status = (TestResultStatus)999,
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Status);
+        result.ShouldHaveValidationErrorFor(command => command.Status);
     }
 
     [Fact]
     public void NotesExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Notes = new string('a', 5001) });
-        result.ShouldHaveValidationErrorFor(x => x.Notes);
+        result.ShouldHaveValidationErrorFor(command => command.Notes);
     }
 }

@@ -29,13 +29,13 @@ public class CreateEmailSubscriptionValidatorTests
     public void InvalidEmail_FailsValidation(string email)
     {
         var result = _validator.TestValidate(ValidCommand() with { Email = email });
-        result.ShouldHaveValidationErrorFor(x => x.Email);
+        result.ShouldHaveValidationErrorFor(command => command.Email);
     }
 
     [Fact]
     public void EmptyEvents_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Events = [] });
-        result.ShouldHaveValidationErrorFor(x => x.Events);
+        result.ShouldHaveValidationErrorFor(command => command.Events);
     }
 }

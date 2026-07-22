@@ -10,32 +10,41 @@ public class ImportJobConfiguration : IEntityTypeConfiguration<ImportJob>
     {
         builder.ToTable("import_jobs");
 
-        builder.HasKey(j => j.Id);
-        builder.Property(j => j.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(j => j.ProjectId).HasColumnName("project_id");
+        builder.HasKey(importJob => importJob.Id);
         builder
-            .Property(j => j.Status)
+            .Property(importJob => importJob.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder.Property(importJob => importJob.ProjectId).HasColumnName("project_id");
+        builder
+            .Property(importJob => importJob.Status)
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(20);
-        builder.Property(j => j.TestRunId).HasColumnName("test_run_id");
-        builder.Property(j => j.Error).HasColumnName("error").HasMaxLength(5000);
-        builder.Property(j => j.CreatedById).HasColumnName("created_by_id");
-        builder.Property(j => j.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(j => j.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
+        builder.Property(importJob => importJob.TestRunId).HasColumnName("test_run_id");
+        builder.Property(importJob => importJob.Error).HasColumnName("error").HasMaxLength(5000);
+        builder.Property(importJob => importJob.CreatedById).HasColumnName("created_by_id");
+        builder
+            .Property(importJob => importJob.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(importJob => importJob.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(j => j.ProjectId);
+        builder.HasIndex(importJob => importJob.ProjectId);
 
         builder
             .HasOne<Project>()
             .WithMany()
-            .HasForeignKey(j => j.ProjectId)
+            .HasForeignKey(importJob => importJob.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
             .HasOne<TestRun>()
             .WithMany()
-            .HasForeignKey(j => j.TestRunId)
+            .HasForeignKey(importJob => importJob.TestRunId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

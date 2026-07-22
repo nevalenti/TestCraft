@@ -29,7 +29,7 @@ public class CreateTestResultValidatorTests
     public void EmptyTestCaseId_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { TestCaseId = Guid.Empty });
-        result.ShouldHaveValidationErrorFor(x => x.TestCaseId);
+        result.ShouldHaveValidationErrorFor(command => command.TestCaseId);
     }
 
     [Fact]
@@ -41,27 +41,27 @@ public class CreateTestResultValidatorTests
                 Status = (TestResultStatus)999,
             }
         );
-        result.ShouldHaveValidationErrorFor(x => x.Status);
+        result.ShouldHaveValidationErrorFor(command => command.Status);
     }
 
     [Fact]
     public void NotesExceedingMaxLength_FailsValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Notes = new string('a', 5001) });
-        result.ShouldHaveValidationErrorFor(x => x.Notes);
+        result.ShouldHaveValidationErrorFor(command => command.Notes);
     }
 
     [Fact]
     public void NotesAtMaxLength_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Notes = new string('a', 5000) });
-        result.ShouldNotHaveValidationErrorFor(x => x.Notes);
+        result.ShouldNotHaveValidationErrorFor(command => command.Notes);
     }
 
     [Fact]
     public void NullNotes_PassesValidation()
     {
         var result = _validator.TestValidate(ValidCommand() with { Notes = null });
-        result.ShouldNotHaveValidationErrorFor(x => x.Notes);
+        result.ShouldNotHaveValidationErrorFor(command => command.Notes);
     }
 }

@@ -107,7 +107,7 @@ public class AttachmentsApiTests(ApiFactory factory)
         var attachments = await listResponse.Content.ReadFromJsonAsync<List<AttachmentResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        attachments.Should().ContainSingle(a => a.FileName == "log.txt");
+        attachments.Should().ContainSingle(attachment => attachment.FileName == "log.txt");
     }
 
     [Fact]

@@ -10,52 +10,74 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     {
         builder.ToTable("projects");
 
-        builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(p => p.Name).HasColumnName("name").HasMaxLength(255).IsRequired();
-        builder.Property(p => p.Description).HasColumnName("description");
-        builder.Property(p => p.UserId).HasColumnName("user_id");
-        builder.Property(p => p.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
-        builder.Property(p => p.UpdatedAt).HasColumnName("updated_at").HasDefaultValueSql("now()");
-        builder.Property(p => p.IsDeleted).HasColumnName("is_deleted").HasDefaultValue(false);
-        builder.Property(p => p.DeletedAt).HasColumnName("deleted_at");
-
-        builder.HasIndex(p => p.UserId);
-        builder.HasIndex(p => new { p.UserId, p.Name }).IsUnique();
-
-        builder.HasQueryFilter(p => !p.IsDeleted);
-
-        builder.HasMany(p => p.TestSuites).WithOne(s => s.Project).HasForeignKey(s => s.ProjectId);
-        builder.HasMany(p => p.TestRuns).WithOne(r => r.Project).HasForeignKey(r => r.ProjectId);
+        builder.HasKey(project => project.Id);
         builder
-            .HasMany(p => p.Labels)
-            .WithOne(l => l.Project)
-            .HasForeignKey(l => l.ProjectId)
+            .Property(project => project.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(project => project.Name)
+            .HasColumnName("name")
+            .HasMaxLength(255)
+            .IsRequired();
+        builder.Property(project => project.Description).HasColumnName("description");
+        builder.Property(project => project.UserId).HasColumnName("user_id");
+        builder
+            .Property(project => project.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(project => project.UpdatedAt)
+            .HasColumnName("updated_at")
+            .HasDefaultValueSql("now()");
+        builder
+            .Property(project => project.IsDeleted)
+            .HasColumnName("is_deleted")
+            .HasDefaultValue(false);
+        builder.Property(project => project.DeletedAt).HasColumnName("deleted_at");
+
+        builder.HasIndex(project => project.UserId);
+        builder.HasIndex(project => new { project.UserId, project.Name }).IsUnique();
+
+        builder.HasQueryFilter(project => !project.IsDeleted);
+
+        builder
+            .HasMany(project => project.TestSuites)
+            .WithOne(testSuite => testSuite.Project)
+            .HasForeignKey(testSuite => testSuite.ProjectId);
+        builder
+            .HasMany(project => project.TestRuns)
+            .WithOne(testRun => testRun.Project)
+            .HasForeignKey(testRun => testRun.ProjectId);
+        builder
+            .HasMany(project => project.Labels)
+            .WithOne(label => label.Project)
+            .HasForeignKey(label => label.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         builder
-            .HasMany(p => p.TestPlans)
+            .HasMany(project => project.TestPlans)
             .WithOne(tp => tp.Project)
             .HasForeignKey(tp => tp.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         builder
-            .HasMany(p => p.ApiTokens)
-            .WithOne(t => t.Project)
-            .HasForeignKey(t => t.ProjectId)
+            .HasMany(project => project.ApiTokens)
+            .WithOne(apiToken => apiToken.Project)
+            .HasForeignKey(apiToken => apiToken.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         builder
-            .HasMany(p => p.WebhookSubscriptions)
-            .WithOne(w => w.Project)
-            .HasForeignKey(w => w.ProjectId)
+            .HasMany(project => project.WebhookSubscriptions)
+            .WithOne(webhookSubscription => webhookSubscription.Project)
+            .HasForeignKey(webhookSubscription => webhookSubscription.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         builder
-            .HasMany(p => p.EmailSubscriptions)
-            .WithOne(e => e.Project)
-            .HasForeignKey(e => e.ProjectId)
+            .HasMany(project => project.EmailSubscriptions)
+            .WithOne(emailSubscription => emailSubscription.Project)
+            .HasForeignKey(emailSubscription => emailSubscription.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
         builder
-            .HasMany(p => p.Members)
-            .WithOne(m => m.Project)
-            .HasForeignKey(m => m.ProjectId)
+            .HasMany(project => project.Members)
+            .WithOne(projectMember => projectMember.Project)
+            .HasForeignKey(projectMember => projectMember.ProjectId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -23,8 +23,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid caseId,
         [FromQuery] GetTestCaseSteps.Query query,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 query with
                 {
@@ -34,6 +35,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Gets a test case step by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -43,8 +45,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid caseId,
         Guid id,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 new GetTestCaseStepById.Query
                 {
@@ -55,6 +58,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Adds a step to a test case.</summary>
     [HttpPost]
@@ -119,8 +123,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
         Guid id,
         UpdateTestCaseStep.Command command,
         CancellationToken cancellationToken
-    ) =>
-        Ok(
+    )
+    {
+        return Ok(
             await sender.Send(
                 command with
                 {
@@ -131,6 +136,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
                 cancellationToken
             )
         );
+    }
 
     /// <summary>Deletes a test case step.</summary>
     [HttpDelete("{id:guid}")]

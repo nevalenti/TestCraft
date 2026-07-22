@@ -38,11 +38,13 @@ export const fetchWithRetry = async (
   for (let attempt = 1; attempt <= RETRY_ATTEMPTS; attempt++) {
     try {
       return await fetch(url, init);
-    } catch (err) {
+    } catch (error) {
       if (attempt === RETRY_ATTEMPTS) {
-        const message = err instanceof Error ? err.message : String(err);
+        const message = error instanceof Error ? error.message : String(error);
         const cause =
-          err instanceof Error && err.cause ? ` (${String(err.cause)})` : "";
+          error instanceof Error && error.cause
+            ? ` (${String(error.cause)})`
+            : "";
         throw new Error(`${errorContext}: ${message}${cause}`);
       }
       await sleep(RETRY_DELAY_MS * attempt);

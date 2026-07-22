@@ -66,7 +66,8 @@ public static class GetRunComparison
                 await context
                     .TestRuns.AsNoTracking()
                     .FirstOrDefaultAsync(
-                        r => r.Id == request.RunAId && r.ProjectId == request.ProjectId,
+                        testRun =>
+                            testRun.Id == request.RunAId && testRun.ProjectId == request.ProjectId,
                         cancellationToken
                     )
                 ?? throw new NotFoundException("Run A not found");
@@ -75,27 +76,28 @@ public static class GetRunComparison
                 await context
                     .TestRuns.AsNoTracking()
                     .FirstOrDefaultAsync(
-                        r => r.Id == request.RunBId && r.ProjectId == request.ProjectId,
+                        testRun =>
+                            testRun.Id == request.RunBId && testRun.ProjectId == request.ProjectId,
                         cancellationToken
                     )
                 ?? throw new NotFoundException("Run B not found");
 
             var resultsA = await context
-                .TestResults.Where(r => r.TestRunId == request.RunAId)
-                .Select(r => new { r.TestCaseId, r.Status })
+                .TestResults.Where(result => result.TestRunId == request.RunAId)
+                .Select(result => new { result.TestCaseId, result.Status })
                 .ToListAsync(cancellationToken);
 
             var resultsB = await context
-                .TestResults.Where(r => r.TestRunId == request.RunBId)
-                .Select(r => new { r.TestCaseId, r.Status })
+                .TestResults.Where(result => result.TestRunId == request.RunBId)
+                .Select(result => new { result.TestCaseId, result.Status })
                 .ToListAsync(cancellationToken);
 
             var mapA = resultsA
-                .GroupBy(r => r.TestCaseId)
-                .ToDictionary(g => g.Key, g => g.Last().Status);
+                .GroupBy(result => result.TestCaseId)
+                .ToDictionary(group => group.Key, group => group.Last().Status);
             var mapB = resultsB
-                .GroupBy(r => r.TestCaseId)
-                .ToDictionary(g => g.Key, g => g.Last().Status);
+                .GroupBy(result => result.TestCaseId)
+                .ToDictionary(group => group.Key, group => group.Last().Status);
 
             var allCaseIds = mapA.Keys.Union(mapB.Keys).ToList();
 
@@ -126,7 +128,7 @@ public static class GetRunComparison
                         IsFix = isFix,
                     };
                 })
-                .OrderBy(r => r.TestCaseName)
+                .OrderBy(row => row.TestCaseName)
                 .ToList();
 
             return new RunComparison

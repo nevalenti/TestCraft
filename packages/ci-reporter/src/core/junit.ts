@@ -33,12 +33,12 @@ export const resolveJunitXml = (
 
   const filePattern = wildcardToRegExp(absolute.slice(dir.length + 1));
   const files = readdirSync(dir)
-    .filter((f) => filePattern.test(f))
+    .filter((file) => filePattern.test(file))
     .sort()
-    .map((f) => join(dir, f));
+    .map((file) => join(dir, file));
 
   if (files.length === 0) return null;
 
-  const suites = files.map((f) => extractSuites(readFileSync(f, "utf8")));
+  const suites = files.map((file) => extractSuites(readFileSync(file, "utf8")));
   return `<?xml version="1.0" encoding="UTF-8"?><testsuites>${suites.join("\n")}</testsuites>`;
 };

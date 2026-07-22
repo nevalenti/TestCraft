@@ -24,7 +24,7 @@ public static class DeleteLabel
         {
             var label =
                 await context.Labels.FirstOrDefaultAsync(
-                    l => l.Id == request.Id && l.ProjectId == request.ProjectId,
+                    label => label.Id == request.Id && label.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

@@ -36,13 +36,13 @@ public static class UpdateWebhookSubscription
     {
         public Validator()
         {
-            RuleFor(x => x.Url)
+            RuleFor(command => command.Url)
                 .NotEmpty()
                 .MaximumLength(2000)
                 .Must(BeValidUri)
                 .WithMessage("Must be a valid URL");
-            RuleFor(x => x.Secret).MaximumLength(200);
-            RuleFor(x => x.Events).NotEmpty();
+            RuleFor(command => command.Secret).MaximumLength(200);
+            RuleFor(command => command.Events).NotEmpty();
         }
 
         private static bool BeValidUri(string url) =>
@@ -60,7 +60,9 @@ public static class UpdateWebhookSubscription
         {
             var subscription =
                 await context.WebhookSubscriptions.FirstOrDefaultAsync(
-                    w => w.Id == request.Id && w.ProjectId == request.ProjectId,
+                    webhookSubscription =>
+                        webhookSubscription.Id == request.Id
+                        && webhookSubscription.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

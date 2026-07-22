@@ -57,16 +57,16 @@ public static class DependencyInjection
             if (!string.IsNullOrEmpty(options.RabbitMqUrl))
             {
                 busConfig.UsingRabbitMq(
-                    (context, cfg) =>
+                    (context, config) =>
                     {
-                        cfg.Host(new Uri(options.RabbitMqUrl));
-                        cfg.ConfigureEndpoints(context);
+                        config.Host(new Uri(options.RabbitMqUrl));
+                        config.ConfigureEndpoints(context);
                     }
                 );
             }
             else
             {
-                busConfig.UsingInMemory((context, cfg) => cfg.ConfigureEndpoints(context));
+                busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
             }
         });
 

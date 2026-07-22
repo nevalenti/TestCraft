@@ -13,8 +13,8 @@ test.describe("Labels", () => {
 
   test.beforeAll(async ({ browser }) => {
     test.setTimeout(60_000);
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
@@ -23,23 +23,23 @@ test.describe("Labels", () => {
     await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
     labelsPath = new URL(page.url()).pathname.replace("/runs", "/labels");
 
-    await ctx.close();
+    await context.close();
   });
 
   test.afterAll(async ({ browser }) => {
     if (!labelsPath) return;
-    const ctx = await browser.newContext({ storageState: AUTH_FILE });
-    const page = await ctx.newPage();
+    const context = await browser.newContext({ storageState: AUTH_FILE });
+    const page = await context.newPage();
 
     const projects = new ProjectsPage(page);
     await projects.goto();
     if ((await projects.getCard(projectName).count()) === 0) {
-      await ctx.close();
+      await context.close();
       return;
     }
     await projects.delete(projectName);
 
-    await ctx.close();
+    await context.close();
   });
 
   test.beforeEach(async ({ labelsPage }) => {

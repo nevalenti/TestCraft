@@ -181,7 +181,7 @@ export const TestRunPage = () => {
   useTestRunRealtime(projectId, runId);
 
   useEffect(() => {
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+    setPagination((previous) => ({ ...previous, pageIndex: 0 }));
   }, [statusFilter, debouncedSearch]);
 
   const handleCreate = (input: CreateTestResult) =>

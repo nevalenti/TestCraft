@@ -10,15 +10,36 @@ public class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<Webhook
     {
         builder.ToTable("webhook_subscriptions");
 
-        builder.HasKey(w => w.Id);
-        builder.Property(w => w.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
-        builder.Property(w => w.ProjectId).HasColumnName("project_id");
-        builder.Property(w => w.Url).HasColumnName("url").HasMaxLength(2000).IsRequired();
-        builder.Property(w => w.Secret).HasColumnName("secret").HasMaxLength(200);
-        builder.Property(w => w.Events).HasColumnName("events").IsRequired();
-        builder.Property(w => w.IsActive).HasColumnName("is_active").HasDefaultValue(true);
-        builder.Property(w => w.CreatedAt).HasColumnName("created_at").HasDefaultValueSql("now()");
+        builder.HasKey(webhookSubscription => webhookSubscription.Id);
+        builder
+            .Property(webhookSubscription => webhookSubscription.Id)
+            .HasColumnName("id")
+            .HasDefaultValueSql("gen_random_uuid()");
+        builder
+            .Property(webhookSubscription => webhookSubscription.ProjectId)
+            .HasColumnName("project_id");
+        builder
+            .Property(webhookSubscription => webhookSubscription.Url)
+            .HasColumnName("url")
+            .HasMaxLength(2000)
+            .IsRequired();
+        builder
+            .Property(webhookSubscription => webhookSubscription.Secret)
+            .HasColumnName("secret")
+            .HasMaxLength(200);
+        builder
+            .Property(webhookSubscription => webhookSubscription.Events)
+            .HasColumnName("events")
+            .IsRequired();
+        builder
+            .Property(webhookSubscription => webhookSubscription.IsActive)
+            .HasColumnName("is_active")
+            .HasDefaultValue(true);
+        builder
+            .Property(webhookSubscription => webhookSubscription.CreatedAt)
+            .HasColumnName("created_at")
+            .HasDefaultValueSql("now()");
 
-        builder.HasIndex(w => w.ProjectId);
+        builder.HasIndex(webhookSubscription => webhookSubscription.ProjectId);
     }
 }

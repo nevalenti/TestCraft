@@ -24,7 +24,9 @@ public static class DeleteWebhookSubscription
         {
             var subscription =
                 await context.WebhookSubscriptions.FirstOrDefaultAsync(
-                    w => w.Id == request.Id && w.ProjectId == request.ProjectId,
+                    webhookSubscription =>
+                        webhookSubscription.Id == request.Id
+                        && webhookSubscription.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
