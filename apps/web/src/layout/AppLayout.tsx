@@ -9,7 +9,7 @@ import { Header } from "@/layout/Header";
 import { Sidebar } from "@/layout/Sidebar";
 
 const AppLayout = () => (
-  <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:my-3 sm:h-[calc(100vh-1.5rem)] sm:rounded-2xl sm:border sm:border-border">
+  <div className="mx-auto flex h-screen w-full max-w-420 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">
     <div className="flex min-h-0 flex-1">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
