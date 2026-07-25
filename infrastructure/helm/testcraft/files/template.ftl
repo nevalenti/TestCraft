@@ -61,7 +61,7 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 90rem;
+        max-width: 105rem;
         height: 100vh;
         margin-left: auto;
         margin-right: auto;
@@ -70,10 +70,8 @@
 
       @media (min-width: 640px) {
         .kc-shell {
-          margin-top: 0.75rem;
-          margin-bottom: 0.75rem;
-          height: calc(100vh - 1.5rem);
-          border-radius: 1rem;
+          border-left: 1px solid var(--color-border);
+          border-right: 1px solid var(--color-border);
         }
       }
 
@@ -158,7 +156,7 @@
     </script>
   </head>
   <body class="text-base-content">
-    <div class="kc-shell bg-base-100 sm:rounded-2xl" style="border: 1px solid var(--color-border);">
+    <div class="kc-shell bg-base-100">
 
       <nav class="navbar bg-base-200 header-stripes shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; height: 3.5rem; border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">
