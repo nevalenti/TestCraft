@@ -33,14 +33,13 @@ internal sealed class KeycloakAdminTokenProvider(
 
             var client = httpClientFactory.CreateClient("keycloak-admin");
             var response = await client.PostAsync(
-                $"{options.KeycloakBaseUrl}/realms/master/protocol/openid-connect/token",
+                $"{options.KeycloakBaseUrl}/realms/{options.KeycloakRealm}/protocol/openid-connect/token",
                 new FormUrlEncodedContent(
                     new Dictionary<string, string>
                     {
-                        ["grant_type"] = "password",
-                        ["client_id"] = "admin-cli",
-                        ["username"] = options.KeycloakAdminUsername,
-                        ["password"] = options.KeycloakAdminPassword,
+                        ["grant_type"] = "client_credentials",
+                        ["client_id"] = options.KeycloakAdminClientId,
+                        ["client_secret"] = options.KeycloakAdminClientSecret,
                     }
                 ),
                 cancellationToken

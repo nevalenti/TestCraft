@@ -34,7 +34,7 @@ spec:
               mkdir -p /data/import
               if [ -n "$GITHUB_CLIENT_ID" ]; then GITHUB_ENABLED=true; else GITHUB_ENABLED=false; fi
               if [ -n "$GOOGLE_CLIENT_ID" ]; then GOOGLE_ENABLED=true; else GOOGLE_ENABLED=false; fi
-              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g" \
+              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g; s|\${KEYCLOAK_ADMIN_CLIENT_SECRET}|$KEYCLOAK_ADMIN_CLIENT_SECRET|g" \
                 /realm-source/testcraft-realm.json > /data/import/testcraft-realm.json
           env:
             - name: GITHUB_CLIENT_ID
@@ -61,6 +61,11 @@ spec:
                   name: testcraft-secrets
                   key: GOOGLE_CLIENT_SECRET
                   optional: true
+            - name: KEYCLOAK_ADMIN_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: KEYCLOAK_ADMIN_CLIENT_SECRET
           volumeMounts:
             - name: data
               mountPath: /data
@@ -105,15 +110,12 @@ spec:
             - name: KC_DB_URL
               value: jdbc:postgresql://postgres:5432/keycloak_db
             - name: KC_DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: testcraft-secrets
-                  key: POSTGRES_USER
+              value: testcraft_keycloak
             - name: KC_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: testcraft-secrets
-                  key: POSTGRES_PASSWORD
+                  key: POSTGRES_KEYCLOAK_PASSWORD
             - name: KC_HEALTH_ENABLED
               value: "true"
             - name: KC_HOSTNAME

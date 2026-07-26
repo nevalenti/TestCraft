@@ -1,7 +1,7 @@
 {
   "realm": "testcraft",
   "enabled": true,
-  "sslRequired": "none",
+  "sslRequired": "external",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
   "passwordPolicy": "length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)",
@@ -14,7 +14,7 @@
       "enabled": true,
       "publicClient": true,
       "standardFlowEnabled": true,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "redirectUris": [
         "http://localhost:3000/*",
         "http://localhost:4173/*",
@@ -44,6 +44,18 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "testcraft-api",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "testcraft-api-dev-secret",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
     }
   ],
   "users": [
@@ -61,6 +73,14 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "service-account-testcraft-api",
+      "enabled": true,
+      "serviceAccountClientId": "testcraft-api",
+      "clientRoles": {
+        "realm-management": ["view-users"]
+      }
     }
   ],
   "loginTheme": "dracula",

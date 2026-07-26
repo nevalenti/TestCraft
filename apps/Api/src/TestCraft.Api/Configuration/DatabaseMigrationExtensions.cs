@@ -47,10 +47,18 @@ public static partial class DatabaseMigrationExtensions
             .Build();
 
         using var cts = new CancellationTokenSource(MigrationTimeout);
-        await pipeline.ExecuteAsync(
-            async cancellationToken => await dbContext.Database.MigrateAsync(cancellationToken),
-            cts.Token
-        );
+        try
+        {
+            await pipeline.ExecuteAsync(
+                async cancellationToken => await dbContext.Database.MigrateAsync(cancellationToken),
+                cts.Token
+            );
+        }
+        catch (Exception exception)
+        {
+            LogMigrationFailed(app.Logger, exception);
+            throw;
+        }
     }
 
     [LoggerMessage(
@@ -63,4 +71,10 @@ public static partial class DatabaseMigrationExtensions
         int attempt,
         int maxAttempts
     );
+
+    [LoggerMessage(
+        Level = LogLevel.Critical,
+        Message = "Database migration failed — refusing to start"
+    )]
+    private static partial void LogMigrationFailed(ILogger logger, Exception exception);
 }

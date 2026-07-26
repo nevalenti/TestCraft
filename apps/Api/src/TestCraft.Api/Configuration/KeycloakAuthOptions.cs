@@ -3,7 +3,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class KeycloakAuthOptions
+public sealed class KeycloakAuthOptions : IStartupOptions
 {
     [Required]
     public string KeycloakAuthority { get; init; } = string.Empty;

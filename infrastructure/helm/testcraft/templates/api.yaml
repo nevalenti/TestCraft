@@ -28,15 +28,12 @@ spec:
             - name: POSTGRES_PORT
               value: "5432"
             - name: POSTGRES_USER
-              valueFrom:
-                secretKeyRef:
-                  name: testcraft-secrets
-                  key: POSTGRES_USER
+              value: testcraft_app
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: testcraft-secrets
-                  key: POSTGRES_PASSWORD
+                  key: POSTGRES_APP_PASSWORD
             - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
@@ -54,24 +51,26 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: RABBITMQ_PASSWORD
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: REDIS_PASSWORD
             - name: REDIS_URL
-              value: redis://redis:6379
+              value: "redis://:$(REDIS_PASSWORD)@redis:6379"
             - name: RABBITMQ_URL
               value: "amqp://$(RABBITMQ_USER):$(RABBITMQ_PASSWORD)@rabbitmq:5672"
             - name: KEYCLOAK_AUTHORITY
               value: http://keycloak:8080/realms/testcraft
             - name: KEYCLOAK_ISSUER
               value: https://auth.testcraft.pro/realms/testcraft
-            - name: KEYCLOAK_ADMIN
+            - name: KEYCLOAK_ADMIN_CLIENT_ID
+              value: testcraft-api
+            - name: KEYCLOAK_ADMIN_CLIENT_SECRET
               valueFrom:
                 secretKeyRef:
                   name: testcraft-secrets
-                  key: KEYCLOAK_ADMIN
-            - name: KEYCLOAK_ADMIN_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: testcraft-secrets
-                  key: KEYCLOAK_ADMIN_PASSWORD
+                  key: KEYCLOAK_ADMIN_CLIENT_SECRET
             - name: KEYCLOAK_AUDIENCE
               value: testcraft-web
             - name: KEYCLOAK_REQUIRE_HTTPS_METADATA

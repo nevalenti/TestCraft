@@ -1,7 +1,7 @@
 {
   "realm": "testcraft",
   "enabled": true,
-  "sslRequired": "none",
+  "sslRequired": "external",
   "registrationAllowed": true,
   "registrationEmailAsUsername": true,
   "passwordPolicy": "length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)",
@@ -14,7 +14,7 @@
       "enabled": true,
       "publicClient": true,
       "standardFlowEnabled": true,
-      "directAccessGrantsEnabled": true,
+      "directAccessGrantsEnabled": false,
       "redirectUris": [
         "http://localhost:3000/*",
         "https://localhost/*",
@@ -42,23 +42,28 @@
           }
         }
       ]
+    },
+    {
+      "clientId": "testcraft-api",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${KEYCLOAK_ADMIN_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
     }
   ],
   "users": [
     {
-      "username": "e2e@testcraft.pro",
-      "email": "e2e@testcraft.pro",
-      "emailVerified": true,
+      "username": "service-account-testcraft-api",
       "enabled": true,
-      "firstName": "E2E",
-      "lastName": "User",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "e2e-test-password",
-          "temporary": false
-        }
-      ]
+      "serviceAccountClientId": "testcraft-api",
+      "clientRoles": {
+        "realm-management": ["view-users"]
+      }
     }
   ],
   "loginTheme": "dracula",

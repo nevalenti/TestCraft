@@ -17,11 +17,13 @@ spec:
         - name: postgres-exporter
           image: prometheuscommunity/postgres-exporter:v0.17.1
           env:
-            - name: DATA_SOURCE_NAME
+            - name: POSTGRES_MONITOR_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: testcraft-secrets
-                  key: POSTGRES_EXPORTER_DSN
+                  key: POSTGRES_MONITOR_PASSWORD
+            - name: DATA_SOURCE_NAME
+              value: "postgresql://testcraft_monitor:$(POSTGRES_MONITOR_PASSWORD)@postgres:5432/postgres?sslmode=disable"
           ports:
             - containerPort: 9187
           resources:
@@ -65,6 +67,11 @@ spec:
           env:
             - name: REDIS_ADDR
               value: redis://redis:6379
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: REDIS_PASSWORD
           ports:
             - containerPort: 9121
           resources:

@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace TestCraft.Infrastructure.Configuration;
@@ -8,9 +9,9 @@ public static partial class ConfigurationLogging
     private const string RedactedValue = "<redacted>";
     private const string NotSetValue = "(not set)";
 
-    public static void LogStartupConfiguration(this ILogger logger, params object[] configurations)
+    public static void LogStartupConfiguration(this ILogger logger, IServiceProvider services)
     {
-        foreach (var configuration in configurations)
+        foreach (var configuration in services.GetServices<IStartupOptions>())
         {
             var type = configuration.GetType();
             foreach (
@@ -32,16 +33,16 @@ public static partial class ConfigurationLogging
             return NotSetValue;
         }
 
-        if (isSensitive)
+        if (!isSensitive)
         {
-            return RedactedValue;
+            return value switch
+            {
+                string[] values => string.Join(", ", values),
+                _ => value?.ToString() ?? NotSetValue,
+            };
         }
 
-        return value switch
-        {
-            string[] values => string.Join(", ", values),
-            _ => value?.ToString() ?? NotSetValue,
-        };
+        return RedactedValue;
     }
 
     private static bool IsEmpty(object? value) =>
