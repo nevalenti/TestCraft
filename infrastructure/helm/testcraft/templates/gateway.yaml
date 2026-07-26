@@ -30,6 +30,10 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: SEQ_ADMIN_PASSWORD
+            - name: LOKI_URL
+              value: http://loki:3100
+            - name: SEQ_URL
+              value: http://seq
           ports:
             - containerPort: 80
             - containerPort: 443

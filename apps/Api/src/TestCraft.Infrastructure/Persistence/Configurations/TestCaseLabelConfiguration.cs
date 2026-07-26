@@ -25,5 +25,7 @@ public class TestCaseLabelConfiguration : IEntityTypeConfiguration<TestCaseLabel
             .WithMany(label => label.TestCaseLabels)
             .HasForeignKey(tcl => tcl.LabelId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(tcl => !tcl.TestCase!.IsDeleted);
     }
 }

@@ -41,5 +41,7 @@ public class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<Webhook
             .HasDefaultValueSql("now()");
 
         builder.HasIndex(webhookSubscription => webhookSubscription.ProjectId);
+
+        builder.HasQueryFilter(webhookSubscription => !webhookSubscription.Project!.IsDeleted);
     }
 }

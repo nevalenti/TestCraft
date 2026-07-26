@@ -34,5 +34,7 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
         builder
             .HasIndex(projectMember => new { projectMember.ProjectId, projectMember.UserId })
             .IsUnique();
+
+        builder.HasQueryFilter(projectMember => !projectMember.Project!.IsDeleted);
     }
 }

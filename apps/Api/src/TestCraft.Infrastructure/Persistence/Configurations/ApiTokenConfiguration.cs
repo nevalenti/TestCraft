@@ -40,5 +40,7 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
 
         builder.HasIndex(apiToken => apiToken.TokenHash).IsUnique();
         builder.HasIndex(apiToken => apiToken.ProjectId);
+
+        builder.HasQueryFilter(apiToken => !apiToken.Project!.IsDeleted);
     }
 }
