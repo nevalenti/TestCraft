@@ -2,7 +2,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class ApiLoggingOptions
+public sealed class ApiLoggingOptions : IStartupOptions
 {
     public string? LokiUrl { get; init; }
 

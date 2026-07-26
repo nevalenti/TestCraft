@@ -2,7 +2,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class DatabaseMigrationOptions
+public sealed class DatabaseMigrationOptions : IStartupOptions
 {
     public bool ApplyMigrations { get; init; }
 

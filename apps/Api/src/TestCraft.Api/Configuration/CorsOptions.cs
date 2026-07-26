@@ -2,7 +2,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class CorsOptions
+public sealed class CorsOptions : IStartupOptions
 {
     public string[] CorsAllowedOrigins { get; init; } = [];
 

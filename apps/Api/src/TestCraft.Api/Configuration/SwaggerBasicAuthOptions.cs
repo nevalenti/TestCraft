@@ -2,7 +2,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class SwaggerBasicAuthOptions
+public sealed class SwaggerBasicAuthOptions : IStartupOptions
 {
     public string? SwaggerBasicAuthUsername { get; init; }
 

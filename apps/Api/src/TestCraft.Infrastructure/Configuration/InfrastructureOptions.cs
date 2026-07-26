@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace TestCraft.Infrastructure.Configuration;
 
-public sealed class InfrastructureOptions
+public sealed class InfrastructureOptions : IStartupOptions
 {
     [Required]
     [Sensitive]
@@ -36,10 +36,10 @@ public sealed class InfrastructureOptions
 
     public string KeycloakBaseUrl { get; init; } = string.Empty;
     public string KeycloakRealm { get; init; } = "testcraft";
-    public string KeycloakAdminUsername { get; init; } = string.Empty;
+    public string KeycloakAdminClientId { get; init; } = string.Empty;
 
     [Sensitive]
-    public string KeycloakAdminPassword { get; init; } = string.Empty;
+    public string KeycloakAdminClientSecret { get; init; } = string.Empty;
 
     public static InfrastructureOptions Bind(IConfiguration configuration)
     {
@@ -66,8 +66,9 @@ public sealed class InfrastructureOptions
             KeycloakBaseUrl = realmIndex >= 0 ? authority[..realmIndex] : authority,
             KeycloakRealm =
                 realmIndex >= 0 ? authority[(realmIndex + realmMarker.Length)..] : "testcraft",
-            KeycloakAdminUsername = configuration["KEYCLOAK_ADMIN"] ?? string.Empty,
-            KeycloakAdminPassword = configuration["KEYCLOAK_ADMIN_PASSWORD"] ?? string.Empty,
+            KeycloakAdminClientId = configuration["KEYCLOAK_ADMIN_CLIENT_ID"] ?? string.Empty,
+            KeycloakAdminClientSecret =
+                configuration["KEYCLOAK_ADMIN_CLIENT_SECRET"] ?? string.Empty,
         };
 
         return OptionsValidator.ValidateAndThrow(options, "infrastructure");

@@ -15,17 +15,9 @@ public static class RateLimitingExtensions
             options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
                 httpContext =>
                 {
-                    var userAgent = httpContext.Request.Headers.UserAgent.ToString();
-
                     if (
                         !builder.Environment.IsProduction()
                         || !ApiPaths.IsVersionedApi(httpContext.Request.Path)
-                        || userAgent.StartsWith(
-                            "TestCraft-GitHub-Actions/",
-                            StringComparison.Ordinal
-                        )
-                        || userAgent.StartsWith("TestCraft-CI-Reporter/", StringComparison.Ordinal)
-                        || userAgent.StartsWith("TestCraft-Reporter/", StringComparison.Ordinal)
                     )
                     {
                         return RateLimitPartition.GetNoLimiter("unrestricted");

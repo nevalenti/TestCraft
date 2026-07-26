@@ -40,13 +40,22 @@ storage:
   minio: 10Gi
   tempo: 5Gi
 
+backups:
+  postgresSchedule: "0 3 * * *"
+  minioSchedule: "15 3 * * *"
+  minioBucket: testcraft-backups
+  retentionDays: 14
+
 secrets:
   postgresUser: ""
   postgresPassword: ""
   postgresDb: ""
-  postgresExporterDsn: ""
+  postgresAppPassword: ""
+  postgresKeycloakPassword: ""
+  postgresMonitorPassword: ""
   rabbitmqUser: ""
   rabbitmqPassword: ""
+  redisPassword: ""
   corsAllowedOrigins: ""
   metricsToken: ""
   swaggerBasicAuthUsername: ""
@@ -56,8 +65,10 @@ secrets:
   minioBucket: ""
   minioPublicEndpoint: ""
   grafanaAdminPassword: ""
+  seqAdminPassword: ""
   keycloakAdmin: ""
   keycloakAdminPassword: ""
+  keycloakAdminClientSecret: ""
   githubClientId: ""
   githubClientSecret: ""
   googleClientId: ""

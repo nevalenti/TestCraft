@@ -34,6 +34,13 @@ spec:
               value: "Y"
             - name: BASE_URI_PATH
               value: /seq
+            - name: SEQ_FIRSTRUN_ADMINUSERNAME
+              value: admin
+            - name: SEQ_FIRSTRUN_ADMINPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SEQ_ADMIN_PASSWORD
           ports:
             - containerPort: 80
           readinessProbe:
