@@ -24,5 +24,7 @@ public class LabelConfiguration : IEntityTypeConfiguration<Label>
             .HasDefaultValueSql("now()");
 
         builder.HasIndex(label => new { label.ProjectId, label.Name }).IsUnique();
+
+        builder.HasQueryFilter(label => !label.Project!.IsDeleted);
     }
 }

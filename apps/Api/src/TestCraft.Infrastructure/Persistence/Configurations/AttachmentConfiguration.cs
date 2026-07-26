@@ -39,5 +39,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
             .HasDefaultValueSql("now()");
 
         builder.HasIndex(attachment => attachment.TestResultId);
+
+        builder.HasQueryFilter(attachment => !attachment.TestResult!.IsDeleted);
     }
 }

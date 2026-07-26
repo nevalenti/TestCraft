@@ -29,5 +29,7 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
             .WithMany()
             .HasForeignKey(runLog => runLog.RunId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(runLog => !runLog.Run!.IsDeleted);
     }
 }

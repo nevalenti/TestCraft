@@ -107,11 +107,17 @@ public partial class NotificationDispatcher(
 
                 using var response = await http.SendAsync(request, cancellationToken);
                 if (!response.IsSuccessStatusCode)
-                    LogWebhookFailed(logger, webhook.Url, (int)response.StatusCode);
+                    LogWebhookFailed(
+                        logger,
+                        webhook.Url,
+                        (int)response.StatusCode,
+                        projectId,
+                        eventType
+                    );
             }
             catch (Exception ex)
             {
-                LogWebhookException(logger, webhook.Url, ex);
+                LogWebhookException(logger, webhook.Url, projectId, eventType, ex);
             }
         }
     }
@@ -146,7 +152,7 @@ public partial class NotificationDispatcher(
             }
             catch (Exception ex)
             {
-                LogEmailException(logger, recipient, ex);
+                LogEmailException(logger, recipient, projectId, eventType, ex);
             }
         }
     }
@@ -159,12 +165,39 @@ public partial class NotificationDispatcher(
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 
-    [LoggerMessage(Level = LogLevel.Warning, Message = "Webhook {Url} returned HTTP {StatusCode}")]
-    static partial void LogWebhookFailed(ILogger logger, string url, int statusCode);
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Webhook {Url} returned HTTP {StatusCode} for project {ProjectId} event {EventType}"
+    )]
+    static partial void LogWebhookFailed(
+        ILogger logger,
+        string url,
+        int statusCode,
+        Guid projectId,
+        string eventType
+    );
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Webhook delivery failed for {Url}")]
-    static partial void LogWebhookException(ILogger logger, string url, Exception ex);
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Webhook delivery failed for {Url} (project {ProjectId}, event {EventType})"
+    )]
+    static partial void LogWebhookException(
+        ILogger logger,
+        string url,
+        Guid projectId,
+        string eventType,
+        Exception ex
+    );
 
-    [LoggerMessage(Level = LogLevel.Error, Message = "Email delivery failed for {Recipient}")]
-    static partial void LogEmailException(ILogger logger, string recipient, Exception ex);
+    [LoggerMessage(
+        Level = LogLevel.Error,
+        Message = "Email delivery failed for {Recipient} (project {ProjectId}, event {EventType})"
+    )]
+    static partial void LogEmailException(
+        ILogger logger,
+        string recipient,
+        Guid projectId,
+        string eventType,
+        Exception ex
+    );
 }

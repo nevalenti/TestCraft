@@ -37,5 +37,7 @@ public class EmailSubscriptionConfiguration : IEntityTypeConfiguration<EmailSubs
             .HasDefaultValueSql("now()");
 
         builder.HasIndex(emailSubscription => emailSubscription.ProjectId);
+
+        builder.HasQueryFilter(emailSubscription => !emailSubscription.Project!.IsDeleted);
     }
 }

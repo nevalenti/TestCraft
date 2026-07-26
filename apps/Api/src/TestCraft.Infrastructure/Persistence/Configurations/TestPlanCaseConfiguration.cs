@@ -26,5 +26,7 @@ public class TestPlanCaseConfiguration : IEntityTypeConfiguration<TestPlanCase>
             .WithMany(tc => tc.TestPlanCases)
             .HasForeignKey(tpc => tpc.TestCaseId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasQueryFilter(tpc => !tpc.TestPlan!.IsDeleted && !tpc.TestCase!.IsDeleted);
     }
 }

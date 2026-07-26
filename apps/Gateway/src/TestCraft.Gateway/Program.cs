@@ -3,6 +3,9 @@ using TestCraft.Gateway.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var gatewayLoggingOptions = GatewayLoggingOptions.Bind(builder.Configuration);
+builder.AddSerilogLogging(gatewayLoggingOptions);
+
 builder
     .Services.AddReverseProxy()
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
@@ -13,6 +16,8 @@ var seqBasicAuthOptions = SeqBasicAuthOptions.Bind(builder.Configuration);
 
 app.Logger.LogStartupConfiguration(builder.Configuration);
 
+app.UseRequestId();
+app.UseRequestLogging();
 app.UseHttpsRedirectionWithAcmeExemption();
 app.UseLegacyPathRedirects();
 app.UseDotPathGuard();

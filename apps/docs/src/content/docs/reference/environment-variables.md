@@ -90,7 +90,9 @@ realm — see `infrastructure/keycloak/realm.json`.
 
 | Variable                                                        | Default                 | Notes                                                     |
 | --------------------------------------------------------------- | ----------------------- | --------------------------------------------------------- |
-| `SEQ_URL`                                                       | `http://localhost:5341` | Structured log sink — leave empty to disable (as CI does) |
+| `SEQ_URL` (also Gateway)                                        | `http://localhost:5341` | Structured log sink — leave empty to disable (as CI does) |
+| `LOKI_URL` (also Gateway)                                       | —                       | Structured log sink — leave empty to disable              |
+| `SEQ_API_KEY` (also Gateway)                                    | —                       | Optional API key for the Seq sink above                   |
 | `GRAFANA_ADMIN_PASSWORD`                                        | `changeme`              |                                                           |
 | `CORS_ALLOWED_ORIGINS`                                          | —                       | Comma-separated origins allowed to call the API           |
 | `METRICS_TOKEN`                                                 | —                       | Bearer token required on `/api/metrics` when set          |
@@ -103,6 +105,10 @@ before proxying the request, and Seq itself is provisioned with an admin account
 `SEQ_FIRSTRUN_ADMINUSERNAME`/`SEQ_FIRSTRUN_ADMINPASSWORD` (same password, `seqAdminPassword` in Helm
 secrets). Grafana (`/grafana`) only needs its own login (`GF_SECURITY_ADMIN_PASSWORD`), since Grafana
 enforces authentication itself.
+
+The Gateway ships structured logs to the same Loki/Seq sinks as the API (`LOKI_URL`/`SEQ_URL`/`SEQ_API_KEY`),
+including a request-level access log, and generates/forwards an `x-request-id` header so a request can be
+traced from the Gateway through to the API in the same log query.
 
 ## Production secrets
 
