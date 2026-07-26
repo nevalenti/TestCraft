@@ -7,6 +7,7 @@ using TestCraft.Api.Middleware;
 using TestCraft.Application;
 using TestCraft.Application.TestRuns;
 using TestCraft.Infrastructure;
+using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
@@ -29,12 +30,12 @@ public static class HostingExtensions
         var metricsOptions = MetricsOptions.Bind(builder.Configuration);
         var swaggerBasicAuthOptions = SwaggerBasicAuthOptions.Bind(builder.Configuration);
 
-        builder.Services.AddSingleton(keycloakAuthOptions);
-        builder.Services.AddSingleton(corsOptions);
-        builder.Services.AddSingleton(loggingOptions);
-        builder.Services.AddSingleton(migrationOptions);
-        builder.Services.AddSingleton(metricsOptions);
-        builder.Services.AddSingleton(swaggerBasicAuthOptions);
+        builder.Services.AddStartupOptions(keycloakAuthOptions);
+        builder.Services.AddStartupOptions(corsOptions);
+        builder.Services.AddStartupOptions(loggingOptions);
+        builder.Services.AddStartupOptions(migrationOptions);
+        builder.Services.AddStartupOptions(metricsOptions);
+        builder.Services.AddStartupOptions(swaggerBasicAuthOptions);
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();
@@ -87,8 +88,6 @@ public static class HostingExtensions
 
         app.UseHttpMetrics();
 
-        app.UseRateLimiter();
-
         app.UseCors(CorsExtensions.DefaultPolicyName);
 
         app.UseWhen(
@@ -98,6 +97,8 @@ public static class HostingExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        app.UseRateLimiter();
 
         app.UseOutputCache();
 

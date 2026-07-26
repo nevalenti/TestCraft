@@ -1,0 +1,95 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.backups.postgresSchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          initContainers:
+            - name: dump
+              image: postgres:16-alpine
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  export PGPASSWORD="$POSTGRES_PASSWORD"
+                  timestamp=$(date -u +%Y%m%dT%H%M%SZ)
+                  pg_dump -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Fc \
+                    -f "/backup/${POSTGRES_DB}-${timestamp}.dump"
+                  pg_dump -h postgres -U "$POSTGRES_USER" -d keycloak_db -Fc \
+                    -f "/backup/keycloak_db-${timestamp}.dump"
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_USER
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_PASSWORD
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_DB
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: "50m"
+                limits:
+                  memory: 256Mi
+                  cpu: "500m"
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            - name: upload
+              image: minio/mc:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mc alias set backup-target http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+                  mc mb --ignore-existing "backup-target/{{ .Values.backups.minioBucket }}/postgres"
+                  for f in /backup/*.dump; do
+                    mc cp "$f" "backup-target/{{ .Values.backups.minioBucket }}/postgres/"
+                  done
+                  mc find "backup-target/{{ .Values.backups.minioBucket }}/postgres/" \
+                    --older-than {{ .Values.backups.retentionDays }}d --exec "mc rm {}"
+              env:
+                - name: MINIO_ROOT_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_USER
+                - name: MINIO_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_PASSWORD
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: "25m"
+                limits:
+                  memory: 128Mi
+                  cpu: "250m"
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              emptyDir: {}

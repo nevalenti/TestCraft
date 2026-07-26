@@ -24,7 +24,7 @@ public static class DependencyInjection
     {
         var options = InfrastructureOptions.Bind(configuration);
 
-        services.AddSingleton(options);
+        services.AddStartupOptions(options);
 
         services.AddDbContext<AppDbContext>(dbOptions =>
             dbOptions.UseNpgsql(

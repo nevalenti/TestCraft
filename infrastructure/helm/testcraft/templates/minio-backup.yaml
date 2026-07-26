@@ -1,0 +1,51 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minio-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.backups.minioSchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: mirror
+              image: minio/mc:latest
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mc alias set minio http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+                  mc mb --ignore-existing "minio/{{ .Values.backups.minioBucket }}/attachments"
+                  mc mirror --overwrite "minio/$MINIO_SOURCE_BUCKET" \
+                    "minio/{{ .Values.backups.minioBucket }}/attachments/"
+              env:
+                - name: MINIO_ROOT_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_USER
+                - name: MINIO_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_PASSWORD
+                - name: MINIO_SOURCE_BUCKET
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_BUCKET
+              resources:
+                requests:
+                  memory: 64Mi
+                  cpu: "50m"
+                limits:
+                  memory: 256Mi
+                  cpu: "250m"

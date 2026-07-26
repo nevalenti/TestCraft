@@ -116,6 +116,8 @@ pipeline {
                 KEYCLOAK_AUTHORITY              = 'http://localhost:8080/realms/testcraft'
                 KEYCLOAK_AUDIENCE               = 'testcraft-web'
                 KEYCLOAK_REQUIRE_HTTPS_METADATA = 'false'
+                KEYCLOAK_ADMIN_CLIENT_ID        = 'testcraft-api'
+                KEYCLOAK_ADMIN_CLIENT_SECRET    = 'testcraft-api-dev-secret'
                 CORS_ALLOWED_ORIGINS            = 'http://localhost:4173'
                 APPLY_MIGRATIONS                = 'true'
                 VITE_API_URL                    = 'http://localhost:5000'

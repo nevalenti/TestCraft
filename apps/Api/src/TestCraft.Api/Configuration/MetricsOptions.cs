@@ -2,7 +2,7 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration;
 
-public sealed class MetricsOptions
+public sealed class MetricsOptions : IStartupOptions
 {
     [Sensitive]
     public string? MetricsToken { get; init; }

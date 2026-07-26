@@ -1,6 +1,9 @@
 using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.Configuration;
 
 namespace TestCraft.Gateway.Tests;
 
@@ -14,8 +17,12 @@ public class GatewayMiddlewareTests
         _factory = factory.WithWebHostBuilder(_ => { });
     }
 
-    private HttpClient CreateClient() =>
-        _factory.CreateClient(
+    private HttpClient CreateClient() => CreateClient(_factory);
+
+    private static HttpClient CreateClient(
+        WebApplicationFactory<Program> factory
+    ) =>
+        factory.CreateClient(
             new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false,
@@ -122,4 +129,69 @@ public class GatewayMiddlewareTests
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.MovedPermanently);
     }
+
+    [Fact]
+    public async Task Get_SeqSubPath_WithoutCredentials_ReturnsUnauthorized()
+    {
+        var client = CreateClient();
+
+        var response = await client.GetAsync("/seq/");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Get_SeqSubPath_WithWrongCredentials_ReturnsUnauthorized()
+    {
+        var factory = WithSeqBasicAuthConfigured();
+        var client = CreateClient(factory);
+        client.DefaultRequestHeaders.Authorization = BasicAuthHeader(
+            "admin",
+            "wrong-password"
+        );
+
+        var response = await client.GetAsync("/seq/");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task Get_SeqSubPath_WithCorrectCredentials_IsNotUnauthorized()
+    {
+        var factory = WithSeqBasicAuthConfigured();
+        var client = CreateClient(factory);
+        client.DefaultRequestHeaders.Authorization = BasicAuthHeader(
+            "admin",
+            "correct-password"
+        );
+
+        var response = await client.GetAsync("/seq/");
+
+        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
+    }
+
+    private WebApplicationFactory<Program> WithSeqBasicAuthConfigured() =>
+        _factory.WithWebHostBuilder(builder =>
+            builder.ConfigureAppConfiguration(
+                (_, config) =>
+                    config.AddInMemoryCollection(
+                        new Dictionary<string, string?>
+                        {
+                            ["SEQ_BASIC_AUTH_USERNAME"] = "admin",
+                            ["SEQ_BASIC_AUTH_PASSWORD"] = "correct-password",
+                        }
+                    )
+            )
+        );
+
+    private static AuthenticationHeaderValue BasicAuthHeader(
+        string username,
+        string password
+    ) =>
+        new(
+            "Basic",
+            Convert.ToBase64String(
+                Encoding.UTF8.GetBytes($"{username}:{password}")
+            )
+        );
 }
