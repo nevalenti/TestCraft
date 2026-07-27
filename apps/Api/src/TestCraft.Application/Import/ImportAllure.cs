@@ -131,20 +131,19 @@ public static class ImportAllure
             context.ImportJobs.Add(job);
             await context.SaveChangesAsync(cancellationToken);
 
-            await publishEndpoint.Publish(
-                new ImportAllureRequested
-                {
-                    JobId = job.Id,
-                    ProjectId = request.ProjectId,
-                    Results = request.Results,
-                    Environment = request.Environment,
-                    Name = request.Name,
-                    Source = request.Source,
-                    UserId = currentUser.UserId,
-                    UserName = currentUser.UserName,
-                },
-                cancellationToken
-            );
+            var message = new ImportAllureRequested
+            {
+                JobId = job.Id,
+                ProjectId = request.ProjectId,
+                Results = request.Results,
+                Environment = request.Environment,
+                Name = request.Name,
+                Source = request.Source,
+                UserId = currentUser.UserId,
+                UserName = currentUser.UserName,
+            };
+
+            await publishEndpoint.Publish(message, cancellationToken);
 
             return new ImportJobResponse
             {

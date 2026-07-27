@@ -15,6 +15,7 @@ public class TestCasesController(ISender sender) : ControllerBase
 {
     /// <summary>Lists test cases in a suite, optionally filtered by name.</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(Paginated<TestCaseResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,
         Guid suiteId,
@@ -22,20 +23,15 @@ public class TestCasesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                query with
-                {
-                    ProjectId = projectId,
-                    SuiteId = suiteId,
-                },
-                cancellationToken
-            )
-        );
+        var scopedQuery = query with { ProjectId = projectId, SuiteId = suiteId };
+        var result = await sender.Send(scopedQuery, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Gets a test case by ID.</summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseResponse>> GetById(
         Guid projectId,
         Guid suiteId,
@@ -43,21 +39,20 @@ public class TestCasesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                new GetTestCaseById.Query
-                {
-                    ProjectId = projectId,
-                    SuiteId = suiteId,
-                    Id = id,
-                },
-                cancellationToken
-            )
-        );
+        var query = new GetTestCaseById.Query
+        {
+            ProjectId = projectId,
+            SuiteId = suiteId,
+            Id = id,
+        };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Creates a new test case in a suite.</summary>
     [HttpPost]
+    [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestCaseResponse>> Create(
         Guid projectId,
         Guid suiteId,
@@ -65,14 +60,8 @@ public class TestCasesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var testCase = await sender.Send(
-            command with
-            {
-                ProjectId = projectId,
-                SuiteId = suiteId,
-            },
-            cancellationToken
-        );
+        var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -80,14 +69,15 @@ public class TestCasesController(ISender sender) : ControllerBase
             {
                 projectId,
                 suiteId,
-                id = testCase.Id,
+                id = result.Id,
             },
-            testCase
+            result
         );
     }
 
     /// <summary>Updates a test case's details.</summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseResponse>> Update(
         Guid projectId,
         Guid suiteId,
@@ -96,21 +86,15 @@ public class TestCasesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                command with
-                {
-                    ProjectId = projectId,
-                    SuiteId = suiteId,
-                    Id = id,
-                },
-                cancellationToken
-            )
-        );
+        var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId, Id = id };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Deletes a test case.</summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid projectId,
         Guid suiteId,
@@ -118,15 +102,13 @@ public class TestCasesController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new DeleteTestCase.Command
-            {
-                ProjectId = projectId,
-                SuiteId = suiteId,
-                Id = id,
-            },
-            cancellationToken
-        );
+        var command = new DeleteTestCase.Command
+        {
+            ProjectId = projectId,
+            SuiteId = suiteId,
+            Id = id,
+        };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }

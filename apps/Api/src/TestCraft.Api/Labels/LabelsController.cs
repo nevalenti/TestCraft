@@ -14,29 +14,36 @@ public class LabelsController(ISender sender) : ControllerBase
 {
     /// <summary>Lists labels for a project.</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<LabelResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<LabelResponse>>> GetAll(
         Guid projectId,
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(new GetLabels.Query { ProjectId = projectId }, cancellationToken)
-        );
+        var query = new GetLabels.Query { ProjectId = projectId };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Creates a label.</summary>
     [HttpPost]
+    [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<LabelResponse>> Create(
         Guid projectId,
         CreateLabel.Command command,
         CancellationToken cancellationToken
     )
     {
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+        var scopedCommand = command with { ProjectId = projectId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Updates a label.</summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<LabelResponse>> Update(
         Guid projectId,
         Guid id,
@@ -44,23 +51,23 @@ public class LabelsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
-        );
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Deletes a label.</summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new DeleteLabel.Command { ProjectId = projectId, Id = id },
-            cancellationToken
-        );
+        var command = new DeleteLabel.Command { ProjectId = projectId, Id = id };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }

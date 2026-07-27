@@ -15,11 +15,15 @@ public class PublicShareTokensController(ISender sender) : ControllerBase
     /// <summary>Returns a shared test run view without authentication.</summary>
     [HttpGet("{token}")]
     [OutputCache(PolicyName = OutputCachingExtensions.PublicSharePolicy)]
+    [ProducesResponseType(typeof(SharedRunResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<SharedRunResponse>> GetByToken(
         string token,
         CancellationToken cancellationToken
     )
     {
-        return Ok(await sender.Send(new GetRunByShareToken.Query(token), cancellationToken));
+        var query = new GetRunByShareToken.Query(token);
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 }

@@ -14,32 +14,39 @@ public class NotificationsController(ISender sender) : ControllerBase
 {
     /// <summary>Lists webhook subscriptions for a project.</summary>
     [HttpGet("webhooks")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<WebhookSubscriptionResponse>),
+        StatusCodes.Status200OK
+    )]
     public async Task<ActionResult<IReadOnlyList<WebhookSubscriptionResponse>>> GetWebhooks(
         Guid projectId,
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                new GetWebhookSubscriptions.Query { ProjectId = projectId },
-                cancellationToken
-            )
-        );
+        var query = new GetWebhookSubscriptions.Query { ProjectId = projectId };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Creates a webhook subscription.</summary>
     [HttpPost("webhooks")]
+    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> CreateWebhook(
         Guid projectId,
         CreateWebhookSubscription.Command command,
         CancellationToken cancellationToken
     )
     {
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+        var scopedCommand = command with { ProjectId = projectId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Updates a webhook subscription.</summary>
     [HttpPut("webhooks/{id:guid}")]
+    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> UpdateWebhook(
         Guid projectId,
         Guid id,
@@ -47,55 +54,62 @@ public class NotificationsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
-        );
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Deletes a webhook subscription.</summary>
     [HttpDelete("webhooks/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteWebhook(
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new DeleteWebhookSubscription.Command { ProjectId = projectId, Id = id },
-            cancellationToken
-        );
+        var command = new DeleteWebhookSubscription.Command { ProjectId = projectId, Id = id };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }
 
     /// <summary>Lists email subscriptions for a project.</summary>
     [HttpGet("emails")]
+    [ProducesResponseType(
+        typeof(IReadOnlyList<EmailSubscriptionResponse>),
+        StatusCodes.Status200OK
+    )]
     public async Task<ActionResult<IReadOnlyList<EmailSubscriptionResponse>>> GetEmails(
         Guid projectId,
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                new GetEmailSubscriptions.Query { ProjectId = projectId },
-                cancellationToken
-            )
-        );
+        var query = new GetEmailSubscriptions.Query { ProjectId = projectId };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Creates an email subscription.</summary>
     [HttpPost("emails")]
+    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<EmailSubscriptionResponse>> CreateEmail(
         Guid projectId,
         CreateEmailSubscription.Command command,
         CancellationToken cancellationToken
     )
     {
-        return Ok(await sender.Send(command with { ProjectId = projectId }, cancellationToken));
+        var scopedCommand = command with { ProjectId = projectId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Updates an email subscription.</summary>
     [HttpPut("emails/{id:guid}")]
+    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<EmailSubscriptionResponse>> UpdateEmail(
         Guid projectId,
         Guid id,
@@ -103,23 +117,23 @@ public class NotificationsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(command with { ProjectId = projectId, Id = id }, cancellationToken)
-        );
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Deletes an email subscription.</summary>
     [HttpDelete("emails/{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEmail(
         Guid projectId,
         Guid id,
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new DeleteEmailSubscription.Command { ProjectId = projectId, Id = id },
-            cancellationToken
-        );
+        var command = new DeleteEmailSubscription.Command { ProjectId = projectId, Id = id };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }
