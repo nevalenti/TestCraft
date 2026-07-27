@@ -13,7 +13,7 @@ RUN dotnet publish apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj -
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 WORKDIR /app
 
-RUN apk add --no-cache curl && \
+RUN apk add --no-cache curl libmsquic && \
     addgroup -S -g 1001 appgroup && \
     adduser -S -u 1001 -G appgroup -H appuser
 
@@ -23,7 +23,7 @@ ENV ASPNETCORE_ENVIRONMENT=Production
 
 USER appuser
 
-EXPOSE 80 443 8443
+EXPOSE 80 443 8443 443/udp
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -fk https://localhost/ || exit 1
