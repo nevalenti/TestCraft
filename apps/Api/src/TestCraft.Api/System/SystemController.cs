@@ -21,6 +21,7 @@ public class SystemController(
 {
     /// <summary>Gets the Keycloak authority used by clients to authenticate.</summary>
     [HttpGet("auth-config")]
+    [ProducesResponseType(typeof(AuthConfigResponse), StatusCodes.Status200OK)]
     public ActionResult<AuthConfigResponse> GetAuthConfig()
     {
         return Ok(new AuthConfigResponse(keycloakOptions.KeycloakAuthority));
@@ -28,6 +29,7 @@ public class SystemController(
 
     /// <summary>Returns whether the API process has started.</summary>
     [HttpGet("ready")]
+    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
     public ActionResult<StatusResponse> GetReady()
     {
         return Ok(new StatusResponse("ok"));
@@ -35,6 +37,8 @@ public class SystemController(
 
     /// <summary>Returns the API's health, including database connectivity.</summary>
     [HttpGet("health")]
+    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status503ServiceUnavailable)]
     public async Task<ActionResult<StatusResponse>> GetHealth()
     {
         if (await PingDbAsync())
@@ -47,6 +51,7 @@ public class SystemController(
 
     /// <summary>Returns detailed runtime status and diagnostics.</summary>
     [HttpGet("status")]
+    [ProducesResponseType(typeof(SystemStatusResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<SystemStatusResponse>> GetStatus()
     {
         var dbUp = await PingDbAsync();
@@ -70,6 +75,8 @@ public class SystemController(
 
     /// <summary>Returns Prometheus metrics for scraping.</summary>
     [HttpGet("metrics")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> GetMetrics(
         [FromHeader(Name = "Authorization")] string? authorization
     )

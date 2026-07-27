@@ -14,6 +14,7 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
 {
     /// <summary>Assigns a label to a test case.</summary>
     [HttpPost("{labelId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Add(
         Guid projectId,
         Guid caseId,
@@ -21,21 +22,20 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new AddTestCaseLabel.Command
-            {
-                ProjectId = projectId,
-                TestCaseId = caseId,
-                LabelId = labelId,
-            },
-            cancellationToken
-        );
+        var command = new AddTestCaseLabel.Command
+        {
+            ProjectId = projectId,
+            TestCaseId = caseId,
+            LabelId = labelId,
+        };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }
 
     /// <summary>Removes a label from a test case.</summary>
     [HttpDelete("{labelId:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Remove(
         Guid projectId,
         Guid caseId,
@@ -43,15 +43,13 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new RemoveTestCaseLabel.Command
-            {
-                ProjectId = projectId,
-                TestCaseId = caseId,
-                LabelId = labelId,
-            },
-            cancellationToken
-        );
+        var command = new RemoveTestCaseLabel.Command
+        {
+            ProjectId = projectId,
+            TestCaseId = caseId,
+            LabelId = labelId,
+        };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }

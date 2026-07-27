@@ -15,6 +15,7 @@ public class TestResultsController(ISender sender) : ControllerBase
 {
     /// <summary>Lists results for a test run.</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(Paginated<TestResultResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
         Guid projectId,
         Guid runId,
@@ -22,20 +23,15 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                query with
-                {
-                    ProjectId = projectId,
-                    RunId = runId,
-                },
-                cancellationToken
-            )
-        );
+        var scopedQuery = query with { ProjectId = projectId, RunId = runId };
+        var result = await sender.Send(scopedQuery, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Gets a test result by ID.</summary>
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestResultResponse>> GetById(
         Guid projectId,
         Guid runId,
@@ -43,21 +39,20 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                new GetTestResultById.Query
-                {
-                    ProjectId = projectId,
-                    RunId = runId,
-                    Id = id,
-                },
-                cancellationToken
-            )
-        );
+        var query = new GetTestResultById.Query
+        {
+            ProjectId = projectId,
+            RunId = runId,
+            Id = id,
+        };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Records a test result for a run.</summary>
     [HttpPost]
+    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> Create(
         Guid projectId,
         Guid runId,
@@ -65,14 +60,8 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var result = await sender.Send(
-            command with
-            {
-                ProjectId = projectId,
-                RunId = runId,
-            },
-            cancellationToken
-        );
+        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -88,6 +77,7 @@ public class TestResultsController(ISender sender) : ControllerBase
 
     /// <summary>Records a test result by suite and test case name, creating them if they don't exist.</summary>
     [HttpPost("by-name")]
+    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> CreateByName(
         Guid projectId,
         Guid runId,
@@ -95,14 +85,8 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var result = await sender.Send(
-            command with
-            {
-                ProjectId = projectId,
-                RunId = runId,
-            },
-            cancellationToken
-        );
+        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
             nameof(GetById),
@@ -118,6 +102,7 @@ public class TestResultsController(ISender sender) : ControllerBase
 
     /// <summary>Updates a test result.</summary>
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestResultResponse>> Update(
         Guid projectId,
         Guid runId,
@@ -126,21 +111,15 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                command with
-                {
-                    ProjectId = projectId,
-                    RunId = runId,
-                    Id = id,
-                },
-                cancellationToken
-            )
-        );
+        var scopedCommand = command with { ProjectId = projectId, RunId = runId, Id = id };
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Deletes a test result.</summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
         Guid projectId,
         Guid runId,
@@ -148,15 +127,13 @@ public class TestResultsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new DeleteTestResult.Command
-            {
-                ProjectId = projectId,
-                RunId = runId,
-                Id = id,
-            },
-            cancellationToken
-        );
+        var command = new DeleteTestResult.Command
+        {
+            ProjectId = projectId,
+            RunId = runId,
+            Id = id,
+        };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }

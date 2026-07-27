@@ -77,21 +77,20 @@ public static class ImportJUnit
             context.ImportJobs.Add(job);
             await context.SaveChangesAsync(cancellationToken);
 
-            await publishEndpoint.Publish(
-                new ImportJUnitRequested
-                {
-                    JobId = job.Id,
-                    ProjectId = request.ProjectId,
-                    Xml = request.Xml,
-                    Environment = request.Environment,
-                    Name = request.Name,
-                    Source = request.Source,
-                    RunId = request.RunId,
-                    UserId = currentUser.UserId,
-                    UserName = currentUser.UserName,
-                },
-                cancellationToken
-            );
+            var message = new ImportJUnitRequested
+            {
+                JobId = job.Id,
+                ProjectId = request.ProjectId,
+                Xml = request.Xml,
+                Environment = request.Environment,
+                Name = request.Name,
+                Source = request.Source,
+                RunId = request.RunId,
+                UserId = currentUser.UserId,
+                UserName = currentUser.UserName,
+            };
+
+            await publishEndpoint.Publish(message, cancellationToken);
 
             return new ImportJobResponse
             {

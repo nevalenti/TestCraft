@@ -22,15 +22,14 @@ public sealed class TestRunStatusChangedHandler(
 
         await cache.RemoveAsync(CacheKeys.TestRunResponse(domainEvent.RunId), cancellationToken);
 
-        await publishEndpoint.Publish(
-            new RunStatusChanged(
-                domainEvent.RunId,
-                domainEvent.ProjectId,
-                domainEvent.RunName,
-                domainEvent.NewStatus.ToString(),
-                domainEvent.OldStatus.ToString()
-            ),
-            cancellationToken
+        var message = new RunStatusChanged(
+            domainEvent.RunId,
+            domainEvent.ProjectId,
+            domainEvent.RunName,
+            domainEvent.NewStatus.ToString(),
+            domainEvent.OldStatus.ToString()
         );
+
+        await publishEndpoint.Publish(message, cancellationToken);
     }
 }

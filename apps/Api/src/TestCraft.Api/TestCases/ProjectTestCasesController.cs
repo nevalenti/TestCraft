@@ -15,12 +15,16 @@ public class ProjectTestCasesController(ISender sender) : ControllerBase
 {
     /// <summary>Lists test cases across all suites in a project, optionally filtered by name.</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(Paginated<TestCaseResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         Guid projectId,
         [FromQuery] GetTestCasesByProject.Query query,
         CancellationToken cancellationToken
     )
     {
-        return Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
+        var scopedQuery = query with { ProjectId = projectId };
+        var result = await sender.Send(scopedQuery, cancellationToken);
+
+        return Ok(result);
     }
 }

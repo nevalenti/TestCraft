@@ -85,8 +85,6 @@ const setupMocks = ({
     isPending: false,
   } as unknown as ReturnType<typeof useTestSuite>);
 
-  // testCase stays undefined so LabelSelect (which has its own data
-  // dependencies) never mounts — the header just shows blank text.
   vi.mocked(useTestCase).mockReturnValue({
     data: undefined,
     isPending: false,

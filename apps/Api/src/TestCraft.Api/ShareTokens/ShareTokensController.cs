@@ -14,6 +14,7 @@ public class ShareTokensController(ISender sender) : ControllerBase
 {
     /// <summary>Creates a shareable link token for a test run.</summary>
     [HttpPost]
+    [ProducesResponseType(typeof(ShareTokenResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<ShareTokenResponse>> Create(
         Guid projectId,
         Guid runId,
@@ -21,36 +22,30 @@ public class ShareTokensController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        var result = await sender.Send(
-            command with
-            {
-                ProjectId = projectId,
-                RunId = runId,
-            },
-            cancellationToken
-        );
+        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+        var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Created(string.Empty, result);
     }
 
     /// <summary>Lists all share tokens for a test run.</summary>
     [HttpGet]
+    [ProducesResponseType(typeof(IReadOnlyList<ShareTokenResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ShareTokenResponse>>> GetAll(
         Guid projectId,
         Guid runId,
         CancellationToken cancellationToken
     )
     {
-        return Ok(
-            await sender.Send(
-                new GetShareTokens.Query { ProjectId = projectId, RunId = runId },
-                cancellationToken
-            )
-        );
+        var query = new GetShareTokens.Query { ProjectId = projectId, RunId = runId };
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
     }
 
     /// <summary>Revokes a share token.</summary>
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Revoke(
         Guid projectId,
         Guid runId,
@@ -58,15 +53,13 @@ public class ShareTokensController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
-        await sender.Send(
-            new RevokeShareToken.Command
-            {
-                ProjectId = projectId,
-                RunId = runId,
-                Id = id,
-            },
-            cancellationToken
-        );
+        var command = new RevokeShareToken.Command
+        {
+            ProjectId = projectId,
+            RunId = runId,
+            Id = id,
+        };
+        await sender.Send(command, cancellationToken);
 
         return NoContent();
     }
