@@ -1,4 +1,4 @@
-.PHONY: up down build load images image-versions \
+.PHONY: up down build load images image-versions dev-realm \
         deploy deploy-prod deploy-app namespace tls-secret destroy status \
         api-github web-github e2e-github docs-github \
         api-gitlab web-gitlab e2e-gitlab docs-gitlab \
@@ -17,13 +17,19 @@ GITLAB_CI_LOCAL = pnpm exec gitlab-ci-local --ignore-predefined-vars CI,CI_PIPEL
 HELM_PROD_VALUES = --values infrastructure/helm/testcraft/values.production.yaml --values infrastructure/helm/testcraft/values.secrets.yaml --reset-then-reuse-values
 HELM_SSA_FLAGS = --server-side=true --force-conflicts
 
-image-versions:
+image-versions: infrastructure/image-versions.env
+dev-realm: infrastructure/keycloak/realm.json
+
+infrastructure/image-versions.env: infrastructure/helm/testcraft/values.yaml scripts/render-image-versions.sh
 	scripts/render-image-versions.sh
 
-up: image-versions
+infrastructure/keycloak/realm.json: infrastructure/helm/testcraft/files/realm.json scripts/render-dev-realm.sh
+	scripts/render-dev-realm.sh
+
+up: infrastructure/image-versions.env infrastructure/keycloak/realm.json
 	docker compose --env-file .env --env-file infrastructure/image-versions.env up -d
 
-down: image-versions
+down: infrastructure/image-versions.env infrastructure/keycloak/realm.json
 	docker compose --env-file .env --env-file infrastructure/image-versions.env down -v
 
 build:

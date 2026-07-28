@@ -10,6 +10,7 @@
 .env
 .env.*
 infrastructure/image-versions.env
+infrastructure/keycloak/realm.json
 .eslintcache
 .gitlab-ci-local-variables.yml
 .gitlab-ci-local/

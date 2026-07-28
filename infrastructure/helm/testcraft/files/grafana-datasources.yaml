@@ -8,6 +8,12 @@ datasources:
     isDefault: true
     uid: prometheus
 
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: loki
+
   - name: Alertmanager
     type: alertmanager
     access: proxy
@@ -15,24 +21,3 @@ datasources:
     uid: alertmanager
     jsonData:
       implementation: prometheus
-
-  - name: Loki
-    type: loki
-    access: proxy
-    url: http://loki:3100
-    uid: loki
-
-  - name: Tempo
-    type: tempo
-    access: proxy
-    url: http://tempo:3200
-    uid: tempo
-    jsonData:
-      tracesToLogsV2:
-        datasourceUid: loki
-        spanStartTimeShift: "-1h"
-        spanEndTimeShift: "1h"
-        filterByTraceID: false
-        filterBySpanID: false
-        customQuery: true
-        query: '{app="testcraft-api"} |= "${__trace.traceId}"'

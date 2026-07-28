@@ -117,7 +117,7 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infrastructure/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infrastructure/helm/testcraft/files/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
       - ./infrastructure/helm/testcraft/files/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
       - ./infrastructure/helm/testcraft/files/api-logs.json:/etc/grafana/provisioning/dashboards/api-logs.json:ro
       - ./infrastructure/helm/testcraft/files/api-http.json:/etc/grafana/provisioning/dashboards/api-http.json:ro

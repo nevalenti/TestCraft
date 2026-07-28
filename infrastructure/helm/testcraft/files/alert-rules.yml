@@ -64,6 +64,15 @@ groups:
           summary: "Backup job {{ $labels.job_name }} failed"
           description: "Kubernetes Job {{ $labels.job_name }} reported a failure. Check its pod logs for details."
 
+      - alert: BackupRestoreVerifyFailed
+        expr: kube_job_status_failed{namespace="testcraft", job_name=~"postgres-restore-verify-.*"} > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backup restore verification failed"
+          description: "postgres-restore-verify could not restore the latest backup dump into a scratch database, or the restored data looked empty. The backup job succeeding is not enough on its own - check its pod logs, the dump may be unusable."
+
       - alert: PostgresBackupMissing
         expr: time() - max(kube_job_status_completion_time{namespace="testcraft", job_name=~"postgres-backup-.*"}) > 93600
         labels:
@@ -79,3 +88,11 @@ groups:
         annotations:
           summary: "No successful MinIO backup in over 26 hours"
           description: "The minio-backup CronJob has not completed successfully recently. Check whether it is still scheduled and running."
+
+      - alert: BackupRestoreVerifyMissing
+        expr: time() - max(kube_job_status_completion_time{namespace="testcraft", job_name=~"postgres-restore-verify-.*"}) > 93600
+        labels:
+          severity: critical
+        annotations:
+          summary: "No successful backup restore verification in over 26 hours"
+          description: "The postgres-restore-verify CronJob has not completed successfully recently. Check whether it is still scheduled and running."

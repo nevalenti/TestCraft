@@ -1,0 +1,131 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-restore-verify
+  namespace: {{ .Release.Namespace }}
+spec:
+  schedule: {{ .Values.backups.restoreVerifySchedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          restartPolicy: Never
+          initContainers:
+            - name: download
+              image: {{ .Values.thirdPartyImages.minio_client }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  mc alias set backup-source http://minio:9000 "$MINIO_ROOT_USER" "$MINIO_ROOT_PASSWORD"
+                  for db in "$POSTGRES_DB" keycloak_db; do
+                    latest=$(mc find "backup-source/{{ .Values.backups.minioBucket }}/postgres/" --name "${db}-*.dump" | sort | tail -1)
+                    if [ -z "$latest" ]; then
+                      echo "No backup found for ${db} - nothing to verify" >&2
+                      exit 1
+                    fi
+                    mc cp "$latest" "/backup/${db}.dump"
+                  done
+              env:
+                - name: MINIO_ROOT_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_USER
+                - name: MINIO_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: MINIO_ROOT_PASSWORD
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_DB
+              resources:
+                requests:
+                  memory: 32Mi
+                  cpu: "25m"
+                limits:
+                  memory: 128Mi
+                  cpu: "250m"
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          containers:
+            - name: restore-verify
+              image: {{ .Values.thirdPartyImages.postgres }}
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -eu
+                  export PGPASSWORD="$POSTGRES_PASSWORD"
+                  status=0
+
+                  verify_one() {
+                    db="$1"
+                    scratch="restore_verify_${db}"
+                    dump="/backup/${db}.dump"
+
+                    psql -h postgres -U "$POSTGRES_USER" -d postgres -v ON_ERROR_STOP=1 \
+                      -c "DROP DATABASE IF EXISTS ${scratch};"
+                    psql -h postgres -U "$POSTGRES_USER" -d postgres -v ON_ERROR_STOP=1 \
+                      -c "CREATE DATABASE ${scratch} OWNER \"$POSTGRES_USER\";"
+
+                    if ! pg_restore -h postgres -U "$POSTGRES_USER" -d "$scratch" --no-owner "$dump"; then
+                      echo "pg_restore failed for ${db}" >&2
+                      status=1
+                    else
+                      table_count=$(psql -h postgres -U "$POSTGRES_USER" -d "$scratch" -tAc \
+                        "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")
+                      if [ "${table_count:-0}" -lt 1 ]; then
+                        echo "Restored ${db} has no tables - dump looks empty or corrupt" >&2
+                        status=1
+                      else
+                        echo "Restored ${db}: ${table_count} tables present"
+                      fi
+                    fi
+
+                    psql -h postgres -U "$POSTGRES_USER" -d postgres -v ON_ERROR_STOP=1 \
+                      -c "DROP DATABASE IF EXISTS ${scratch};"
+                  }
+
+                  verify_one "$POSTGRES_DB"
+                  verify_one keycloak_db
+
+                  exit $status
+              env:
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_USER
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_PASSWORD
+                - name: POSTGRES_DB
+                  valueFrom:
+                    secretKeyRef:
+                      name: testcraft-secrets
+                      key: POSTGRES_DB
+              resources:
+                requests:
+                  memory: 128Mi
+                  cpu: "100m"
+                limits:
+                  memory: 512Mi
+                  cpu: "500m"
+              volumeMounts:
+                - name: backup
+                  mountPath: /backup
+          volumes:
+            - name: backup
+              emptyDir: {}
