@@ -1,11 +1,11 @@
-import { PaperClipIcon } from "@heroicons/react/24/outline";
-import { createColumnHelper } from "@tanstack/react-table";
-import { type TestResult, TestResultStatus } from "@testcraft/types";
+import { PaperClipIcon } from '@heroicons/react/24/outline';
+import { createColumnHelper } from '@tanstack/react-table';
+import { type TestResult, TestResultStatus } from '@testcraft/types';
 
-import { DefectTypeBadge } from "@/components/ui/DefectTypeBadge";
-import { ResourceActions } from "@/components/ui/ResourceActions";
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { formatDateTime, formatDuration } from "@/lib/format";
+import { DefectTypeBadge } from '@/components/ui/DefectTypeBadge';
+import { ResourceActions } from '@/components/ui/ResourceActions';
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { formatDateTime, formatDuration } from '@/lib/format';
 
 const columnHelper = createColumnHelper<TestResult>();
 
@@ -21,8 +21,8 @@ export const createColumns = ({
   onAttachment,
 }: CreateColumnsOptions) => [
   columnHelper.display({
-    id: "index",
-    header: "#",
+    id: 'index',
+    header: '#',
     cell: ({ row, table }) => {
       const { pageIndex, pageSize } = table.getState().pagination;
 
@@ -33,16 +33,16 @@ export const createColumns = ({
       );
     },
   }),
-  columnHelper.accessor("testCaseName", {
-    header: "Test Case",
+  columnHelper.accessor('testCaseName', {
+    header: 'Test Case',
     cell: (info) => (
       <span className="line-clamp-1 text-sm font-medium">
         {info.getValue()}
       </span>
     ),
   }),
-  columnHelper.accessor("status", {
-    header: "Status",
+  columnHelper.accessor('status', {
+    header: 'Status',
     cell: (info) => (
       <div className="flex flex-col items-start gap-1">
         <StatusBadge status={info.getValue()} />
@@ -53,8 +53,8 @@ export const createColumns = ({
       </div>
     ),
   }),
-  columnHelper.accessor("notes", {
-    header: "Notes",
+  columnHelper.accessor('notes', {
+    header: 'Notes',
     enableSorting: false,
     cell: (info) => {
       const value = info.getValue();
@@ -71,8 +71,8 @@ export const createColumns = ({
       );
     },
   }),
-  columnHelper.accessor("durationMs", {
-    header: "Duration",
+  columnHelper.accessor('durationMs', {
+    header: 'Duration',
     enableSorting: true,
     cell: (info) => (
       <span className="text-xs whitespace-nowrap text-base-content/75 tabular-nums">
@@ -80,8 +80,8 @@ export const createColumns = ({
       </span>
     ),
   }),
-  columnHelper.accessor("executedAt", {
-    header: "Executed",
+  columnHelper.accessor('executedAt', {
+    header: 'Executed',
     cell: (info) => (
       <span className="text-xs whitespace-nowrap text-base-content/75 tabular-nums">
         {formatDateTime(info.getValue())}
@@ -89,8 +89,8 @@ export const createColumns = ({
     ),
   }),
   columnHelper.display({
-    id: "actions",
-    header: "",
+    id: 'actions',
+    header: '',
     cell: ({ row }) => (
       <div className="flex justify-end gap-0.5 opacity-100 transition-opacity focus-within:opacity-100 sm:opacity-0 sm:group-hover:opacity-100">
         <button

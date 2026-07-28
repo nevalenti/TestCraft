@@ -1,8 +1,8 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { useCallback } from "react";
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback } from 'react';
 
-import { queryKeys } from "@/api/queryKeys";
-import { useSignalR } from "@/hooks/useSignalR";
+import { queryKeys } from '@/api/queryKeys';
+import { useSignalR } from '@/hooks/useSignalR';
 
 export const useTestRunRealtime = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();

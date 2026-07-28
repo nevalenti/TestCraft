@@ -1,16 +1,16 @@
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
-import type { AllureResultItem } from "@testcraft/types";
-import { useState } from "react";
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import type { AllureResultItem } from '@testcraft/types';
+import { useState } from 'react';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { cn } from "@/lib/cn";
-import { FileDropZone } from "@/pages/ProjectDetailPage/FileDropZone";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { cn } from '@/lib/cn';
+import { FileDropZone } from '@/pages/ProjectDetailPage/FileDropZone';
 
 type ImportData =
-  | { type: "junit"; xml: string; environment: string; name?: string }
+  | { type: 'junit'; xml: string; environment: string; name?: string }
   | {
-      type: "allure";
+      type: 'allure';
       results: AllureResultItem[];
       environment: string;
       name?: string;
@@ -22,17 +22,17 @@ interface ImportFormProps {
   isLoading: boolean;
 }
 
-type DetectedFormat = "junit" | "allure" | "mixed" | null;
+type DetectedFormat = 'junit' | 'allure' | 'mixed' | null;
 type FormErrors = { files?: string; environment?: string };
 
 const detectFormat = (files: File[]): DetectedFormat => {
   if (files.length === 0) return null;
-  if (files.every((file) => file.name.toLowerCase().endsWith(".xml")))
-    return "junit";
-  if (files.every((file) => file.name.toLowerCase().endsWith(".json")))
-    return "allure";
+  if (files.every((file) => file.name.toLowerCase().endsWith('.xml')))
+    return 'junit';
+  if (files.every((file) => file.name.toLowerCase().endsWith('.json')))
+    return 'allure';
 
-  return "mixed";
+  return 'mixed';
 };
 
 const validateImport = (
@@ -42,12 +42,12 @@ const validateImport = (
 ): FormErrors => {
   const next: FormErrors = {};
 
-  if (!environment.trim()) next.environment = "Environment is required";
-  if (files.length === 0) next.files = "Please drop a file to import";
-  else if (detectedFormat === "mixed")
-    next.files = "All files must be the same type (.xml or .json)";
-  else if (detectedFormat === "junit" && files.length > 1)
-    next.files = "JUnit import supports a single XML file";
+  if (!environment.trim()) next.environment = 'Environment is required';
+  if (files.length === 0) next.files = 'Please drop a file to import';
+  else if (detectedFormat === 'mixed')
+    next.files = 'All files must be the same type (.xml or .json)';
+  else if (detectedFormat === 'junit' && files.length > 1)
+    next.files = 'JUnit import supports a single XML file';
   else {
     const MAX = 5 * 1024 * 1024;
     const oversized = files.find((file) => file.size > MAX);
@@ -85,8 +85,8 @@ export const ImportForm = ({
   isLoading,
 }: ImportFormProps) => {
   const [files, setFiles] = useState<File[]>([]);
-  const [environment, setEnvironment] = useState("");
-  const [name, setName] = useState("");
+  const [environment, setEnvironment] = useState('');
+  const [name, setName] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
 
   const detectedFormat = detectFormat(files);
@@ -103,26 +103,26 @@ export const ImportForm = ({
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
-    if (detectedFormat === "junit") {
+    if (detectedFormat === 'junit') {
       const xml = await files[0].text();
 
       onSubmit({
-        type: "junit",
+        type: 'junit',
         xml,
         environment: environment.trim(),
         name: name.trim() || undefined,
       });
-    } else if (detectedFormat === "allure") {
+    } else if (detectedFormat === 'allure') {
       const allureData = await parseAllureFiles(files);
 
-      if ("fileError" in allureData) {
+      if ('fileError' in allureData) {
         setErrors((previous) => ({ ...previous, files: allureData.fileError }));
 
         return;
       }
 
       onSubmit({
-        type: "allure",
+        type: 'allure',
         results: allureData.results,
         environment: environment.trim(),
         name: name.trim() || undefined,
@@ -143,12 +143,12 @@ export const ImportForm = ({
           hasError={!!errors.files}
           color="secondary"
         />
-        {detectedFormat && detectedFormat !== "mixed" && (
+        {detectedFormat && detectedFormat !== 'mixed' && (
           <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-success">
             <CheckCircleIcon className="size-3.5" aria-hidden="true" />
-            {detectedFormat === "junit"
-              ? "JUnit XML detected"
-              : "Allure JSON detected"}
+            {detectedFormat === 'junit'
+              ? 'JUnit XML detected'
+              : 'Allure JSON detected'}
           </span>
         )}
       </FormField>
@@ -161,8 +161,8 @@ export const ImportForm = ({
         <input
           id="import-environment"
           className={cn(
-            "input-bordered input w-full bg-base-200",
-            errors.environment && "input-error",
+            'input-bordered input w-full bg-base-200',
+            errors.environment && 'input-error',
           )}
           placeholder="staging"
           value={environment}

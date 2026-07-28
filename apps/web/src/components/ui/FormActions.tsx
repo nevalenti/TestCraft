@@ -1,17 +1,17 @@
-import { cn } from "@/lib/cn";
+import { cn } from '@/lib/cn';
 
 interface FormActionsProps {
   onCancel: () => void;
   isLoading: boolean;
   label?: string;
-  variant?: "primary" | "secondary";
+  variant?: 'primary' | 'secondary';
 }
 
 export const FormActions = ({
   onCancel,
   isLoading,
-  label = "Save",
-  variant = "primary",
+  label = 'Save',
+  variant = 'primary',
 }: FormActionsProps) => (
   <div className="flex justify-end gap-2 pt-3">
     <button
@@ -24,8 +24,8 @@ export const FormActions = ({
     <button
       type="submit"
       className={cn(
-        "btn btn-sm min-w-16",
-        variant === "secondary" ? "btn-secondary" : "btn-primary",
+        'btn btn-sm min-w-16',
+        variant === 'secondary' ? 'btn-secondary' : 'btn-primary',
       )}
       disabled={isLoading}
     >

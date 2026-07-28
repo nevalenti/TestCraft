@@ -1,10 +1,10 @@
-import { FolderIcon } from "@heroicons/react/24/solid";
-import type { Project } from "@testcraft/types";
+import { FolderIcon } from '@heroicons/react/24/solid';
+import type { Project } from '@testcraft/types';
 
-import { ResourceCard } from "@/components/ui/ResourceCard";
-import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { formatDate } from "@/lib/format";
-import type { ViewMode } from "@/stores/viewMode";
+import { ResourceCard } from '@/components/ui/ResourceCard';
+import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { formatDate } from '@/lib/format';
+import type { ViewMode } from '@/stores/viewMode';
 
 interface ProjectCardProps {
   project: Project;
@@ -20,10 +20,10 @@ const CountBadges = ({ project }: { project: Project }) => {
   return (
     <>
       <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-        {project.suiteCount} {project.suiteCount === 1 ? "suite" : "suites"}
+        {project.suiteCount} {project.suiteCount === 1 ? 'suite' : 'suites'}
       </span>
       <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-        {project.runCount} {project.runCount === 1 ? "run" : "runs"}
+        {project.runCount} {project.runCount === 1 ? 'run' : 'runs'}
       </span>
     </>
   );
@@ -31,13 +31,13 @@ const CountBadges = ({ project }: { project: Project }) => {
 
 export const ProjectCard = ({
   project,
-  viewMode = "grid",
+  viewMode = 'grid',
   onEdit,
   onDelete,
 }: ProjectCardProps) => {
   const deleteHandler = project.isOwner ? onDelete : undefined;
 
-  if (viewMode === "list")
+  if (viewMode === 'list')
     return (
       <ResourceListItem
         to={`/projects/${project.id}`}

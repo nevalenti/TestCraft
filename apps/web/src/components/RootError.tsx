@@ -1,4 +1,4 @@
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 
 export const RootError = ({ error }: { error: Error }) => (
   <div className="flex flex-1 items-center justify-center p-8">

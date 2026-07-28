@@ -1,16 +1,16 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   BulkReorderSteps,
   CreateTestCaseStep,
   Paginated,
   TestCaseStep,
   UpdateTestCaseStep,
-} from "@testcraft/types";
-import { produce } from "immer";
+} from '@testcraft/types';
+import { produce } from 'immer';
 
-import { queryKeys } from "@/api/queryKeys";
-import { testCaseStepQueries, testCaseStepsApi } from "@/api/testCaseSteps";
-import { notify } from "@/lib/notify";
+import { queryKeys } from '@/api/queryKeys';
+import { testCaseStepQueries, testCaseStepsApi } from '@/api/testCaseSteps';
+import { notify } from '@/lib/notify';
 
 export const useTestCaseSteps = (
   projectId: string,
@@ -40,7 +40,7 @@ export const useCreateTestCaseStep = (
     mutationFn: (input: CreateTestCaseStep) =>
       testCaseStepsApi.create(projectId, suiteId, caseId, input),
     onSuccess: () => {
-      notify("Step added");
+      notify('Step added');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });
@@ -59,7 +59,7 @@ export const useUpdateTestCaseStep = (
     mutationFn: ({ id, ...input }: UpdateTestCaseStep & { id: string }) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
     onSuccess: (_, { id }) => {
-      notify("Step updated");
+      notify('Step updated');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });
@@ -130,7 +130,7 @@ export const useDeleteTestCaseStep = (
     mutationFn: (id: string) =>
       testCaseStepsApi.delete(projectId, suiteId, caseId, id),
     onSuccess: (_, id) => {
-      notify("Step deleted");
+      notify('Step deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });

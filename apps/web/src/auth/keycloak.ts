@@ -1,6 +1,6 @@
-import Keycloak from "keycloak-js";
+import Keycloak from 'keycloak-js';
 
-import { env } from "@/lib/env";
+import { env } from '@/lib/env';
 
 const keycloak = new Keycloak({
   url: env.VITE_KEYCLOAK_URL,

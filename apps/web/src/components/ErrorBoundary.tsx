@@ -1,5 +1,5 @@
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import { Component, type ErrorInfo, type ReactNode } from "react";
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import { Component, type ErrorInfo, type ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -22,7 +22,7 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.props.onError) {
       this.props.onError(error, info);
     } else {
-      console.error("Unhandled error:", error, info);
+      console.error('Unhandled error:', error, info);
     }
   }
 

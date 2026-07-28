@@ -5,22 +5,22 @@ import {
   ClockIcon,
   FolderIcon,
   XCircleIcon,
-} from "@heroicons/react/24/solid";
-import { useQueries } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
-import { TestRunStatus } from "@testcraft/types";
-import { compareDesc } from "date-fns";
-import { useMemo } from "react";
+} from '@heroicons/react/24/solid';
+import { useQueries } from '@tanstack/react-query';
+import { Link } from '@tanstack/react-router';
+import { TestRunStatus } from '@testcraft/types';
+import { compareDesc } from 'date-fns';
+import { useMemo } from 'react';
 
-import { testRunQueries } from "@/api/testRuns";
-import keycloak from "@/auth/keycloak";
-import { ErrorState } from "@/components/ErrorState";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useProjects } from "@/hooks/useProjects";
-import { cn } from "@/lib/cn";
-import { formatDateTime } from "@/lib/format";
-import { StatCard } from "@/pages/DashboardPage/StatCard";
+import { testRunQueries } from '@/api/testRuns';
+import keycloak from '@/auth/keycloak';
+import { ErrorState } from '@/components/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useProjects } from '@/hooks/useProjects';
+import { cn } from '@/lib/cn';
+import { formatDateTime } from '@/lib/format';
+import { StatCard } from '@/pages/DashboardPage/StatCard';
 
 const getInitials = (name: string) =>
   name
@@ -28,7 +28,7 @@ const getInitials = (name: string) =>
     .split(/\s+/)
     .map((word) => word[0])
     .slice(0, 2)
-    .join("")
+    .join('')
     .toUpperCase();
 
 const getRunAvatarLabel = (
@@ -37,21 +37,21 @@ const getRunAvatarLabel = (
 ) => {
   if (executedByName) return getInitials(executedByName);
   if (source) return source.slice(0, 2).toUpperCase();
-  return "?";
+  return '?';
 };
 
 const RunAvatar = ({
   executedByName,
   executedByAvatarUrl,
   source,
-  size = "size-6",
+  size = 'size-6',
 }: {
   executedByName?: string | null;
   executedByAvatarUrl?: string | null;
   source?: string | null;
   size?: string;
 }) => {
-  const title = executedByName ?? source ?? "Unknown";
+  const title = executedByName ?? source ?? 'Unknown';
 
   if (executedByAvatarUrl) {
     return (
@@ -59,7 +59,7 @@ const RunAvatar = ({
         src={executedByAvatarUrl}
         alt={title}
         title={title}
-        className={cn(size, "shrink-0 rounded-full object-cover")}
+        className={cn(size, 'shrink-0 rounded-full object-cover')}
       />
     );
   }
@@ -67,7 +67,7 @@ const RunAvatar = ({
   return (
     <span
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums",
+        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums',
         size,
       )}
       title={title}
@@ -79,9 +79,9 @@ const RunAvatar = ({
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+  if (hour < 12) return 'Good morning';
+  if (hour < 18) return 'Good afternoon';
+  return 'Good evening';
 };
 
 export const DashboardPage = () => {
@@ -155,7 +155,7 @@ export const DashboardPage = () => {
       new Map(activeRuns.map((run, index) => [run.id, results[index].data])),
   });
 
-  useBreadcrumbs([{ label: "Dashboard", href: "/" }]);
+  useBreadcrumbs([{ label: 'Dashboard', href: '/' }]);
 
   if (isError) return <ErrorState error={error} />;
 
@@ -168,7 +168,7 @@ export const DashboardPage = () => {
 
   const displayName =
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
-  const firstName = displayName?.split(" ", 1)[0];
+  const firstName = displayName?.split(' ', 1)[0];
 
   return (
     <div className="flex min-h-0 w-full flex-col overflow-y-auto">
@@ -180,7 +180,7 @@ export const DashboardPage = () => {
         <>
           <header className="px-4 pt-6 pb-5 sm:px-6 lg:px-8">
             <h1 className="page-title">
-              {firstName ? `${getGreeting()}, ${firstName}` : "Dashboard"}
+              {firstName ? `${getGreeting()}, ${firstName}` : 'Dashboard'}
             </h1>
             <p className="mt-0.5 text-sm text-base-content/70">
               {"Here's an overview of your testing activity."}
@@ -270,10 +270,10 @@ export const DashboardPage = () => {
                           >
                             <span
                               className={cn(
-                                "relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
+                                'relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full',
                                 hasResults
-                                  ? "bg-warning/12 text-warning"
-                                  : "bg-base-content/6 text-base-content/55",
+                                  ? 'bg-warning/12 text-warning'
+                                  : 'bg-base-content/6 text-base-content/55',
                               )}
                             >
                               {hasResults ? (
@@ -303,9 +303,9 @@ export const DashboardPage = () => {
                                         {project.name}
                                       </span>
                                     )}
-                                    {" · "}
+                                    {' · '}
                                     {run.environment}
-                                    {" · "}
+                                    {' · '}
                                     {formatDateTime(run.createdAt)}
                                   </p>
                                 </div>
@@ -390,10 +390,10 @@ export const DashboardPage = () => {
                           >
                             <span
                               className={cn(
-                                "relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full",
+                                'relative flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full',
                                 hasFailed
-                                  ? "bg-error/12 text-error"
-                                  : "bg-success/12 text-success",
+                                  ? 'bg-error/12 text-error'
+                                  : 'bg-success/12 text-success',
                               )}
                             >
                               {hasFailed ? (
@@ -423,9 +423,9 @@ export const DashboardPage = () => {
                                         {project.name}
                                       </span>
                                     )}
-                                    {" · "}
+                                    {' · '}
                                     {run.environment}
-                                    {" · "}
+                                    {' · '}
                                     {formatDateTime(
                                       run.updatedAt ?? run.createdAt,
                                     )}
@@ -435,16 +435,16 @@ export const DashboardPage = () => {
                                 {passRate !== null && (
                                   <span
                                     className={cn(
-                                      "flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums",
+                                      'flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 font-mono text-sm tabular-nums',
                                       passRate === 100 &&
-                                        "bg-success/10 text-success",
+                                        'bg-success/10 text-success',
                                       passRate !== null &&
                                         passRate < 100 &&
                                         passRate >= 80 &&
-                                        "bg-warning/10 text-warning",
+                                        'bg-warning/10 text-warning',
                                       passRate !== null &&
                                         passRate < 80 &&
-                                        "bg-error/10 text-error",
+                                        'bg-error/10 text-error',
                                     )}
                                   >
                                     {hasFailed ? (
@@ -462,16 +462,16 @@ export const DashboardPage = () => {
                                   <>
                                     <div
                                       className={cn(
-                                        "h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all",
+                                        'h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all',
                                         hasFailed
-                                          ? "bg-error/20"
-                                          : "bg-success/20",
+                                          ? 'bg-error/20'
+                                          : 'bg-success/20',
                                       )}
                                     >
                                       <div
                                         className={cn(
-                                          "h-full rounded-full transition-all",
-                                          hasFailed ? "bg-error" : "bg-success",
+                                          'h-full rounded-full transition-all',
+                                          hasFailed ? 'bg-error' : 'bg-success',
                                         )}
                                         style={{ width: `${passRate ?? 0}%` }}
                                       />

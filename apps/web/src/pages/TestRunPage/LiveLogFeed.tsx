@@ -1,15 +1,15 @@
-import { TestResultStatus, TestRunStatus } from "@testcraft/types";
+import { TestResultStatus, TestRunStatus } from '@testcraft/types';
 
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { useResultFeed } from "@/hooks/useResultFeed";
-import { useTestRun } from "@/hooks/useTestRuns";
-import { formatDate } from "@/lib/format";
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useResultFeed } from '@/hooks/useResultFeed';
+import { useTestRun } from '@/hooks/useTestRuns';
+import { formatDate } from '@/lib/format';
 
 const STATUS_BORDER: Record<TestResultStatus, string> = {
-  [TestResultStatus.Passed]: "border-l-success",
-  [TestResultStatus.Failed]: "border-l-error",
-  [TestResultStatus.Blocked]: "border-l-warning",
-  [TestResultStatus.Skipped]: "border-l-base-content/20",
+  [TestResultStatus.Passed]: 'border-l-success',
+  [TestResultStatus.Failed]: 'border-l-error',
+  [TestResultStatus.Blocked]: 'border-l-warning',
+  [TestResultStatus.Skipped]: 'border-l-base-content/20',
 };
 
 const formatDuration = (ms: number | null | undefined) => {
@@ -49,7 +49,7 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
           </span>
         )}
         <span className="text-sm text-base-content/65">
-          {items.length} result{items.length === 1 ? "" : "s"}
+          {items.length} result{items.length === 1 ? '' : 's'}
         </span>
       </div>
 

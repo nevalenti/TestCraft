@@ -4,20 +4,20 @@ import {
   Cog6ToothIcon,
   HomeIcon,
   RectangleStackIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 import {
   Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
   XMarkIcon,
-} from "@heroicons/react/24/solid";
-import { Link } from "@tanstack/react-router";
-import { useRef } from "react";
+} from '@heroicons/react/24/solid';
+import { Link } from '@tanstack/react-router';
+import { useRef } from 'react';
 
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { AccountMenu } from "@/layout/AccountMenu";
-import { LogoMark } from "@/layout/LogoMark";
-import { NavItem } from "@/layout/NavItem";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { AccountMenu } from '@/layout/AccountMenu';
+import { LogoMark } from '@/layout/LogoMark';
+import { NavItem } from '@/layout/NavItem';
 
 export const Header = () => {
   const drawerRef = useRef<HTMLInputElement>(null);
@@ -44,7 +44,7 @@ export const Header = () => {
             <LogoMark />
             <span
               className="text-[15px] font-extrabold tracking-tight"
-              style={{ fontFamily: "var(--font-display)" }}
+              style={{ fontFamily: 'var(--font-display)' }}
             >
               TestCraft
             </span>
@@ -76,7 +76,7 @@ export const Header = () => {
                 <LogoMark />
                 <span
                   className="text-[15px] font-extrabold tracking-tight text-base-content"
-                  style={{ fontFamily: "var(--font-display)" }}
+                  style={{ fontFamily: 'var(--font-display)' }}
                 >
                   TestCraft
                 </span>

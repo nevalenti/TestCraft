@@ -4,9 +4,9 @@ import {
   useContext,
   useEffect,
   useState,
-} from "react";
+} from 'react';
 
-import { getCookie, setCookie } from "@/lib/cookie";
+import { getCookie, setCookie } from '@/lib/cookie';
 
 interface ThemeContextValue {
   isDark: boolean;
@@ -18,14 +18,14 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 export const useTheme = (): ThemeContextValue => {
   const context = useContext(ThemeContext);
 
-  if (!context) throw new Error("useTheme must be used inside ThemeProvider");
+  if (!context) throw new Error('useTheme must be used inside ThemeProvider');
 
   return context;
 };
 
-const THEME_KEY = "app-theme";
-const LIGHT = "testcraft-light";
-const DARK = "dracula";
+const THEME_KEY = 'app-theme';
+const LIGHT = 'testcraft-light';
+const DARK = 'dracula';
 
 const resolveTheme = (): string => {
   const stored = getCookie(THEME_KEY);

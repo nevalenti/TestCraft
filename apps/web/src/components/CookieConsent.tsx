@@ -1,6 +1,6 @@
-import { ShieldCheckIcon } from "@heroicons/react/24/solid";
+import { ShieldCheckIcon } from '@heroicons/react/24/solid';
 
-import { useCookieConsent } from "@/hooks/useCookieConsent";
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 export const CookieConsent = () => {
   const { isShowing, accept, decline } = useCookieConsent();

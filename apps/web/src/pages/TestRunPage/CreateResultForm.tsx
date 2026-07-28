@@ -1,30 +1,30 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   type CreateTestResult,
   DefectType,
   TestResultStatus,
-} from "@testcraft/types";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
+} from '@testcraft/types';
+import { useForm, useWatch } from 'react-hook-form';
+import { z } from 'zod';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { FormInput } from "@/components/ui/FormInput";
-import { FormTextarea } from "@/components/ui/FormTextarea";
-import { useProjectTestCases } from "@/hooks/useTestCases";
-import { cn } from "@/lib/cn";
-import { statusOptions } from "@/lib/constants";
-import { toDatetimeLocal } from "@/lib/format";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormInput } from '@/components/ui/FormInput';
+import { FormTextarea } from '@/components/ui/FormTextarea';
+import { useProjectTestCases } from '@/hooks/useTestCases';
+import { cn } from '@/lib/cn';
+import { statusOptions } from '@/lib/constants';
+import { toDatetimeLocal } from '@/lib/format';
 
 const defectTypeOptions = [
-  { value: DefectType.ProductBug, label: "Product Bug" },
-  { value: DefectType.AutomationBug, label: "Automation Bug" },
-  { value: DefectType.EnvironmentIssue, label: "Environment Issue" },
-  { value: DefectType.ToInvestigate, label: "To Investigate" },
+  { value: DefectType.ProductBug, label: 'Product Bug' },
+  { value: DefectType.AutomationBug, label: 'Automation Bug' },
+  { value: DefectType.EnvironmentIssue, label: 'Environment Issue' },
+  { value: DefectType.ToInvestigate, label: 'To Investigate' },
 ];
 
 const schema = z.object({
-  testCaseId: z.string().min(1, "Select a test case"),
+  testCaseId: z.string().min(1, 'Select a test case'),
   status: z.nativeEnum(TestResultStatus),
   notes: z.string(),
   durationMs: z.coerce
@@ -32,9 +32,9 @@ const schema = z.object({
     .int()
     .nonnegative()
     .optional()
-    .or(z.literal("")),
-  defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
-  executedAt: z.string().min(1, "Executed at is required"),
+    .or(z.literal('')),
+  defectType: z.union([z.nativeEnum(DefectType), z.literal('')]).optional(),
+  executedAt: z.string().min(1, 'Executed at is required'),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -62,21 +62,21 @@ export const CreateResultForm = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      testCaseId: "",
+      testCaseId: '',
       status: TestResultStatus.Passed,
-      notes: "",
-      durationMs: "",
+      notes: '',
+      durationMs: '',
       executedAt: toDatetimeLocal(new Date().toISOString()),
     },
   });
 
-  const status = useWatch({ control, name: "status" });
+  const status = useWatch({ control, name: 'status' });
 
   let defaultOptionText: string;
 
-  if (loadingCases) defaultOptionText = "Loading…";
-  else if (cases?.length === 0) defaultOptionText = "No test cases in project";
-  else defaultOptionText = "Select a test case";
+  if (loadingCases) defaultOptionText = 'Loading…';
+  else if (cases?.length === 0) defaultOptionText = 'No test cases in project';
+  else defaultOptionText = 'Select a test case';
 
   return (
     <form
@@ -85,9 +85,9 @@ export const CreateResultForm = ({
           testCaseId: data.testCaseId,
           status: data.status,
           notes: data.notes || undefined,
-          durationMs: data.durationMs === "" ? undefined : data.durationMs,
+          durationMs: data.durationMs === '' ? undefined : data.durationMs,
           defectType:
-            data.status === TestResultStatus.Failed && data.defectType !== ""
+            data.status === TestResultStatus.Failed && data.defectType !== ''
               ? data.defectType
               : undefined,
           executedAt: new Date(data.executedAt).toISOString(),
@@ -103,12 +103,12 @@ export const CreateResultForm = ({
         <select
           id="result-test-case"
           className={cn(
-            "select-bordered select w-full",
-            errors.testCaseId && "select-error",
+            'select-bordered select w-full',
+            errors.testCaseId && 'select-error',
           )}
           disabled={loadingCases}
           autoFocus
-          {...register("testCaseId")}
+          {...register('testCaseId')}
         >
           <option value="">{defaultOptionText}</option>
           {cases?.map((testCase) => (
@@ -126,7 +126,7 @@ export const CreateResultForm = ({
         <select
           id="result-status"
           className="select-bordered select w-full"
-          {...register("status")}
+          {...register('status')}
         >
           {statusOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -144,7 +144,7 @@ export const CreateResultForm = ({
           <select
             id="result-defect-type"
             className="select-bordered select w-full"
-            {...register("defectType")}
+            {...register('defectType')}
           >
             <option value="">Select defect type (optional)</option>
             {defectTypeOptions.map((option) => (
@@ -165,7 +165,7 @@ export const CreateResultForm = ({
           type="number"
           placeholder="e.g. 1500 (optional)"
           min={0}
-          {...register("durationMs")}
+          {...register('durationMs')}
         />
       </FormField>
       <FormField
@@ -176,7 +176,7 @@ export const CreateResultForm = ({
         <FormInput
           id="result-executed-at"
           type="datetime-local"
-          {...register("executedAt")}
+          {...register('executedAt')}
         />
       </FormField>
       <FormField
@@ -188,7 +188,7 @@ export const CreateResultForm = ({
           id="result-notes"
           placeholder="Optional"
           rows={2}
-          {...register("notes")}
+          {...register('notes')}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

@@ -1,4 +1,4 @@
-import { useCookieConsentStore } from "@/stores/cookieConsent";
+import { useCookieConsentStore } from '@/stores/cookieConsent';
 
 export const useCookieConsent = () => {
   const consent = useCookieConsentStore((store) => store.consent);

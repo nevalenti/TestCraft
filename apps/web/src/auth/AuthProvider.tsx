@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-import keycloak from "@/auth/keycloak";
+import keycloak from '@/auth/keycloak';
 
 interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-const isPublicRoute = () => location.pathname.startsWith("/share/");
+const isPublicRoute = () => location.pathname.startsWith('/share/');
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [ready, setReady] = useState(false);
@@ -21,13 +21,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     (async () => {
       try {
         await keycloak.init({
-          onLoad: isPublicRoute() ? "check-sso" : "login-required",
-          pkceMethod: "S256",
+          onLoad: isPublicRoute() ? 'check-sso' : 'login-required',
+          pkceMethod: 'S256',
           checkLoginIframe: false,
         });
         setReady(true);
       } catch (error_) {
-        console.error("Keycloak init failed:", error_);
+        console.error('Keycloak init failed:', error_);
         setError(String(error_));
       }
     })();

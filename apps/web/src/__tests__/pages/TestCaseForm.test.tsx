@@ -1,13 +1,13 @@
-import { TestCasePriority } from "@testcraft/types";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { TestCasePriority } from '@testcraft/types';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
-import { TestCaseForm } from "@/pages/TestSuitePage/TestCaseForm";
+import { TestCaseForm } from '@/pages/TestSuitePage/TestCaseForm';
 
-describe("TestCaseForm", () => {
-  describe("given no defaultValues — renders an empty name field and Medium priority", () => {
-    it("name input is empty", () => {
+describe('TestCaseForm', () => {
+  describe('given no defaultValues — renders an empty name field and Medium priority', () => {
+    it('name input is empty', () => {
       render(
         <TestCaseForm
           onSubmit={vi.fn()}
@@ -15,10 +15,10 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      expect(screen.getByLabelText("Name")).toHaveValue("");
+      expect(screen.getByLabelText('Name')).toHaveValue('');
     });
 
-    it("priority defaults to Medium", () => {
+    it('priority defaults to Medium', () => {
       render(
         <TestCaseForm
           onSubmit={vi.fn()}
@@ -26,19 +26,19 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      expect(screen.getByLabelText("Priority")).toHaveValue(
+      expect(screen.getByLabelText('Priority')).toHaveValue(
         TestCasePriority.Medium,
       );
     });
   });
 
-  describe("given defaultValues — pre-fills the fields", () => {
-    it("sets the name", () => {
+  describe('given defaultValues — pre-fills the fields', () => {
+    it('sets the name', () => {
       render(
         <TestCaseForm
           defaultValues={{
-            name: "Login succeeds",
-            description: "",
+            name: 'Login succeeds',
+            description: '',
             priority: TestCasePriority.High,
           }}
           onSubmit={vi.fn()}
@@ -46,15 +46,15 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      expect(screen.getByLabelText("Name")).toHaveValue("Login succeeds");
+      expect(screen.getByLabelText('Name')).toHaveValue('Login succeeds');
     });
 
-    it("sets the priority", () => {
+    it('sets the priority', () => {
       render(
         <TestCaseForm
           defaultValues={{
-            name: "Login succeeds",
-            description: "",
+            name: 'Login succeeds',
+            description: '',
             priority: TestCasePriority.High,
           }}
           onSubmit={vi.fn()}
@@ -62,14 +62,14 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      expect(screen.getByLabelText("Priority")).toHaveValue(
+      expect(screen.getByLabelText('Priority')).toHaveValue(
         TestCasePriority.High,
       );
     });
   });
 
-  describe("when submitted — calls onSubmit with entered values", () => {
-    it("passes name, priority, and undefined description when empty", async () => {
+  describe('when submitted — calls onSubmit with entered values', () => {
+    it('passes name, priority, and undefined description when empty', async () => {
       const onSubmit = vi.fn();
 
       render(
@@ -79,18 +79,18 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      await userEvent.type(screen.getByLabelText("Name"), "User can log in");
-      await userEvent.click(screen.getByRole("button", { name: "Save" }));
+      await userEvent.type(screen.getByLabelText('Name'), 'User can log in');
+      await userEvent.click(screen.getByRole('button', { name: 'Save' }));
       expect(onSubmit).toHaveBeenCalledWith({
-        name: "User can log in",
+        name: 'User can log in',
         description: undefined,
         priority: TestCasePriority.Medium,
       });
     });
   });
 
-  describe("when Cancel is clicked — calls onCancel", () => {
-    it("invokes onCancel once", async () => {
+  describe('when Cancel is clicked — calls onCancel', () => {
+    it('invokes onCancel once', async () => {
       const onCancel = vi.fn();
 
       render(
@@ -100,7 +100,7 @@ describe("TestCaseForm", () => {
           isLoading={false}
         />,
       );
-      await userEvent.click(screen.getByRole("button", { name: "Cancel" }));
+      await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
       expect(onCancel).toHaveBeenCalledOnce();
     });
   });

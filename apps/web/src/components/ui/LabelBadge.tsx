@@ -1,4 +1,4 @@
-import type { Label } from "@testcraft/types";
+import type { Label } from '@testcraft/types';
 
 export const LabelBadge = ({ label }: { label: Label }) => (
   <span

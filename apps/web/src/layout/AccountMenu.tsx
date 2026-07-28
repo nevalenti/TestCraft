@@ -2,11 +2,11 @@ import {
   ArrowRightStartOnRectangleIcon,
   ChevronDownIcon,
   ChevronRightIcon,
-} from "@heroicons/react/24/solid";
-import { useNavigate } from "@tanstack/react-router";
+} from '@heroicons/react/24/solid';
+import { useNavigate } from '@tanstack/react-router';
 
-import keycloak from "@/auth/keycloak";
-import { useAvatarUrl } from "@/hooks/useAccount";
+import keycloak from '@/auth/keycloak';
+import { useAvatarUrl } from '@/hooks/useAccount';
 
 const getInitials = (name: string) =>
   name
@@ -14,7 +14,7 @@ const getInitials = (name: string) =>
     .split(/\s+/)
     .map((part) => part[0])
     .slice(0, 2)
-    .join("")
+    .join('')
     .toUpperCase();
 
 export const AccountMenu = () => {
@@ -60,7 +60,7 @@ export const AccountMenu = () => {
             <li>
               <button
                 onClick={() => {
-                  navigate({ to: "/account" });
+                  navigate({ to: '/account' });
                   (document.activeElement as HTMLElement)?.blur();
                 }}
                 className="group flex w-full cursor-pointer items-center gap-3 bg-base-200/30 px-4 py-3.5 text-left transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-primary)]"
@@ -101,7 +101,7 @@ export const AccountMenu = () => {
           <button
             onClick={() =>
               keycloak.logout({
-                redirectUri: location.origin + "/",
+                redirectUri: location.origin + '/',
               })
             }
             className="flex w-full cursor-pointer items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium text-base-content/80 transition-colors hover:bg-error/10 hover:text-error"

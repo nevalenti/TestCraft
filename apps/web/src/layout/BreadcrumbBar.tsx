@@ -1,8 +1,8 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from '@tanstack/react-router';
 
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { AccountMenu } from "@/layout/AccountMenu";
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { AccountMenu } from '@/layout/AccountMenu';
+import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
 
 export const BreadcrumbBar = () => {
   const breadcrumbs = useBreadcrumbsStore((store) => store.items);
@@ -40,10 +40,10 @@ export const BreadcrumbBar = () => {
                   </Link>
                 ) : (
                   <span
-                    aria-current={isLast ? "page" : undefined}
+                    aria-current={isLast ? 'page' : undefined}
                     title={item.label}
                     className={`max-w-64 truncate text-xs font-semibold ${
-                      isLast ? "text-base-content/90" : "text-base-content/85"
+                      isLast ? 'text-base-content/90' : 'text-base-content/85'
                     }`}
                   >
                     {item.label}

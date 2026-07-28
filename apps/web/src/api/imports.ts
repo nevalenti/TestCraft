@@ -1,6 +1,6 @@
-import type { AllureResultItem, TestRun } from "@testcraft/types";
+import type { AllureResultItem, TestRun } from '@testcraft/types';
 
-import client from "@/api/client";
+import client from '@/api/client';
 
 const BASE = (projectId: string) => `projects/${projectId}/import`;
 

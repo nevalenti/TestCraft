@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo } from 'react';
 import {
   Area,
   AreaChart,
@@ -7,50 +7,50 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 
-import { useRunTrend } from "@/hooks/useAnalytics";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { formatDate } from "@/lib/format";
+import { useRunTrend } from '@/hooks/useAnalytics';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { formatDate } from '@/lib/format';
 
 const PALETTE = [
-  "#818cf8",
-  "#36d399",
-  "#f97316",
-  "#f43f5e",
-  "#facc15",
-  "#22d3ee",
-  "#a78bfa",
+  '#818cf8',
+  '#36d399',
+  '#f97316',
+  '#f43f5e',
+  '#facc15',
+  '#22d3ee',
+  '#a78bfa',
 ];
 
-const MANUAL_COLOR = "#94a3b8";
+const MANUAL_COLOR = '#94a3b8';
 
 const sourceLabel = (source: string | undefined) =>
-  source ? source.charAt(0).toUpperCase() + source.slice(1) : "Manual";
+  source ? source.charAt(0).toUpperCase() + source.slice(1) : 'Manual';
 
 const sourceColor = (source: string | undefined, index: number) =>
   source ? (PALETTE[index % PALETTE.length] ?? PALETTE[0]) : MANUAL_COLOR;
 
 const gradientId = (source: string | undefined) =>
-  `trendGrad-${source ?? "manual"}`;
+  `trendGrad-${source ?? 'manual'}`;
 
 const passRateClass = (rate: number) => {
-  if (rate >= 80) return "text-success";
-  if (rate >= 50) return "text-warning";
-  return "text-error";
+  if (rate >= 80) return 'text-success';
+  if (rate >= 50) return 'text-warning';
+  return 'text-error';
 };
 
 const deltaClass = (delta: number) => {
-  if (delta > 0) return "text-success";
-  if (delta < 0) return "text-error";
-  return "text-base-content/65";
+  if (delta > 0) return 'text-success';
+  if (delta < 0) return 'text-error';
+  return 'text-base-content/65';
 };
 
 const deltaLabel = (delta: number | null) => {
-  if (delta === null) return "Not enough data";
-  if (delta > 0) return "Improving";
-  if (delta < 0) return "Declining";
-  return "Unchanged";
+  if (delta === null) return 'Not enough data';
+  if (delta > 0) return 'Improving';
+  if (delta < 0) return 'Declining';
+  return 'Unchanged';
 };
 
 type TrendEntry = {
@@ -89,10 +89,10 @@ const TrendTooltip = ({
       <div className="my-1.5 border-t border-border/50" />
       {(
         [
-          { label: "Passed", value: entry.passed, cls: "bg-success" },
-          { label: "Failed", value: entry.failed, cls: "bg-error" },
-          { label: "Blocked", value: entry.blocked, cls: "bg-warning" },
-          { label: "Skipped", value: entry.skipped, cls: "bg-base-content/30" },
+          { label: 'Passed', value: entry.passed, cls: 'bg-success' },
+          { label: 'Failed', value: entry.failed, cls: 'bg-error' },
+          { label: 'Blocked', value: entry.blocked, cls: 'bg-warning' },
+          { label: 'Skipped', value: entry.skipped, cls: 'bg-base-content/30' },
         ] as const
       ).map(({ label, value, cls }) => (
         <div key={label} className="flex items-center justify-between gap-8">
@@ -112,7 +112,7 @@ const TrendTooltip = ({
 };
 
 const truncate = (text: string, maxLength: number) =>
-  text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+  text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
 
 type SourceGroup = {
   source: string | undefined;
@@ -175,7 +175,7 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
             <p
               className={`mt-1 text-2xl font-bold tabular-nums ${deltaClass(stats.delta)}`}
             >
-              {stats.delta > 0 ? "+" : ""}
+              {stats.delta > 0 ? '+' : ''}
               {stats.delta}%
             </p>
           )}
@@ -192,7 +192,7 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
             {stats.avg}%
           </p>
           <p className="mt-0.5 text-xs text-base-content/65">
-            across {stats.count} run{stats.count === 1 ? "" : "s"}
+            across {stats.count} run{stats.count === 1 ? '' : 's'}
           </p>
         </div>
 
@@ -230,21 +230,21 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
             />
             <XAxis
               dataKey="name"
-              tick={{ fontSize: 10, fill: "currentColor", opacity: 0.4 }}
+              tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
               tickLine={false}
               axisLine={false}
             />
             <YAxis
               domain={[0, 100]}
               unit="%"
-              tick={{ fontSize: 10, fill: "currentColor", opacity: 0.4 }}
+              tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
               tickLine={false}
               axisLine={false}
               width={36}
             />
             <Tooltip
               content={<TrendTooltip />}
-              cursor={{ fill: "currentColor", fillOpacity: 0.03 }}
+              cursor={{ fill: 'currentColor', fillOpacity: 0.03 }}
             />
             <Area
               type="monotone"
@@ -257,7 +257,7 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
               activeDot={{
                 r: 5,
                 fill: color,
-                stroke: "#fff",
+                stroke: '#fff',
                 strokeWidth: 2,
               }}
             />
@@ -269,7 +269,7 @@ const TrendSection = ({ group }: { group: SourceGroup }) => {
 };
 
 export const AnalyticsTrendTab = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: trend } = useRunTrend(projectId, 20);
 
   const groups = useMemo(() => {
@@ -277,7 +277,7 @@ export const AnalyticsTrendTab = () => {
     const map = new Map<string, TrendEntry[]>();
 
     for (const point of raw) {
-      const key = point.source ?? "__manual__";
+      const key = point.source ?? '__manual__';
       if (!map.has(key)) map.set(key, []);
       map.get(key)!.push({
         name: truncate(point.runName, 18),
@@ -293,13 +293,13 @@ export const AnalyticsTrendTab = () => {
     }
 
     const sorted = [...map].toSorted((groupA, groupB) => {
-      if (groupA[0] === "__manual__") return 1;
-      if (groupB[0] === "__manual__") return -1;
+      if (groupA[0] === '__manual__') return 1;
+      if (groupB[0] === '__manual__') return -1;
       return groupA[0].localeCompare(groupB[0]);
     });
 
     return sorted.map(([key, data], index) => ({
-      source: key === "__manual__" ? undefined : key,
+      source: key === '__manual__' ? undefined : key,
       data,
       index,
     }));
@@ -315,7 +315,7 @@ export const AnalyticsTrendTab = () => {
   return (
     <div className="space-y-8 pb-10">
       {groups.map((group) => (
-        <TrendSection key={group.source ?? "__manual__"} group={group} />
+        <TrendSection key={group.source ?? '__manual__'} group={group} />
       ))}
     </div>
   );

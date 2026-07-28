@@ -1,30 +1,30 @@
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
-import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
-import { useForm } from "react-hook-form";
+import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
+import type { CreateLabel, Label, UpdateLabel } from '@testcraft/types';
+import { useForm } from 'react-hook-form';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { LabelBadge } from "@/components/ui/LabelBadge";
-import { Modal } from "@/components/ui/Modal";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { LabelBadge } from '@/components/ui/LabelBadge';
+import { Modal } from '@/components/ui/Modal';
 import {
   useCreateLabel,
   useDeleteLabel,
   useLabels,
   useUpdateLabel,
-} from "@/hooks/useLabels";
-import { useModal } from "@/hooks/useModal";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+} from '@/hooks/useLabels';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 const PRESET_COLORS = [
-  "#ef4444",
-  "#f97316",
-  "#eab308",
-  "#22c55e",
-  "#06b6d4",
-  "#3b82f6",
-  "#8b5cf6",
-  "#ec4899",
-  "#64748b",
+  '#ef4444',
+  '#f97316',
+  '#eab308',
+  '#22c55e',
+  '#06b6d4',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#64748b',
 ];
 
 interface LabelFormValues {
@@ -41,7 +41,7 @@ interface LabelFormProps {
 }
 
 const LabelForm = ({
-  defaultValues = { name: "", color: PRESET_COLORS[0] },
+  defaultValues = { name: '', color: PRESET_COLORS[0] },
   onSubmit,
   onCancel,
   isLoading,
@@ -50,7 +50,7 @@ const LabelForm = ({
   const { register, handleSubmit, watch, setValue } = useForm<LabelFormValues>({
     defaultValues,
   });
-  const color = watch("color");
+  const color = watch('color');
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -60,7 +60,7 @@ const LabelForm = ({
         </label>
         <input
           id="label-name"
-          {...register("name", { required: true })}
+          {...register('name', { required: true })}
           className="input-bordered input w-full"
           placeholder="e.g. smoke, regression, flaky"
           autoFocus
@@ -84,14 +84,14 @@ const LabelForm = ({
                     ? `0 0 0 2px ${presetColor}`
                     : undefined,
               }}
-              onClick={() => setValue("color", presetColor)}
+              onClick={() => setValue('color', presetColor)}
               aria-label={presetColor}
             />
           ))}
           <input
             id="label-color-custom"
             type="color"
-            {...register("color")}
+            {...register('color')}
             className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0"
             title="Custom color"
           />
@@ -99,10 +99,10 @@ const LabelForm = ({
         <div className="mt-1">
           <LabelBadge
             label={{
-              id: "",
-              name: watch("name") || "Preview",
+              id: '',
+              name: watch('name') || 'Preview',
               color,
-              projectId: "",
+              projectId: '',
             }}
           />
         </div>
@@ -129,7 +129,7 @@ const LabelForm = ({
 };
 
 export const LabelsTab = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: labels, isPending, isError, error } = useLabels(projectId);
   const createLabel = useCreateLabel(projectId);
   const updateLabel = useUpdateLabel(projectId);
@@ -140,11 +140,11 @@ export const LabelsTab = () => {
     createLabel.mutate(data, { onSuccess: close });
 
   const handleUpdate = (data: UpdateLabel) => {
-    if (modal.type !== "edit") return;
+    if (modal.type !== 'edit') return;
     updateLabel.mutate({ id: modal.item.id, ...data }, { onSuccess: close });
   };
 
-  const deleteTarget = modal.type === "delete" ? modal.item : null;
+  const deleteTarget = modal.type === 'delete' ? modal.item : null;
 
   const renderLabels = () => {
     if (isPending)
@@ -230,7 +230,7 @@ export const LabelsTab = () => {
 
       {renderLabels()}
 
-      <Modal isOpen={modal.type === "create"} onClose={close} title="New Label">
+      <Modal isOpen={modal.type === 'create'} onClose={close} title="New Label">
         <LabelForm
           onSubmit={handleCreate}
           onCancel={close}
@@ -239,8 +239,8 @@ export const LabelsTab = () => {
         />
       </Modal>
 
-      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Label">
-        {modal.type === "edit" && (
+      <Modal isOpen={modal.type === 'edit'} onClose={close} title="Edit Label">
+        {modal.type === 'edit' && (
           <LabelForm
             key={modal.item.id}
             defaultValues={{ name: modal.item.name, color: modal.item.color }}
@@ -253,7 +253,7 @@ export const LabelsTab = () => {
       </Modal>
 
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() =>
           deleteTarget &&

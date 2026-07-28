@@ -1,16 +1,16 @@
-import { test as base } from "@playwright/test";
+import { test as base } from '@playwright/test';
 
-import { AnalyticsPage } from "./pages/analytics.page";
-import { LabelsPage } from "./pages/labels.page";
-import { ProjectsPage } from "./pages/projects.page";
-import { SuitesPage } from "./pages/suites.page";
-import { TestCasesPage } from "./pages/test-cases.page";
-import { TestPlansPage } from "./pages/test-plans.page";
-import { TestResultsPage } from "./pages/test-results.page";
-import { TestRunsPage } from "./pages/test-runs.page";
-import { TestStepsPage } from "./pages/test-steps.page";
+import { AnalyticsPage } from './pages/analytics.page';
+import { LabelsPage } from './pages/labels.page';
+import { ProjectsPage } from './pages/projects.page';
+import { SuitesPage } from './pages/suites.page';
+import { TestCasesPage } from './pages/test-cases.page';
+import { TestPlansPage } from './pages/test-plans.page';
+import { TestResultsPage } from './pages/test-results.page';
+import { TestRunsPage } from './pages/test-runs.page';
+import { TestStepsPage } from './pages/test-steps.page';
 
-export { expect } from "@playwright/test";
+export { expect } from '@playwright/test';
 
 type Fixtures = {
   projectsPage: ProjectsPage;

@@ -1,4 +1,4 @@
-import type { TestCaseStep } from "@testcraft/types";
+import type { TestCaseStep } from '@testcraft/types';
 
 interface StepDragPreviewProps {
   step: TestCaseStep;

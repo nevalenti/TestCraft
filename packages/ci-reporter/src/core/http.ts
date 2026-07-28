@@ -1,8 +1,8 @@
-const USER_AGENT = "TestCraft-CI-Reporter/1.0";
+const USER_AGENT = 'TestCraft-CI-Reporter/1.0';
 
 export const authHeaders = (token: string): Record<string, string> => ({
   Authorization: `Bearer ${token}`,
-  "User-Agent": USER_AGENT,
+  'User-Agent': USER_AGENT,
 });
 
 export const assertOk = async (
@@ -15,7 +15,7 @@ export const assertOk = async (
 
   const detail = await response.text();
   throw new Error(
-    `${errorContext}: ${response.status} ${response.statusText}${detail ? `\n${detail}` : ""}`,
+    `${errorContext}: ${response.status} ${response.statusText}${detail ? `\n${detail}` : ''}`,
   );
 };
 
@@ -25,11 +25,6 @@ const RETRY_DELAY_MS = 1000;
 const sleep = (ms: number): Promise<void> =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
-/**
- * fetch() wrapper that retries when the request never reaches the server
- * (DNS failure, connection refused, transient blip) - not when the server
- * responds with a non-2xx status, since a retry won't fix that.
- */
 export const fetchWithRetry = async (
   url: string | URL,
   init: RequestInit,
@@ -44,7 +39,7 @@ export const fetchWithRetry = async (
         const cause =
           error instanceof Error && error.cause
             ? ` (${String(error.cause)})`
-            : "";
+            : '';
         throw new Error(`${errorContext}: ${message}${cause}`);
       }
       await sleep(RETRY_DELAY_MS * attempt);

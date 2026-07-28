@@ -4,28 +4,28 @@ import {
   PlayCircleIcon,
   RectangleStackIcon,
   TagIcon,
-} from "@heroicons/react/24/solid";
-import { Link, Outlet } from "@tanstack/react-router";
-import { useState } from "react";
+} from '@heroicons/react/24/solid';
+import { Link, Outlet } from '@tanstack/react-router';
+import { useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { ProjectSettingsModal } from "@/pages/ProjectDetailPage/ProjectSettingsModal";
+import { ErrorState } from '@/components/ErrorState';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { ProjectSettingsModal } from '@/pages/ProjectDetailPage/ProjectSettingsModal';
 
 const NAV_BASE =
-  "flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90";
-const NAV_ACTIVE = "!border-primary !text-base-content";
+  'flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90';
+const NAV_ACTIVE = '!border-primary !text-base-content';
 
 export const ProjectDetailPage = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: project, isPending } = useProject(projectId);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…" },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…' },
   ]);
 
   if (!isPending && !project)
@@ -45,7 +45,7 @@ export const ProjectDetailPage = () => {
             <h1 className="page-title">{project?.name}</h1>
             <p className="mt-0.5 text-sm text-base-content/70">
               {project?.description ??
-                "Manage test suites and runs for this project"}
+                'Manage test suites and runs for this project'}
             </p>
           </div>
           <button

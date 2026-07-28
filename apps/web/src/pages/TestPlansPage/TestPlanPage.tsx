@@ -1,4 +1,4 @@
-import type { DragEndEvent } from "@dnd-kit/core";
+import type { DragEndEvent } from '@dnd-kit/core';
 import {
   closestCenter,
   DndContext,
@@ -6,32 +6,32 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import {
   Bars3Icon,
   MagnifyingGlassIcon,
   PlayIcon,
   TrashIcon,
-} from "@heroicons/react/24/solid";
-import { useNavigate } from "@tanstack/react-router";
-import type { TestPlanCase } from "@testcraft/types";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+} from '@heroicons/react/24/solid';
+import { useNavigate } from '@tanstack/react-router';
+import type { TestPlanCase } from '@testcraft/types';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { ErrorState } from "@/components/ErrorState";
-import { Modal } from "@/components/ui/Modal";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useProjectTestCases } from "@/hooks/useTestCases";
+import { ErrorState } from '@/components/ErrorState';
+import { Modal } from '@/components/ui/Modal';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useProjectTestCases } from '@/hooks/useTestCases';
 import {
   useAddCaseToPlan,
   useCreateRunFromPlan,
@@ -39,7 +39,7 @@ import {
   useReorderPlanCases,
   useTestPlan,
   useTestPlanCases,
-} from "@/hooks/useTestPlans";
+} from '@/hooks/useTestPlans';
 
 interface SortableItemProps {
   item: TestPlanCase;
@@ -92,8 +92,8 @@ function SortableItem({ item, onRemove }: SortableItemProps) {
 }
 
 export const TestPlanPage = () => {
-  const projectId = useRequiredParam("projectId");
-  const planId = useRequiredParam("planId");
+  const projectId = useRequiredParam('projectId');
+  const planId = useRequiredParam('planId');
   const navigate = useNavigate();
 
   const { data: project } = useProject(projectId);
@@ -110,19 +110,19 @@ export const TestPlanPage = () => {
   const reorderCases = useReorderPlanCases(projectId, planId);
   const createRun = useCreateRunFromPlan(projectId);
 
-  const [addSearch, setAddSearch] = useState("");
+  const [addSearch, setAddSearch] = useState('');
   const [runModalOpen, setRunModalOpen] = useState(false);
 
   const { register, handleSubmit, reset } = useForm<{
     name: string;
     environment: string;
-  }>({ defaultValues: { name: "", environment: "" } });
+  }>({ defaultValues: { name: '', environment: '' } });
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
-    { label: "Test Plans", href: `/projects/${projectId}/plans` },
-    { label: plan?.name ?? "…" },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…', href: `/projects/${projectId}` },
+    { label: 'Test Plans', href: `/projects/${projectId}/plans` },
+    { label: plan?.name ?? '…' },
   ]);
 
   const sensors = useSensors(
@@ -168,7 +168,7 @@ export const TestPlanPage = () => {
           reset();
           setRunModalOpen(false);
           navigate({
-            to: "/projects/$projectId/runs/$runId",
+            to: '/projects/$projectId/runs/$runId',
             params: { projectId, runId: run.id },
           });
         },
@@ -217,7 +217,7 @@ export const TestPlanPage = () => {
     <div className="flex min-h-0 w-full flex-col">
       <header className="page-header flex items-center justify-between gap-4">
         <div>
-          <h1 className="page-title">{plan?.name ?? "…"}</h1>
+          <h1 className="page-title">{plan?.name ?? '…'}</h1>
           {plan?.description && (
             <p className="mt-0.5 text-sm text-base-content/70">
               {plan.description}
@@ -258,7 +258,7 @@ export const TestPlanPage = () => {
             </div>
             {availableToAdd.length === 0 ? (
               <p className="text-sm text-base-content/65">
-                {addSearch ? "No matches." : "All test cases are in the plan."}
+                {addSearch ? 'No matches.' : 'All test cases are in the plan.'}
               </p>
             ) : (
               <ul className="max-h-96 space-y-2 overflow-y-auto">
@@ -296,8 +296,8 @@ export const TestPlanPage = () => {
               id="run-name"
               className="input-bordered input input-sm w-full"
               autoFocus
-              placeholder={`${plan?.name ?? "Plan"} – Run 1`}
-              {...register("name", { required: true })}
+              placeholder={`${plan?.name ?? 'Plan'} – Run 1`}
+              {...register('name', { required: true })}
             />
           </div>
           <div>
@@ -308,7 +308,7 @@ export const TestPlanPage = () => {
               id="run-env"
               className="input-bordered input input-sm w-full"
               placeholder="e.g. staging"
-              {...register("environment")}
+              {...register('environment')}
             />
           </div>
           <div className="flex justify-end gap-2">

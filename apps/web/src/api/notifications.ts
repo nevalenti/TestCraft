@@ -1,4 +1,4 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions } from '@tanstack/react-query';
 import type {
   CreateEmailSubscription,
   CreateWebhookSubscription,
@@ -6,10 +6,10 @@ import type {
   UpdateEmailSubscription,
   UpdateWebhookSubscription,
   WebhookSubscription,
-} from "@testcraft/types";
+} from '@testcraft/types';
 
-import client from "@/api/client";
-import { queryKeys } from "@/api/queryKeys";
+import client from '@/api/client';
+import { queryKeys } from '@/api/queryKeys';
 
 const WEBHOOK_BASE = (projectId: string) =>
   `projects/${projectId}/notifications/webhooks`;

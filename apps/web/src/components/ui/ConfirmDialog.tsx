@@ -1,4 +1,4 @@
-import { Modal } from "@/components/ui/Modal";
+import { Modal } from '@/components/ui/Modal';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -16,7 +16,7 @@ export const ConfirmDialog = ({
   onConfirm,
   title,
   description,
-  confirmLabel = "Delete",
+  confirmLabel = 'Delete',
   isLoading,
 }: ConfirmDialogProps) => (
   <Modal isOpen={isOpen} onClose={onClose} title={title}>

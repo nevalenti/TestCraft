@@ -1,5 +1,5 @@
-import { TrashIcon } from "@heroicons/react/24/solid";
-import type { ReactNode } from "react";
+import { TrashIcon } from '@heroicons/react/24/solid';
+import type { ReactNode } from 'react';
 
 interface SettingsEntityListProps<T> {
   items: T[];

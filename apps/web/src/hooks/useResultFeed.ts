@@ -1,13 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useQuery } from '@tanstack/react-query';
+import { useMemo } from 'react';
 
-import { queryKeys } from "@/api/queryKeys";
-import { testResultsApi } from "@/api/testResults";
-import { testRunsApi } from "@/api/testRuns";
+import { queryKeys } from '@/api/queryKeys';
+import { testResultsApi } from '@/api/testResults';
+import { testRunsApi } from '@/api/testRuns';
 
 export const useResultFeed = (projectId: string, runId: string) => {
   const feedKey = useMemo(
-    () => [...queryKeys.testResults.all(projectId, runId), "feed"],
+    () => [...queryKeys.testResults.all(projectId, runId), 'feed'],
     [projectId, runId],
   );
 

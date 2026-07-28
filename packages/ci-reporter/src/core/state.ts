@@ -1,6 +1,6 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
 export interface StateStore {
   readState: () => string | null;
@@ -14,13 +14,13 @@ export const createStateStore = (namespace: string): StateStore => {
   return {
     readState: () => {
       if (!existsSync(stateFile)) return null;
-      return readFileSync(stateFile, "utf8").trim() || null;
+      return readFileSync(stateFile, 'utf8').trim() || null;
     },
     saveState: (runId: string) => {
-      writeFileSync(stateFile, runId, "utf8");
+      writeFileSync(stateFile, runId, 'utf8');
     },
     clearState: () => {
-      writeFileSync(stateFile, "", "utf8");
+      writeFileSync(stateFile, '', 'utf8');
     },
   };
 };

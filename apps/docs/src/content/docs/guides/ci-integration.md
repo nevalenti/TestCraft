@@ -37,7 +37,7 @@ supports two commands:
     password: ${{ secrets.TESTCRAFT_PASSWORD }}
     api-url: ${{ secrets.TESTCRAFT_API_URL }}
     project-name: TestCraft
-    run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
+    run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
     source: api
 
 # ... run your tests, then:
@@ -51,7 +51,7 @@ supports two commands:
     api-url: ${{ secrets.TESTCRAFT_API_URL }}
     project-name: TestCraft
     junit-xml: apps/Api/test-results/*.junit.xml
-    run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
+    run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
     source: api
     screenshots-dir: apps/e2e/test-results # optional, Playwright only
 ```

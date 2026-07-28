@@ -16,11 +16,6 @@ images:
     tag: latest
     pullPolicy: IfNotPresent
 
-# Single source of truth for third-party image tags. docker-compose.yml does
-# not read this file directly (Compose can't parse nested YAML) - it gets
-# these via infrastructure/image-versions.env, generated from this map by
-# scripts/render-image-versions.sh. Bump a version here, regenerate, and both
-# environments move together.
 thirdPartyImages:
   postgres: postgres:16-alpine
   redis: redis:7-alpine

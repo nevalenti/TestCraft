@@ -1,10 +1,10 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { RouterProvider } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { RouterProvider } from '@tanstack/react-router';
 
-import { AuthProvider } from "@/auth/AuthProvider";
-import { ThemeProvider } from "@/contexts/ThemeContext";
-import { router } from "@/router";
+import { AuthProvider } from '@/auth/AuthProvider';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { router } from '@/router';
 
 const queryClient = new QueryClient({
   defaultOptions: {

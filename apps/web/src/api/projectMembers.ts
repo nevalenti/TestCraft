@@ -1,8 +1,8 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { AddProjectMember, ProjectMember } from "@testcraft/types";
+import { queryOptions } from '@tanstack/react-query';
+import type { AddProjectMember, ProjectMember } from '@testcraft/types';
 
-import client from "@/api/client";
-import { queryKeys } from "@/api/queryKeys";
+import client from '@/api/client';
+import { queryKeys } from '@/api/queryKeys';
 
 const BASE = (projectId: string) => `projects/${projectId}/members`;
 

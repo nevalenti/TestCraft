@@ -1,4 +1,4 @@
-import type { components } from "./generated/schema.js";
+import type { components } from './generated/schema.js';
 
 export type Attachment =
-  components["schemas"]["TestCraft.Application.Attachments.AttachmentResponse"];
+  components['schemas']['TestCraft.Application.Attachments.AttachmentResponse'];

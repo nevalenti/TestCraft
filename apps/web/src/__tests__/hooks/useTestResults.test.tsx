@@ -1,9 +1,9 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { renderHook, waitFor } from "@testing-library/react";
-import type { ReactNode } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { renderHook, waitFor } from '@testing-library/react';
+import type { ReactNode } from 'react';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock("@/api/testResults", () => ({
+vi.mock('@/api/testResults', () => ({
   testResultQueries: {
     all: vi.fn(
       (
@@ -14,11 +14,11 @@ vi.mock("@/api/testResults", () => ({
         page = 1,
       ) => ({
         queryKey: [
-          "projects",
+          'projects',
           projectId,
-          "runs",
+          'runs',
           runId,
-          "results",
+          'results',
           status,
           search,
           page,
@@ -27,7 +27,7 @@ vi.mock("@/api/testResults", () => ({
       }),
     ),
     detail: vi.fn((projectId: string, runId: string, id: string) => ({
-      queryKey: ["projects", projectId, "runs", runId, "results", id],
+      queryKey: ['projects', projectId, 'runs', runId, 'results', id],
       queryFn: vi.fn().mockResolvedValue(null),
     })),
   },
@@ -38,17 +38,17 @@ vi.mock("@/api/testResults", () => ({
   },
 }));
 
-vi.mock("@/lib/notify", () => ({ notify: vi.fn() }));
+vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
 
-import { testResultQueries, testResultsApi } from "@/api/testResults";
+import { testResultQueries, testResultsApi } from '@/api/testResults';
 import {
   useCreateTestResult,
   useDeleteTestResult,
   useTestResult,
   useTestResults,
   useUpdateTestResult,
-} from "@/hooks/useTestResults";
-import { notify } from "@/lib/notify";
+} from '@/hooks/useTestResults';
+import { notify } from '@/lib/notify';
 
 const makeWrapper = () => {
   const queryClient = new QueryClient({
@@ -64,29 +64,29 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("useTestResults", () => {
-  describe("given projectId, runId, and filters — calls the query factory", () => {
-    it("calls testResultQueries.all with projectId, runId, status, search, and page", () => {
+describe('useTestResults', () => {
+  describe('given projectId, runId, and filters — calls the query factory', () => {
+    it('calls testResultQueries.all with projectId, runId, status, search, and page', () => {
       const { wrapper } = makeWrapper();
       renderHook(
-        () => useTestResults("proj-1", "run-1", "Failed" as any, "login", 2),
+        () => useTestResults('proj-1', 'run-1', 'Failed' as any, 'login', 2),
         { wrapper },
       );
       expect(testResultQueries.all).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
-        "Failed",
-        "login",
+        'proj-1',
+        'run-1',
+        'Failed',
+        'login',
         2,
       );
     });
 
-    it("calls testResultQueries.all with defaults when no filters given", () => {
+    it('calls testResultQueries.all with defaults when no filters given', () => {
       const { wrapper } = makeWrapper();
-      renderHook(() => useTestResults("proj-1", "run-1"), { wrapper });
+      renderHook(() => useTestResults('proj-1', 'run-1'), { wrapper });
       expect(testResultQueries.all).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
+        'proj-1',
+        'run-1',
         undefined,
         undefined,
         1,
@@ -95,133 +95,133 @@ describe("useTestResults", () => {
   });
 });
 
-describe("useTestResult", () => {
-  describe("given projectId, runId, and id — calls the detail query factory", () => {
-    it("calls testResultQueries.detail with all three ids", () => {
+describe('useTestResult', () => {
+  describe('given projectId, runId, and id — calls the detail query factory', () => {
+    it('calls testResultQueries.detail with all three ids', () => {
       const { wrapper } = makeWrapper();
-      renderHook(() => useTestResult("proj-1", "run-1", "result-1"), {
+      renderHook(() => useTestResult('proj-1', 'run-1', 'result-1'), {
         wrapper,
       });
       expect(testResultQueries.detail).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
-        "result-1",
+        'proj-1',
+        'run-1',
+        'result-1',
       );
     });
   });
 });
 
-describe("useCreateTestResult", () => {
-  describe("on mutate — calls API and notifies", () => {
-    it("calls testResultsApi.create with projectId, runId, and input", async () => {
+describe('useCreateTestResult', () => {
+  describe('on mutate — calls API and notifies', () => {
+    it('calls testResultsApi.create with projectId, runId, and input', async () => {
       vi.mocked(testResultsApi.create).mockResolvedValue({
-        id: "res-1",
+        id: 'res-1',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useCreateTestResult("proj-1", "run-1"),
+        () => useCreateTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
       const input = {
-        testCaseId: "case-1",
-        status: "Passed" as any,
+        testCaseId: 'case-1',
+        status: 'Passed' as any,
         executedAt: new Date().toISOString(),
       };
       result.current.mutate(input);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testResultsApi.create).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
+        'proj-1',
+        'run-1',
         input,
       );
     });
 
     it("notifies 'Result saved' on success", async () => {
       vi.mocked(testResultsApi.create).mockResolvedValue({
-        id: "res-1",
+        id: 'res-1',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useCreateTestResult("proj-1", "run-1"),
+        () => useCreateTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
       result.current.mutate({
-        testCaseId: "case-1",
-        status: "Passed" as any,
+        testCaseId: 'case-1',
+        status: 'Passed' as any,
         executedAt: new Date().toISOString(),
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith("Result saved");
+      expect(notify).toHaveBeenCalledWith('Result saved');
     });
   });
 });
 
-describe("useUpdateTestResult", () => {
-  describe("on mutate — calls API with stripped input", () => {
-    it("calls testResultsApi.update with projectId, runId, id, and update payload", async () => {
+describe('useUpdateTestResult', () => {
+  describe('on mutate — calls API with stripped input', () => {
+    it('calls testResultsApi.update with projectId, runId, id, and update payload', async () => {
       vi.mocked(testResultsApi.update).mockResolvedValue({
-        id: "res-1",
+        id: 'res-1',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useUpdateTestResult("proj-1", "run-1"),
+        () => useUpdateTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
       result.current.mutate({
-        id: "res-1",
-        status: "Failed" as any,
-        notes: "Regression found",
+        id: 'res-1',
+        status: 'Failed' as any,
+        notes: 'Regression found',
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testResultsApi.update).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
-        "res-1",
-        { status: "Failed", notes: "Regression found" },
+        'proj-1',
+        'run-1',
+        'res-1',
+        { status: 'Failed', notes: 'Regression found' },
       );
     });
 
     it("notifies 'Result updated' on success", async () => {
       vi.mocked(testResultsApi.update).mockResolvedValue({
-        id: "res-1",
+        id: 'res-1',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useUpdateTestResult("proj-1", "run-1"),
+        () => useUpdateTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
-      result.current.mutate({ id: "res-1", status: "Blocked" as any });
+      result.current.mutate({ id: 'res-1', status: 'Blocked' as any });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith("Result updated");
+      expect(notify).toHaveBeenCalledWith('Result updated');
     });
   });
 });
 
-describe("useDeleteTestResult", () => {
-  describe("on mutate — calls API and notifies", () => {
-    it("calls testResultsApi.delete with projectId, runId, and resultId", async () => {
+describe('useDeleteTestResult', () => {
+  describe('on mutate — calls API and notifies', () => {
+    it('calls testResultsApi.delete with projectId, runId, and resultId', async () => {
       vi.mocked(testResultsApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useDeleteTestResult("proj-1", "run-1"),
+        () => useDeleteTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
-      result.current.mutate("res-1");
+      result.current.mutate('res-1');
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testResultsApi.delete).toHaveBeenCalledWith(
-        "proj-1",
-        "run-1",
-        "res-1",
+        'proj-1',
+        'run-1',
+        'res-1',
       );
     });
 
@@ -229,14 +229,14 @@ describe("useDeleteTestResult", () => {
       vi.mocked(testResultsApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useDeleteTestResult("proj-1", "run-1"),
+        () => useDeleteTestResult('proj-1', 'run-1'),
         { wrapper },
       );
 
-      result.current.mutate("res-1");
+      result.current.mutate('res-1');
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith("Result deleted");
+      expect(notify).toHaveBeenCalledWith('Result deleted');
     });
   });
 });

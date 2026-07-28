@@ -2,15 +2,15 @@ import {
   CheckIcon,
   PencilSquareIcon,
   TagIcon,
-} from "@heroicons/react/24/solid";
-import type { Label } from "@testcraft/types";
-import { useRef, useState } from "react";
+} from '@heroicons/react/24/solid';
+import type { Label } from '@testcraft/types';
+import { useRef, useState } from 'react';
 
 import {
   useAddTestCaseLabel,
   useLabels,
   useRemoveTestCaseLabel,
-} from "@/hooks/useLabels";
+} from '@/hooks/useLabels';
 
 interface LabelSelectProps {
   projectId: string;

@@ -1,28 +1,28 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
-import type { CreateProject, Project, UpdateProject } from "@testcraft/types";
-import { useState } from "react";
+import { PlusIcon } from '@heroicons/react/24/solid';
+import type { CreateProject, Project, UpdateProject } from '@testcraft/types';
+import { useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
-import { Modal } from "@/components/ui/Modal";
-import { ViewToggle } from "@/components/ui/ViewToggle";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useModal } from "@/hooks/useModal";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ListToolbar } from '@/components/ui/ListToolbar';
+import { Modal } from '@/components/ui/Modal';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
 import {
   useCreateProject,
   useDeleteProject,
   useProjects,
   useUpdateProject,
-} from "@/hooks/useProjects";
-import { ProjectCard } from "@/pages/ProjectsPage/ProjectCard";
-import { ProjectForm } from "@/pages/ProjectsPage/ProjectForm";
-import { useViewModeStore } from "@/stores/viewMode";
+} from '@/hooks/useProjects';
+import { ProjectCard } from '@/pages/ProjectsPage/ProjectCard';
+import { ProjectForm } from '@/pages/ProjectsPage/ProjectForm';
+import { useViewModeStore } from '@/stores/viewMode';
 
 export const ProjectsPage = () => {
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
   const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
@@ -37,7 +37,7 @@ export const ProjectsPage = () => {
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
 
-  useBreadcrumbs([{ label: "Projects" }]);
+  useBreadcrumbs([{ label: 'Projects' }]);
 
   if (isError) return <ErrorState error={error} />;
 
@@ -48,7 +48,7 @@ export const ProjectsPage = () => {
   const handleDelete = (id: string) =>
     deleteProject.mutate(id, { onSuccess: close });
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   const renderProjects = () => {
     if (isPending)
@@ -68,9 +68,9 @@ export const ProjectsPage = () => {
     return (
       <div
         className={
-          viewMode === "list"
-            ? "flex flex-col gap-2"
-            : "grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+          viewMode === 'list'
+            ? 'flex flex-col gap-2'
+            : 'grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'
         }
       >
         {projects?.map((project) => (
@@ -113,11 +113,11 @@ export const ProjectsPage = () => {
       </section>
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="New Project"
       >
-        {modal.type === "create" && (
+        {modal.type === 'create' && (
           <ProjectForm
             onSubmit={handleCreate}
             onCancel={close}
@@ -126,16 +126,16 @@ export const ProjectsPage = () => {
         )}
       </Modal>
       <Modal
-        isOpen={modal.type === "edit"}
+        isOpen={modal.type === 'edit'}
         onClose={close}
         title="Edit Project"
       >
-        {modal.type === "edit" && (
+        {modal.type === 'edit' && (
           <ProjectForm
             key={modal.item.id}
             defaultValues={{
               name: modal.item.name,
-              description: modal.item.description ?? "",
+              description: modal.item.description ?? '',
             }}
             onSubmit={handleUpdate(modal.item.id)}
             onCancel={close}
@@ -144,14 +144,14 @@ export const ProjectsPage = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Project"
         description={
           deleteItem
             ? `Delete "${deleteItem.name}"? This cannot be undone.`
-            : ""
+            : ''
         }
         isLoading={deleteProject.isPending}
       />

@@ -1,21 +1,21 @@
-import type { QueryClient } from "@tanstack/react-query";
+import type { QueryClient } from '@tanstack/react-query';
 import {
   createRootRouteWithContext,
   createRoute,
   createRouter,
   Outlet,
   redirect,
-} from "@tanstack/react-router";
+} from '@tanstack/react-router';
 
-import { projectQueries } from "@/api/projects";
-import { testCaseQueries } from "@/api/testCases";
-import { testCaseStepQueries } from "@/api/testCaseSteps";
-import { testPlanQueries } from "@/api/testPlans";
-import { testResultQueries } from "@/api/testResults";
-import { testRunQueries } from "@/api/testRuns";
-import { testSuiteQueries } from "@/api/testSuites";
-import { RootError } from "@/components/RootError";
-import AppLayout from "@/layout/AppLayout";
+import { projectQueries } from '@/api/projects';
+import { testCaseQueries } from '@/api/testCases';
+import { testCaseStepQueries } from '@/api/testCaseSteps';
+import { testPlanQueries } from '@/api/testPlans';
+import { testResultQueries } from '@/api/testResults';
+import { testRunQueries } from '@/api/testRuns';
+import { testSuiteQueries } from '@/api/testSuites';
+import { RootError } from '@/components/RootError';
+import AppLayout from '@/layout/AppLayout';
 import {
   LazyAccountPage,
   LazyAnalyticsComparisonTab,
@@ -36,8 +36,8 @@ import {
   LazyTestPlansPage,
   LazyTestRunPage,
   LazyTestSuitePage,
-} from "@/pages/lazy";
-import { NotFound } from "@/pages/NotFound";
+} from '@/pages/lazy';
+import { NotFound } from '@/pages/NotFound';
 
 interface RouterContext {
   queryClient: QueryClient;
@@ -51,25 +51,25 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
 
 const appLayoutRoute = createRoute({
   getParentRoute: () => rootRoute,
-  id: "app",
+  id: 'app',
   component: AppLayout,
 });
 
 const indexRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/",
+  path: '/',
   component: LazyDashboardPage,
 });
 
 const projectsRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects",
+  path: '/projects',
   component: LazyProjectsPage,
 });
 
 const projectDetailRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId",
+  path: '/projects/$projectId',
   component: LazyProjectDetailPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(
@@ -79,10 +79,10 @@ const projectDetailRoute = createRoute({
 
 const projectDetailIndexRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
-  path: "/",
+  path: '/',
   beforeLoad: ({ params }) => {
     throw redirect({
-      to: "/projects/$projectId/runs",
+      to: '/projects/$projectId/runs',
       params,
       replace: true,
     });
@@ -91,7 +91,7 @@ const projectDetailIndexRoute = createRoute({
 
 const projectSuitesRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
-  path: "suites",
+  path: 'suites',
   component: LazyProjectSuitesPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(testSuiteQueries.all(params.projectId)),
@@ -99,7 +99,7 @@ const projectSuitesRoute = createRoute({
 
 const projectRunsRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
-  path: "runs",
+  path: 'runs',
   component: LazyProjectRunsPage,
   loader: ({ context, params }) =>
     context.queryClient.ensureQueryData(testRunQueries.all(params.projectId)),
@@ -107,16 +107,16 @@ const projectRunsRoute = createRoute({
 
 const projectAnalyticsRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
-  path: "analytics",
+  path: 'analytics',
   component: LazyProjectAnalyticsLayout,
 });
 
 const projectAnalyticsIndexRoute = createRoute({
   getParentRoute: () => projectAnalyticsRoute,
-  path: "/",
+  path: '/',
   beforeLoad: ({ params }) => {
     throw redirect({
-      to: "/projects/$projectId/analytics/trend",
+      to: '/projects/$projectId/analytics/trend',
       params,
       replace: true,
     });
@@ -125,37 +125,37 @@ const projectAnalyticsIndexRoute = createRoute({
 
 const projectAnalyticsTrendRoute = createRoute({
   getParentRoute: () => projectAnalyticsRoute,
-  path: "trend",
+  path: 'trend',
   component: LazyAnalyticsTrendTab,
 });
 
 const projectAnalyticsFlakyRoute = createRoute({
   getParentRoute: () => projectAnalyticsRoute,
-  path: "flaky",
+  path: 'flaky',
   component: LazyAnalyticsFlakyTab,
 });
 
 const projectAnalyticsSuiteRoute = createRoute({
   getParentRoute: () => projectAnalyticsRoute,
-  path: "suite",
+  path: 'suite',
   component: LazyAnalyticsSuiteTab,
 });
 
 const projectAnalyticsComparisonRoute = createRoute({
   getParentRoute: () => projectAnalyticsRoute,
-  path: "comparison",
+  path: 'comparison',
   component: LazyAnalyticsComparisonTab,
 });
 
 const projectLabelsRoute = createRoute({
   getParentRoute: () => projectDetailRoute,
-  path: "labels",
+  path: 'labels',
   component: LazyProjectLabelsPage,
 });
 
 const testSuiteRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId/suites/$suiteId",
+  path: '/projects/$projectId/suites/$suiteId',
   component: LazyTestSuitePage,
   loader: ({ context, params }) =>
     Promise.all([
@@ -173,7 +173,7 @@ const testSuiteRoute = createRoute({
 
 const testCaseRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId/suites/$suiteId/cases/$caseId",
+  path: '/projects/$projectId/suites/$suiteId/cases/$caseId',
   component: LazyTestCasePage,
   loader: ({ context, params }) =>
     Promise.all([
@@ -198,7 +198,7 @@ const testCaseRoute = createRoute({
 
 const testRunRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId/runs/$runId",
+  path: '/projects/$projectId/runs/$runId',
   component: LazyTestRunPage,
   loader: ({ context, params }) =>
     Promise.all([
@@ -219,7 +219,7 @@ const testRunRoute = createRoute({
 
 const testPlansRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId/plans",
+  path: '/projects/$projectId/plans',
   component: LazyTestPlansPage,
   loader: ({ context, params }) =>
     Promise.all([
@@ -234,7 +234,7 @@ const testPlansRoute = createRoute({
 
 const testPlanRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/projects/$projectId/plans/$planId",
+  path: '/projects/$projectId/plans/$planId',
   component: LazyTestPlanPage,
   loader: ({ context, params }) =>
     Promise.all([
@@ -252,19 +252,19 @@ const testPlanRoute = createRoute({
 
 const accountRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/account",
+  path: '/account',
   component: LazyAccountPage,
 });
 
 const settingsRoute = createRoute({
   getParentRoute: () => appLayoutRoute,
-  path: "/settings",
+  path: '/settings',
   component: LazySettingsPage,
 });
 
 const shareRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: "/share/$token",
+  path: '/share/$token',
   component: LazySharePage,
 });
 

@@ -1,46 +1,46 @@
 version: 2
 updates:
-  - package-ecosystem: "npm"
-    directory: "/"
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
     groups:
       production-dependencies:
-        dependency-type: "production"
+        dependency-type: 'production'
       development-dependencies:
-        dependency-type: "development"
+        dependency-type: 'development'
 
-  - package-ecosystem: "docker"
-    directory: "/apps/web"
+  - package-ecosystem: 'docker'
+    directory: '/apps/web'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "docker"
-    directory: "/apps/Api"
+  - package-ecosystem: 'docker'
+    directory: '/apps/Api'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "docker"
-    directory: "/apps/Gateway"
+  - package-ecosystem: 'docker'
+    directory: '/apps/Gateway'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "docker"
-    directory: "/apps/docs"
+  - package-ecosystem: 'docker'
+    directory: '/apps/docs'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "nuget"
-    directory: "/apps/Api"
+  - package-ecosystem: 'nuget'
+    directory: '/apps/Api'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "nuget"
-    directory: "/apps/Gateway"
+  - package-ecosystem: 'nuget'
+    directory: '/apps/Gateway'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: "weekly"
+      interval: 'weekly'

@@ -1,35 +1,35 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 beforeAll(() => {
   HTMLDialogElement.prototype.showModal = vi.fn(function (
     this: HTMLDialogElement,
   ) {
-    this.setAttribute("open", "");
+    this.setAttribute('open', '');
   });
   HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
-    this.removeAttribute("open");
+    this.removeAttribute('open');
   });
 });
 
-vi.mock("@tanstack/react-router", () => ({
+vi.mock('@tanstack/react-router', () => ({
   useNavigate: vi.fn().mockReturnValue(vi.fn()),
 }));
 
-vi.mock("@/hooks/useRequiredParam", () => ({
+vi.mock('@/hooks/useRequiredParam', () => ({
   useRequiredParam: vi.fn((key: string) => `${key}-1`),
 }));
 
-vi.mock("@/hooks/useProjects", () => ({
+vi.mock('@/hooks/useProjects', () => ({
   useProject: vi.fn(),
 }));
 
-vi.mock("@/hooks/useTestCases", () => ({
+vi.mock('@/hooks/useTestCases', () => ({
   useProjectTestCases: vi.fn(),
 }));
 
-vi.mock("@/hooks/useTestPlans", () => ({
+vi.mock('@/hooks/useTestPlans', () => ({
   useTestPlan: vi.fn(),
   useTestPlanCases: vi.fn(),
   useAddCaseToPlan: vi.fn(),
@@ -38,12 +38,12 @@ vi.mock("@/hooks/useTestPlans", () => ({
   useCreateRunFromPlan: vi.fn(),
 }));
 
-vi.mock("@/hooks/useBreadcrumbs", () => ({ useBreadcrumbs: vi.fn() }));
+vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 
-import type { TestPlan, TestPlanCase } from "@testcraft/types";
+import type { TestPlan, TestPlanCase } from '@testcraft/types';
 
-import { useProject } from "@/hooks/useProjects";
-import { useProjectTestCases } from "@/hooks/useTestCases";
+import { useProject } from '@/hooks/useProjects';
+import { useProjectTestCases } from '@/hooks/useTestCases';
 import {
   useAddCaseToPlan,
   useCreateRunFromPlan,
@@ -51,22 +51,22 @@ import {
   useReorderPlanCases,
   useTestPlan,
   useTestPlanCases,
-} from "@/hooks/useTestPlans";
-import { TestPlanPage } from "@/pages/TestPlansPage/TestPlanPage";
+} from '@/hooks/useTestPlans';
+import { TestPlanPage } from '@/pages/TestPlansPage/TestPlanPage';
 
 const makePlan = (overrides: Partial<TestPlan> = {}): TestPlan => ({
-  id: "plan-1",
-  projectId: "proj-1",
-  name: "Sprint 1",
+  id: 'plan-1',
+  projectId: 'proj-1',
+  name: 'Sprint 1',
   caseCount: 0,
-  createdAt: "2026-01-15T00:00:00.000Z",
+  createdAt: '2026-01-15T00:00:00.000Z',
   ...overrides,
 });
 
 const makeCase = (overrides: Partial<TestPlanCase> = {}): TestPlanCase => ({
-  testCaseId: "case-1",
-  testCaseName: "Login works",
-  suiteName: "Auth",
+  testCaseId: 'case-1',
+  testCaseName: 'Login works',
+  suiteName: 'Auth',
   order: 1,
   ...overrides,
 });
@@ -83,7 +83,7 @@ const setupMocks = ({
   error = undefined as unknown,
 } = {}) => {
   vi.mocked(useProject).mockReturnValue({
-    data: { id: "proj-1", name: "My Project" },
+    data: { id: 'proj-1', name: 'My Project' },
     isPending: false,
   } as unknown as ReturnType<typeof useProject>);
 
@@ -126,88 +126,88 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe("TestPlanPage", () => {
-  describe("loading state — shows spinner", () => {
-    it("renders a loading spinner when isPending", () => {
+describe('TestPlanPage', () => {
+  describe('loading state — shows spinner', () => {
+    it('renders a loading spinner when isPending', () => {
       setupMocks({ cases: undefined, isPending: true });
       const { container } = render(<TestPlanPage />);
-      expect(container.querySelector(".loading-spinner")).toBeInTheDocument();
+      expect(container.querySelector('.loading-spinner')).toBeInTheDocument();
     });
   });
 
-  describe("error state — shows an error instead of the empty state", () => {
-    it("renders the failure message when the cases query errors", () => {
+  describe('error state — shows an error instead of the empty state', () => {
+    it('renders the failure message when the cases query errors', () => {
       setupMocks({ cases: undefined, isError: true });
       render(<TestPlanPage />);
-      expect(screen.getByText("Failed to load")).toBeInTheDocument();
+      expect(screen.getByText('Failed to load')).toBeInTheDocument();
       expect(
-        screen.queryByText("Add test cases from the right panel."),
+        screen.queryByText('Add test cases from the right panel.'),
       ).not.toBeInTheDocument();
     });
   });
 
-  describe("empty state — prompts to add cases", () => {
-    it("shows the empty-plan hint", () => {
+  describe('empty state — prompts to add cases', () => {
+    it('shows the empty-plan hint', () => {
       setupMocks({ cases: [] });
       render(<TestPlanPage />);
       expect(
-        screen.getByText("Add test cases from the right panel."),
+        screen.getByText('Add test cases from the right panel.'),
       ).toBeInTheDocument();
     });
 
-    it("disables the Run Plan button", () => {
+    it('disables the Run Plan button', () => {
       setupMocks({ cases: [] });
       render(<TestPlanPage />);
-      expect(screen.getByRole("button", { name: /Run Plan/i })).toBeDisabled();
+      expect(screen.getByRole('button', { name: /Run Plan/i })).toBeDisabled();
     });
   });
 
-  describe("with cases — renders each one", () => {
-    it("displays case names and the plan case count", () => {
+  describe('with cases — renders each one', () => {
+    it('displays case names and the plan case count', () => {
       setupMocks({
         cases: [
-          makeCase({ testCaseId: "case-1", testCaseName: "Login works" }),
+          makeCase({ testCaseId: 'case-1', testCaseName: 'Login works' }),
           makeCase({
-            testCaseId: "case-2",
-            testCaseName: "Logout works",
+            testCaseId: 'case-2',
+            testCaseName: 'Logout works',
             order: 2,
           }),
         ],
       });
       render(<TestPlanPage />);
-      expect(screen.getByText("Login works")).toBeInTheDocument();
-      expect(screen.getByText("Logout works")).toBeInTheDocument();
-      expect(screen.getByText("Plan Cases (2)")).toBeInTheDocument();
+      expect(screen.getByText('Login works')).toBeInTheDocument();
+      expect(screen.getByText('Logout works')).toBeInTheDocument();
+      expect(screen.getByText('Plan Cases (2)')).toBeInTheDocument();
     });
 
-    it("enables the Run Plan button", () => {
+    it('enables the Run Plan button', () => {
       setupMocks({ cases: [makeCase()] });
       render(<TestPlanPage />);
       expect(
-        screen.getByRole("button", { name: /Run Plan/i }),
+        screen.getByRole('button', { name: /Run Plan/i }),
       ).not.toBeDisabled();
     });
   });
 
-  describe("remove button — removes the case from the plan", () => {
-    it("calls removeCase.mutate with the test case id", async () => {
-      setupMocks({ cases: [makeCase({ testCaseId: "case-1" })] });
+  describe('remove button — removes the case from the plan', () => {
+    it('calls removeCase.mutate with the test case id', async () => {
+      setupMocks({ cases: [makeCase({ testCaseId: 'case-1' })] });
       render(<TestPlanPage />);
       await userEvent.click(
-        screen.getByRole("button", { name: "Remove from plan" }),
+        screen.getByRole('button', { name: 'Remove from plan' }),
       );
-      expect(removeCaseMutate).toHaveBeenCalledWith("case-1");
+      expect(removeCaseMutate).toHaveBeenCalledWith('case-1');
     });
   });
 
-  describe("Run Plan button — opens the run modal", () => {
-    it("shows the Run Test Plan modal heading on click", async () => {
+  describe('Run Plan button — opens the run modal', () => {
+    it('shows the Run Test Plan modal heading on click', async () => {
       setupMocks({ cases: [makeCase()] });
       render(<TestPlanPage />);
-      await userEvent.click(screen.getByRole("button", { name: /Run Plan/i }));
+      await userEvent.click(screen.getByRole('button', { name: /Run Plan/i }));
       await waitFor(() =>
         expect(
-          screen.getByRole("heading", { name: "Run Test Plan" }),
+          screen.getByRole('heading', { name: 'Run Test Plan' }),
         ).toBeInTheDocument(),
       );
     });

@@ -35,12 +35,12 @@ indent_style = tab
 
 [*.cs]
 dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
-dotnet_analyzer_diagnostic.category-Blocker Bug.severity = suggestion
-dotnet_analyzer_diagnostic.category-Critical Bug.severity = suggestion
+dotnet_analyzer_diagnostic.category-Blocker Bug.severity = warning
+dotnet_analyzer_diagnostic.category-Critical Bug.severity = warning
 dotnet_analyzer_diagnostic.category-Major Bug.severity = suggestion
 dotnet_analyzer_diagnostic.category-Minor Bug.severity = suggestion
-dotnet_analyzer_diagnostic.category-Blocker Vulnerability.severity = suggestion
-dotnet_analyzer_diagnostic.category-Critical Vulnerability.severity = suggestion
+dotnet_analyzer_diagnostic.category-Blocker Vulnerability.severity = warning
+dotnet_analyzer_diagnostic.category-Critical Vulnerability.severity = warning
 dotnet_analyzer_diagnostic.category-Major Vulnerability.severity = suggestion
 dotnet_analyzer_diagnostic.category-Blocker Code Smell.severity = suggestion
 dotnet_analyzer_diagnostic.category-Critical Code Smell.severity = suggestion

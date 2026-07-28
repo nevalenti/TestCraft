@@ -1,36 +1,36 @@
-import { PlusIcon, RectangleStackIcon } from "@heroicons/react/24/solid";
+import { PlusIcon, RectangleStackIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestSuite,
   TestSuite,
   UpdateTestSuite,
-} from "@testcraft/types";
-import { useState } from "react";
+} from '@testcraft/types';
+import { useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
-import { Modal } from "@/components/ui/Modal";
-import { ResourceCard } from "@/components/ui/ResourceCard";
-import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { ViewToggle } from "@/components/ui/ViewToggle";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useModal } from "@/hooks/useModal";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ListToolbar } from '@/components/ui/ListToolbar';
+import { Modal } from '@/components/ui/Modal';
+import { ResourceCard } from '@/components/ui/ResourceCard';
+import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
   useCreateTestSuite,
   useDeleteTestSuite,
   useTestSuites,
   useUpdateTestSuite,
-} from "@/hooks/useTestSuites";
-import { formatDate } from "@/lib/format";
-import { SourceFilter } from "@/pages/ProjectDetailPage/SourceFilter";
-import { SuiteForm } from "@/pages/ProjectDetailPage/SuiteForm";
-import { useViewModeStore } from "@/stores/viewMode";
+} from '@/hooks/useTestSuites';
+import { formatDate } from '@/lib/format';
+import { SourceFilter } from '@/pages/ProjectDetailPage/SourceFilter';
+import { SuiteForm } from '@/pages/ProjectDetailPage/SuiteForm';
+import { useViewModeStore } from '@/stores/viewMode';
 
 export const SuitesTab = () => {
-  const projectId = useRequiredParam("projectId");
-  const [search, setSearch] = useState("");
+  const projectId = useRequiredParam('projectId');
+  const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
   const viewMode = useViewModeStore((state) => state.viewMode);
@@ -53,7 +53,7 @@ export const SuitesTab = () => {
   const handleDelete = (id: string) =>
     deleteSuite.mutate(id, { onSuccess: close });
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   const allSuites = suites ?? [];
   const sources = [
@@ -89,7 +89,7 @@ export const SuitesTab = () => {
         />
       );
 
-    if (viewMode === "list")
+    if (viewMode === 'list')
       return (
         <div className="flex flex-col gap-2">
           {visibleSuites?.map((suite) => (
@@ -199,11 +199,11 @@ export const SuitesTab = () => {
       {renderSuites()}
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="New Test Suite"
       >
-        {modal.type === "create" && (
+        {modal.type === 'create' && (
           <SuiteForm
             onSubmit={handleCreate}
             onCancel={close}
@@ -212,16 +212,16 @@ export const SuitesTab = () => {
         )}
       </Modal>
       <Modal
-        isOpen={modal.type === "edit"}
+        isOpen={modal.type === 'edit'}
         onClose={close}
         title="Edit Test Suite"
       >
-        {modal.type === "edit" && (
+        {modal.type === 'edit' && (
           <SuiteForm
             key={modal.item.id}
             defaultValues={{
               name: modal.item.name,
-              description: modal.item.description ?? "",
+              description: modal.item.description ?? '',
             }}
             onSubmit={handleUpdate(modal.item.id)}
             onCancel={close}
@@ -230,11 +230,11 @@ export const SuitesTab = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Test Suite"
-        description={deleteItem ? `Delete "${deleteItem.name}"?` : ""}
+        description={deleteItem ? `Delete "${deleteItem.name}"?` : ''}
         isLoading={deleteSuite.isPending}
       />
     </>

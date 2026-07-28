@@ -1,6 +1,6 @@
-import { expect, type Page } from "@playwright/test";
+import { expect, type Page } from '@playwright/test';
 
-import { ConfirmDialog } from "./confirm-dialog";
+import { ConfirmDialog } from './confirm-dialog';
 
 export class SuitesPage {
   readonly confirmDialog: ConfirmDialog;
@@ -12,16 +12,16 @@ export class SuitesPage {
   async goto(path: string) {
     await this.page.goto(path);
     await expect(
-      this.page.getByRole("tab", { name: /Test Suites/i }),
+      this.page.getByRole('tab', { name: /Test Suites/i }),
     ).toBeVisible();
   }
 
   get createButton() {
-    return this.page.getByRole("button", { name: "New Suite" });
+    return this.page.getByRole('button', { name: 'New Suite' });
   }
 
   get dialog() {
-    return this.page.locator("dialog[open]");
+    return this.page.locator('dialog[open]');
   }
 
   getCard(name: string) {
@@ -36,21 +36,21 @@ export class SuitesPage {
 
   async create(name: string) {
     await this.openCreateDialog();
-    await this.page.getByLabel("Name").fill(name);
-    await this.page.getByRole("button", { name: "Save" }).click();
+    await this.page.getByLabel('Name').fill(name);
+    await this.page.getByRole('button', { name: 'Save' }).click();
     await expect(this.getCard(name)).toBeVisible({ timeout: 10_000 });
   }
 
   async open(name: string) {
     await this.getCard(name)
-      .getByRole("link", { name: "Open test suite" })
+      .getByRole('link', { name: 'Open test suite' })
       .click();
   }
 
   async delete(name: string) {
     const card = this.getCard(name);
     await card.hover();
-    await card.getByRole("button", { name: "Delete test suite" }).click();
+    await card.getByRole('button', { name: 'Delete test suite' }).click();
     await this.confirmDialog.confirmDelete();
     await expect(this.getCard(name)).toHaveCount(0);
   }
@@ -58,10 +58,10 @@ export class SuitesPage {
   async edit(name: string, newName: string) {
     const card = this.getCard(name);
     await card.hover();
-    await card.getByRole("button", { name: "Edit test suite" }).click();
+    await card.getByRole('button', { name: 'Edit test suite' }).click();
     await expect(this.dialog).toBeVisible();
-    await this.dialog.locator("#suite-name").fill(newName);
-    await this.dialog.getByRole("button", { name: "Save" }).click();
+    await this.dialog.locator('#suite-name').fill(newName);
+    await this.dialog.getByRole('button', { name: 'Save' }).click();
     await expect(this.dialog).not.toBeVisible();
     await expect(this.getCard(newName)).toBeVisible({ timeout: 10_000 });
   }

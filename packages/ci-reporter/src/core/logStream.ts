@@ -1,5 +1,5 @@
-const ANSI_PATTERN = new RegExp("[\\u001B\\u009B]\\[[0-9;]*[a-zA-Z]", "g");
-const stripAnsi = (text: string): string => text.replace(ANSI_PATTERN, "");
+const ANSI_PATTERN = new RegExp('[\\u001B\\u009B]\\[[0-9;]*[a-zA-Z]', 'g');
+const stripAnsi = (text: string): string => text.replace(ANSI_PATTERN, '');
 
 type WriteFn = typeof process.stdout.write;
 
@@ -11,14 +11,14 @@ export interface StdioCapture {
 export const createStdioCapture = (
   onLines: (lines: string[]) => void,
 ): StdioCapture => {
-  let stdoutBuffer = "";
-  let stderrBuffer = "";
+  let stdoutBuffer = '';
+  let stderrBuffer = '';
 
   const capture = (chunk: string | Uint8Array, isErr: boolean): void => {
     const text = stripAnsi(chunk.toString());
     const combined = (isErr ? stderrBuffer : stdoutBuffer) + text;
-    const parts = combined.split("\n");
-    const remainder = parts.pop() ?? "";
+    const parts = combined.split('\n');
+    const remainder = parts.pop() ?? '';
     if (isErr) stderrBuffer = remainder;
     else stdoutBuffer = remainder;
 
@@ -47,8 +47,8 @@ export const createStdioCapture = (
       const trailing = [stdoutBuffer, stderrBuffer].filter(
         (line) => line.length > 0,
       );
-      stdoutBuffer = "";
-      stderrBuffer = "";
+      stdoutBuffer = '';
+      stderrBuffer = '';
       if (trailing.length) onLines(trailing);
     },
   };

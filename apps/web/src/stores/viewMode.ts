@@ -1,7 +1,7 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export type ViewMode = "grid" | "list";
+export type ViewMode = 'grid' | 'list';
 
 interface ViewModeState {
   viewMode: ViewMode;
@@ -11,9 +11,9 @@ interface ViewModeState {
 export const useViewModeStore = create<ViewModeState>()(
   persist(
     (set) => ({
-      viewMode: "grid",
+      viewMode: 'grid',
       setViewMode: (viewMode) => set({ viewMode }),
     }),
-    { name: "testcraft.view-mode" },
+    { name: 'testcraft.view-mode' },
   ),
 );

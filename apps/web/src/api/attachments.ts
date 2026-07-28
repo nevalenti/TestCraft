@@ -1,8 +1,8 @@
-import { queryOptions } from "@tanstack/react-query";
-import type { Attachment } from "@testcraft/types";
+import { queryOptions } from '@tanstack/react-query';
+import type { Attachment } from '@testcraft/types';
 
-import client from "@/api/client";
-import { queryKeys } from "@/api/queryKeys";
+import client from '@/api/client';
+import { queryKeys } from '@/api/queryKeys';
 
 const BASE = (projectId: string, runId: string, resultId: string) =>
   `projects/${projectId}/runs/${runId}/results/${resultId}/attachments`;
@@ -21,12 +21,12 @@ export const attachmentsApi = {
     file: File,
   ) => {
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append('file', file);
     const { data } = await client.post<Attachment>(
       BASE(projectId, runId, resultId),
       formData,
       {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { 'Content-Type': 'multipart/form-data' },
       },
     );
     return data;

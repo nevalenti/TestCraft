@@ -1,5 +1,5 @@
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
-import type { AxiosError } from "axios";
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+import type { AxiosError } from 'axios';
 
 interface ApiProblem {
   title?: string;
@@ -20,7 +20,7 @@ const extractMessage = (error: unknown): string | undefined => {
 };
 
 export const ErrorState = ({
-  title = "Failed to load",
+  title = 'Failed to load',
   error,
   message,
   onRetry = () => location.reload(),
@@ -28,7 +28,7 @@ export const ErrorState = ({
   const displayMessage =
     message ??
     extractMessage(error) ??
-    "Please check your connection and try again.";
+    'Please check your connection and try again.';
 
   return (
     <div className="flex flex-1 items-center justify-center p-8">

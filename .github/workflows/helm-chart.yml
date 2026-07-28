@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "infrastructure/helm/**"
-      - ".github/workflows/helm-chart.yml"
+      - 'infrastructure/helm/**'
+      - '.github/workflows/helm-chart.yml'
   pull_request:
     branches: [main]
     paths:
-      - "infrastructure/helm/**"
-      - ".github/workflows/helm-chart.yml"
+      - 'infrastructure/helm/**'
+      - '.github/workflows/helm-chart.yml'
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,7 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v4
         with:
-          version: "v3.16.4"
+          version: 'v3.16.4'
 
       - name: Helm dependency update
         run: helm dependency update infrastructure/helm/testcraft

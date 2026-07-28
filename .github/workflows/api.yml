@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/Api/**"
-      - ".github/workflows/api.yml"
+      - 'apps/Api/**'
+      - '.github/workflows/api.yml'
   pull_request:
     branches: [main]
     paths:
-      - "apps/Api/**"
-      - ".github/workflows/api.yml"
+      - 'apps/Api/**'
+      - '.github/workflows/api.yml'
   workflow_dispatch:
 
 concurrency:
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      MSBUILDTERMINALLOGGER: "off"
+      MSBUILDTERMINALLOGGER: 'off'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,7 +48,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: "10.0.x"
+          dotnet-version: '10.0.x'
 
       - name: Cache NuGet packages
         uses: actions/cache@v4
@@ -90,7 +90,7 @@ jobs:
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
-          run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
           source: api
 
       - name: Test
@@ -115,7 +115,7 @@ jobs:
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
           junit-xml: apps/Api/test-results/*.junit.xml
-          run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
           source: api
 
   docker:

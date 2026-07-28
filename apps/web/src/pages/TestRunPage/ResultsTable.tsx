@@ -1,12 +1,12 @@
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
-import { flexRender, type Table } from "@tanstack/react-table";
-import type { TestResult } from "@testcraft/types";
+import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { flexRender, type Table } from '@tanstack/react-table';
+import type { TestResult } from '@testcraft/types';
 
-const getSortIcon = (sorted: false | "asc" | "desc"): string => {
-  if (sorted === "asc") return "▲";
-  if (sorted === "desc") return "▼";
+const getSortIcon = (sorted: false | 'asc' | 'desc'): string => {
+  if (sorted === 'asc') return '▲';
+  if (sorted === 'desc') return '▼';
 
-  return "⬍";
+  return '⬍';
 };
 
 interface ResultsTableProps {
@@ -33,8 +33,8 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
                     onClick={header.column.getToggleSortingHandler()}
                     className={
                       header.column.getCanSort()
-                        ? "cursor-pointer select-none"
-                        : ""
+                        ? 'cursor-pointer select-none'
+                        : ''
                     }
                   >
                     <span className="inline-flex items-center gap-1.5">
@@ -74,10 +74,10 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
       {pageCount > 1 && (
         <div className="mt-4 flex items-center justify-between gap-4">
           <span className="px-1 text-sm text-base-content/75">
-            Page{" "}
+            Page{' '}
             <span className="font-semibold text-base-content">
               {pageIndex + 1}
-            </span>{" "}
+            </span>{' '}
             of {pageCount}
           </span>
           <div className="flex gap-1.5">

@@ -1,14 +1,14 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions } from '@tanstack/react-query';
 import type {
   CreateTestCase,
   Paginated,
   TestCase,
   UpdateTestCase,
-} from "@testcraft/types";
+} from '@testcraft/types';
 
-import client from "@/api/client";
-import { queryKeys } from "@/api/queryKeys";
-import { PAGE_SIZE } from "@/lib/constants";
+import client from '@/api/client';
+import { queryKeys } from '@/api/queryKeys';
+import { PAGE_SIZE } from '@/lib/constants';
 
 const BASE = (projectId: string, suiteId: string) =>
   `projects/${projectId}/suites/${suiteId}/cases`;

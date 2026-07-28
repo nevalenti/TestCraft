@@ -1,7 +1,7 @@
-import { ListBulletIcon, Squares2X2Icon } from "@heroicons/react/24/solid";
+import { ListBulletIcon, Squares2X2Icon } from '@heroicons/react/24/solid';
 
-import { cn } from "@/lib/cn";
-import { useViewModeStore } from "@/stores/viewMode";
+import { cn } from '@/lib/cn';
+import { useViewModeStore } from '@/stores/viewMode';
 
 export const ViewToggle = () => {
   const viewMode = useViewModeStore((state) => state.viewMode);
@@ -12,28 +12,28 @@ export const ViewToggle = () => {
       <button
         type="button"
         className={cn(
-          "flex size-7 items-center justify-center rounded-md transition-all",
-          viewMode === "grid"
-            ? "bg-base-100 text-base-content shadow-sm"
-            : "text-base-content/65 hover:text-base-content/85",
+          'flex size-7 items-center justify-center rounded-md transition-all',
+          viewMode === 'grid'
+            ? 'bg-base-100 text-base-content shadow-sm'
+            : 'text-base-content/65 hover:text-base-content/85',
         )}
-        onClick={() => setViewMode("grid")}
+        onClick={() => setViewMode('grid')}
         aria-label="Grid view"
-        aria-pressed={viewMode === "grid"}
+        aria-pressed={viewMode === 'grid'}
       >
         <Squares2X2Icon className="size-3.5" />
       </button>
       <button
         type="button"
         className={cn(
-          "flex size-7 items-center justify-center rounded-md transition-all",
-          viewMode === "list"
-            ? "bg-base-100 text-base-content shadow-sm"
-            : "text-base-content/65 hover:text-base-content/85",
+          'flex size-7 items-center justify-center rounded-md transition-all',
+          viewMode === 'list'
+            ? 'bg-base-100 text-base-content shadow-sm'
+            : 'text-base-content/65 hover:text-base-content/85',
         )}
-        onClick={() => setViewMode("list")}
+        onClick={() => setViewMode('list')}
         aria-label="List view"
-        aria-pressed={viewMode === "list"}
+        aria-pressed={viewMode === 'list'}
       >
         <ListBulletIcon className="size-3.5" />
       </button>

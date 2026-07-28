@@ -3,12 +3,12 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from "@tanstack/react-query";
-import type { CreateProject, UpdateProject } from "@testcraft/types";
+} from '@tanstack/react-query';
+import type { CreateProject, UpdateProject } from '@testcraft/types';
 
-import { projectQueries, projectsApi } from "@/api/projects";
-import { queryKeys } from "@/api/queryKeys";
-import { notify } from "@/lib/notify";
+import { projectQueries, projectsApi } from '@/api/projects';
+import { queryKeys } from '@/api/queryKeys';
+import { notify } from '@/lib/notify';
 
 export const useProjects = (search?: string) =>
   useQuery({
@@ -25,7 +25,7 @@ export const useCreateProject = () => {
   return useMutation({
     mutationFn: (input: CreateProject) => projectsApi.create(input),
     onSuccess: () => {
-      notify("Project created");
+      notify('Project created');
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
     },
   });
@@ -38,7 +38,7 @@ export const useUpdateProject = () => {
     mutationFn: ({ id, ...input }: UpdateProject & { id: string }) =>
       projectsApi.update(id, input),
     onSuccess: (_, { id }) => {
-      notify("Project updated");
+      notify('Project updated');
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(id),
@@ -53,7 +53,7 @@ export const useDeleteProject = () => {
   return useMutation({
     mutationFn: (id: string) => projectsApi.delete(id),
     onSuccess: (_, id) => {
-      notify("Project deleted");
+      notify('Project deleted');
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.removeQueries({ queryKey: queryKeys.projects.detail(id) });
     },
