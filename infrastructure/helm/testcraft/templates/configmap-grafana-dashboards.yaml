@@ -16,3 +16,9 @@ data:
 {{ .Files.Get "files/postgres-metrics.json" | indent 4 }}
   rabbitmq-metrics.json: |
 {{ .Files.Get "files/rabbitmq-metrics.json" | indent 4 }}
+  k8s-cluster.json: |
+{{ .Files.Get "files/k8s-cluster.json" | indent 4 }}
+  k8s-node.json: |
+{{ .Files.Get "files/k8s-node.json" | indent 4 }}
+  k8s-pods.json: |
+{{ .Files.Get "files/k8s-pods.json" | indent 4 }}
