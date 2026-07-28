@@ -1,4 +1,4 @@
-import { useParams } from "@tanstack/react-router";
+import { useParams } from '@tanstack/react-router';
 
 export const useRequiredParam = (name: string): string => {
   const params = useParams({ strict: false });

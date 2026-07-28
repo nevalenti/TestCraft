@@ -6,8 +6,8 @@ import {
   fetchToken,
   findProjectId,
   type StdioCapture,
-} from "testcraft-ci-reporter";
-import type { Reporter } from "vitest/node";
+} from 'testcraft-ci-reporter';
+import type { Reporter } from 'vitest/node';
 
 interface Ctx extends ApiContext {
   runId: string;
@@ -57,15 +57,15 @@ class TestCraftReporter implements Reporter {
   }
 
   onInit(): void {
-    const apiUrl = process.env["TESTCRAFT_API_URL"];
-    const runId = process.env["TESTCRAFT_RUN_ID"];
-    const username = process.env["TESTCRAFT_USERNAME"];
-    const password = process.env["TESTCRAFT_PASSWORD"];
-    const projectName = process.env["TESTCRAFT_PROJECT_NAME"];
+    const apiUrl = process.env['TESTCRAFT_API_URL'];
+    const runId = process.env['TESTCRAFT_RUN_ID'];
+    const username = process.env['TESTCRAFT_USERNAME'];
+    const password = process.env['TESTCRAFT_PASSWORD'];
+    const projectName = process.env['TESTCRAFT_PROJECT_NAME'];
 
     if (!apiUrl || !runId || !username || !password || !projectName) return;
 
-    const keycloakAuthority = process.env["TESTCRAFT_KEYCLOAK_AUTHORITY"];
+    const keycloakAuthority = process.env['TESTCRAFT_KEYCLOAK_AUTHORITY'];
 
     this.initPromise = this.init(
       apiUrl,

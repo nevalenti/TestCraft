@@ -1,41 +1,41 @@
-import { ClipboardDocumentListIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { ClipboardDocumentListIcon, PlusIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestCase,
   TestCase,
   UpdateTestCase,
-} from "@testcraft/types";
-import { useState } from "react";
+} from '@testcraft/types';
+import { useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { LabelBadge } from "@/components/ui/LabelBadge";
-import { ListToolbar } from "@/components/ui/ListToolbar";
-import { Modal } from "@/components/ui/Modal";
-import { PriorityBadge } from "@/components/ui/PriorityBadge";
-import { ResourceCard } from "@/components/ui/ResourceCard";
-import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { ViewToggle } from "@/components/ui/ViewToggle";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useModal } from "@/hooks/useModal";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { LabelBadge } from '@/components/ui/LabelBadge';
+import { ListToolbar } from '@/components/ui/ListToolbar';
+import { Modal } from '@/components/ui/Modal';
+import { PriorityBadge } from '@/components/ui/PriorityBadge';
+import { ResourceCard } from '@/components/ui/ResourceCard';
+import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
   useCreateTestCase,
   useDeleteTestCase,
   useTestCases,
   useUpdateTestCase,
-} from "@/hooks/useTestCases";
-import { useTestSuite } from "@/hooks/useTestSuites";
-import { formatDate } from "@/lib/format";
-import { TestCaseForm } from "@/pages/TestSuitePage/TestCaseForm";
-import { useViewModeStore } from "@/stores/viewMode";
+} from '@/hooks/useTestCases';
+import { useTestSuite } from '@/hooks/useTestSuites';
+import { formatDate } from '@/lib/format';
+import { TestCaseForm } from '@/pages/TestSuitePage/TestCaseForm';
+import { useViewModeStore } from '@/stores/viewMode';
 
 export const TestSuitePage = () => {
-  const projectId = useRequiredParam("projectId");
-  const suiteId = useRequiredParam("suiteId");
-  const [search, setSearch] = useState("");
+  const projectId = useRequiredParam('projectId');
+  const suiteId = useRequiredParam('suiteId');
+  const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
   const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
@@ -61,12 +61,12 @@ export const TestSuitePage = () => {
     deleteCase.mutate(id, { onSuccess: close });
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
-    { label: suite?.name ?? "…" },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…', href: `/projects/${projectId}` },
+    { label: suite?.name ?? '…' },
   ]);
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   const renderTestCases = () => {
     if (isPending)
@@ -84,7 +84,7 @@ export const TestSuitePage = () => {
         />
       );
 
-    if (viewMode === "list")
+    if (viewMode === 'list')
       return (
         <div className="flex flex-col gap-2">
           {testCases?.map((testCase) => (
@@ -127,7 +127,7 @@ export const TestSuitePage = () => {
                 {testCase.stepCount > 0 && (
                   <span className="text-[11px] text-base-content/75">
                     {testCase.stepCount} step
-                    {testCase.stepCount === 1 ? "" : "s"}
+                    {testCase.stepCount === 1 ? '' : 's'}
                   </span>
                 )}
                 <PriorityBadge priority={testCase.priority} />
@@ -184,7 +184,7 @@ export const TestSuitePage = () => {
                 {testCase.stepCount > 0 && (
                   <span className="text-[11px] text-base-content/75">
                     {testCase.stepCount} step
-                    {testCase.stepCount === 1 ? "" : "s"}
+                    {testCase.stepCount === 1 ? '' : 's'}
                   </span>
                 )}
               </div>
@@ -211,7 +211,7 @@ export const TestSuitePage = () => {
             )}
           </div>
           <p className="mt-0.5 text-sm text-base-content/70">
-            {suite?.description ?? "Test cases in this suite"}
+            {suite?.description ?? 'Test cases in this suite'}
           </p>
         </div>
       </header>
@@ -232,11 +232,11 @@ export const TestSuitePage = () => {
       </section>
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="New Test Case"
       >
-        {modal.type === "create" && (
+        {modal.type === 'create' && (
           <TestCaseForm
             onSubmit={handleCreate}
             onCancel={close}
@@ -245,16 +245,16 @@ export const TestSuitePage = () => {
         )}
       </Modal>
       <Modal
-        isOpen={modal.type === "edit"}
+        isOpen={modal.type === 'edit'}
         onClose={close}
         title="Edit Test Case"
       >
-        {modal.type === "edit" && (
+        {modal.type === 'edit' && (
           <TestCaseForm
             key={modal.item.id}
             defaultValues={{
               name: modal.item.name,
-              description: modal.item.description ?? "",
+              description: modal.item.description ?? '',
               priority: modal.item.priority,
             }}
             onSubmit={handleUpdate(modal.item.id)}
@@ -264,11 +264,11 @@ export const TestSuitePage = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Test Case"
-        description={deleteItem ? `Delete "${deleteItem.name}"?` : ""}
+        description={deleteItem ? `Delete "${deleteItem.name}"?` : ''}
         isLoading={deleteCase.isPending}
       />
     </div>

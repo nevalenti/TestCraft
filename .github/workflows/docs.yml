@@ -4,15 +4,15 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/docs/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/docs.yml"
+      - 'apps/docs/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/docs.yml'
   pull_request:
     branches: [main]
     paths:
-      - "apps/docs/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/docs.yml"
+      - 'apps/docs/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 concurrency:
@@ -64,7 +64,7 @@ jobs:
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
-          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
           source: docs
 
       - name: Typecheck
@@ -84,7 +84,7 @@ jobs:
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
           junit-xml: apps/docs/test-results/*.junit.xml
-          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
           source: docs
 
   docker:

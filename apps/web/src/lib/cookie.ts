@@ -1,16 +1,16 @@
-import { addDays } from "date-fns";
+import { addDays } from 'date-fns';
 
 export const setCookie = (name: string, value: string, days = 365): void => {
   const expires = addDays(new Date(), days).toUTCString();
-  const secure = location.protocol === "https:" ? "Secure;" : "";
+  const secure = location.protocol === 'https:' ? 'Secure;' : '';
   // eslint-disable-next-line unicorn/no-document-cookie
   document.cookie = `${name}=${encodeURIComponent(value)};expires=${expires};path=/;${secure}SameSite=Strict`;
 };
 
 export const getCookie = (name: string): string | null => {
   const match = document.cookie
-    .split("; ")
-    .find((cookie) => cookie.startsWith(name + "="));
+    .split('; ')
+    .find((cookie) => cookie.startsWith(name + '='));
 
   return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
 };

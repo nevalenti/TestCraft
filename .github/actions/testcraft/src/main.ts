@@ -1,6 +1,6 @@
-import * as core from "@actions/core";
-import { existsSync, readdirSync } from "node:fs";
-import { basename, join, resolve } from "node:path";
+import * as core from '@actions/core';
+import { existsSync, readdirSync } from 'node:fs';
+import { basename, join, resolve } from 'node:path';
 
 import {
   ApiContext,
@@ -15,10 +15,10 @@ import {
   resolveJunitXml,
   slugify,
   uploadAttachment,
-} from "testcraft-ci-reporter";
+} from 'testcraft-ci-reporter';
 
 const { readState, saveState, clearState } = createStateStore(
-  `${process.env["GITHUB_RUN_ID"] ?? "local"}_${process.env["GITHUB_JOB"] ?? "job"}`,
+  `${process.env['GITHUB_RUN_ID'] ?? 'local'}_${process.env['GITHUB_JOB'] ?? 'job'}`,
 );
 
 const authenticate = async (
@@ -29,10 +29,10 @@ const authenticate = async (
 ): Promise<string> => {
   let authority = keycloakAuthority;
   if (!authority) {
-    core.info("Fetching auth config…");
+    core.info('Fetching auth config…');
     authority = await fetchAuthority(apiUrl);
   }
-  core.info("Authenticating with Keycloak…");
+  core.info('Authenticating with Keycloak…');
   const token = await fetchToken(authority, username, password);
   core.setSecret(token);
   return token;
@@ -61,10 +61,10 @@ const handleStart = async (
   runName: string,
   source?: string,
 ): Promise<void> => {
-  core.info("Creating Active run…");
-  const activeRun = await createRun(ctx, runName, "ci", source);
+  core.info('Creating Active run…');
+  const activeRun = await createRun(ctx, runName, 'ci', source);
   saveState(activeRun.id);
-  core.setOutput("run-id", activeRun.id);
+  core.setOutput('run-id', activeRun.id);
   core.info(`Run ${activeRun.id} is now Active`);
 };
 
@@ -73,7 +73,7 @@ const uploadScreenshots = async (
   runId: string,
   screenshotsDir: string,
 ): Promise<void> => {
-  core.info("Uploading screenshots as attachments…");
+  core.info('Uploading screenshots as attachments…');
   const results = await fetchAllResults(ctx, runId);
 
   let uploaded = 0;
@@ -83,7 +83,7 @@ const uploadScreenshots = async (
       .filter((d) => d.isDirectory() && d.name.toLowerCase().includes(slug))
       .flatMap((d) =>
         readdirSync(join(screenshotsDir, d.name))
-          .filter((f) => f.endsWith(".png"))
+          .filter((f) => f.endsWith('.png'))
           .map((f) => join(screenshotsDir, d.name, f)),
       );
 
@@ -134,10 +134,10 @@ const handleImport = async (
   if (savedRunId) {
     core.info(`Appending results to existing run ${savedRunId}…`);
   } else {
-    core.info("No pre-created run found — creating Active run for import…");
+    core.info('No pre-created run found — creating Active run for import…');
   }
 
-  core.info("Importing results…");
+  core.info('Importing results…');
   const job = await importResults(
     ctx,
     runName,
@@ -146,10 +146,10 @@ const handleImport = async (
     savedRunId ?? undefined,
   );
 
-  core.info("Waiting for import job to complete…");
+  core.info('Waiting for import job to complete…');
   const completedRunId = await pollJob(ctx, job.id);
-  core.setOutput("run-id", completedRunId ?? "");
-  core.info("Results imported successfully");
+  core.setOutput('run-id', completedRunId ?? '');
+  core.info('Results imported successfully');
 
   clearState();
 
@@ -166,23 +166,23 @@ const handleImport = async (
 };
 
 const run = async (): Promise<void> => {
-  const command = core.getInput("command") || "import";
-  const apiUrl = core.getInput("api-url");
-  const username = core.getInput("username");
-  const password = core.getInput("password");
-  const projectName = core.getInput("project-name", { required: true });
-  const runName = core.getInput("run-name", { required: true });
-  const keycloakAuthority = core.getInput("keycloak-authority") || undefined;
-  const source = core.getInput("source") || undefined;
-  const workspace = process.env["GITHUB_WORKSPACE"] ?? process.cwd();
+  const command = core.getInput('command') || 'import';
+  const apiUrl = core.getInput('api-url');
+  const username = core.getInput('username');
+  const password = core.getInput('password');
+  const projectName = core.getInput('project-name', { required: true });
+  const runName = core.getInput('run-name', { required: true });
+  const keycloakAuthority = core.getInput('keycloak-authority') || undefined;
+  const source = core.getInput('source') || undefined;
+  const workspace = process.env['GITHUB_WORKSPACE'] ?? process.cwd();
 
   if (!apiUrl) {
-    core.info("api-url not set — skipping TestCraft");
+    core.info('api-url not set — skipping TestCraft');
     return;
   }
 
   if (!username || !password) {
-    throw new Error("username and password are required when api-url is set");
+    throw new Error('username and password are required when api-url is set');
   }
 
   const ctx = await buildContext(
@@ -193,17 +193,17 @@ const run = async (): Promise<void> => {
     keycloakAuthority,
   );
 
-  if (command === "start") {
+  if (command === 'start') {
     await handleStart(ctx, runName, source);
     return;
   }
 
-  const junitXmlInput = core.getInput("junit-xml");
+  const junitXmlInput = core.getInput('junit-xml');
   if (!junitXmlInput) {
-    throw new Error("junit-xml is required when command is import");
+    throw new Error('junit-xml is required when command is import');
   }
 
-  const screenshotsDirInput = core.getInput("screenshots-dir") || undefined;
+  const screenshotsDirInput = core.getInput('screenshots-dir') || undefined;
   await handleImport(
     ctx,
     runName,

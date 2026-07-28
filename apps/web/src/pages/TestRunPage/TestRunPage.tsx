@@ -4,7 +4,7 @@ import {
   QueueListIcon,
   ShareIcon,
   SignalIcon,
-} from "@heroicons/react/24/solid";
+} from '@heroicons/react/24/solid';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -12,43 +12,43 @@ import {
   type SortingState,
   type Table,
   useReactTable,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   type CreateTestResult,
   type Paginated,
   type TestResult,
   TestResultStatus,
   type UpdateTestResult,
-} from "@testcraft/types";
-import { useEffect, useMemo, useState } from "react";
+} from '@testcraft/types';
+import { useEffect, useMemo, useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Modal } from "@/components/ui/Modal";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useModal } from "@/hooks/useModal";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Modal } from '@/components/ui/Modal';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
   useCreateTestResult,
   useDeleteTestResult,
   useTestResults,
   useUpdateTestResult,
-} from "@/hooks/useTestResults";
-import { useTestRunRealtime } from "@/hooks/useTestRunRealtime";
-import { useTestRun, useTestRunSummary } from "@/hooks/useTestRuns";
-import { RESULTS_PAGE_SIZE } from "@/lib/constants";
-import { AttachmentModal } from "@/pages/TestRunPage/AttachmentModal";
-import { createColumns } from "@/pages/TestRunPage/columns";
-import { CreateResultForm } from "@/pages/TestRunPage/CreateResultForm";
-import { LiveLogFeed } from "@/pages/TestRunPage/LiveLogFeed";
-import { LogPanel } from "@/pages/TestRunPage/LogPanel";
-import { ResultsTable } from "@/pages/TestRunPage/ResultsTable";
-import { RunSummaryBar } from "@/pages/TestRunPage/RunSummaryBar";
-import { ShareModal } from "@/pages/TestRunPage/ShareModal";
-import { UpdateResultForm } from "@/pages/TestRunPage/UpdateResultForm";
+} from '@/hooks/useTestResults';
+import { useTestRunRealtime } from '@/hooks/useTestRunRealtime';
+import { useTestRun, useTestRunSummary } from '@/hooks/useTestRuns';
+import { RESULTS_PAGE_SIZE } from '@/lib/constants';
+import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';
+import { createColumns } from '@/pages/TestRunPage/columns';
+import { CreateResultForm } from '@/pages/TestRunPage/CreateResultForm';
+import { LiveLogFeed } from '@/pages/TestRunPage/LiveLogFeed';
+import { LogPanel } from '@/pages/TestRunPage/LogPanel';
+import { ResultsTable } from '@/pages/TestRunPage/ResultsTable';
+import { RunSummaryBar } from '@/pages/TestRunPage/RunSummaryBar';
+import { ShareModal } from '@/pages/TestRunPage/ShareModal';
+import { UpdateResultForm } from '@/pages/TestRunPage/UpdateResultForm';
 
 interface ResultsContentProps {
   isPending: boolean;
@@ -134,19 +134,19 @@ const ResultsContent = ({
 };
 
 export const TestRunPage = () => {
-  const projectId = useRequiredParam("projectId");
-  const runId = useRequiredParam("runId");
+  const projectId = useRequiredParam('projectId');
+  const runId = useRequiredParam('runId');
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestResult>();
   const [shareOpen, setShareOpen] = useState(false);
-  const [view, setView] = useState<"table" | "live" | "logs">("table");
+  const [view, setView] = useState<'table' | 'live' | 'logs'>('table');
   const [attachmentResult, setAttachmentResult] = useState<TestResult | null>(
     null,
   );
   const [statusFilter, setStatusFilter] = useState<TestResultStatus | null>(
     null,
   );
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
@@ -192,9 +192,9 @@ export const TestRunPage = () => {
     deleteResult.mutate(id, { onSuccess: close });
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
-    { label: run?.name ?? "…" },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…', href: `/projects/${projectId}` },
+    { label: run?.name ?? '…' },
   ]);
 
   const columns = useMemo(
@@ -223,12 +223,12 @@ export const TestRunPage = () => {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   let viewContent: React.ReactNode;
-  if (view === "live") {
+  if (view === 'live') {
     viewContent = <LiveLogFeed projectId={projectId} runId={runId} />;
-  } else if (view === "logs") {
+  } else if (view === 'logs') {
     viewContent = <LogPanel projectId={projectId} runId={runId} />;
   } else {
     viewContent = (
@@ -258,7 +258,7 @@ export const TestRunPage = () => {
             statusFilter={statusFilter}
             debouncedSearch={debouncedSearch}
             openCreate={openCreate}
-            onClearSearch={() => setSearch("")}
+            onClearSearch={() => setSearch('')}
             onClearFilter={() => setStatusFilter(null)}
             table={table}
             pageCount={pageCount}
@@ -274,30 +274,30 @@ export const TestRunPage = () => {
         <div>
           <h1 className="page-title">{run?.name}</h1>
           <p className="mt-0.5 text-sm text-base-content/70">
-            {run?.environment ?? "Track test results for this run"}
+            {run?.environment ?? 'Track test results for this run'}
           </p>
         </div>
         <div className="flex items-center gap-2">
           <div className="join">
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === "table" ? "btn-neutral" : "btn-ghost"}`}
-              onClick={() => setView("table")}
+              className={`btn join-item gap-1.5 btn-sm ${view === 'table' ? 'btn-neutral' : 'btn-ghost'}`}
+              onClick={() => setView('table')}
               aria-label="Table view"
             >
               <QueueListIcon className="size-4" />
               Table
             </button>
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === "live" ? "btn-neutral" : "btn-ghost"}`}
-              onClick={() => setView("live")}
+              className={`btn join-item gap-1.5 btn-sm ${view === 'live' ? 'btn-neutral' : 'btn-ghost'}`}
+              onClick={() => setView('live')}
               aria-label="Live log view"
             >
               <SignalIcon className="size-4" />
               Live
             </button>
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === "logs" ? "btn-neutral" : "btn-ghost"}`}
-              onClick={() => setView("logs")}
+              className={`btn join-item gap-1.5 btn-sm ${view === 'logs' ? 'btn-neutral' : 'btn-ghost'}`}
+              onClick={() => setView('logs')}
               aria-label="Pipeline logs"
             >
               <CommandLineIcon className="size-4" />
@@ -315,17 +315,17 @@ export const TestRunPage = () => {
       </header>
 
       <section
-        className={`page-content min-h-0 flex-1 ${view === "logs" ? "flex overflow-hidden" : "overflow-y-auto"}`}
+        className={`page-content min-h-0 flex-1 ${view === 'logs' ? 'flex overflow-hidden' : 'overflow-y-auto'}`}
       >
         {viewContent}
       </section>
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="Add Test Result"
       >
-        {modal.type === "create" && (
+        {modal.type === 'create' && (
           <CreateResultForm
             projectId={projectId}
             onSubmit={handleCreate}
@@ -334,13 +334,13 @@ export const TestRunPage = () => {
           />
         )}
       </Modal>
-      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Result">
-        {modal.type === "edit" && (
+      <Modal isOpen={modal.type === 'edit'} onClose={close} title="Edit Result">
+        {modal.type === 'edit' && (
           <UpdateResultForm
             key={modal.item.id}
             defaultValues={{
               status: modal.item.status,
-              notes: modal.item.notes ?? "",
+              notes: modal.item.notes ?? '',
               defectType: modal.item.defectType,
             }}
             onSubmit={handleUpdate(modal.item.id)}
@@ -350,12 +350,12 @@ export const TestRunPage = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Result"
         description={
-          deleteItem ? `Delete result for "${deleteItem.testCaseName}"?` : ""
+          deleteItem ? `Delete result for "${deleteItem.testCaseName}"?` : ''
         }
         isLoading={deleteResult.isPending}
       />
@@ -370,8 +370,8 @@ export const TestRunPage = () => {
         onClose={() => setAttachmentResult(null)}
         projectId={projectId}
         runId={runId}
-        resultId={attachmentResult?.id ?? ""}
-        testCaseName={attachmentResult?.testCaseName ?? ""}
+        resultId={attachmentResult?.id ?? ''}
+        testCaseName={attachmentResult?.testCaseName ?? ''}
       />
     </div>
   );

@@ -5,17 +5,17 @@ e2e:
   rules:
     - if: $CI_PIPELINE_SOURCE == "web"
     - changes:
-        - "apps/Api/**/*"
-        - "apps/web/**/*"
-        - "apps/e2e/**/*"
-        - "packages/**/*"
-        - "pnpm-lock.yaml"
-        - "infrastructure/keycloak/**/*"
-        - "infrastructure/helm/testcraft/files/*.ftl"
-        - "infrastructure/helm/testcraft/files/theme.properties"
-        - "infrastructure/helm/testcraft/files/realm.json"
-        - "scripts/render-dev-realm.sh"
-        - ".gitlab/ci/e2e.yml"
+        - 'apps/Api/**/*'
+        - 'apps/web/**/*'
+        - 'apps/e2e/**/*'
+        - 'packages/**/*'
+        - 'pnpm-lock.yaml'
+        - 'infrastructure/keycloak/**/*'
+        - 'infrastructure/helm/testcraft/files/*.ftl'
+        - 'infrastructure/helm/testcraft/files/theme.properties'
+        - 'infrastructure/helm/testcraft/files/realm.json'
+        - 'scripts/render-dev-realm.sh'
+        - '.gitlab/ci/e2e.yml'
   services:
     - name: docker:27-dind
       alias: docker
@@ -23,7 +23,7 @@ e2e:
       alias: postgres
   variables:
     DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
+    DOCKER_TLS_CERTDIR: ''
     POSTGRES_USER: e2e
     POSTGRES_PASSWORD: e2e
     POSTGRES_DB: testcraft_e2e
@@ -31,7 +31,7 @@ e2e:
     KEYCLOAK_AUTHORITY: http://docker:8080/realms/testcraft
     VITE_KEYCLOAK_URL: http://docker:8080
     TESTCRAFT_JUNIT_XML: apps/e2e/e2e-results/junit.xml
-    TESTCRAFT_RUN_NAME: "#$CI_PIPELINE_IID e2e ($CI_COMMIT_REF_NAME)"
+    TESTCRAFT_RUN_NAME: '#$CI_PIPELINE_IID e2e ($CI_COMMIT_REF_NAME)'
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg jq
     - curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz --strip-components=1 -C /usr/local/bin docker/docker

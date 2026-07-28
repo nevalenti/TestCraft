@@ -2,13 +2,13 @@ import {
   ArrowRightStartOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   CameraIcon,
-} from "@heroicons/react/24/solid";
-import { useRef } from "react";
+} from '@heroicons/react/24/solid';
+import { useRef } from 'react';
 
-import keycloak from "@/auth/keycloak";
-import { useAvatarUrl, useUploadAvatar } from "@/hooks/useAccount";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { env } from "@/lib/env";
+import keycloak from '@/auth/keycloak';
+import { useAvatarUrl, useUploadAvatar } from '@/hooks/useAccount';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { env } from '@/lib/env';
 
 const getInitials = (name: string) =>
   name
@@ -16,39 +16,39 @@ const getInitials = (name: string) =>
     .split(/\s+/)
     .map((part) => part[0])
     .slice(0, 2)
-    .join("")
+    .join('')
     .toUpperCase();
 
 const keycloakAccountUrl = `${env.VITE_KEYCLOAK_URL}/realms/${env.VITE_KEYCLOAK_REALM}/account`;
 
 export const AccountPage = () => {
   const token = keycloak.tokenParsed;
-  const displayName = token?.name ?? token?.preferred_username ?? "";
+  const displayName = token?.name ?? token?.preferred_username ?? '';
   const email = token?.email as string | undefined;
   const username = token?.preferred_username as string | undefined;
   const firstName = token?.given_name as string | undefined;
   const lastName = token?.family_name as string | undefined;
-  const initials = displayName ? getInitials(displayName) : "?";
+  const initials = displayName ? getInitials(displayName) : '?';
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const signOutDialogRef = useRef<HTMLDialogElement>(null);
   const { data: avatarData } = useAvatarUrl();
   const { mutate: uploadAvatar, isPending } = useUploadAvatar();
 
-  useBreadcrumbs([{ label: "Account", href: "/account" }]);
+  useBreadcrumbs([{ label: 'Account', href: '/account' }]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     uploadAvatar(file);
-    e.target.value = "";
+    e.target.value = '';
   };
 
   const fields = [
-    { label: "First Name", value: firstName },
-    { label: "Last Name", value: lastName },
-    { label: "Username", value: username },
-    { label: "Email", value: email },
+    { label: 'First Name', value: firstName },
+    { label: 'Last Name', value: lastName },
+    { label: 'Username', value: username },
+    { label: 'Email', value: email },
   ];
 
   return (
@@ -92,7 +92,7 @@ export const AccountPage = () => {
 
             <div className="min-w-0 flex-1">
               <p className="font-display text-xl font-bold tracking-tight text-base-content">
-                {displayName || "—"}
+                {displayName || '—'}
               </p>
               {email && (
                 <p className="mt-0.5 truncate text-sm text-base-content/70">
@@ -110,7 +110,7 @@ export const AccountPage = () => {
                 onClick={() => fileInputRef.current?.click()}
                 className="mt-3 text-xs font-medium text-primary/70 transition-colors hover:text-primary disabled:cursor-not-allowed"
               >
-                {isPending ? "Uploading…" : "Change photo"}
+                {isPending ? 'Uploading…' : 'Change photo'}
               </button>
             </div>
           </div>
@@ -122,7 +122,7 @@ export const AccountPage = () => {
                   {label}
                 </p>
                 <p className="mt-1 truncate text-sm font-medium text-base-content">
-                  {value ?? "—"}
+                  {value ?? '—'}
                 </p>
               </div>
             ))}
@@ -173,7 +173,7 @@ export const AccountPage = () => {
             <button
               className="btn btn-sm btn-error"
               onClick={() =>
-                keycloak.logout({ redirectUri: location.origin + "/" })
+                keycloak.logout({ redirectUri: location.origin + '/' })
               }
             >
               <ArrowRightStartOnRectangleIcon className="size-4" />

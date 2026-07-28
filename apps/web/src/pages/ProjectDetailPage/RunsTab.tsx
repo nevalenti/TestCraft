@@ -4,25 +4,25 @@ import {
   PlayCircleIcon,
   PlusIcon,
   XCircleIcon,
-} from "@heroicons/react/24/solid";
-import { useQueries } from "@tanstack/react-query";
-import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
-import { TestRunStatus } from "@testcraft/types";
-import { useState } from "react";
+} from '@heroicons/react/24/solid';
+import { useQueries } from '@tanstack/react-query';
+import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
+import { TestRunStatus } from '@testcraft/types';
+import { useState } from 'react';
 
-import { testRunQueries } from "@/api/testRuns";
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
-import { Modal } from "@/components/ui/Modal";
-import { ResourceCard } from "@/components/ui/ResourceCard";
-import { ResourceListItem } from "@/components/ui/ResourceListItem";
-import { RunStatusBadge } from "@/components/ui/RunStatusBadge";
-import { ViewToggle } from "@/components/ui/ViewToggle";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useModal } from "@/hooks/useModal";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { testRunQueries } from '@/api/testRuns';
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { ListToolbar } from '@/components/ui/ListToolbar';
+import { Modal } from '@/components/ui/Modal';
+import { ResourceCard } from '@/components/ui/ResourceCard';
+import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { RunStatusBadge } from '@/components/ui/RunStatusBadge';
+import { ViewToggle } from '@/components/ui/ViewToggle';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
   useCreateTestRun,
   useDeleteTestRun,
@@ -30,16 +30,16 @@ import {
   useImportJUnitXml,
   useTestRuns,
   useUpdateTestRun,
-} from "@/hooks/useTestRuns";
-import { formatDate } from "@/lib/format";
-import { ImportForm } from "@/pages/ProjectDetailPage/ImportForm";
-import { RunForm } from "@/pages/ProjectDetailPage/RunForm";
-import { SourceFilter } from "@/pages/ProjectDetailPage/SourceFilter";
-import { useViewModeStore } from "@/stores/viewMode";
+} from '@/hooks/useTestRuns';
+import { formatDate } from '@/lib/format';
+import { ImportForm } from '@/pages/ProjectDetailPage/ImportForm';
+import { RunForm } from '@/pages/ProjectDetailPage/RunForm';
+import { SourceFilter } from '@/pages/ProjectDetailPage/SourceFilter';
+import { useViewModeStore } from '@/stores/viewMode';
 
 export const RunsTab = () => {
-  const projectId = useRequiredParam("projectId");
-  const [search, setSearch] = useState("");
+  const projectId = useRequiredParam('projectId');
+  const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
   const viewMode = useViewModeStore((state) => state.viewMode);
@@ -63,10 +63,10 @@ export const RunsTab = () => {
     updateRun.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteRun.mutate(id, { onSuccess: close });
-  const handleImport: React.ComponentProps<typeof ImportForm>["onSubmit"] = (
+  const handleImport: React.ComponentProps<typeof ImportForm>['onSubmit'] = (
     data,
   ) => {
-    if (data.type === "junit") {
+    if (data.type === 'junit') {
       importJUnit.mutate(
         { xml: data.xml, environment: data.environment, name: data.name },
         { onSuccess: close },
@@ -83,7 +83,7 @@ export const RunsTab = () => {
     }
   };
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   const completedRuns = (runs ?? []).filter(
     (run) => run.status === TestRunStatus.Completed,
@@ -96,8 +96,8 @@ export const RunsTab = () => {
       new Map(completedRuns.map((run, index) => [run.id, results[index].data])),
   });
 
-  const getRunIcon = (run: TestRun, size: "sm" | "xs") => {
-    const cls = size === "sm" ? "size-4" : "size-3.5";
+  const getRunIcon = (run: TestRun, size: 'sm' | 'xs') => {
+    const cls = size === 'sm' ? 'size-4' : 'size-3.5';
     if (run.status === TestRunStatus.Completed) {
       const summary = summaryMap.get(run.id);
       return (summary?.failed ?? 0) > 0 ? (
@@ -141,7 +141,7 @@ export const RunsTab = () => {
         />
       );
 
-    if (viewMode === "list")
+    if (viewMode === 'list')
       return (
         <div className="flex flex-col gap-2">
           {visibleRuns?.map((run) => (
@@ -154,7 +154,7 @@ export const RunsTab = () => {
               label="test run"
               cardBg="card-bg-warning"
               accentText="text-warning"
-              typeIcon={getRunIcon(run, "sm")}
+              typeIcon={getRunIcon(run, 'sm')}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold">
@@ -192,7 +192,7 @@ export const RunsTab = () => {
             label="test run"
             cardBg="card-bg-warning"
             accentText="text-warning"
-            typeIcon={getRunIcon(run, "xs")}
+            typeIcon={getRunIcon(run, 'xs')}
           >
             <div className="flex flex-col gap-1">
               <span className="line-clamp-2 text-base leading-snug font-semibold">
@@ -252,11 +252,11 @@ export const RunsTab = () => {
       {renderRuns()}
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="New Test Run"
       >
-        {modal.type === "create" && (
+        {modal.type === 'create' && (
           <RunForm
             onSubmit={handleCreate}
             onCancel={close}
@@ -265,11 +265,11 @@ export const RunsTab = () => {
         )}
       </Modal>
       <Modal
-        isOpen={modal.type === "edit"}
+        isOpen={modal.type === 'edit'}
         onClose={close}
         title="Edit Test Run"
       >
-        {modal.type === "edit" && (
+        {modal.type === 'edit' && (
           <RunForm
             key={modal.item.id}
             defaultValues={{
@@ -284,19 +284,19 @@ export const RunsTab = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Test Run"
-        description={deleteItem ? `Delete "${deleteItem.name}"?` : ""}
+        description={deleteItem ? `Delete "${deleteItem.name}"?` : ''}
         isLoading={deleteRun.isPending}
       />
       <Modal
-        isOpen={modal.type === "import"}
+        isOpen={modal.type === 'import'}
         onClose={close}
         title="Import Test Results"
       >
-        {modal.type === "import" && (
+        {modal.type === 'import' && (
           <ImportForm
             onSubmit={handleImport}
             onCancel={close}

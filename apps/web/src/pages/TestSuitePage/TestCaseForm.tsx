@@ -1,16 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TestCasePriority } from "@testcraft/types";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { TestCasePriority } from '@testcraft/types';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { FormInput } from "@/components/ui/FormInput";
-import { FormTextarea } from "@/components/ui/FormTextarea";
-import { priorityOptions } from "@/lib/constants";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormInput } from '@/components/ui/FormInput';
+import { FormTextarea } from '@/components/ui/FormTextarea';
+import { priorityOptions } from '@/lib/constants';
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
+  name: z.string().min(1, 'Name is required').max(255),
   priority: z.nativeEnum(TestCasePriority),
   description: z.string().max(1000),
 });
@@ -45,9 +45,9 @@ export const TestCaseForm = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: defaultValues?.name ?? "",
+      name: defaultValues?.name ?? '',
       priority: defaultValues?.priority ?? TestCasePriority.Medium,
-      description: defaultValues?.description ?? "",
+      description: defaultValues?.description ?? '',
     },
   });
 
@@ -64,7 +64,7 @@ export const TestCaseForm = ({
           hasError={!!errors.name}
           placeholder="User can log in with valid credentials"
           autoFocus
-          {...register("name")}
+          {...register('name')}
         />
       </FormField>
       <FormField
@@ -75,7 +75,7 @@ export const TestCaseForm = ({
         <select
           id="case-priority"
           className="select-bordered select w-full"
-          {...register("priority")}
+          {...register('priority')}
         >
           {priorityOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -93,7 +93,7 @@ export const TestCaseForm = ({
           id="case-description"
           placeholder="Optional"
           rows={2}
-          {...register("description")}
+          {...register('description')}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

@@ -1,7 +1,7 @@
-import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
-import { Link } from "@tanstack/react-router";
+import { ArrowLeftIcon, HomeIcon } from '@heroicons/react/24/solid';
+import { Link } from '@tanstack/react-router';
 
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 
 export const NotFound = () => {
   useBreadcrumbs([]);

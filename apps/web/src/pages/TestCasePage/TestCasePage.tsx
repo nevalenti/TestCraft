@@ -9,48 +9,48 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
+} from '@dnd-kit/core';
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { PlusIcon } from "@heroicons/react/24/solid";
+} from '@dnd-kit/sortable';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestCaseStep,
   TestCaseStep,
   UpdateTestCaseStep,
-} from "@testcraft/types";
-import { useMemo, useRef, useState } from "react";
+} from '@testcraft/types';
+import { useMemo, useRef, useState } from 'react';
 
-import { ErrorState } from "@/components/ErrorState";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { LabelBadge } from "@/components/ui/LabelBadge";
-import { Modal } from "@/components/ui/Modal";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useModal } from "@/hooks/useModal";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useTestCase } from "@/hooks/useTestCases";
+import { ErrorState } from '@/components/ErrorState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { LabelBadge } from '@/components/ui/LabelBadge';
+import { Modal } from '@/components/ui/Modal';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useModal } from '@/hooks/useModal';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useTestCase } from '@/hooks/useTestCases';
 import {
   useBulkReorderSteps,
   useCreateTestCaseStep,
   useDeleteTestCaseStep,
   useTestCaseSteps,
   useUpdateTestCaseStep,
-} from "@/hooks/useTestCaseSteps";
-import { useTestSuite } from "@/hooks/useTestSuites";
-import { LabelSelect } from "@/pages/TestCasePage/LabelSelect";
-import { StepDragPreview } from "@/pages/TestCasePage/StepDragPreview";
-import { StepForm } from "@/pages/TestCasePage/StepForm";
-import { StepRow } from "@/pages/TestCasePage/StepRow";
+} from '@/hooks/useTestCaseSteps';
+import { useTestSuite } from '@/hooks/useTestSuites';
+import { LabelSelect } from '@/pages/TestCasePage/LabelSelect';
+import { StepDragPreview } from '@/pages/TestCasePage/StepDragPreview';
+import { StepForm } from '@/pages/TestCasePage/StepForm';
+import { StepRow } from '@/pages/TestCasePage/StepRow';
 
 export const TestCasePage = () => {
-  const projectId = useRequiredParam("projectId");
-  const suiteId = useRequiredParam("suiteId");
-  const caseId = useRequiredParam("caseId");
+  const projectId = useRequiredParam('projectId');
+  const suiteId = useRequiredParam('suiteId');
+  const caseId = useRequiredParam('caseId');
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestCaseStep>();
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -141,16 +141,16 @@ export const TestCasePage = () => {
   };
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…', href: `/projects/${projectId}` },
     {
-      label: suite?.name ?? "…",
+      label: suite?.name ?? '…',
       href: `/projects/${projectId}/suites/${suiteId}`,
     },
-    { label: testCase?.name ?? "…" },
+    { label: testCase?.name ?? '…' },
   ]);
 
-  const deleteItem = modal.type === "delete" ? modal.item : null;
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
 
   const renderSteps = () => {
     if (isPending)
@@ -204,7 +204,7 @@ export const TestCasePage = () => {
         <div>
           <h1 className="page-title">{testCase?.name}</h1>
           <p className="mt-0.5 text-sm text-base-content/70">
-            {testCase?.description ?? "Steps for this test case"}
+            {testCase?.description ?? 'Steps for this test case'}
           </p>
           {testCase && (
             <div className="mt-2 flex flex-wrap items-center gap-1.5">
@@ -233,8 +233,8 @@ export const TestCasePage = () => {
         <div className="min-h-80">{renderSteps()}</div>
       </section>
 
-      <Modal isOpen={modal.type === "create"} onClose={close} title="Add Step">
-        {modal.type === "create" && (
+      <Modal isOpen={modal.type === 'create'} onClose={close} title="Add Step">
+        {modal.type === 'create' && (
           <StepForm
             nextOrder={nextOrder}
             onSubmit={handleCreate}
@@ -243,8 +243,8 @@ export const TestCasePage = () => {
           />
         )}
       </Modal>
-      <Modal isOpen={modal.type === "edit"} onClose={close} title="Edit Step">
-        {modal.type === "edit" && (
+      <Modal isOpen={modal.type === 'edit'} onClose={close} title="Edit Step">
+        {modal.type === 'edit' && (
           <StepForm
             key={modal.item.id}
             defaultValues={{
@@ -260,14 +260,14 @@ export const TestCasePage = () => {
         )}
       </Modal>
       <ConfirmDialog
-        isOpen={modal.type === "delete"}
+        isOpen={modal.type === 'delete'}
         onClose={close}
         onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
         title="Delete Step"
         description={
           deleteItem
             ? `Delete step ${deleteItem.order}? This cannot be undone.`
-            : ""
+            : ''
         }
         isLoading={deleteStep.isPending}
       />

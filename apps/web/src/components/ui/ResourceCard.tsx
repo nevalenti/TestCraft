@@ -1,7 +1,7 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from '@tanstack/react-router';
 
-import { ResourceActions } from "@/components/ui/ResourceActions";
-import { cn } from "@/lib/cn";
+import { ResourceActions } from '@/components/ui/ResourceActions';
+import { cn } from '@/lib/cn';
 
 interface ResourceCardProps {
   to?: string;
@@ -16,13 +16,13 @@ interface ResourceCardProps {
 }
 
 const accentToColorVar: Record<string, string> = {
-  "text-primary": "--color-primary",
-  "text-secondary": "--color-secondary",
-  "text-accent": "--color-accent",
-  "text-warning": "--color-warning",
-  "text-success": "--color-success",
-  "text-error": "--color-error",
-  "text-info": "--color-info",
+  'text-primary': '--color-primary',
+  'text-secondary': '--color-secondary',
+  'text-accent': '--color-accent',
+  'text-warning': '--color-warning',
+  'text-success': '--color-success',
+  'text-error': '--color-error',
+  'text-info': '--color-info',
 };
 
 export const ResourceCard = ({
@@ -30,22 +30,22 @@ export const ResourceCard = ({
   onEdit,
   onDelete,
   label,
-  cardBg = "bg-base-100",
-  accentText = "text-primary",
+  cardBg = 'bg-base-100',
+  accentText = 'text-primary',
   typeIcon,
   testId,
   children,
 }: ResourceCardProps) => {
-  const colorVar = accentToColorVar[accentText] ?? "--color-primary";
+  const colorVar = accentToColorVar[accentText] ?? '--color-primary';
 
   return (
     <div
       data-testid={testId}
-      style={{ "--card-glow": `var(${colorVar})` } as React.CSSProperties}
+      style={{ '--card-glow': `var(${colorVar})` } as React.CSSProperties}
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-border bg-base-100",
-        "transition-[background-color,box-shadow] duration-200 ease-out",
-        "hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.4),0_8px_20px_-8px_oklch(from_var(--card-glow)_l_c_h/0.35)]",
+        'group relative overflow-hidden rounded-xl border border-border bg-base-100',
+        'transition-[background-color,box-shadow] duration-200 ease-out',
+        'hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.4),0_8px_20px_-8px_oklch(from_var(--card-glow)_l_c_h/0.35)]',
       )}
     >
       {to && (
@@ -60,7 +60,7 @@ export const ResourceCard = ({
           <div className="mb-2 flex items-center gap-1.5">
             <span
               className={cn(
-                "flex size-6 shrink-0 items-center justify-center rounded-lg border",
+                'flex size-6 shrink-0 items-center justify-center rounded-lg border',
                 cardBg,
                 accentText,
               )}

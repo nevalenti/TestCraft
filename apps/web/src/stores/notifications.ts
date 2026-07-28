@@ -1,12 +1,12 @@
-import { nanoid } from "nanoid";
-import { create } from "zustand";
+import { nanoid } from 'nanoid';
+import { create } from 'zustand';
 
 export type NotificationType =
-  | "alert"
-  | "success"
-  | "error"
-  | "info"
-  | "warning";
+  | 'alert'
+  | 'success'
+  | 'error'
+  | 'info'
+  | 'warning';
 
 export interface AppNotification {
   id: string;
@@ -17,7 +17,7 @@ export interface AppNotification {
 
 interface NotificationsState {
   notifications: AppNotification[];
-  add: (notification: Omit<AppNotification, "id">) => void;
+  add: (notification: Omit<AppNotification, 'id'>) => void;
   remove: (id: string) => void;
   clearAll: () => void;
 }

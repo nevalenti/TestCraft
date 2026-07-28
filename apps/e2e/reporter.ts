@@ -1,4 +1,4 @@
-import type { Reporter } from "@playwright/test/reporter";
+import type { Reporter } from '@playwright/test/reporter';
 import {
   type ApiContext,
   appendLogs,
@@ -7,7 +7,7 @@ import {
   fetchToken,
   findProjectId,
   type StdioCapture,
-} from "testcraft-ci-reporter";
+} from 'testcraft-ci-reporter';
 
 interface Ctx extends ApiContext {
   runId: string;
@@ -20,12 +20,12 @@ class TestCraftReporter implements Reporter {
   private capture: StdioCapture | null = null;
 
   onBegin(): void {
-    const apiUrl = process.env["TESTCRAFT_API_URL"];
-    const runId = process.env["TESTCRAFT_RUN_ID"];
-    const username = process.env["TESTCRAFT_USERNAME"];
-    const password = process.env["TESTCRAFT_PASSWORD"];
-    const projectName = process.env["TESTCRAFT_PROJECT_NAME"];
-    const keycloakAuthority = process.env["TESTCRAFT_KEYCLOAK_AUTHORITY"];
+    const apiUrl = process.env['TESTCRAFT_API_URL'];
+    const runId = process.env['TESTCRAFT_RUN_ID'];
+    const username = process.env['TESTCRAFT_USERNAME'];
+    const password = process.env['TESTCRAFT_PASSWORD'];
+    const projectName = process.env['TESTCRAFT_PROJECT_NAME'];
+    const keycloakAuthority = process.env['TESTCRAFT_KEYCLOAK_AUTHORITY'];
 
     if (!apiUrl || !runId || !username || !password || !projectName) return;
 

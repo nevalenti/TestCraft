@@ -2,12 +2,6 @@
 
 set -euo pipefail
 
-# Generates a Compose-compatible env file from the single source of truth for
-# third-party image tags: infrastructure/helm/testcraft/values.yaml's
-# `thirdPartyImages` map. Regenerated on every `make up`/`make down`, so
-# docker-compose.yml and the production Helm chart can never disagree on a
-# version - there is only one place to bump it.
-
 VALUES_FILE="infrastructure/helm/testcraft/values.yaml"
 OUT_FILE="infrastructure/image-versions.env"
 

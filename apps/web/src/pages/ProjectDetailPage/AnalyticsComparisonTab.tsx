@@ -1,38 +1,38 @@
-import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
-import { useMemo, useState } from "react";
+import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
+import { useMemo, useState } from 'react';
 
-import { EmptyState } from "@/components/ui/EmptyState";
-import { useRunComparison } from "@/hooks/useAnalytics";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useTestRuns } from "@/hooks/useTestRuns";
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useRunComparison } from '@/hooks/useAnalytics';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useTestRuns } from '@/hooks/useTestRuns';
 
 const STATUS_BADGE: Record<string, string> = {
-  Passed: "badge-success",
-  Failed: "badge-error",
-  Blocked: "badge-warning",
-  Skipped: "badge-ghost",
+  Passed: 'badge-success',
+  Failed: 'badge-error',
+  Blocked: 'badge-warning',
+  Skipped: 'badge-ghost',
 };
 
 const rowBg = (isRegression: boolean, isFix: boolean) => {
-  if (isRegression) return "bg-error/5";
-  if (isFix) return "bg-success/5";
-  return "";
+  if (isRegression) return 'bg-error/5';
+  if (isFix) return 'bg-success/5';
+  return '';
 };
 
-type Filter = "all" | "changes";
+type Filter = 'all' | 'changes';
 
 export const AnalyticsComparisonTab = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: runs } = useTestRuns(projectId);
-  const [runA, setRunA] = useState("");
-  const [runB, setRunB] = useState("");
+  const [runA, setRunA] = useState('');
+  const [runB, setRunB] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>('all');
 
   const { data: comparison } = useRunComparison(
     projectId,
-    submitted ? runA : "",
-    submitted ? runB : "",
+    submitted ? runA : '',
+    submitted ? runB : '',
   );
 
   const counts = useMemo(() => {
@@ -50,7 +50,7 @@ export const AnalyticsComparisonTab = () => {
 
   const visibleRows = useMemo(() => {
     if (!comparison) return [];
-    if (filter === "changes")
+    if (filter === 'changes')
       return comparison.results.filter(
         (result) => result.isRegression || result.isFix,
       );
@@ -120,7 +120,7 @@ export const AnalyticsComparisonTab = () => {
           className="btn shrink-0 btn-sm btn-primary"
           disabled={!canCompare}
           onClick={() => {
-            setFilter("all");
+            setFilter('all');
             setSubmitted(true);
           }}
         >
@@ -145,7 +145,7 @@ export const AnalyticsComparisonTab = () => {
                 {counts.regressions}
               </span>
               <span className="text-xs font-medium text-error/70">
-                Regression{counts.regressions === 1 ? "" : "s"}
+                Regression{counts.regressions === 1 ? '' : 's'}
               </span>
             </div>
             <div className="flex items-center gap-2 rounded-lg border border-success/20 bg-success/8 px-3 py-2">
@@ -166,9 +166,9 @@ export const AnalyticsComparisonTab = () => {
             <div className="ml-auto flex items-center gap-0.5 rounded-lg bg-base-200 p-0.5">
               {(
                 [
-                  { key: "all", label: `All (${comparison.results.length})` },
+                  { key: 'all', label: `All (${comparison.results.length})` },
                   {
-                    key: "changes",
+                    key: 'changes',
                     label: `Changes only (${counts.regressions + counts.fixes})`,
                   },
                 ] as { key: Filter; label: string }[]
@@ -177,8 +177,8 @@ export const AnalyticsComparisonTab = () => {
                   key={key}
                   className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
                     filter === key
-                      ? "bg-base-100 text-base-content shadow-sm"
-                      : "text-base-content/75 hover:text-base-content"
+                      ? 'bg-base-100 text-base-content shadow-sm'
+                      : 'text-base-content/75 hover:text-base-content'
                   }`}
                   onClick={() => setFilter(key)}
                 >
@@ -215,7 +215,7 @@ export const AnalyticsComparisonTab = () => {
                       <td>
                         {row.statusInA ? (
                           <span
-                            className={`badge badge-sm ${STATUS_BADGE[row.statusInA] ?? "badge-ghost"}`}
+                            className={`badge badge-sm ${STATUS_BADGE[row.statusInA] ?? 'badge-ghost'}`}
                           >
                             {row.statusInA}
                           </span>
@@ -228,7 +228,7 @@ export const AnalyticsComparisonTab = () => {
                       <td>
                         {row.statusInB ? (
                           <span
-                            className={`badge badge-sm ${STATUS_BADGE[row.statusInB] ?? "badge-ghost"}`}
+                            className={`badge badge-sm ${STATUS_BADGE[row.statusInB] ?? 'badge-ghost'}`}
                           >
                             {row.statusInB}
                           </span>

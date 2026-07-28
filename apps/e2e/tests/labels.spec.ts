@@ -1,12 +1,12 @@
-import path from "node:path";
+import path from 'node:path';
 
-import { expect, test } from "../fixtures";
-import { ProjectsPage } from "../pages/projects.page";
+import { expect, test } from '../fixtures';
+import { ProjectsPage } from '../pages/projects.page';
 
-const AUTH_FILE = path.join(import.meta.dirname, ".auth/user.json");
+const AUTH_FILE = path.join(import.meta.dirname, '.auth/user.json');
 
-test.describe("Labels", () => {
-  test.describe.configure({ mode: "serial" });
+test.describe('Labels', () => {
+  test.describe.configure({ mode: 'serial' });
 
   const projectName = `E2E Labels ${Date.now()}`;
   let labelsPath: string;
@@ -21,7 +21,7 @@ test.describe("Labels", () => {
     await projects.create(projectName);
     await projects.open(projectName);
     await page.waitForURL(/\/projects\/[^/]+\/runs$/, { timeout: 15_000 });
-    labelsPath = new URL(page.url()).pathname.replace("/runs", "/labels");
+    labelsPath = new URL(page.url()).pathname.replace('/runs', '/labels');
 
     await context.close();
   });
@@ -46,17 +46,17 @@ test.describe("Labels", () => {
     await labelsPage.goto(labelsPath);
   });
 
-  test("renders labels page", async ({ page }) => {
-    await expect(page.getByRole("button", { name: "New Label" })).toBeVisible();
+  test('renders labels page', async ({ page }) => {
+    await expect(page.getByRole('button', { name: 'New Label' })).toBeVisible();
   });
 
-  test("creates and deletes a label", async ({ labelsPage }) => {
+  test('creates and deletes a label', async ({ labelsPage }) => {
     const name = `E2E Label ${Date.now()}`;
     await labelsPage.create(name);
     await labelsPage.delete(name);
   });
 
-  test("edits a label name", async ({ labelsPage }) => {
+  test('edits a label name', async ({ labelsPage }) => {
     const name = `E2E Label Edit ${Date.now()}`;
     await labelsPage.create(name);
     await labelsPage.edit(name, `${name} Updated`);

@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "packages/ci-reporter/**"
-      - ".changeset/**"
-      - ".github/workflows/changesets.yml"
+      - 'packages/ci-reporter/**'
+      - '.changeset/**'
+      - '.github/workflows/changesets.yml'
 
 concurrency:
   group: changesets-${{ github.ref }}
@@ -48,8 +48,8 @@ jobs:
         uses: changesets/action@v1
         with:
           publish: pnpm exec changeset publish
-          title: "chore: version packages"
-          commit: "chore: version packages"
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

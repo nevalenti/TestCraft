@@ -1,8 +1,8 @@
-import type { components } from "./generated/schema.js";
+import type { components } from './generated/schema.js';
 
 export type TestSuite =
-  components["schemas"]["TestCraft.Application.TestSuites.TestSuiteResponse"];
+  components['schemas']['TestCraft.Application.TestSuites.TestSuiteResponse'];
 export type CreateTestSuite =
-  components["schemas"]["TestCraft.Application.TestSuites.CreateTestSuite.Command"];
+  components['schemas']['TestCraft.Application.TestSuites.CreateTestSuite.Command'];
 export type UpdateTestSuite =
-  components["schemas"]["TestCraft.Application.TestSuites.UpdateTestSuite.Command"];
+  components['schemas']['TestCraft.Application.TestSuites.UpdateTestSuite.Command'];

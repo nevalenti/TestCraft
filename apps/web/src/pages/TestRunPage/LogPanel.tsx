@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import { useResultFeed } from "@/hooks/useResultFeed";
+import { useResultFeed } from '@/hooks/useResultFeed';
 
 interface Props {
   projectId: string;
@@ -12,7 +12,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
+    endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [logs]);
 
   return logs.length === 0 ? (
@@ -31,7 +31,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
         <pre className="font-logs text-xs leading-5 break-all whitespace-pre-wrap text-base-content/85">
-          {logs.join("\n")}
+          {logs.join('\n')}
         </pre>
         <div ref={endRef} />
       </div>

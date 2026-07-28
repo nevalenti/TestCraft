@@ -1,4 +1,4 @@
-import { cn } from "@/lib/cn";
+import { cn } from '@/lib/cn';
 
 interface SourceFilterProps {
   sources: string[];
@@ -30,10 +30,10 @@ export const SourceFilter = ({
           key={source}
           onClick={() => onChange(value === source ? null : source)}
           className={cn(
-            "flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all",
+            'flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all',
             value === source
-              ? "border-base-content/25 bg-base-200 shadow-sm text-base-content"
-              : "border-border bg-base-100 text-base-content/80 hover:bg-base-200 hover:text-base-content",
+              ? 'border-base-content/25 bg-base-200 shadow-sm text-base-content'
+              : 'border-border bg-base-100 text-base-content/80 hover:bg-base-200 hover:text-base-content',
           )}
         >
           <span>{source}</span>

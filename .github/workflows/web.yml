@@ -4,17 +4,17 @@ on:
   push:
     branches: [main]
     paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/web.yml"
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/web.yml'
   pull_request:
     branches: [main]
     paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/web.yml"
+      - 'apps/web/**'
+      - 'packages/**'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/web.yml'
   workflow_dispatch:
 
 concurrency:
@@ -78,7 +78,7 @@ jobs:
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
-          run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
           source: web
 
       - name: Test
@@ -103,7 +103,7 @@ jobs:
           keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
           project-name: TestCraft
           junit-xml: apps/web/test-results/junit.xml
-          run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
+          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
           source: web
 
       - name: Upload test report

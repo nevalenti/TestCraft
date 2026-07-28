@@ -1,13 +1,13 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateTestResult,
   TestResultStatus,
   UpdateTestResult,
-} from "@testcraft/types";
+} from '@testcraft/types';
 
-import { queryKeys } from "@/api/queryKeys";
-import { testResultQueries, testResultsApi } from "@/api/testResults";
-import { notify } from "@/lib/notify";
+import { queryKeys } from '@/api/queryKeys';
+import { testResultQueries, testResultsApi } from '@/api/testResults';
+import { notify } from '@/lib/notify';
 
 export const useTestResults = (
   projectId: string,
@@ -27,7 +27,7 @@ export const useCreateTestResult = (projectId: string, runId: string) => {
     mutationFn: (input: CreateTestResult) =>
       testResultsApi.create(projectId, runId, input),
     onSuccess: () => {
-      notify("Result saved");
+      notify('Result saved');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
       });
@@ -45,7 +45,7 @@ export const useUpdateTestResult = (projectId: string, runId: string) => {
     mutationFn: ({ id, ...input }: UpdateTestResult & { id: string }) =>
       testResultsApi.update(projectId, runId, id, input),
     onSuccess: (_, { id }) => {
-      notify("Result updated");
+      notify('Result updated');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
       });
@@ -65,7 +65,7 @@ export const useDeleteTestResult = (projectId: string, runId: string) => {
   return useMutation({
     mutationFn: (id: string) => testResultsApi.delete(projectId, runId, id),
     onSuccess: (_, id) => {
-      notify("Result deleted");
+      notify('Result deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
       });

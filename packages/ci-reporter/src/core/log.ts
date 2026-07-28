@@ -5,7 +5,7 @@ export const setSecret = (value: string): void => {
 };
 
 const redact = (message: string): string =>
-  secrets.reduce((text, secret) => text.split(secret).join("***"), message);
+  secrets.reduce((text, secret) => text.split(secret).join('***'), message);
 
 export const info = (message: string): void => {
   console.log(redact(message));

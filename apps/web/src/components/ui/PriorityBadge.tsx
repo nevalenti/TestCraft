@@ -1,13 +1,13 @@
-import { TestCasePriority } from "@testcraft/types";
+import { TestCasePriority } from '@testcraft/types';
 
 const config: Record<TestCasePriority, { label: string; cls: string }> = {
   [TestCasePriority.Low]: {
-    label: "Low",
-    cls: "badge-ghost text-base-content/75",
+    label: 'Low',
+    cls: 'badge-ghost text-base-content/75',
   },
-  [TestCasePriority.Medium]: { label: "Medium", cls: "badge-info" },
-  [TestCasePriority.High]: { label: "High", cls: "badge-warning" },
-  [TestCasePriority.Critical]: { label: "Critical", cls: "badge-error" },
+  [TestCasePriority.Medium]: { label: 'Medium', cls: 'badge-info' },
+  [TestCasePriority.High]: { label: 'High', cls: 'badge-warning' },
+  [TestCasePriority.Critical]: { label: 'Critical', cls: 'badge-error' },
 };
 
 export const PriorityBadge = ({

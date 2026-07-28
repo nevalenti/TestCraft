@@ -1,11 +1,11 @@
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { Bars3Icon } from "@heroicons/react/24/solid";
-import type { TestCaseStep } from "@testcraft/types";
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Bars3Icon } from '@heroicons/react/24/solid';
+import type { TestCaseStep } from '@testcraft/types';
 
-import { ResourceActions } from "@/components/ui/ResourceActions";
-import { cn } from "@/lib/cn";
-import { formatDate } from "@/lib/format";
+import { ResourceActions } from '@/components/ui/ResourceActions';
+import { cn } from '@/lib/cn';
+import { formatDate } from '@/lib/format';
 
 interface StepRowProps {
   step: TestCaseStep;
@@ -34,15 +34,15 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
     >
       <div
         data-testid="step-row"
-        style={{ "--card-glow": "var(--color-info)" } as React.CSSProperties}
+        style={{ '--card-glow': 'var(--color-info)' } as React.CSSProperties}
         className={cn(
-          "card-bg-info group relative rounded-lg border transition-[box-shadow] duration-200 ease-out",
+          'card-bg-info group relative rounded-lg border transition-[box-shadow] duration-200 ease-out',
           isDragging
-            ? "border-dashed border-primary/30 shadow-none"
-            : "border-base-content/20 shadow-sm hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]",
+            ? 'border-dashed border-primary/30 shadow-none'
+            : 'border-base-content/20 shadow-sm hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]',
         )}
       >
-        <div className={cn(isDragging && "invisible")}>
+        <div className={cn(isDragging && 'invisible')}>
           <div className="flex items-start gap-3 p-4 pr-24">
             <div className="flex shrink-0 items-center pt-0.5">
               <span className="flex size-8 items-center justify-center rounded-md bg-base-content/10 text-sm font-bold text-base-content tabular-nums">

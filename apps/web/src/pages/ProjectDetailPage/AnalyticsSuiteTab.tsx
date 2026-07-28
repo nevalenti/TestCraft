@@ -1,5 +1,5 @@
-import { Squares2X2Icon } from "@heroicons/react/24/outline";
-import { useMemo, useState } from "react";
+import { Squares2X2Icon } from '@heroicons/react/24/outline';
+import { useMemo, useState } from 'react';
 import {
   Bar,
   BarChart,
@@ -9,19 +9,19 @@ import {
   Tooltip,
   XAxis,
   YAxis,
-} from "recharts";
+} from 'recharts';
 
-import { EmptyState } from "@/components/ui/EmptyState";
-import { useSuiteBreakdown } from "@/hooks/useAnalytics";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useTestRuns } from "@/hooks/useTestRuns";
-import { formatDate } from "@/lib/format";
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useSuiteBreakdown } from '@/hooks/useAnalytics';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useTestRuns } from '@/hooks/useTestRuns';
+import { formatDate } from '@/lib/format';
 
 const COLORS = {
-  passed: "#36d399",
-  failed: "#f87272",
-  blocked: "#fbbd23",
-  skipped: "#94a3b8",
+  passed: '#36d399',
+  failed: '#f87272',
+  blocked: '#fbbd23',
+  skipped: '#94a3b8',
 };
 
 type SuiteEntry = { name: string; value: number; fill: string };
@@ -66,12 +66,12 @@ const SuiteTooltip = ({
 };
 
 const truncate = (text: string, maxLength: number) =>
-  text.length > maxLength ? text.slice(0, maxLength) + "…" : text;
+  text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
 
 export const AnalyticsSuiteTab = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: runs } = useTestRuns(projectId);
-  const [suiteRunId, setSuiteRunId] = useState("");
+  const [suiteRunId, setSuiteRunId] = useState('');
 
   const { data: suiteBreakdown } = useSuiteBreakdown(projectId, suiteRunId);
 
@@ -149,19 +149,19 @@ export const AnalyticsSuiteTab = () => {
               />
               <XAxis
                 dataKey="suiteName"
-                tick={{ fontSize: 10, fill: "currentColor", opacity: 0.4 }}
+                tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                tick={{ fontSize: 10, fill: "currentColor", opacity: 0.4 }}
+                tick={{ fontSize: 10, fill: 'currentColor', opacity: 0.4 }}
                 tickLine={false}
                 axisLine={false}
                 width={28}
               />
               <Tooltip
                 content={<SuiteTooltip />}
-                cursor={{ fill: "currentColor", fillOpacity: 0.04 }}
+                cursor={{ fill: 'currentColor', fillOpacity: 0.04 }}
               />
               <Legend
                 iconType="circle"

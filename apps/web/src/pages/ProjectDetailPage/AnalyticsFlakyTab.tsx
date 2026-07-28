@@ -1,12 +1,12 @@
-import { ExclamationTriangleIcon } from "@heroicons/react/24/outline";
-import { useMemo } from "react";
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
+import { useMemo } from 'react';
 
-import { EmptyState } from "@/components/ui/EmptyState";
-import { useFlakyTests } from "@/hooks/useAnalytics";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { EmptyState } from '@/components/ui/EmptyState';
+import { useFlakyTests } from '@/hooks/useAnalytics';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 export const AnalyticsFlakyTab = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: flakyTests } = useFlakyTests(projectId);
 
   const sortedTests = useMemo(
@@ -84,12 +84,12 @@ export const AnalyticsFlakyTab = () => {
           <tbody>
             {sortedTests.map((stat, index) => {
               const pct = Math.round(stat.flakRate * 100);
-              let barColor = "bg-info";
-              if (pct >= 60) barColor = "bg-error";
-              else if (pct >= 30) barColor = "bg-warning";
-              let rankColor = "text-info/60";
-              if (pct >= 60) rankColor = "text-error/60";
-              else if (pct >= 30) rankColor = "text-warning/60";
+              let barColor = 'bg-info';
+              if (pct >= 60) barColor = 'bg-error';
+              else if (pct >= 30) barColor = 'bg-warning';
+              let rankColor = 'text-info/60';
+              if (pct >= 60) rankColor = 'text-error/60';
+              else if (pct >= 30) rankColor = 'text-warning/60';
               return (
                 <tr key={stat.testCaseId} className="hover:bg-base-300/70">
                   <td

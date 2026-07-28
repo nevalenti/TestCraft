@@ -1,4 +1,4 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 interface ListToolbarProps {
   search: string;

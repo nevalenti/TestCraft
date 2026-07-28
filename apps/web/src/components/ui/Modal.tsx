@@ -1,5 +1,5 @@
-import { XMarkIcon } from "@heroicons/react/24/solid";
-import { useLayoutEffect, useRef, useState } from "react";
+import { XMarkIcon } from '@heroicons/react/24/solid';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 interface ModalProps {
   isOpen: boolean;

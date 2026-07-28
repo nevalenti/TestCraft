@@ -1,14 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateEmailSubscription,
   CreateWebhookSubscription,
   UpdateEmailSubscription,
   UpdateWebhookSubscription,
-} from "@testcraft/types";
+} from '@testcraft/types';
 
-import { notificationQueries, notificationsApi } from "@/api/notifications";
-import { queryKeys } from "@/api/queryKeys";
-import { notify } from "@/lib/notify";
+import { notificationQueries, notificationsApi } from '@/api/notifications';
+import { queryKeys } from '@/api/queryKeys';
+import { notify } from '@/lib/notify';
 
 export const useWebhooks = (projectId: string) =>
   useQuery(notificationQueries.webhooks(projectId));
@@ -20,7 +20,7 @@ export const useCreateWebhook = (projectId: string) => {
     mutationFn: (input: CreateWebhookSubscription) =>
       notificationsApi.createWebhook(projectId, input),
     onSuccess: () => {
-      notify("Webhook added");
+      notify('Webhook added');
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.webhooks(projectId),
       });
@@ -51,7 +51,7 @@ export const useDeleteWebhook = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteWebhook(projectId, id),
     onSuccess: () => {
-      notify("Webhook removed");
+      notify('Webhook removed');
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.webhooks(projectId),
       });
@@ -69,7 +69,7 @@ export const useCreateEmail = (projectId: string) => {
     mutationFn: (input: CreateEmailSubscription) =>
       notificationsApi.createEmail(projectId, input),
     onSuccess: () => {
-      notify("Email subscription added");
+      notify('Email subscription added');
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.emails(projectId),
       });
@@ -97,7 +97,7 @@ export const useDeleteEmail = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteEmail(projectId, id),
     onSuccess: () => {
-      notify("Email subscription removed");
+      notify('Email subscription removed');
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.emails(projectId),
       });

@@ -1,28 +1,28 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from '@hookform/resolvers/zod';
 import {
   DefectType,
   TestResultStatus,
   type UpdateTestResult,
-} from "@testcraft/types";
-import { useForm, useWatch } from "react-hook-form";
-import { z } from "zod";
+} from '@testcraft/types';
+import { useForm, useWatch } from 'react-hook-form';
+import { z } from 'zod';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { FormTextarea } from "@/components/ui/FormTextarea";
-import { statusOptions } from "@/lib/constants";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormTextarea } from '@/components/ui/FormTextarea';
+import { statusOptions } from '@/lib/constants';
 
 const defectTypeOptions = [
-  { value: DefectType.ProductBug, label: "Product Bug" },
-  { value: DefectType.AutomationBug, label: "Automation Bug" },
-  { value: DefectType.EnvironmentIssue, label: "Environment Issue" },
-  { value: DefectType.ToInvestigate, label: "To Investigate" },
+  { value: DefectType.ProductBug, label: 'Product Bug' },
+  { value: DefectType.AutomationBug, label: 'Automation Bug' },
+  { value: DefectType.EnvironmentIssue, label: 'Environment Issue' },
+  { value: DefectType.ToInvestigate, label: 'To Investigate' },
 ];
 
 const schema = z.object({
   status: z.nativeEnum(TestResultStatus),
   notes: z.string(),
-  defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
+  defectType: z.union([z.nativeEnum(DefectType), z.literal('')]).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -54,7 +54,7 @@ export const UpdateResultForm = ({
     defaultValues,
   });
 
-  const status = useWatch({ control, name: "status" });
+  const status = useWatch({ control, name: 'status' });
 
   return (
     <form
@@ -63,7 +63,7 @@ export const UpdateResultForm = ({
           status: data.status,
           notes: data.notes || undefined,
           defectType:
-            data.status === TestResultStatus.Failed && data.defectType !== ""
+            data.status === TestResultStatus.Failed && data.defectType !== ''
               ? data.defectType
               : undefined,
         }),
@@ -79,7 +79,7 @@ export const UpdateResultForm = ({
           id="update-result-status"
           className="select-bordered select w-full"
           autoFocus
-          {...register("status")}
+          {...register('status')}
         >
           {statusOptions.map((option) => (
             <option key={option.value} value={option.value}>
@@ -97,7 +97,7 @@ export const UpdateResultForm = ({
           <select
             id="update-result-defect-type"
             className="select-bordered select w-full"
-            {...register("defectType")}
+            {...register('defectType')}
           >
             <option value="">Select defect type (optional)</option>
             {defectTypeOptions.map((option) => (
@@ -117,7 +117,7 @@ export const UpdateResultForm = ({
           id="update-result-notes"
           placeholder="Optional"
           rows={2}
-          {...register("notes")}
+          {...register('notes')}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

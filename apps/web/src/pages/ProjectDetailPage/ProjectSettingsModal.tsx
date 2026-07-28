@@ -1,15 +1,15 @@
-import { EyeIcon } from "@heroicons/react/24/solid";
-import type { CreateApiTokenResponse } from "@testcraft/types";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { EyeIcon } from '@heroicons/react/24/solid';
+import type { CreateApiTokenResponse } from '@testcraft/types';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { Modal } from "@/components/ui/Modal";
-import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
+import { Modal } from '@/components/ui/Modal';
+import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
 import {
   useApiTokens,
   useCreateApiToken,
   useRevokeApiToken,
-} from "@/hooks/useApiTokens";
+} from '@/hooks/useApiTokens';
 import {
   useCreateEmail,
   useCreateWebhook,
@@ -17,15 +17,15 @@ import {
   useDeleteWebhook,
   useEmails,
   useWebhooks,
-} from "@/hooks/useNotifications";
+} from '@/hooks/useNotifications';
 import {
   useAddProjectMember,
   useProjectMembers,
   useRemoveProjectMember,
-} from "@/hooks/useProjectMembers";
-import { formatDate } from "@/lib/format";
+} from '@/hooks/useProjectMembers';
+import { formatDate } from '@/lib/format';
 
-const AVAILABLE_EVENTS = ["RunCompleted", "FailureThresholdExceeded"];
+const AVAILABLE_EVENTS = ['RunCompleted', 'FailureThresholdExceeded'];
 
 function EventCheckboxes({
   selected,
@@ -68,7 +68,7 @@ interface ProjectSettingsModalProps {
   isOwner: boolean;
 }
 
-type Tab = "tokens" | "notifications" | "members";
+type Tab = 'tokens' | 'notifications' | 'members';
 
 export function ProjectSettingsModal({
   isOpen,
@@ -76,38 +76,38 @@ export function ProjectSettingsModal({
   projectId,
   isOwner,
 }: ProjectSettingsModalProps) {
-  const [tab, setTab] = useState<Tab>("tokens");
+  const [tab, setTab] = useState<Tab>('tokens');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Project Settings">
       <div className="mb-5 flex gap-1">
         <button
-          className={`btn btn-sm ${tab === "tokens" ? "btn-neutral" : "btn-ghost"}`}
-          onClick={() => setTab("tokens")}
+          className={`btn btn-sm ${tab === 'tokens' ? 'btn-neutral' : 'btn-ghost'}`}
+          onClick={() => setTab('tokens')}
         >
           API Tokens
         </button>
         <button
-          className={`btn btn-sm ${tab === "notifications" ? "btn-neutral" : "btn-ghost"}`}
-          onClick={() => setTab("notifications")}
+          className={`btn btn-sm ${tab === 'notifications' ? 'btn-neutral' : 'btn-ghost'}`}
+          onClick={() => setTab('notifications')}
         >
           Notifications
         </button>
         {isOwner && (
           <button
-            className={`btn btn-sm ${tab === "members" ? "btn-neutral" : "btn-ghost"}`}
-            onClick={() => setTab("members")}
+            className={`btn btn-sm ${tab === 'members' ? 'btn-neutral' : 'btn-ghost'}`}
+            onClick={() => setTab('members')}
           >
             Members
           </button>
         )}
       </div>
 
-      {tab === "tokens" && <ApiTokensSection projectId={projectId} />}
-      {tab === "notifications" && (
+      {tab === 'tokens' && <ApiTokensSection projectId={projectId} />}
+      {tab === 'notifications' && (
         <NotificationsSection projectId={projectId} />
       )}
-      {tab === "members" && isOwner && <MembersSection projectId={projectId} />}
+      {tab === 'members' && isOwner && <MembersSection projectId={projectId} />}
     </Modal>
   );
 }
@@ -120,7 +120,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
     name: string;
     expiresAt: string;
   }>({
-    defaultValues: { name: "", expiresAt: "" },
+    defaultValues: { name: '', expiresAt: '' },
   });
   const [newToken, setNewToken] = useState<CreateApiTokenResponse | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -148,7 +148,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
           <div className="flex gap-2">
             <input
               readOnly
-              type={revealed ? "text" : "password"}
+              type={revealed ? 'text' : 'password'}
               value={newToken.token}
               className="input-bordered input input-sm w-full font-mono text-xs"
             />
@@ -177,7 +177,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             id="token-name"
             className="input-bordered input input-sm w-full"
             placeholder="e.g. CI pipeline"
-            {...register("name", { required: true })}
+            {...register('name', { required: true })}
           />
         </div>
         <div className="w-36">
@@ -188,8 +188,8 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             id="token-expires"
             type="date"
             className="input-bordered input input-sm w-full"
-            min={new Date().toISOString().split("T", 1)[0]}
-            {...register("expiresAt")}
+            min={new Date().toISOString().split('T', 1)[0]}
+            {...register('expiresAt')}
           />
         </div>
         <button
@@ -200,7 +200,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
           {createToken.isPending ? (
             <span className="loading loading-xs loading-spinner" />
           ) : (
-            "Create"
+            'Create'
           )}
         </button>
       </form>
@@ -214,11 +214,11 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
             Created {formatDate(t.createdAt)}
             {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
             {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
-            {t.isRevoked && " · revoked"}
+            {t.isRevoked && ' · revoked'}
           </>
         )}
         onRemove={(t) => revokeToken.mutate(t.id)}
-        removeAriaLabel={() => "Revoke token"}
+        removeAriaLabel={() => 'Revoke token'}
         removeLabel="Revoke"
         isRemoveHidden={(t) => t.isRevoked}
       />
@@ -230,14 +230,14 @@ function MembersSection({ projectId }: { projectId: string }) {
   const { data: members } = useProjectMembers(projectId);
   const addMember = useAddProjectMember(projectId);
   const removeMember = useRemoveProjectMember(projectId);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   const handleAdd = () => {
     if (!email) return;
     addMember.mutate(
       { email },
       {
-        onSuccess: () => setEmail(""),
+        onSuccess: () => setEmail(''),
       },
     );
   };
@@ -266,7 +266,7 @@ function MembersSection({ projectId }: { projectId: string }) {
           {addMember.isPending ? (
             <span className="loading loading-xs loading-spinner" />
           ) : (
-            "Add"
+            'Add'
           )}
         </button>
       </div>
@@ -298,8 +298,8 @@ function WebhooksSection({ projectId }: { projectId: string }) {
   const { data: webhooks } = useWebhooks(projectId);
   const createWebhook = useCreateWebhook(projectId);
   const deleteWebhook = useDeleteWebhook(projectId);
-  const [url, setUrl] = useState("");
-  const [secret, setSecret] = useState("");
+  const [url, setUrl] = useState('');
+  const [secret, setSecret] = useState('');
   const [events, setEvents] = useState<string[]>(AVAILABLE_EVENTS);
 
   const handleCreate = () => {
@@ -308,8 +308,8 @@ function WebhooksSection({ projectId }: { projectId: string }) {
       { url, secret: secret || undefined, events },
       {
         onSuccess: () => {
-          setUrl("");
-          setSecret("");
+          setUrl('');
+          setSecret('');
           setEvents(AVAILABLE_EVENTS);
         },
       },
@@ -347,7 +347,7 @@ function WebhooksSection({ projectId }: { projectId: string }) {
         items={webhooks ?? []}
         getKey={(wh) => wh.id}
         renderPrimary={(wh) => wh.url}
-        renderSecondary={(wh) => wh.events.join(", ")}
+        renderSecondary={(wh) => wh.events.join(', ')}
         onRemove={(wh) => deleteWebhook.mutate(wh.id)}
         removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
       />
@@ -359,7 +359,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
   const { data: emailSubs } = useEmails(projectId);
   const createEmail = useCreateEmail(projectId);
   const deleteEmail = useDeleteEmail(projectId);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [events, setEvents] = useState<string[]>(AVAILABLE_EVENTS);
 
   const handleCreate = () => {
@@ -368,7 +368,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
       { email, events },
       {
         onSuccess: () => {
-          setEmail("");
+          setEmail('');
           setEvents(AVAILABLE_EVENTS);
         },
       },
@@ -401,7 +401,7 @@ function EmailsSection({ projectId }: { projectId: string }) {
         items={emailSubs ?? []}
         getKey={(sub) => sub.id}
         renderPrimary={(sub) => sub.email}
-        renderSecondary={(sub) => sub.events.join(", ")}
+        renderSecondary={(sub) => sub.events.join(', ')}
         onRemove={(sub) => deleteEmail.mutate(sub.id)}
         removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
       />

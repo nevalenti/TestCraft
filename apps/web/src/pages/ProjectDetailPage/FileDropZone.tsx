@@ -2,10 +2,10 @@ import {
   ArrowUpTrayIcon,
   DocumentIcon,
   XMarkIcon,
-} from "@heroicons/react/24/outline";
-import { useRef, useState } from "react";
+} from '@heroicons/react/24/outline';
+import { useRef, useState } from 'react';
 
-import { cn } from "@/lib/cn";
+import { cn } from '@/lib/cn';
 
 interface FileDropZoneProps {
   id: string;
@@ -15,16 +15,16 @@ interface FileDropZoneProps {
   onFilesChange: (files: File[]) => void;
   hint?: string;
   hasError?: boolean;
-  color?: "primary" | "secondary";
+  color?: 'primary' | 'secondary';
 }
 
 const isAccepted = (file: File, accept: string): boolean =>
-  accept.split(",").some((token) => {
+  accept.split(',').some((token) => {
     const trimmed = token.trim();
 
-    if (trimmed.startsWith("."))
+    if (trimmed.startsWith('.'))
       return file.name.toLowerCase().endsWith(trimmed.toLowerCase());
-    if (trimmed.endsWith("/*"))
+    if (trimmed.endsWith('/*'))
       return file.type.startsWith(trimmed.slice(0, -1));
 
     return file.type === trimmed;
@@ -32,18 +32,18 @@ const isAccepted = (file: File, accept: string): boolean =>
 
 const colorClasses = {
   primary: {
-    ring: "focus-visible:ring-primary",
-    drag: "border-primary bg-primary/5",
-    hover: "hover:border-primary/40 hover:bg-base-200/70",
-    text: "text-primary",
-    textMuted: "text-primary/70 hover:text-primary",
+    ring: 'focus-visible:ring-primary',
+    drag: 'border-primary bg-primary/5',
+    hover: 'hover:border-primary/40 hover:bg-base-200/70',
+    text: 'text-primary',
+    textMuted: 'text-primary/70 hover:text-primary',
   },
   secondary: {
-    ring: "focus-visible:ring-secondary",
-    drag: "border-secondary bg-secondary/5",
-    hover: "hover:border-secondary/40 hover:bg-base-200/70",
-    text: "text-secondary",
-    textMuted: "text-secondary/70 hover:text-secondary",
+    ring: 'focus-visible:ring-secondary',
+    drag: 'border-secondary bg-secondary/5',
+    hover: 'hover:border-secondary/40 hover:bg-base-200/70',
+    text: 'text-secondary',
+    textMuted: 'text-secondary/70 hover:text-secondary',
   },
 };
 
@@ -55,7 +55,7 @@ export const FileDropZone = ({
   onFilesChange,
   hint,
   hasError,
-  color = "primary",
+  color = 'primary',
 }: FileDropZoneProps) => {
   const colorTheme = colorClasses[color];
   const inputRef = useRef<HTMLInputElement>(null);
@@ -65,7 +65,7 @@ export const FileDropZone = ({
   const openPicker = () => {
     if (!inputRef.current) return;
 
-    inputRef.current.value = "";
+    inputRef.current.value = '';
     inputRef.current.click();
   };
 
@@ -105,20 +105,20 @@ export const FileDropZone = ({
       tabIndex={0}
       aria-label="File upload area"
       className={cn(
-        "rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        'rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         colorTheme.ring,
         isDragging && colorTheme.drag,
-        !isDragging && hasError && "border-error/50 bg-error/5",
+        !isDragging && hasError && 'border-error/50 bg-error/5',
         !isDragging &&
           !hasError &&
           cn(
-            "border-base-300 bg-base-200/40 transition-colors",
+            'border-base-300 bg-base-200/40 transition-colors',
             colorTheme.hover,
           ),
       )}
       onClick={openPicker}
       onKeyDown={(event) =>
-        (event.key === "Enter" || event.key === " ") && openPicker()
+        (event.key === 'Enter' || event.key === ' ') && openPicker()
       }
       onDragEnter={handleDragEnter}
       onDragOver={(event) => event.preventDefault()}
@@ -144,9 +144,9 @@ export const FileDropZone = ({
           </div>
           <div>
             <p className="text-sm text-base-content/85">
-              <span className={cn("font-medium", colorTheme.text)}>
+              <span className={cn('font-medium', colorTheme.text)}>
                 Click to upload
-              </span>{" "}
+              </span>{' '}
               or drag & drop
             </p>
             {hint && (
@@ -185,13 +185,13 @@ export const FileDropZone = ({
           <button
             type="button"
             className={cn(
-              "mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors",
+              'mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors',
               colorTheme.textMuted,
             )}
             onClick={openPicker}
           >
             <ArrowUpTrayIcon className="size-3" />
-            {multiple ? "Add or replace files" : "Replace file"}
+            {multiple ? 'Add or replace files' : 'Replace file'}
           </button>
         </div>
       )}

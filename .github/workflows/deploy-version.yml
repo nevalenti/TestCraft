@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       app:
-        description: "app to deploy"
+        description: 'app to deploy'
         required: true
         type: choice
         options:
@@ -13,7 +13,7 @@ on:
           - gateway
           - docs
       version:
-        description: "image tag to deploy: a released version (v1.2.3) or a commit SHA"
+        description: 'image tag to deploy: a released version (v1.2.3) or a commit SHA'
         required: true
         type: string
 

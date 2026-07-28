@@ -1,6 +1,6 @@
-import { Link, useMatchRoute } from "@tanstack/react-router";
+import { Link, useMatchRoute } from '@tanstack/react-router';
 
-import { cn } from "@/lib/cn";
+import { cn } from '@/lib/cn';
 
 type NavItemProps = {
   to: string;
@@ -29,10 +29,10 @@ export const NavItem = ({
       to={to as never}
       onClick={onClick}
       className={cn(
-        "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
+        'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors',
         isActive
-          ? "bg-primary/12 font-semibold text-primary"
-          : "font-medium text-base-content/85 hover:bg-base-content/6 hover:text-base-content",
+          ? 'bg-primary/12 font-semibold text-primary'
+          : 'font-medium text-base-content/85 hover:bg-base-content/6 hover:text-base-content',
       )}
     >
       {!hideIcon &&

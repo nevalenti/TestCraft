@@ -1,41 +1,41 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/solid';
 
-import { cn } from "@/lib/cn";
+import { cn } from '@/lib/cn';
 
 interface ResourceActionsProps {
   onEdit: () => void;
   onDelete?: () => void;
   label: string;
-  size?: "sm" | "xs";
+  size?: 'sm' | 'xs';
 }
 
 export const ResourceActions = ({
   onEdit,
   onDelete,
   label,
-  size = "sm",
+  size = 'sm',
 }: ResourceActionsProps) => (
   <>
     <button
       className={cn(
-        "btn btn-ghost text-base-content/70 hover:text-base-content",
+        'btn btn-ghost text-base-content/70 hover:text-base-content',
         `btn-${size}`,
       )}
       onClick={onEdit}
       aria-label={`Edit ${label}`}
     >
-      <PencilIcon className={cn(size === "xs" ? "size-3.5" : "size-4")} />
+      <PencilIcon className={cn(size === 'xs' ? 'size-3.5' : 'size-4')} />
     </button>
     {onDelete && (
       <button
         className={cn(
-          "btn btn-ghost text-base-content/70 hover:text-error",
+          'btn btn-ghost text-base-content/70 hover:text-error',
           `btn-${size}`,
         )}
         onClick={onDelete}
         aria-label={`Delete ${label}`}
       >
-        <TrashIcon className={cn(size === "xs" ? "size-3.5" : "size-4")} />
+        <TrashIcon className={cn(size === 'xs' ? 'size-3.5' : 'size-4')} />
       </button>
     )}
   </>

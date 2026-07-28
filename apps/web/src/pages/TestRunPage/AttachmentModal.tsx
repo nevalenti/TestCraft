@@ -2,19 +2,19 @@ import {
   ArrowDownTrayIcon,
   PaperClipIcon,
   TrashIcon,
-} from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/24/solid";
-import type { Attachment } from "@testcraft/types";
-import { useRef } from "react";
+} from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/solid';
+import type { Attachment } from '@testcraft/types';
+import { useRef } from 'react';
 
-import { attachmentsApi } from "@/api/attachments";
-import { Modal } from "@/components/ui/Modal";
+import { attachmentsApi } from '@/api/attachments';
+import { Modal } from '@/components/ui/Modal';
 import {
   useAttachments,
   useDeleteAttachment,
   useUploadAttachment,
-} from "@/hooks/useAttachments";
-import { formatDateTime } from "@/lib/format";
+} from '@/hooks/useAttachments';
+import { formatDateTime } from '@/lib/format';
 
 const formatBytes = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
@@ -52,7 +52,7 @@ export const AttachmentModal = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) upload.mutate(file);
-    e.target.value = "";
+    e.target.value = '';
   };
 
   const handleDownload = async (attachment: Attachment) => {
@@ -62,7 +62,7 @@ export const AttachmentModal = ({
       resultId,
       attachment.id,
     );
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const renderAttachments = () => {
@@ -92,7 +92,7 @@ export const AttachmentModal = ({
                 {attachment.fileName}
               </p>
               <p className="text-xs text-base-content/75">
-                {formatBytes(attachment.sizeBytes)} ·{" "}
+                {formatBytes(attachment.sizeBytes)} ·{' '}
                 {formatDateTime(attachment.createdAt)}
               </p>
             </div>

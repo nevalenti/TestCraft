@@ -1,16 +1,16 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import { TestRunStatus } from "@testcraft/types";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { TestRunStatus } from '@testcraft/types';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { FormInput } from "@/components/ui/FormInput";
-import { runStatusOptions } from "@/lib/constants";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormInput } from '@/components/ui/FormInput';
+import { runStatusOptions } from '@/lib/constants';
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
-  environment: z.string().min(1, "Environment is required").max(255),
+  name: z.string().min(1, 'Name is required').max(255),
+  environment: z.string().min(1, 'Environment is required').max(255),
   status: z.nativeEnum(TestRunStatus),
 });
 
@@ -40,8 +40,8 @@ export const RunForm = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: defaultValues?.name ?? "",
-      environment: defaultValues?.environment ?? "",
+      name: defaultValues?.name ?? '',
+      environment: defaultValues?.environment ?? '',
       status: defaultValues?.status ?? TestRunStatus.Active,
     },
   });
@@ -57,7 +57,7 @@ export const RunForm = ({
           hasError={!!errors.name}
           placeholder="Sprint 42 Regression"
           autoFocus
-          {...register("name")}
+          {...register('name')}
         />
       </FormField>
       <FormField
@@ -69,7 +69,7 @@ export const RunForm = ({
           id="run-environment"
           hasError={!!errors.environment}
           placeholder="staging"
-          {...register("environment")}
+          {...register('environment')}
         />
       </FormField>
       <FormField
@@ -80,7 +80,7 @@ export const RunForm = ({
         <select
           id="run-status"
           className="select-bordered select w-full"
-          {...register("status")}
+          {...register('status')}
         >
           {runStatusOptions.map((option) => (
             <option key={option.value} value={option.value}>

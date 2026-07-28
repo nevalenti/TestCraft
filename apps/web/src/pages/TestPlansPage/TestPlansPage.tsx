@@ -1,25 +1,25 @@
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { Link } from "@tanstack/react-router";
-import type { TestPlan } from "@testcraft/types";
-import { useForm } from "react-hook-form";
+import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { Link } from '@tanstack/react-router';
+import type { TestPlan } from '@testcraft/types';
+import { useForm } from 'react-hook-form';
 
-import { ErrorState } from "@/components/ErrorState";
-import { EmptyState } from "@/components/ui/EmptyState";
-import { Modal } from "@/components/ui/Modal";
-import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
-import { useModal } from "@/hooks/useModal";
-import { useProject } from "@/hooks/useProjects";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { ErrorState } from '@/components/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { Modal } from '@/components/ui/Modal';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useModal } from '@/hooks/useModal';
+import { useProject } from '@/hooks/useProjects';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import {
   useCreateTestPlan,
   useDeleteTestPlan,
   useTestPlans,
   useUpdateTestPlan,
-} from "@/hooks/useTestPlans";
-import { formatDate } from "@/lib/format";
+} from '@/hooks/useTestPlans';
+import { formatDate } from '@/lib/format';
 
 export const TestPlansPage = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
   const { data: project } = useProject(projectId);
   const { data: plans, isPending, isError, error } = useTestPlans(projectId);
   const createPlan = useCreateTestPlan(projectId);
@@ -28,9 +28,9 @@ export const TestPlansPage = () => {
   const { modal, close, openCreate, openEdit } = useModal<TestPlan>();
 
   useBreadcrumbs([
-    { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
-    { label: "Test Plans" },
+    { label: 'Projects', href: '/projects' },
+    { label: project?.name ?? '…', href: `/projects/${projectId}` },
+    { label: 'Test Plans' },
   ]);
 
   const {
@@ -38,14 +38,14 @@ export const TestPlansPage = () => {
     handleSubmit: handleCreate,
     reset: resetCreate,
   } = useForm<{ name: string; description: string }>({
-    defaultValues: { name: "", description: "" },
+    defaultValues: { name: '', description: '' },
   });
   const {
     register: registerEdit,
     handleSubmit: handleEdit,
     reset: resetEdit,
   } = useForm<{ name: string; description: string }>({
-    defaultValues: { name: "", description: "" },
+    defaultValues: { name: '', description: '' },
   });
 
   if (isPending)
@@ -58,12 +58,12 @@ export const TestPlansPage = () => {
   if (isError) return <ErrorState error={error} />;
 
   const startCreate = () => {
-    resetCreate({ name: "", description: "" });
+    resetCreate({ name: '', description: '' });
     openCreate();
   };
 
   const startEdit = (plan: TestPlan) => {
-    resetEdit({ name: plan.name, description: plan.description ?? "" });
+    resetEdit({ name: plan.name, description: plan.description ?? '' });
     openEdit(plan);
   };
 
@@ -107,8 +107,8 @@ export const TestPlansPage = () => {
                     </p>
                   )}
                   <p className="mt-1 text-xs text-base-content/65">
-                    Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{" "}
-                    case{plan.caseCount === 1 ? "" : "s"}
+                    Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{' '}
+                    case{plan.caseCount === 1 ? '' : 's'}
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5">
@@ -148,7 +148,7 @@ export const TestPlansPage = () => {
       </section>
 
       <Modal
-        isOpen={modal.type === "create"}
+        isOpen={modal.type === 'create'}
         onClose={close}
         title="New Test Plan"
       >
@@ -169,7 +169,7 @@ export const TestPlansPage = () => {
               id="create-plan-name"
               className="input-bordered input input-sm w-full"
               autoFocus
-              {...registerCreate("name", { required: true })}
+              {...registerCreate('name', { required: true })}
             />
           </div>
           <div>
@@ -183,7 +183,7 @@ export const TestPlansPage = () => {
               id="create-plan-desc"
               className="textarea-bordered textarea w-full textarea-sm"
               rows={2}
-              {...registerCreate("description")}
+              {...registerCreate('description')}
             />
           </div>
           <div className="flex justify-end gap-2">
@@ -206,11 +206,11 @@ export const TestPlansPage = () => {
       </Modal>
 
       <Modal
-        isOpen={modal.type === "edit"}
+        isOpen={modal.type === 'edit'}
         onClose={close}
         title="Edit Test Plan"
       >
-        {modal.type === "edit" && (
+        {modal.type === 'edit' && (
           <form
             onSubmit={handleEdit((data) =>
               updatePlan.mutate(
@@ -231,7 +231,7 @@ export const TestPlansPage = () => {
                 id="edit-plan-name"
                 className="input-bordered input input-sm w-full"
                 autoFocus
-                {...registerEdit("name", { required: true })}
+                {...registerEdit('name', { required: true })}
               />
             </div>
             <div>
@@ -245,7 +245,7 @@ export const TestPlansPage = () => {
                 id="edit-plan-desc"
                 className="textarea-bordered textarea w-full textarea-sm"
                 rows={2}
-                {...registerEdit("description")}
+                {...registerEdit('description')}
               />
             </div>
             <div className="flex justify-end gap-2">

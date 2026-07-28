@@ -3,17 +3,17 @@ import {
   ArrowTrendingUpIcon,
   ExclamationTriangleIcon,
   Squares2X2Icon,
-} from "@heroicons/react/24/solid";
-import { Link, Outlet } from "@tanstack/react-router";
+} from '@heroicons/react/24/solid';
+import { Link, Outlet } from '@tanstack/react-router';
 
-import { useRequiredParam } from "@/hooks/useRequiredParam";
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 const TAB_BASE =
-  "flex items-center gap-1.5 border-b-2 border-transparent pb-2 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90";
-const TAB_ACTIVE = "!border-primary !text-base-content";
+  'flex items-center gap-1.5 border-b-2 border-transparent pb-2 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90';
+const TAB_ACTIVE = '!border-primary !text-base-content';
 
 export const AnalyticsLayout = () => {
-  const projectId = useRequiredParam("projectId");
+  const projectId = useRequiredParam('projectId');
 
   return (
     <div className="pt-1">

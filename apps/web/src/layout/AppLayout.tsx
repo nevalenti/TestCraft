@@ -1,12 +1,12 @@
-import { Outlet } from "@tanstack/react-router";
+import { Outlet } from '@tanstack/react-router';
 
-import { CookieConsent } from "@/components/CookieConsent";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Notifications } from "@/components/Notifications";
-import { BreadcrumbBar } from "@/layout/BreadcrumbBar";
-import { Footer } from "@/layout/Footer";
-import { Header } from "@/layout/Header";
-import { Sidebar } from "@/layout/Sidebar";
+import { CookieConsent } from '@/components/CookieConsent';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { Notifications } from '@/components/Notifications';
+import { BreadcrumbBar } from '@/layout/BreadcrumbBar';
+import { Footer } from '@/layout/Footer';
+import { Header } from '@/layout/Header';
+import { Sidebar } from '@/layout/Sidebar';
 
 const AppLayout = () => (
   <div className="mx-auto flex h-screen w-full max-w-420 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">

@@ -1,16 +1,16 @@
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { describe, expect, it, vi } from 'vitest';
 
-vi.mock("@tanstack/react-router", () => ({
+vi.mock('@tanstack/react-router', () => ({
   Link: ({
     children,
     to,
-    "aria-label": ariaLabel,
+    'aria-label': ariaLabel,
   }: {
     children?: React.ReactNode;
     to: string;
-    "aria-label"?: string;
+    'aria-label'?: string;
   }) => (
     <a href={to} aria-label={ariaLabel}>
       {children}
@@ -18,25 +18,25 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-import type { Project } from "@testcraft/types";
+import type { Project } from '@testcraft/types';
 
-import { ProjectCard } from "@/pages/ProjectsPage/ProjectCard";
+import { ProjectCard } from '@/pages/ProjectsPage/ProjectCard';
 
 const makeProject = (overrides: Partial<Project> = {}): Project => ({
-  id: "proj-1",
-  name: "Alpha",
-  description: "An alpha project",
+  id: 'proj-1',
+  name: 'Alpha',
+  description: 'An alpha project',
   suiteCount: 3,
   runCount: 2,
-  createdAt: "2026-01-15T00:00:00.000Z",
-  updatedAt: "2026-01-15T00:00:00.000Z",
+  createdAt: '2026-01-15T00:00:00.000Z',
+  updatedAt: '2026-01-15T00:00:00.000Z',
   isOwner: true,
   ...overrides,
 });
 
-describe("ProjectCard", () => {
-  describe("renders project information", () => {
-    it("displays the project name", () => {
+describe('ProjectCard', () => {
+  describe('renders project information', () => {
+    it('displays the project name', () => {
       render(
         <ProjectCard
           project={makeProject()}
@@ -44,10 +44,10 @@ describe("ProjectCard", () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(screen.getByText("Alpha")).toBeInTheDocument();
+      expect(screen.getByText('Alpha')).toBeInTheDocument();
     });
 
-    it("displays the project description", () => {
+    it('displays the project description', () => {
       render(
         <ProjectCard
           project={makeProject()}
@@ -55,10 +55,10 @@ describe("ProjectCard", () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(screen.getByText("An alpha project")).toBeInTheDocument();
+      expect(screen.getByText('An alpha project')).toBeInTheDocument();
     });
 
-    it("shows suite and run counts", () => {
+    it('shows suite and run counts', () => {
       render(
         <ProjectCard
           project={makeProject({ suiteCount: 3, runCount: 2 })}
@@ -66,11 +66,11 @@ describe("ProjectCard", () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(screen.getByText("3 suites")).toBeInTheDocument();
-      expect(screen.getByText("2 runs")).toBeInTheDocument();
+      expect(screen.getByText('3 suites')).toBeInTheDocument();
+      expect(screen.getByText('2 runs')).toBeInTheDocument();
     });
 
-    it("uses singular label for count of 1", () => {
+    it('uses singular label for count of 1', () => {
       render(
         <ProjectCard
           project={makeProject({ suiteCount: 1, runCount: 1 })}
@@ -78,13 +78,13 @@ describe("ProjectCard", () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(screen.getByText("1 suite")).toBeInTheDocument();
-      expect(screen.getByText("1 run")).toBeInTheDocument();
+      expect(screen.getByText('1 suite')).toBeInTheDocument();
+      expect(screen.getByText('1 run')).toBeInTheDocument();
     });
   });
 
-  describe("without a description — shows placeholder text", () => {
-    it("renders the No description placeholder", () => {
+  describe('without a description — shows placeholder text', () => {
+    it('renders the No description placeholder', () => {
       render(
         <ProjectCard
           project={makeProject({ description: undefined })}
@@ -92,12 +92,12 @@ describe("ProjectCard", () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(screen.getByText("No description")).toBeInTheDocument();
+      expect(screen.getByText('No description')).toBeInTheDocument();
     });
   });
 
-  describe("links to the project detail page", () => {
-    it("renders a link to the correct route", () => {
+  describe('links to the project detail page', () => {
+    it('renders a link to the correct route', () => {
       render(
         <ProjectCard
           project={makeProject()}
@@ -106,13 +106,13 @@ describe("ProjectCard", () => {
         />,
       );
       expect(
-        screen.getByRole("link", { name: "Open project" }),
-      ).toHaveAttribute("href", "/projects/proj-1");
+        screen.getByRole('link', { name: 'Open project' }),
+      ).toHaveAttribute('href', '/projects/proj-1');
     });
   });
 
-  describe("action buttons", () => {
-    it("calls onEdit when Edit is clicked", async () => {
+  describe('action buttons', () => {
+    it('calls onEdit when Edit is clicked', async () => {
       const onEdit = vi.fn();
 
       render(
@@ -123,12 +123,12 @@ describe("ProjectCard", () => {
         />,
       );
       await userEvent.click(
-        screen.getByRole("button", { name: "Edit project" }),
+        screen.getByRole('button', { name: 'Edit project' }),
       );
       expect(onEdit).toHaveBeenCalledOnce();
     });
 
-    it("calls onDelete when Delete is clicked", async () => {
+    it('calls onDelete when Delete is clicked', async () => {
       const onDelete = vi.fn();
 
       render(
@@ -139,12 +139,12 @@ describe("ProjectCard", () => {
         />,
       );
       await userEvent.click(
-        screen.getByRole("button", { name: "Delete project" }),
+        screen.getByRole('button', { name: 'Delete project' }),
       );
       expect(onDelete).toHaveBeenCalledOnce();
     });
 
-    it("hides the Delete action for a project the user does not own", () => {
+    it('hides the Delete action for a project the user does not own', () => {
       render(
         <ProjectCard
           project={makeProject({ isOwner: false })}
@@ -153,10 +153,10 @@ describe("ProjectCard", () => {
         />,
       );
       expect(
-        screen.queryByRole("button", { name: "Delete project" }),
+        screen.queryByRole('button', { name: 'Delete project' }),
       ).not.toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Edit project" }),
+        screen.getByRole('button', { name: 'Edit project' }),
       ).toBeInTheDocument();
     });
   });

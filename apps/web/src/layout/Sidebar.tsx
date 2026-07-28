@@ -3,16 +3,16 @@ import {
   Cog6ToothIcon,
   HomeIcon,
   RectangleStackIcon,
-} from "@heroicons/react/24/outline";
+} from '@heroicons/react/24/outline';
 import {
   Cog6ToothIcon as Cog6ToothIconSolid,
   HomeIcon as HomeIconSolid,
   RectangleStackIcon as RectangleStackIconSolid,
-} from "@heroicons/react/24/solid";
-import { Link } from "@tanstack/react-router";
+} from '@heroicons/react/24/solid';
+import { Link } from '@tanstack/react-router';
 
-import { LogoMark } from "@/layout/LogoMark";
-import { NavItem } from "@/layout/NavItem";
+import { LogoMark } from '@/layout/LogoMark';
+import { NavItem } from '@/layout/NavItem';
 
 export const Sidebar = () => {
   return (
@@ -24,7 +24,7 @@ export const Sidebar = () => {
         <LogoMark />
         <span
           className="text-[15px] font-extrabold tracking-tight"
-          style={{ fontFamily: "var(--font-display)" }}
+          style={{ fontFamily: 'var(--font-display)' }}
         >
           TestCraft
         </span>

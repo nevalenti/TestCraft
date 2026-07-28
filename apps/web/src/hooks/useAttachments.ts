@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-import { attachmentQueries, attachmentsApi } from "@/api/attachments";
-import { queryKeys } from "@/api/queryKeys";
-import { notify } from "@/lib/notify";
+import { attachmentQueries, attachmentsApi } from '@/api/attachments';
+import { queryKeys } from '@/api/queryKeys';
+import { notify } from '@/lib/notify';
 
 export const useAttachments = (
   projectId: string,
@@ -21,7 +21,7 @@ export const useUploadAttachment = (
     mutationFn: (file: File) =>
       attachmentsApi.upload(projectId, runId, resultId, file),
     onSuccess: () => {
-      notify("Attachment uploaded");
+      notify('Attachment uploaded');
       queryClient.invalidateQueries({
         queryKey: queryKeys.attachments.all(projectId, runId, resultId),
       });
@@ -40,7 +40,7 @@ export const useDeleteAttachment = (
     mutationFn: (id: string) =>
       attachmentsApi.delete(projectId, runId, resultId, id),
     onSuccess: () => {
-      notify("Attachment deleted");
+      notify('Attachment deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.attachments.all(projectId, runId, resultId),
       });

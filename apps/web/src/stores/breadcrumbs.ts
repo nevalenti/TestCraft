@@ -1,6 +1,6 @@
-import { create } from "zustand";
+import { create } from 'zustand';
 
-import { type BreadcrumbItem } from "@/types";
+import { type BreadcrumbItem } from '@/types';
 
 interface BreadcrumbsState {
   items: BreadcrumbItem[] | null;

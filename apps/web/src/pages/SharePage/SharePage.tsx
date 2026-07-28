@@ -1,26 +1,26 @@
-import type { TestResultStatus } from "@testcraft/types";
+import type { TestResultStatus } from '@testcraft/types';
 
-import { StatusBadge } from "@/components/ui/StatusBadge";
-import { useRequiredParam } from "@/hooks/useRequiredParam";
-import { useSharedRun } from "@/hooks/useShareTokens";
-import { formatDate, formatDateTime } from "@/lib/format";
+import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useSharedRun } from '@/hooks/useShareTokens';
+import { formatDate, formatDateTime } from '@/lib/format';
 
 function formatDuration(ms?: number | null): string {
-  if (ms === undefined || ms === null) return "—";
+  if (ms === undefined || ms === null) return '—';
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
 
   return `${ms}ms`;
 }
 
 const passRateClass = (rate: number) => {
-  if (rate >= 80) return "text-success";
-  if (rate >= 50) return "text-warning";
+  if (rate >= 80) return 'text-success';
+  if (rate >= 50) return 'text-warning';
 
-  return "text-error";
+  return 'text-error';
 };
 
 export const SharePage = () => {
-  const token = useRequiredParam("token");
+  const token = useRequiredParam('token');
   const { data: run, isPending, isError } = useSharedRun(token);
 
   if (isPending)
@@ -107,7 +107,7 @@ export const SharePage = () => {
                     {formatDateTime(result.executedAt)}
                   </td>
                   <td className="max-w-xs truncate text-xs text-base-content/85">
-                    {result.notes ?? "—"}
+                    {result.notes ?? '—'}
                   </td>
                 </tr>
               ))}
@@ -126,7 +126,7 @@ export const SharePage = () => {
 function Stat({
   label,
   value,
-  className = "",
+  className = '',
 }: {
   label: string;
   value: number;

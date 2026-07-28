@@ -1,8 +1,8 @@
-import { HubConnectionBuilder } from "@microsoft/signalr";
-import { useEffect, useLayoutEffect, useRef } from "react";
+import { HubConnectionBuilder } from '@microsoft/signalr';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
-import keycloak from "@/auth/keycloak";
-import { env } from "@/lib/env";
+import keycloak from '@/auth/keycloak';
+import { env } from '@/lib/env';
 
 export function useSignalR(
   runId: string | undefined,
@@ -23,7 +23,7 @@ export function useSignalR(
 
     const connection = new HubConnectionBuilder()
       .withUrl(`${env.VITE_API_URL}/hubs/test-run`, {
-        accessTokenFactory: () => keycloak.token ?? "",
+        accessTokenFactory: () => keycloak.token ?? '',
       })
       .withAutomaticReconnect()
       .build();
@@ -35,7 +35,7 @@ export function useSignalR(
     connection.onreconnected(() => {
       (async () => {
         try {
-          await connection.invoke("JoinRun", runId);
+          await connection.invoke('JoinRun', runId);
           onReconnectedRef.current?.();
         } catch (error) {
           console.error(error);
@@ -46,7 +46,7 @@ export function useSignalR(
     (async () => {
       try {
         await connection.start();
-        await connection.invoke("JoinRun", runId);
+        await connection.invoke('JoinRun', runId);
       } catch (error) {
         console.error(error);
       }
@@ -55,7 +55,7 @@ export function useSignalR(
     return () => {
       (async () => {
         try {
-          await connection.invoke("LeaveRun", runId);
+          await connection.invoke('LeaveRun', runId);
         } catch {
           // ignore cleanup errors
         }

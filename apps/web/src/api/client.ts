@@ -1,13 +1,13 @@
-import axios from "axios";
+import axios from 'axios';
 
-import keycloak from "@/auth/keycloak";
-import { env } from "@/lib/env";
-import { useNotificationsStore } from "@/stores/notifications";
+import keycloak from '@/auth/keycloak';
+import { env } from '@/lib/env';
+import { useNotificationsStore } from '@/stores/notifications';
 
 const client = axios.create({
   baseURL: `${env.VITE_API_URL}/api/v1`,
   headers: {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json',
   },
 });
 
@@ -29,16 +29,16 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.config?.method !== "get") {
+    if (error.config?.method !== 'get') {
       const message =
         error.response?.data?.detail ??
         error.response?.data?.title ??
         error.message ??
-        "An unexpected error occurred.";
+        'An unexpected error occurred.';
 
       useNotificationsStore
         .getState()
-        .add({ type: "error", message, timeout: 10_000 });
+        .add({ type: 'error', message, timeout: 10_000 });
     }
 
     return Promise.reject(error);

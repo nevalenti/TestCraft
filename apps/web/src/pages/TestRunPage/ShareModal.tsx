@@ -1,13 +1,13 @@
-import { ClipboardIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { ClipboardIcon, TrashIcon } from '@heroicons/react/24/solid';
+import { useState } from 'react';
 
-import { Modal } from "@/components/ui/Modal";
+import { Modal } from '@/components/ui/Modal';
 import {
   useCreateShareToken,
   useRevokeShareToken,
   useShareTokens,
-} from "@/hooks/useShareTokens";
-import { formatDate } from "@/lib/format";
+} from '@/hooks/useShareTokens';
+import { formatDate } from '@/lib/format';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ export function ShareModal({
   const { data: tokens, isPending } = useShareTokens(projectId, runId);
   const createToken = useCreateShareToken(projectId, runId);
   const revokeToken = useRevokeShareToken(projectId, runId);
-  const [expiresAt, setExpiresAt] = useState("");
+  const [expiresAt, setExpiresAt] = useState('');
   const [newToken, setNewToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -35,7 +35,7 @@ export function ShareModal({
       {
         onSuccess: (token) => {
           setNewToken(token.token);
-          setExpiresAt("");
+          setExpiresAt('');
         },
       },
     );
@@ -71,7 +71,7 @@ export function ShareModal({
                 title="Copy to clipboard"
               >
                 <ClipboardIcon className="size-4" />
-                {copied ? "Copied!" : "Copy"}
+                {copied ? 'Copied!' : 'Copy'}
               </button>
             </div>
             <p className="mt-2 text-xs text-base-content/75">
@@ -95,7 +95,7 @@ export function ShareModal({
                 className="input-bordered input input-sm w-full"
                 value={expiresAt}
                 onChange={(event) => setExpiresAt(event.target.value)}
-                min={new Date().toISOString().split("T", 1)[0]}
+                min={new Date().toISOString().split('T', 1)[0]}
               />
             </div>
             <button
@@ -106,7 +106,7 @@ export function ShareModal({
               {createToken.isPending ? (
                 <span className="loading loading-xs loading-spinner" />
               ) : (
-                "Create Link"
+                'Create Link'
               )}
             </button>
           </div>

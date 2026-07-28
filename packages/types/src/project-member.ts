@@ -1,6 +1,6 @@
-import type { components } from "./generated/schema.js";
+import type { components } from './generated/schema.js';
 
 export type ProjectMember =
-  components["schemas"]["TestCraft.Application.ProjectMembers.ProjectMemberResponse"];
+  components['schemas']['TestCraft.Application.ProjectMembers.ProjectMemberResponse'];
 export type AddProjectMember =
-  components["schemas"]["TestCraft.Application.ProjectMembers.AddProjectMember.Command"];
+  components['schemas']['TestCraft.Application.ProjectMembers.AddProjectMember.Command'];

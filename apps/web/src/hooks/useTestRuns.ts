@@ -3,13 +3,13 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from "@tanstack/react-query";
-import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
+} from '@tanstack/react-query';
+import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
 
-import { importsApi } from "@/api/imports";
-import { queryKeys } from "@/api/queryKeys";
-import { testRunQueries, testRunsApi } from "@/api/testRuns";
-import { notify } from "@/lib/notify";
+import { importsApi } from '@/api/imports';
+import { queryKeys } from '@/api/queryKeys';
+import { testRunQueries, testRunsApi } from '@/api/testRuns';
+import { notify } from '@/lib/notify';
 
 export const useTestRuns = (projectId: string, search?: string) =>
   useQuery({
@@ -30,7 +30,7 @@ export const useCreateTestRun = (projectId: string) => {
   return useMutation({
     mutationFn: (input: CreateTestRun) => testRunsApi.create(projectId, input),
     onSuccess: () => {
-      notify("Test run created");
+      notify('Test run created');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -48,7 +48,7 @@ export const useUpdateTestRun = (projectId: string) => {
     mutationFn: ({ id, ...input }: UpdateTestRun & { id: string }) =>
       testRunsApi.update(projectId, id, input),
     onSuccess: (_, { id }) => {
-      notify("Test run updated");
+      notify('Test run updated');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -68,7 +68,7 @@ const useImportMutation = <T>(
   return useMutation({
     mutationFn,
     onSuccess: () => {
-      notify("Test run imported");
+      notify('Test run imported');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -99,7 +99,7 @@ export const useDeleteTestRun = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testRunsApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      notify("Test run deleted");
+      notify('Test run deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });

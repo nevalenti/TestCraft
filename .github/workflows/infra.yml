@@ -4,8 +4,8 @@ on:
   push:
     branches: [main]
     paths:
-      - "infrastructure/helm/**"
-      - ".github/workflows/infra.yml"
+      - 'infrastructure/helm/**'
+      - '.github/workflows/infra.yml'
   workflow_dispatch:
 
 concurrency:

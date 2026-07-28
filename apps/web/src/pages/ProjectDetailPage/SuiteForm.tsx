@@ -1,15 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { CreateTestSuite, UpdateTestSuite } from '@testcraft/types';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
-import { FormActions } from "@/components/ui/FormActions";
-import { FormField } from "@/components/ui/FormField";
-import { FormInput } from "@/components/ui/FormInput";
-import { FormTextarea } from "@/components/ui/FormTextarea";
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormInput } from '@/components/ui/FormInput';
+import { FormTextarea } from '@/components/ui/FormTextarea';
 
 const schema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
+  name: z.string().min(1, 'Name is required').max(255),
   description: z.string().max(1000),
 });
 
@@ -35,8 +35,8 @@ export const SuiteForm = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      name: defaultValues?.name ?? "",
-      description: defaultValues?.description ?? "",
+      name: defaultValues?.name ?? '',
+      description: defaultValues?.description ?? '',
     },
   });
 
@@ -53,7 +53,7 @@ export const SuiteForm = ({
           hasError={!!errors.name}
           placeholder="Login Flow"
           autoFocus
-          {...register("name")}
+          {...register('name')}
         />
       </FormField>
       <FormField
@@ -65,7 +65,7 @@ export const SuiteForm = ({
           id="suite-description"
           placeholder="Optional"
           rows={2}
-          {...register("description")}
+          {...register('description')}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />
