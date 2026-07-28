@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16-alpine
+    image: ${POSTGRES_IMAGE}
     container_name: testcraft-postgres
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -17,7 +17,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7-alpine
+    image: ${REDIS_IMAGE}
     container_name: testcraft-redis
     ports:
       - "6379:6379"
@@ -28,7 +28,7 @@ services:
       retries: 5
 
   rabbitmq:
-    image: rabbitmq:4-management-alpine
+    image: ${RABBITMQ_IMAGE}
     container_name: testcraft-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${POSTGRES_USER}
@@ -45,7 +45,7 @@ services:
       retries: 5
 
   minio:
-    image: minio/minio:latest
+    image: ${MINIO_IMAGE}
     container_name: testcraft-minio
     command: server /data --console-address ":9001"
     environment:
@@ -63,7 +63,7 @@ services:
       retries: 5
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.2
+    image: ${KEYCLOAK_IMAGE}
     container_name: testcraft-keycloak
     entrypoint: /bin/sh
     command:
@@ -88,7 +88,12 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infrastructure/keycloak/themes:/opt/keycloak/themes/dracula/login:ro
+      - ./infrastructure/helm/testcraft/files/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
+      - ./infrastructure/helm/testcraft/files/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
+      - ./infrastructure/helm/testcraft/files/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
+      - ./infrastructure/helm/testcraft/files/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro
+      - ./infrastructure/helm/testcraft/files/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro
+      - ./infrastructure/helm/testcraft/files/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro
       - ./infrastructure/keycloak/realm.json:/realm-source/realm.json:ro
     healthcheck:
       test:
@@ -102,7 +107,7 @@ services:
       start_period: 30s
 
   grafana:
-    image: grafana/grafana:11.6.0
+    image: ${GRAFANA_IMAGE}
     container_name: testcraft-grafana
     ports:
       - "3001:3000"
@@ -112,26 +117,51 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: "true"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./infrastructure/helm/testcraft/files/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./infrastructure/helm/testcraft/files/api-logs.json:/etc/grafana/provisioning/dashboards/api-logs.json:ro
+      - ./infrastructure/helm/testcraft/files/api-http.json:/etc/grafana/provisioning/dashboards/api-http.json:ro
+      - ./infrastructure/helm/testcraft/files/redis-metrics.json:/etc/grafana/provisioning/dashboards/redis-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/postgres-metrics.json:/etc/grafana/provisioning/dashboards/postgres-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/rabbitmq-metrics.json:/etc/grafana/provisioning/dashboards/rabbitmq-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/k8s-cluster.json:/etc/grafana/provisioning/dashboards/k8s-cluster.json:ro
+      - ./infrastructure/helm/testcraft/files/k8s-node.json:/etc/grafana/provisioning/dashboards/k8s-node.json:ro
+      - ./infrastructure/helm/testcraft/files/k8s-pods.json:/etc/grafana/provisioning/dashboards/k8s-pods.json:ro
     depends_on:
       - prometheus
       - loki
+      - alertmanager
 
   prometheus:
-    image: prom/prometheus:v3.4.0
+    image: ${PROMETHEUS_IMAGE}
     container_name: testcraft-prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
       - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infrastructure/helm/testcraft/files/alert-rules.yml:/etc/prometheus/rules/alert-rules.yml:ro
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     ports:
       - "9090:9090"
 
+  alertmanager:
+    image: ${ALERTMANAGER_IMAGE}
+    container_name: testcraft-alertmanager
+    volumes:
+      - ./infrastructure/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "9093:9093"
+    depends_on:
+      - mailpit
+
   loki:
-    image: grafana/loki:3.4.3
+    image: ${LOKI_IMAGE}
     container_name: testcraft-loki
     ports:
       - "3100:3100"
@@ -140,7 +170,7 @@ services:
     command: -config.file=/etc/loki/local-config.yaml
 
   seq:
-    image: datalust/seq:2024.3
+    image: ${SEQ_IMAGE}
     container_name: testcraft-seq
     environment:
       ACCEPT_EULA: "Y"
@@ -157,7 +187,7 @@ services:
       - "8025:8025"
 
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.17.1
+    image: ${POSTGRES_EXPORTER_IMAGE}
     container_name: testcraft-postgres-exporter
     environment:
       DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
@@ -166,7 +196,7 @@ services:
         condition: service_healthy
 
   redis-exporter:
-    image: oliver006/redis_exporter:v1.67.0
+    image: ${REDIS_EXPORTER_IMAGE}
     container_name: testcraft-redis-exporter
     environment:
       REDIS_ADDR: "redis://redis:6379"
@@ -175,7 +205,7 @@ services:
         condition: service_healthy
 
   rabbitmq-exporter:
-    image: kbudde/rabbitmq-exporter:1.0.0
+    image: ${RABBITMQ_EXPORTER_IMAGE}
     container_name: testcraft-rabbitmq-exporter
     environment:
       RABBIT_URL: "http://rabbitmq:15672"
@@ -192,5 +222,6 @@ volumes:
   keycloak_data:
   grafana_data:
   prometheus_data:
+  alertmanager_data:
   loki_data:
   seq_data:

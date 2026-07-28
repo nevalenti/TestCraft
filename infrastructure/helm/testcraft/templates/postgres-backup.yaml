@@ -16,7 +16,7 @@ spec:
           restartPolicy: OnFailure
           initContainers:
             - name: dump
-              image: postgres:16-alpine
+              image: {{ .Values.thirdPartyImages.postgres }}
               command:
                 - /bin/sh
                 - -c
@@ -56,7 +56,7 @@ spec:
                   mountPath: /backup
           containers:
             - name: upload
-              image: minio/mc:latest
+              image: {{ .Values.thirdPartyImages.minio_client }}
               command:
                 - /bin/sh
                 - -c

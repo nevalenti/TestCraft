@@ -1,4 +1,4 @@
-.PHONY: up down build load images \
+.PHONY: up down build load images image-versions \
         deploy deploy-prod deploy-app namespace tls-secret destroy status \
         api-github web-github e2e-github docs-github \
         api-gitlab web-gitlab e2e-gitlab docs-gitlab \
@@ -17,11 +17,14 @@ GITLAB_CI_LOCAL = pnpm exec gitlab-ci-local --ignore-predefined-vars CI,CI_PIPEL
 HELM_PROD_VALUES = --values infrastructure/helm/testcraft/values.production.yaml --values infrastructure/helm/testcraft/values.secrets.yaml --reset-then-reuse-values
 HELM_SSA_FLAGS = --server-side=true --force-conflicts
 
-up:
-	docker compose up -d
+image-versions:
+	scripts/render-image-versions.sh
 
-down:
-	docker compose down -v
+up: image-versions
+	docker compose --env-file .env --env-file infrastructure/image-versions.env up -d
+
+down: image-versions
+	docker compose --env-file .env --env-file infrastructure/image-versions.env down -v
 
 build:
 	docker build -t $(API_IMAGE) -f apps/Api/Dockerfile .

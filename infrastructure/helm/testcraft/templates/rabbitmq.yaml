@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: rabbitmq
-          image: rabbitmq:4-management-alpine
+          image: {{ .Values.thirdPartyImages.rabbitmq }}
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:

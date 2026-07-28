@@ -28,7 +28,7 @@ spec:
     spec:
       initContainers:
         - name: copy-realm
-          image: busybox:1.36
+          image: {{ .Values.thirdPartyImages.busybox }}
           command:
             - /bin/sh
             - -c
@@ -74,7 +74,7 @@ spec:
             - name: realm-source
               mountPath: /realm-source
         - name: install-theme
-          image: quay.io/keycloak/keycloak:26.2
+          image: {{ .Values.thirdPartyImages.keycloak }}
           command:
             - /bin/sh
             - -c
@@ -94,7 +94,7 @@ spec:
               mountPath: /theme-source
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:26.2
+          image: {{ .Values.thirdPartyImages.keycloak }}
           args: ["start", "--import-realm"]
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME

@@ -11,6 +11,8 @@ e2e:
         - "packages/**/*"
         - "pnpm-lock.yaml"
         - "infrastructure/keycloak/**/*"
+        - "infrastructure/helm/testcraft/files/*.ftl"
+        - "infrastructure/helm/testcraft/files/theme.properties"
         - ".gitlab/ci/e2e.yml"
   services:
     - name: docker:27-dind
@@ -52,7 +54,7 @@ e2e:
     - apt-get install -y --no-install-recommends nodejs
     - corepack enable && corepack prepare pnpm@11.3.0 --activate
   script:
-    - docker build -t e2e-keycloak:$CI_COMMIT_SHA -f infrastructure/keycloak/e2e.Dockerfile infrastructure/keycloak
+    - docker build -t e2e-keycloak:$CI_COMMIT_SHA -f infrastructure/keycloak/e2e.Dockerfile .
     - docker run -d --name keycloak -p 8080:8080 -p 9000:9000 e2e-keycloak:$CI_COMMIT_SHA
     - dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj
     - pnpm install --frozen-lockfile
