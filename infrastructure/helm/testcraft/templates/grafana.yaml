@@ -41,6 +41,8 @@ spec:
               value: "false"
             - name: GF_SERVER_DOMAIN
               value: {{ index .Values.tls.dnsNames 0 | quote }}
+            - name: GF_SECURITY_CSRF_TRUSTED_ORIGINS
+              value: "https://{{ index .Values.tls.dnsNames 0 }}"
             - name: GF_SERVER_ROOT_URL
               value: "https://%(domain)s/grafana/"
             - name: GF_SERVER_SERVE_FROM_SUB_PATH
