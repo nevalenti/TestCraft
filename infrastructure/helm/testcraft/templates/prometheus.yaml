@@ -25,11 +25,13 @@ spec:
     metadata:
       labels:
         app: prometheus
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-prometheus.yaml") . | sha256sum }}
     spec:
       serviceAccountName: prometheus
       containers:
         - name: prometheus
-          image: prom/prometheus:v3.4.0
+          image: {{ .Values.thirdPartyImages.prometheus }}
           args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --storage.tsdb.retention.time=30d
@@ -52,6 +54,9 @@ spec:
             - name: config
               mountPath: /etc/prometheus/prometheus.yml
               subPath: prometheus.yml
+            - name: config
+              mountPath: /etc/prometheus/rules/alert-rules.yml
+              subPath: alert-rules.yml
             - name: data
               mountPath: /prometheus
       volumes:

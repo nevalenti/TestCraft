@@ -1,0 +1,81 @@
+groups:
+  - name: testcraft.rules
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Scrape target {{ $labels.job }}/{{ $labels.instance }} is down"
+          description: "Prometheus has not been able to scrape {{ $labels.job }} ({{ $labels.instance }}) for 5 minutes."
+
+      - alert: DeploymentReplicasMismatch
+        expr: kube_deployment_spec_replicas{namespace="testcraft"} != kube_deployment_status_replicas_available{namespace="testcraft"}
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Deployment {{ $labels.deployment }} is under-replicated"
+          description: "{{ $labels.deployment }} has had fewer available replicas than desired for 10 minutes."
+
+      - alert: PodCrashLooping
+        expr: increase(kube_pod_container_status_restarts_total{namespace="testcraft"}[15m]) > 3
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Pod {{ $labels.pod }} is crash-looping"
+          description: "Container {{ $labels.container }} in pod {{ $labels.pod }} has restarted more than 3 times in the last 15 minutes."
+
+      - alert: NodeDiskSpaceLow
+        expr: node_filesystem_avail_bytes{mountpoint="/",fstype!="tmpfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="tmpfs"} < 0.1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Node root filesystem below 10% free space"
+          description: "Only {{ $value | humanizePercentage }} of the root filesystem is free on {{ $labels.instance }}."
+
+      - alert: NodeMemoryLow
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.1
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Node available memory below 10%"
+          description: "{{ $labels.instance }} has less than 10% memory available."
+
+      - alert: PersistentVolumeAlmostFull
+        expr: kubelet_volume_stats_used_bytes{namespace="testcraft"} / kubelet_volume_stats_capacity_bytes{namespace="testcraft"} > 0.85
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PVC {{ $labels.persistentvolumeclaim }} is over 85% full"
+          description: "PVC {{ $labels.persistentvolumeclaim }} in {{ $labels.namespace }} is at {{ $value | humanizePercentage }} capacity."
+
+      - alert: BackupJobFailed
+        expr: kube_job_status_failed{namespace="testcraft", job_name=~"postgres-backup-.*|minio-backup-.*"} > 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Backup job {{ $labels.job_name }} failed"
+          description: "Kubernetes Job {{ $labels.job_name }} reported a failure. Check its pod logs for details."
+
+      - alert: PostgresBackupMissing
+        expr: time() - max(kube_job_status_completion_time{namespace="testcraft", job_name=~"postgres-backup-.*"}) > 93600
+        labels:
+          severity: critical
+        annotations:
+          summary: "No successful Postgres backup in over 26 hours"
+          description: "The postgres-backup CronJob has not completed successfully recently. Check whether it is still scheduled and running."
+
+      - alert: MinioBackupMissing
+        expr: time() - max(kube_job_status_completion_time{namespace="testcraft", job_name=~"minio-backup-.*"}) > 93600
+        labels:
+          severity: critical
+        annotations:
+          summary: "No successful MinIO backup in over 26 hours"
+          description: "The minio-backup CronJob has not completed successfully recently. Check whether it is still scheduled and running."

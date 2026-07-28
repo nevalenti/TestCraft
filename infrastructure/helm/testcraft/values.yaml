@@ -16,6 +16,31 @@ images:
     tag: latest
     pullPolicy: IfNotPresent
 
+# Single source of truth for third-party image tags. docker-compose.yml does
+# not read this file directly (Compose can't parse nested YAML) - it gets
+# these via infrastructure/image-versions.env, generated from this map by
+# scripts/render-image-versions.sh. Bump a version here, regenerate, and both
+# environments move together.
+thirdPartyImages:
+  postgres: postgres:16-alpine
+  redis: redis:7-alpine
+  rabbitmq: rabbitmq:4-management-alpine
+  minio: minio/minio:latest
+  minio_client: minio/mc:latest
+  keycloak: quay.io/keycloak/keycloak:26.2
+  busybox: busybox:1.36
+  grafana: grafana/grafana:11.6.0
+  loki: grafana/loki:3.4.3
+  tempo: grafana/tempo:2.7.1
+  prometheus: prom/prometheus:v3.4.0
+  alertmanager: prom/alertmanager:v0.27.0
+  seq: datalust/seq:2024.3
+  postgres_exporter: prometheuscommunity/postgres-exporter:v0.17.1
+  redis_exporter: oliver006/redis_exporter:v1.67.0
+  rabbitmq_exporter: kbudde/rabbitmq-exporter:v0.29.0
+  kube_state_metrics: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0
+  node_exporter: prom/node-exporter:v1.8.2
+
 tls:
   provider: mkcert
   acmeEmail: ""
@@ -35,6 +60,7 @@ storage:
   loki: 5Gi
   seq: 5Gi
   prometheus: 10Gi
+  alertmanager: 1Gi
   grafana: 1Gi
   keycloak: 1Gi
   minio: 10Gi
@@ -73,3 +99,9 @@ secrets:
   githubClientSecret: ""
   googleClientId: ""
   googleClientSecret: ""
+  smtpHost: ""
+  smtpPort: ""
+  smtpUser: ""
+  smtpPassword: ""
+  smtpFromAddress: ""
+  alertEmailTo: ""

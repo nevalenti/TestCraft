@@ -16,7 +16,7 @@ spec:
           restartPolicy: OnFailure
           containers:
             - name: mirror
-              image: minio/mc:latest
+              image: {{ .Values.thirdPartyImages.minio_client }}
               command:
                 - /bin/sh
                 - -c

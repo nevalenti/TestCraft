@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:16-alpine
+          image: {{ .Values.thirdPartyImages.postgres }}
           env:
             - name: POSTGRES_USER
               valueFrom:

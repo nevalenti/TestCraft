@@ -9,6 +9,7 @@
 *.user
 .env
 .env.*
+infrastructure/image-versions.env
 .eslintcache
 .gitlab-ci-local-variables.yml
 .gitlab-ci-local/
