@@ -61,6 +61,8 @@ pipeline {
         stage('Start services') {
             steps {
                 sh '''
+                    scripts/render-dev-realm.sh
+
                     docker run -d --rm --name testcraft-e2e-postgres \
                         -e POSTGRES_USER=e2e -e POSTGRES_PASSWORD=e2e -e POSTGRES_DB=testcraft_e2e \
                         -p 5433:5432 postgres:16-alpine
@@ -111,35 +113,24 @@ pipeline {
 
         stage('Run e2e tests') {
             environment {
-                CI                              = 'true'
-                SEQ_URL                         = ''
-                MSBUILDTERMINALLOGGER           = 'off'
-                E2E_BASE_URL                    = 'http://localhost:4173'
-                E2E_USERNAME                    = 'e2e@testcraft.pro'
-                E2E_PASSWORD                    = 'e2e-test-password'
-                DATABASE_URL                    = 'postgresql://e2e:e2e@localhost:5433/testcraft_e2e'
-                KEYCLOAK_AUTHORITY              = 'http://localhost:8080/realms/testcraft'
-                KEYCLOAK_AUDIENCE               = 'testcraft-web'
-                KEYCLOAK_REQUIRE_HTTPS_METADATA = 'false'
-                KEYCLOAK_ADMIN_CLIENT_ID        = 'testcraft-api'
-                KEYCLOAK_ADMIN_CLIENT_SECRET    = 'testcraft-api-dev-secret'
-                CORS_ALLOWED_ORIGINS            = 'http://localhost:4173'
-                APPLY_MIGRATIONS                = 'true'
-                VITE_API_URL                    = 'http://localhost:5000'
-                VITE_KEYCLOAK_URL               = 'http://localhost:8080'
-                VITE_KEYCLOAK_REALM             = 'testcraft'
-                VITE_KEYCLOAK_CLIENT_ID         = 'testcraft-web'
-                TESTCRAFT_PROJECT_NAME          = 'TestCraft'
-                TESTCRAFT_SOURCE                = 'e2e'
+                DATABASE_URL       = 'postgresql://e2e:e2e@localhost:5433/testcraft_e2e'
+                KEYCLOAK_AUTHORITY = 'http://localhost:8080/realms/testcraft'
+                VITE_KEYCLOAK_URL  = 'http://localhost:8080'
             }
             steps {
-                withCredentials([
-                    usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
-                    string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
-                    string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
-                ]) {
-                    catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
-                        sh 'pnpm --filter testcraft-e2e run e2e'
+                script {
+                    def raw = sh(script: "grep -v '^#' infrastructure/keycloak/e2e.env | grep -v '^\$'", returnStdout: true).trim()
+                    def shared = raw ? raw.split('\n') as List : []
+                    withEnv(shared) {
+                        withCredentials([
+                            usernamePassword(credentialsId: 'testcraft-service-account', usernameVariable: 'TESTCRAFT_USERNAME', passwordVariable: 'TESTCRAFT_PASSWORD'),
+                            string(credentialsId: 'testcraft-api-url', variable: 'TESTCRAFT_API_URL'),
+                            string(credentialsId: 'testcraft-keycloak-authority', variable: 'TESTCRAFT_KEYCLOAK_AUTHORITY'),
+                        ]) {
+                            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                                sh 'pnpm --filter testcraft-e2e run e2e'
+                            }
+                        }
                     }
                 }
             }

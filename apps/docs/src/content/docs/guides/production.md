@@ -45,7 +45,7 @@ the image, not just the chart. Deploy one service at a time:
 make deploy-app APP=api TAG=<sha-or-version>
 ```
 
-This runs `helm upgrade --install --reuse-values` against
+This runs `helm upgrade --install --reset-then-reuse-values` against
 `values.production.yaml`/`values.secrets.yaml`, overriding only
 `images.<app>.tag`, then restarts and waits on that one Deployment. Every
 other service keeps whatever tag it was last deployed with. If the rollout
@@ -59,7 +59,7 @@ For chart/template/config changes that aren't tied to a specific app image
 make deploy-prod
 ```
 
-This re-applies the full chart with `--reuse-values`, so it won't disturb
+This re-applies the full chart with `--reset-then-reuse-values`, so it won't disturb
 any app's currently pinned tag. Check progress at any time with:
 
 ```bash
@@ -113,46 +113,60 @@ must agree with the same prefix the Gateway route matches on.
 
 ## Backups
 
-There's no built-in backup automation — persistent state lives in PVCs
-(`infrastructure/helm/testcraft/templates/postgres.yaml`,
-`minio.yaml`, sized via `values.yaml`'s `storage.*` keys) and is your
-responsibility to snapshot. At minimum, back up:
+Backups are automated via three CronJobs in the chart, scheduled by
+`values.yaml`'s `backups.*` keys and landing in the `minio` bucket named by
+`backups.minioBucket` (default `testcraft-backups`), retained for
+`backups.retentionDays` (default 14 days):
 
-- **Postgres** — the source of truth for everything except file
-  attachments: `sudo k3s kubectl exec -n testcraft deploy/postgres -- pg_dump -U testcraft testcraft_db > backup.sql`
-- **MinIO** — test result attachments (screenshots, logs): mirror the
-  `testcraft-attachments` bucket with the `mc` client, or snapshot the
-  underlying PVC.
+- **`postgres-backup`** (`backups.postgresSchedule`, default `0 3 * * *`) —
+  dumps both `testcraft_db` and `keycloak_db` with `pg_dump -Fc` (custom
+  format), uploads them to `<bucket>/postgres/`.
+- **`minio-backup`** (`backups.minioSchedule`, default `15 3 * * *`) —
+  mirrors the attachments bucket to `<bucket>/attachments/`.
+- **`postgres-restore-verify`** (`backups.restoreVerifySchedule`, default
+  `30 3 * * *`) — downloads the latest Postgres dumps, restores each into a
+  scratch database, and checks it actually contains tables. A backup job
+  exiting `0` doesn't guarantee the dump is usable; this catches a
+  corrupt or empty dump that would otherwise go unnoticed until an actual
+  restore was needed.
+
+All three are on their own alert rules (`infrastructure/helm/testcraft/files/alert-rules.yml`)
+routed through Alertmanager to email — a failed job, a job that stops
+running entirely, or a dump that fails to restore all page.
+
+These backups are **not offsite** — they live in the same cluster's MinIO,
+so a full loss of the box takes the backups with it. If you need real
+disaster-recovery coverage, mirror the bucket to storage outside this host.
 
 Losing Keycloak's PVC loses realm/user config, but that's reproducible from
-`infrastructure/keycloak/realm.json` — it doesn't need routine backups.
+`infrastructure/helm/testcraft/files/realm.json` — it doesn't need routine
+backups.
 
 ### Restore
 
-**Postgres** — copy the dump into the pod and restore it with `psql` (the
-`pg_dump` above produces a plain SQL file, not a custom-format archive, so
-`pg_restore` isn't used):
+**Postgres** — download the dump from MinIO and restore with `pg_restore`
+(the backup is a custom-format archive, not a plain SQL file):
 
 ```bash
-sudo k3s kubectl cp backup.sql testcraft/$(sudo k3s kubectl get pod -n testcraft -l app=postgres -o jsonpath='{.items[0].metadata.name}'):/tmp/backup.sql
-sudo k3s kubectl exec -n testcraft deploy/postgres -- psql -U testcraft -d testcraft_db -f /tmp/backup.sql
-```
-
-Restoring into a database that already has data will fail on conflicting
-rows/constraints — either restore into a freshly created database, or drop
-and recreate `testcraft_db` first.
-
-**MinIO** — point the `mc` client at the in-cluster service and mirror the
-bucket back:
-
-```bash
+kubectl port-forward svc/minio 9000:9000 -n testcraft &
 mc alias set testcraft-minio http://localhost:9000 <MINIO_ROOT_USER> <MINIO_ROOT_PASSWORD>
-mc mirror ./attachments-backup testcraft-minio/testcraft-attachments
+mc cp testcraft-minio/testcraft-backups/postgres/testcraft_db-<timestamp>.dump ./backup.dump
+
+sudo k3s kubectl cp backup.dump testcraft/$(sudo k3s kubectl get pod -n testcraft -l app=postgres -o jsonpath='{.items[0].metadata.name}'):/tmp/backup.dump
+sudo k3s kubectl exec -n testcraft deploy/postgres -- pg_restore -U testcraft -d testcraft_db --clean --if-exists /tmp/backup.dump
 ```
 
-(`kubectl port-forward svc/minio 9000:9000 -n testcraft` first if running
-this from outside the cluster.) Restoring the underlying PVC snapshot instead
-works too, and doesn't require `mc`.
+Use the same steps with `keycloak_db-<timestamp>.dump` and `-d keycloak_db`
+to restore Keycloak's database instead.
+
+**MinIO** — mirror the attachments bucket back:
+
+```bash
+mc mirror testcraft-minio/testcraft-backups/attachments/ testcraft-minio/testcraft-attachments/
+```
+
+Restoring the underlying PVC snapshot instead works too, and doesn't require
+`mc`.
 
 After restoring Postgres, restart the API so it drops any cached state:
 `sudo k3s kubectl rollout restart deployment/api -n testcraft`.

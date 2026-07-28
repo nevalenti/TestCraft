@@ -13,6 +13,8 @@ e2e:
         - "infrastructure/keycloak/**/*"
         - "infrastructure/helm/testcraft/files/*.ftl"
         - "infrastructure/helm/testcraft/files/theme.properties"
+        - "infrastructure/helm/testcraft/files/realm.json"
+        - "scripts/render-dev-realm.sh"
         - ".gitlab/ci/e2e.yml"
   services:
     - name: docker:27-dind
@@ -25,35 +27,20 @@ e2e:
     POSTGRES_USER: e2e
     POSTGRES_PASSWORD: e2e
     POSTGRES_DB: testcraft_e2e
-    CI: "true"
-    SEQ_URL: ""
-    MSBUILDTERMINALLOGGER: "off"
-    E2E_BASE_URL: http://localhost:4173
-    E2E_USERNAME: e2e@testcraft.pro
-    E2E_PASSWORD: e2e-test-password
     DATABASE_URL: postgresql://e2e:e2e@postgres:5432/testcraft_e2e
     KEYCLOAK_AUTHORITY: http://docker:8080/realms/testcraft
-    KEYCLOAK_AUDIENCE: testcraft-web
-    KEYCLOAK_REQUIRE_HTTPS_METADATA: "false"
-    KEYCLOAK_ADMIN_CLIENT_ID: testcraft-api
-    KEYCLOAK_ADMIN_CLIENT_SECRET: testcraft-api-dev-secret
-    CORS_ALLOWED_ORIGINS: http://localhost:4173
-    APPLY_MIGRATIONS: "true"
-    VITE_API_URL: http://localhost:5000
     VITE_KEYCLOAK_URL: http://docker:8080
-    VITE_KEYCLOAK_REALM: testcraft
-    VITE_KEYCLOAK_CLIENT_ID: testcraft-web
-    TESTCRAFT_PROJECT_NAME: TestCraft
-    TESTCRAFT_SOURCE: e2e
     TESTCRAFT_JUNIT_XML: apps/e2e/e2e-results/junit.xml
     TESTCRAFT_RUN_NAME: "#$CI_PIPELINE_IID e2e ($CI_COMMIT_REF_NAME)"
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg
+    - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg jq
     - curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz --strip-components=1 -C /usr/local/bin docker/docker
     - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     - apt-get install -y --no-install-recommends nodejs
     - corepack enable && corepack prepare pnpm@11.3.0 --activate
   script:
+    - set -a && . infrastructure/keycloak/e2e.env && set +a
+    - scripts/render-dev-realm.sh
     - docker build -t e2e-keycloak:$CI_COMMIT_SHA -f infrastructure/keycloak/e2e.Dockerfile .
     - docker run -d --name keycloak -p 8080:8080 -p 9000:9000 e2e-keycloak:$CI_COMMIT_SHA
     - dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj

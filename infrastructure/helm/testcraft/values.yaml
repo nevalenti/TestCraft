@@ -69,6 +69,7 @@ storage:
 backups:
   postgresSchedule: "0 3 * * *"
   minioSchedule: "15 3 * * *"
+  restoreVerifySchedule: "30 3 * * *"
   minioBucket: testcraft-backups
   retentionDays: 14
 
