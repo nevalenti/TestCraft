@@ -20,7 +20,7 @@
           id="username" name="username" type="text"
           value="${(login.username!'')}"
           autofocus autocomplete="username"
-          placeholder="john.doe@example.com"
+          placeholder="you@example.com"
           class="input input-bordered w-full h-10 text-sm"
         />
       </div>

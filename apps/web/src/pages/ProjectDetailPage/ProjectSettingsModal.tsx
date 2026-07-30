@@ -322,18 +322,34 @@ function WebhooksSection({ projectId }: { projectId: string }) {
         Webhooks
       </p>
       <div className="mb-4 space-y-3">
-        <input
-          className="input-bordered input input-sm w-full"
-          placeholder="https://hooks.example.com/testcraft"
-          value={url}
-          onChange={(event) => setUrl(event.target.value)}
-        />
-        <input
-          className="input-bordered input input-sm w-full"
-          placeholder="Secret (optional, for HMAC verification)"
-          value={secret}
-          onChange={(event) => setSecret(event.target.value)}
-        />
+        <div>
+          <label htmlFor="webhook-url" className="label-text label text-xs">
+            Webhook URL
+          </label>
+          <input
+            id="webhook-url"
+            className="input-bordered input input-sm w-full"
+            placeholder="https://hooks.example.com/testcraft"
+            value={url}
+            onChange={(event) => setUrl(event.target.value)}
+          />
+        </div>
+        <div>
+          <label htmlFor="webhook-secret" className="label-text label text-xs">
+            Secret (optional)
+          </label>
+          <input
+            id="webhook-secret"
+            className="input-bordered input input-sm w-full"
+            placeholder="whsec_..."
+            value={secret}
+            onChange={(event) => setSecret(event.target.value)}
+          />
+          <p className="mt-1 text-xs text-base-content/70">
+            Used to sign requests with HMAC-SHA256 so you can verify they
+            came from TestCraft.
+          </p>
+        </div>
         <EventCheckboxes selected={events} onChange={setEvents} />
         <button
           className="btn btn-sm btn-primary"

@@ -28,7 +28,7 @@
         <label for="email" class="block text-xs font-semibold mb-1.5 text-base-content">Email address</label>
         <input id="email" name="email" type="email"
         value="${(register.formData.email!'')}" autocomplete="email"
-        placeholder="john.doe@example.com" class="input input-bordered w-full h-10 text-sm" />
+        placeholder="you@example.com" class="input input-bordered w-full h-10 text-sm" />
       </div>
 
       <div>
