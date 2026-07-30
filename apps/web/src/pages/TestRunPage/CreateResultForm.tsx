@@ -156,14 +156,14 @@ export const CreateResultForm = ({
         </FormField>
       )}
       <FormField
-        label="Duration (ms)"
+        label="Duration (ms, optional)"
         htmlFor="result-duration"
         error={errors.durationMs?.message}
       >
         <FormInput
           id="result-duration"
           type="number"
-          placeholder="e.g. 1500 (optional)"
+          placeholder="1500"
           min={0}
           {...register('durationMs')}
         />

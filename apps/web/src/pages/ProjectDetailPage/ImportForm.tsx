@@ -170,11 +170,15 @@ export const ImportForm = ({
         />
       </FormField>
 
-      <FormField label="Run name (optional)" htmlFor="import-name">
+      <FormField
+        label="Run name (optional)"
+        htmlFor="import-name"
+        hint="Derived from the imported file if left blank."
+      >
         <input
           id="import-name"
           className="input-bordered input w-full bg-base-200"
-          placeholder="Derived from file if left blank"
+          placeholder="e.g. api-run-42"
           value={name}
           onChange={(event) => setName(event.target.value)}
         />
