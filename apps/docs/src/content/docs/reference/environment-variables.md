@@ -48,12 +48,12 @@ without a password since it isn't reachable outside your machine.
 | `KEYCLOAK_ADMIN`                            | `admin`                                  |
 | `KEYCLOAK_ADMIN_PASSWORD`                   | `changeme`                               |
 | `KEYCLOAK_ADMIN_CLIENT_ID`                  | `testcraft-api`                          |
-| `KEYCLOAK_ADMIN_CLIENT_SECRET`              | —                                        |
+| `KEYCLOAK_ADMIN_CLIENT_SECRET`              | `testcraft-api-dev-secret` (dev only)    |
 | `KEYCLOAK_AUTHORITY`                        | `http://localhost:8080/realms/testcraft` |
 | `KEYCLOAK_AUDIENCE`                         | `testcraft-web`                          |
 | `KEYCLOAK_REQUIRE_HTTPS_METADATA`           | `false`                                  |
-| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | —                                        |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | —                                        |
+| `GITHUB_CLIENT_ID` / `GITHUB_CLIENT_SECRET` | placeholder values — set to enable       |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | placeholder values — set to enable       |
 
 `KEYCLOAK_ADMIN` / `KEYCLOAK_ADMIN_PASSWORD` bootstrap the Keycloak server's own master-realm
 admin account (used only by the Keycloak container itself). The API authenticates to Keycloak's
@@ -84,7 +84,7 @@ realm — see `infrastructure/keycloak/realm.json`.
 | `SMTP_HOST`                   | `localhost` (Mailpit in dev) |
 | `SMTP_PORT`                   | `1025`                       |
 | `SMTP_USER` / `SMTP_PASSWORD` | —                            |
-| `SMTP_FROM_ADDRESS`           | `noreply@testcraft.pro`      |
+| `SMTP_FROM_ADDRESS`           | `noreply@testcraft.dev`      |
 
 ## Observability & misc
 

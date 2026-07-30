@@ -5,7 +5,12 @@ sidebar:
   order: 1
 ---
 
-**Prerequisites:** Docker, .NET 10 SDK, Node.js 24, pnpm
+## Prerequisites
+
+- Docker, to run Postgres, Redis, RabbitMQ, MinIO, Keycloak, and the rest of
+  the stack via `make up`
+- .NET 10 SDK, to run the API outside its container (`dotnet run`)
+- Node.js 24 + pnpm, to run the web app outside its container
 
 ```bash
 git clone https://github.com/nevalenti/TestCraft.git

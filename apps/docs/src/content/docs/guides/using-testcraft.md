@@ -2,7 +2,7 @@
 title: Using TestCraft
 description: Projects, suites, test cases, runs, plans, analytics, and notifications from the web app.
 sidebar:
-  order: 6
+  order: 2
 ---
 
 This covers the product itself — the web app at `/`, once you're past
