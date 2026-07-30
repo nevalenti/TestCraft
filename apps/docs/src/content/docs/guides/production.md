@@ -2,7 +2,7 @@
 title: Production Deployment
 description: Deploy TestCraft to a k3s cluster with Helm.
 sidebar:
-  order: 4
+  order: 5
 ---
 
 TestCraft ships as a Helm chart at `infrastructure/helm/testcraft`, deployed

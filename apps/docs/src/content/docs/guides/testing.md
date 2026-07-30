@@ -2,7 +2,7 @@
 title: Running Tests
 description: Run the API, web, and end-to-end test suites locally.
 sidebar:
-  order: 3
+  order: 4
 ---
 
 ```bash
@@ -39,7 +39,9 @@ back to TestCraft.
 
 ## Reproducing CI locally
 
-Beyond the E2E suite, `make api-github` / `make api-gitlab` / `make web-github`
-/ `make web-gitlab` run the other pipelines through the same local emulators.
-This is the most reliable way to debug a pipeline failure that doesn't
-reproduce with a plain local `dotnet test`/`pnpm test` run.
+Beyond the E2E suite, `make api-github` / `make api-gitlab`, `make web-github`
+/ `make web-gitlab`, and `make docs-github` / `make docs-gitlab` run the other
+pipelines through the same local emulators (plus `make api-jenkins` /
+`make web-jenkins` / `make docs-jenkins` for the Jenkins equivalents). This is
+the most reliable way to debug a pipeline failure that doesn't reproduce with
+a plain local `dotnet test`/`pnpm test` run.

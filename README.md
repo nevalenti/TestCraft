@@ -68,61 +68,24 @@
 
 ## Built With
 
-| Layer          | Technology                        |
-| -------------- | --------------------------------- |
-| Frontend       | React 19                          |
-| Backend        | ASP.NET Core (.NET 10)            |
-| Database       | PostgreSQL                        |
-| Cache          | Redis                             |
-| Messaging      | MassTransit + RabbitMQ            |
-| Real-time      | SignalR                           |
-| Object storage | MinIO                             |
-| Auth           | Keycloak                          |
-| Reverse proxy  | YARP                              |
-| Observability  | Grafana · Prometheus · Loki · Seq |
-| Deployment     | Helm on k3s                       |
+React 19 · ASP.NET Core (.NET 10) · PostgreSQL · Redis · RabbitMQ + MassTransit
+· SignalR · MinIO · Keycloak · YARP · Grafana/Prometheus/Loki/Seq · Helm on
+k3s
+
+See [Tech Stack](https://testcraft.pro/docs/reference/tech-stack/) for what
+each layer is used for.
 
 ---
 
 ## Architecture
 
-```
-apps/
-  Api/src/
-    TestCraft.Domain         # Entities, domain events
-    TestCraft.Application    # CQRS (MediatR)
-    TestCraft.Infrastructure # EF Core, Redis, MinIO, MailKit, MassTransit
-    TestCraft.Api            # Controllers, SignalR hubs
-  Gateway/src/               # YARP reverse proxy (Web + API)
-  docs/                      # Astro Starlight documentation site
-  web/                       # React SPA
-    src/api/                 # Axios clients, one per domain
-    src/hooks/               # TanStack Query hooks, one per domain
-    src/stores/              # Zustand stores
-    src/pages/               # Route components (hooks only)
-    src/layout/              # App shell
-    src/components/          # Shared components, ui/ primitives
-    src/auth/                # Keycloak provider
-    src/contexts/            # React contexts (theme)
-    src/lib/                 # Shared helpers
-    src/types/               # Shared frontend types
-    src/__tests__/           # Vitest tests
-  e2e/                       # Playwright suite
-packages/
-  types/                     # Shared TS types, published to web
-  ci-reporter/               # CI reporter (npx/Docker) for non-GitHub CI
-infrastructure/
-  helm/                      # Helm chart
-  keycloak/                  # Realm config, login theme
-  grafana/                   # Dashboard provisioning
-  prometheus/                # Scrape config
-.github/
-  actions/testcraft/         # CI reporter for GitHub Actions
-  workflows/                 # GitHub Actions pipelines
-jenkins/                     # Jenkins pipelines
-.gitlab-ci.yml               # GitLab CI entry pipeline
-.gitlab/ci/                  # GitLab CI includes (API, web, E2E)
-```
+Clean Architecture on the API (`Domain` → `Application` → `Infrastructure` →
+`Api`), a YARP Gateway as the single public entry point in front of the
+API/web/docs/observability stack, and a React SPA that mirrors the API's
+layering (`api/` → `hooks/` → `pages/`).
+
+See [Architecture](https://testcraft.pro/docs/reference/architecture/) for
+the full repository layout and module boundaries.
 
 ---
 
@@ -135,12 +98,18 @@ git clone https://github.com/nevalenti/TestCraft.git
 cd TestCraft
 pnpm install
 cp .env.example .env
+```
+
+`APPLY_MIGRATIONS` defaults to `false` in `.env.example` — set it to `true`
+in `.env` before starting the stack, or the database schema stays empty and
+the API fails on first request:
+
+```bash
 make up
 ```
 
-Keycloak imports the `testcraft` realm automatically on first start. The API applies migrations on startup when `APPLY_MIGRATIONS=true` is set in `.env`.
-
-Then in separate terminals:
+Keycloak imports the `testcraft` realm automatically on first start. Then in
+separate terminals:
 
 ```bash
 # API
@@ -148,32 +117,11 @@ dotnet run --project apps/Api/src/TestCraft.Api
 
 # Web
 pnpm --filter testcraft-web dev
-
-# Docs
-pnpm --filter testcraft-docs dev
 ```
 
-| Service    | URL                           |
-| ---------- | ----------------------------- |
-| Web        | http://localhost:3000         |
-| Docs       | http://localhost:4321         |
-| API        | http://localhost:5000         |
-| Swagger UI | http://localhost:5000/swagger |
-| RabbitMQ   | http://localhost:15672        |
-| MinIO      | http://localhost:9001         |
-| Keycloak   | http://localhost:8080         |
-| Mailpit    | http://localhost:8025         |
-| Seq        | http://localhost:5341         |
-| Grafana    | http://localhost:3001         |
-| Prometheus | http://localhost:9090         |
-
-### Running tests
-
-```bash
-dotnet test TestCraft.slnx         # API (xUnit + Testcontainers)
-pnpm --filter testcraft-web test   # Web (Vitest)
-make e2e-github                    # End-to-end (Playwright via act)
-```
+See [Getting Started](https://testcraft.pro/docs/guides/getting-started/) for
+local service URLs, and [Running Tests](https://testcraft.pro/docs/guides/testing/)
+for the API/web/E2E test suites.
 
 ---
 
@@ -185,7 +133,9 @@ Requires k3s and Helm. Fill in `infrastructure/helm/testcraft/values.secrets.yam
 make deploy
 ```
 
-Check rollout status at any time with `make status`.
+Check rollout status at any time with `make status`. See
+[Production Deployment](https://testcraft.pro/docs/guides/production/) for
+TLS, secrets rotation, backups, and continuous deployment.
 
 ---
 

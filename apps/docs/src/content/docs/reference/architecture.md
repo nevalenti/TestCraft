@@ -13,6 +13,7 @@ apps/
     TestCraft.Infrastructure # EF Core, Redis, MinIO, MailKit, MassTransit
     TestCraft.Api            # Controllers, SignalR hubs
   Gateway/src/               # YARP reverse proxy (Web + API)
+  docs/                      # This site (Astro Starlight)
   web/                       # React SPA
     src/api/                 # Axios clients, one per domain
     src/hooks/                # TanStack Query hooks, one per domain
@@ -26,7 +27,6 @@ apps/
     src/types/                # Shared frontend types
     src/__tests__/            # Vitest tests
   e2e/                       # Playwright suite
-  docs/                      # This site (Starlight)
 packages/
   types/                     # Shared TS types, published to web
   ci-reporter/               # CI reporter (npx/Docker) for non-GitHub CI
@@ -39,8 +39,8 @@ infrastructure/
   actions/testcraft/         # CI reporter for GitHub Actions
   workflows/                 # GitHub Actions pipelines
 jenkins/                     # Jenkins pipelines
-.gitlab-ci.yml               # GitLab CI pipelines
-.gitlab/ci/                  # GitLab CI pipelines
+.gitlab-ci.yml               # GitLab CI entry pipeline
+.gitlab/ci/                  # GitLab CI includes (API, web, E2E, docs)
 ```
 
 ## Why these boundaries

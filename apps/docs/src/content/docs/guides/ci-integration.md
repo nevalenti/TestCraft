@@ -2,7 +2,7 @@
 title: CI Integration
 description: Report test runs into TestCraft from GitHub Actions, GitLab CI, Jenkins, or any other CI system.
 sidebar:
-  order: 2
+  order: 3
 ---
 
 TestCraft imports JUnit XML results and streams live per-test logs from any CI
@@ -59,8 +59,8 @@ supports two commands:
 | Input                   | Required | Description                                                                         |
 | ----------------------- | -------- | ----------------------------------------------------------------------------------- |
 | `command`               | no       | `start` creates an Active run before tests; default `import` imports results after  |
-| `username` / `password` | no       | Service account credentials — omitted `api-url` makes the step a no-op              |
-| `api-url`               | no       | TestCraft API base URL                                                              |
+| `username` / `password` | no       | Service account credentials                                                         |
+| `api-url`               | no       | TestCraft API base URL — omitted makes the step a no-op                             |
 | `project-name`          | yes      | Project to import results into                                                      |
 | `junit-xml`             | no       | Path or single-directory glob to a JUnit XML report — required for `import`         |
 | `run-name`              | yes      | Display name for the run                                                            |
@@ -74,10 +74,16 @@ reporter pick up automatically to stream live per-test logs.
 
 ## `testcraft-ci-reporter` CLI
 
-For GitLab CI, Jenkins, or any other CI system, use the CLI equivalent. It
-isn't published to a registry — build it from source in the pipeline, either
-by running the bundled esbuild output with `node` or by building the image
-from [`packages/ci-reporter/Dockerfile`](https://github.com/nevalenti/TestCraft/tree/main/packages/ci-reporter/Dockerfile).
+For GitLab CI, Jenkins, or any other CI system, use the CLI equivalent. It's
+published to npm as [`testcraft-ci-reporter`](https://www.npmjs.com/package/testcraft-ci-reporter),
+versioned independently of the app images (see
+[Upgrading](/docs/guides/upgrading/)) — `npx testcraft-ci-reporter@latest <command>`
+works directly, no build step required. This repo's own pipelines instead
+build it from source in the pipeline (either running the bundled esbuild
+output with `node`, or building the image from
+[`packages/ci-reporter/Dockerfile`](https://github.com/nevalenti/TestCraft/tree/main/packages/ci-reporter/Dockerfile)),
+since the tool lives in this monorepo — both approaches below work the same
+way against the published package.
 
 ```bash
 # build once (or build the Docker image instead — see below)

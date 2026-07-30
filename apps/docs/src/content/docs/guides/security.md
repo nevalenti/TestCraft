@@ -11,11 +11,13 @@ a deployment to the internet.
 ## Password policy
 
 Keycloak's `testcraft` realm enforces a minimum-length password policy
-(`passwordPolicy` in `infrastructure/keycloak/realm.json` /
-`infrastructure/helm/testcraft/files/realm.json`, currently
+(`passwordPolicy` in `infrastructure/helm/testcraft/files/realm.json`,
+currently
 `length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)`).
-Both copies must be kept in sync manually — there's no templating link
-between the local-dev file and the Helm-deployed one.
+The Helm-deployed file is the source of truth — `infrastructure/keycloak/realm.json`
+(used by local `make up`) is a generated, gitignored copy, rendered from it by
+`scripts/render-dev-realm.sh` via the Makefile's `dev-realm` target, so the
+policy can't drift between the two.
 
 ## TLS
 

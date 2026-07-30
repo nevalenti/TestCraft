@@ -2,7 +2,7 @@
 title: Troubleshooting
 description: Common problems when running TestCraft locally or in production.
 sidebar:
-  order: 5
+  order: 6
 ---
 
 ## `make up` never becomes healthy
