@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.ApiTokens;
+using TestCraft.Application.Features.ApiTokens;
 
 namespace TestCraft.Application.UnitTests.ApiTokens;
 

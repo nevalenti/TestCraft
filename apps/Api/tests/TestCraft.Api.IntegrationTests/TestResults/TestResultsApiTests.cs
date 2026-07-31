@@ -4,8 +4,8 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
-using TestCraft.Application.TestResults;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestResults;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.TestResults;

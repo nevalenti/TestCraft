@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.UnitTests.TestRuns;

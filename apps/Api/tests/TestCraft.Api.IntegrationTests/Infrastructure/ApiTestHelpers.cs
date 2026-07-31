@@ -1,15 +1,15 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using TestCraft.Application.Import;
-using TestCraft.Application.Labels;
-using TestCraft.Application.ProjectMembers;
-using TestCraft.Application.Projects;
-using TestCraft.Application.TestCases;
-using TestCraft.Application.TestPlans;
-using TestCraft.Application.TestResults;
-using TestCraft.Application.TestRuns;
-using TestCraft.Application.TestSuites;
+using TestCraft.Application.Features.Import;
+using TestCraft.Application.Features.Labels;
+using TestCraft.Application.Features.ProjectMembers;
+using TestCraft.Application.Features.Projects;
+using TestCraft.Application.Features.TestCases;
+using TestCraft.Application.Features.TestPlans;
+using TestCraft.Application.Features.TestResults;
+using TestCraft.Application.Features.TestRuns;
+using TestCraft.Application.Features.TestSuites;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;

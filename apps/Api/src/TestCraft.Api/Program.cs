@@ -1,5 +1,6 @@
 using DotNetEnv;
-using TestCraft.Api.Configuration;
+using TestCraft.Api.Configuration.Database;
+using TestCraft.Api.Configuration.Hosting;
 using TestCraft.Infrastructure.Configuration;
 
 Env.NoClobber().TraversePath().Load();

@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.Labels;
+using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Application.UnitTests.Labels;
 

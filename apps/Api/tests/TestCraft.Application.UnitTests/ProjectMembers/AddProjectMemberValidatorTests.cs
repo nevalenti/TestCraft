@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.ProjectMembers;
+using TestCraft.Application.Features.ProjectMembers;
 
 namespace TestCraft.Application.UnitTests.ProjectMembers;
 

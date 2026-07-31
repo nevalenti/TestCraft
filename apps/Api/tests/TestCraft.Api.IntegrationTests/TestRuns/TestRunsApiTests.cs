@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
 using TestCraft.Infrastructure.Persistence;
 

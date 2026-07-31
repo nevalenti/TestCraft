@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.TestCaseSteps;
+using TestCraft.Application.Features.TestCaseSteps;
 
 namespace TestCraft.Application.UnitTests.TestCaseSteps;
 

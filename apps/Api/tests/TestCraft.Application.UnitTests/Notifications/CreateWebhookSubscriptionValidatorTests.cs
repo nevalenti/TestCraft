@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.Notifications;
+using TestCraft.Application.Features.Notifications;
 
 namespace TestCraft.Application.UnitTests.Notifications;
 

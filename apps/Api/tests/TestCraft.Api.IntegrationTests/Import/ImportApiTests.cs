@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
-using TestCraft.Application.Import;
+using TestCraft.Application.Features.Import;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Import;

@@ -2,7 +2,7 @@ using FluentAssertions;
 using MediatR;
 using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
