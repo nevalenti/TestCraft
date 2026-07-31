@@ -1,7 +1,7 @@
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Application.Common.Behaviours;
-using TestCraft.Application.ShareTokens;
+using TestCraft.Application.Features.ShareTokens;
 
 namespace TestCraft.Application;
 

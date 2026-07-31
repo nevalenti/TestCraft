@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
-using TestCraft.Application.Users;
+using TestCraft.Application.Features.Users;
 
 namespace TestCraft.Api.IntegrationTests.Users;
 

@@ -5,8 +5,8 @@ using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Application.ProjectMembers;
-using TestCraft.Application.Projects;
+using TestCraft.Application.Features.ProjectMembers;
+using TestCraft.Application.Features.Projects;
 
 namespace TestCraft.Api.IntegrationTests.ProjectMembers;
 

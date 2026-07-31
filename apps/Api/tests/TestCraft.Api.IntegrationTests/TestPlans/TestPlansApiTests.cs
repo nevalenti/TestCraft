@@ -3,8 +3,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
-using TestCraft.Application.TestPlans;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestPlans;
+using TestCraft.Application.Features.TestRuns;
 
 namespace TestCraft.Api.IntegrationTests.TestPlans;
 

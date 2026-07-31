@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.SignalR;
-using TestCraft.Application.TestResults;
-using TestCraft.Application.TestRuns;
+using TestCraft.Application.Features.TestResults;
+using TestCraft.Application.Features.TestRuns;
 
 namespace TestCraft.Api.Hubs;
 

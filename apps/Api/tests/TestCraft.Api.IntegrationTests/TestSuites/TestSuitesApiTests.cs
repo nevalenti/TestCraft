@@ -4,7 +4,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
-using TestCraft.Application.TestSuites;
+using TestCraft.Application.Features.TestSuites;
 
 namespace TestCraft.Api.IntegrationTests.TestSuites;
 

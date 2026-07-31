@@ -1,5 +1,5 @@
 using System.Text;
-using TestCraft.Api.Configuration;
+using TestCraft.Api.Configuration.Swagger;
 using TestCraft.Infrastructure.Security;
 
 namespace TestCraft.Api.Middleware;

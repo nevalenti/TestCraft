@@ -1,5 +1,5 @@
 using FluentValidation.TestHelper;
-using TestCraft.Application.Import;
+using TestCraft.Application.Features.Import;
 
 namespace TestCraft.Application.UnitTests.Import;
 

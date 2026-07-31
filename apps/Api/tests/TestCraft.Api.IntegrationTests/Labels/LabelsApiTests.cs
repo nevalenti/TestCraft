@@ -3,7 +3,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using TestCraft.Api.IntegrationTests.Infrastructure;
-using TestCraft.Application.Labels;
+using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Api.IntegrationTests.Labels;
 

@@ -3,8 +3,8 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc.Testing;
+using TestCraft.Api.Features.System;
 using TestCraft.Api.IntegrationTests.Infrastructure;
-using TestCraft.Api.System;
 
 namespace TestCraft.Api.IntegrationTests.System;
 
