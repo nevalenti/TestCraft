@@ -1,6 +1,6 @@
 FROM quay.io/keycloak/keycloak:26.2
 
-COPY --chown=1000:0 infrastructure/helm/testcraft/files/theme.properties infrastructure/helm/testcraft/files/template.ftl infrastructure/helm/testcraft/files/login.ftl infrastructure/helm/testcraft/files/register.ftl infrastructure/helm/testcraft/files/error.ftl infrastructure/helm/testcraft/files/login-verify-email.ftl /opt/keycloak/themes/dracula/login/
+COPY --chown=1000:0 infrastructure/helm/testcraft/files/keycloak/theme.properties infrastructure/helm/testcraft/files/keycloak/template.ftl infrastructure/helm/testcraft/files/keycloak/login.ftl infrastructure/helm/testcraft/files/keycloak/register.ftl infrastructure/helm/testcraft/files/keycloak/error.ftl infrastructure/helm/testcraft/files/keycloak/login-verify-email.ftl /opt/keycloak/themes/dracula/login/
 COPY --chown=1000:0 infrastructure/keycloak/realm.json /realm-source/realm.json
 
 RUN mkdir -p /opt/keycloak/data/import && \

@@ -23,7 +23,7 @@ dev-realm: infrastructure/keycloak/realm.json
 infrastructure/image-versions.env: infrastructure/helm/testcraft/values.yaml scripts/render-image-versions.sh
 	scripts/render-image-versions.sh
 
-infrastructure/keycloak/realm.json: infrastructure/helm/testcraft/files/realm.json scripts/render-dev-realm.sh
+infrastructure/keycloak/realm.json: infrastructure/helm/testcraft/files/keycloak/realm.json scripts/render-dev-realm.sh
 	scripts/render-dev-realm.sh
 
 up: infrastructure/image-versions.env infrastructure/keycloak/realm.json

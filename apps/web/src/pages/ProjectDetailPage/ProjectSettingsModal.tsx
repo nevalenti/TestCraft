@@ -346,8 +346,8 @@ function WebhooksSection({ projectId }: { projectId: string }) {
             onChange={(event) => setSecret(event.target.value)}
           />
           <p className="mt-1 text-xs text-base-content/70">
-            Used to sign requests with HMAC-SHA256 so you can verify they
-            came from TestCraft.
+            Used to sign requests with HMAC-SHA256 so you can verify they came
+            from TestCraft.
           </p>
         </div>
         <EventCheckboxes selected={events} onChange={setEvents} />

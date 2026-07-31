@@ -11,9 +11,7 @@ e2e:
         - 'packages/**/*'
         - 'pnpm-lock.yaml'
         - 'infrastructure/keycloak/**/*'
-        - 'infrastructure/helm/testcraft/files/*.ftl'
-        - 'infrastructure/helm/testcraft/files/theme.properties'
-        - 'infrastructure/helm/testcraft/files/realm.json'
+        - 'infrastructure/helm/testcraft/files/keycloak/*'
         - 'scripts/render-dev-realm.sh'
         - '.gitlab/ci/e2e.yml'
   services:

@@ -88,12 +88,12 @@ services:
       - '8080:8080'
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infrastructure/helm/testcraft/files/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
-      - ./infrastructure/helm/testcraft/files/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
-      - ./infrastructure/helm/testcraft/files/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
-      - ./infrastructure/helm/testcraft/files/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro
-      - ./infrastructure/helm/testcraft/files/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro
-      - ./infrastructure/helm/testcraft/files/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro
       - ./infrastructure/keycloak/realm.json:/realm-source/realm.json:ro
     healthcheck:
       test:
@@ -117,16 +117,16 @@ services:
       GF_AUTH_DISABLE_LOGIN_FORM: 'true'
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./infrastructure/helm/testcraft/files/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
-      - ./infrastructure/helm/testcraft/files/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
-      - ./infrastructure/helm/testcraft/files/api-logs.json:/etc/grafana/provisioning/dashboards/api-logs.json:ro
-      - ./infrastructure/helm/testcraft/files/api-http.json:/etc/grafana/provisioning/dashboards/api-http.json:ro
-      - ./infrastructure/helm/testcraft/files/redis-metrics.json:/etc/grafana/provisioning/dashboards/redis-metrics.json:ro
-      - ./infrastructure/helm/testcraft/files/postgres-metrics.json:/etc/grafana/provisioning/dashboards/postgres-metrics.json:ro
-      - ./infrastructure/helm/testcraft/files/rabbitmq-metrics.json:/etc/grafana/provisioning/dashboards/rabbitmq-metrics.json:ro
-      - ./infrastructure/helm/testcraft/files/k8s-cluster.json:/etc/grafana/provisioning/dashboards/k8s-cluster.json:ro
-      - ./infrastructure/helm/testcraft/files/k8s-node.json:/etc/grafana/provisioning/dashboards/k8s-node.json:ro
-      - ./infrastructure/helm/testcraft/files/k8s-pods.json:/etc/grafana/provisioning/dashboards/k8s-pods.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./infrastructure/helm/testcraft/files/grafana/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/api-logs.json:/etc/grafana/provisioning/dashboards/api-logs.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/api-http.json:/etc/grafana/provisioning/dashboards/api-http.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/redis-metrics.json:/etc/grafana/provisioning/dashboards/redis-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/postgres-metrics.json:/etc/grafana/provisioning/dashboards/postgres-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/rabbitmq-metrics.json:/etc/grafana/provisioning/dashboards/rabbitmq-metrics.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/k8s-cluster.json:/etc/grafana/provisioning/dashboards/k8s-cluster.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/k8s-node.json:/etc/grafana/provisioning/dashboards/k8s-node.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/k8s-pods.json:/etc/grafana/provisioning/dashboards/k8s-pods.json:ro
     depends_on:
       - prometheus
       - loki
@@ -139,7 +139,7 @@ services:
       - 'host.docker.internal:host-gateway'
     volumes:
       - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - ./infrastructure/helm/testcraft/files/alert-rules.yml:/etc/prometheus/rules/alert-rules.yml:ro
+      - ./infrastructure/helm/testcraft/files/prometheus/alert-rules.yml:/etc/prometheus/rules/alert-rules.yml:ro
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml

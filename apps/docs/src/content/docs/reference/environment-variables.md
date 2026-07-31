@@ -21,7 +21,7 @@ Copy it to `.env` and fill in real values before starting.
 In production, the API, Keycloak, and the Prometheus postgres-exporter each connect as their
 own dedicated Postgres role (`testcraft_app`, `testcraft_keycloak`, `testcraft_monitor`) instead
 of the superuser — the exporter's role only has the built-in read-only `pg_monitor` grant. See
-`infrastructure/helm/testcraft/files/init.sql`. The local Docker Compose stack keeps a single
+`infrastructure/helm/testcraft/files/postgres/init.sql`. The local Docker Compose stack keeps a single
 shared `POSTGRES_USER` for simplicity since local Keycloak uses its own embedded dev database,
 not this Postgres instance.
 
