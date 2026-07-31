@@ -130,7 +130,7 @@ Backups are automated via three CronJobs in the chart, scheduled by
   corrupt or empty dump that would otherwise go unnoticed until an actual
   restore was needed.
 
-All three are on their own alert rules (`infrastructure/helm/testcraft/files/alert-rules.yml`)
+All three are on their own alert rules (`infrastructure/helm/testcraft/files/prometheus/alert-rules.yml`)
 routed through Alertmanager to email — a failed job, a job that stops
 running entirely, or a dump that fails to restore all page.
 
@@ -139,7 +139,7 @@ so a full loss of the box takes the backups with it. If you need real
 disaster-recovery coverage, mirror the bucket to storage outside this host.
 
 Losing Keycloak's PVC loses realm/user config, but that's reproducible from
-`infrastructure/helm/testcraft/files/realm.json` — it doesn't need routine
+`infrastructure/helm/testcraft/files/keycloak/realm.json` — it doesn't need routine
 backups.
 
 ### Restore

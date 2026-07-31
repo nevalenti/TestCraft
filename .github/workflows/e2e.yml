@@ -72,12 +72,12 @@ jobs:
             --name keycloak \
             --network host \
             -e KC_HEALTH_ENABLED=true \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro \
             -v ${{ github.workspace }}/infrastructure/keycloak/realm.json:/realm-source/realm.json:ro \
             --entrypoint /bin/sh \
             quay.io/keycloak/keycloak:26.2 \

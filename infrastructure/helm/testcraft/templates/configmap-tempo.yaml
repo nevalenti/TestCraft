@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   tempo.yaml: |
-{{ .Files.Get "files/tempo.yaml" | indent 4 }}
+{{ .Files.Get "files/tempo/tempo.yaml" | indent 4 }}

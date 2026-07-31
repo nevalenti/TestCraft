@@ -4,7 +4,7 @@ set -euo pipefail
 
 command -v jq >/dev/null 2>&1 || { echo "::error::jq is required to render infrastructure/keycloak/realm.json" >&2; exit 1; }
 
-BASE_FILE="infrastructure/helm/testcraft/files/realm.json"
+BASE_FILE="infrastructure/helm/testcraft/files/keycloak/realm.json"
 OUT_FILE="infrastructure/keycloak/realm.json"
 
 jq '

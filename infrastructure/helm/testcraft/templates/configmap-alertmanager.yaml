@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   alertmanager.yml: |
-{{ tpl (.Files.Get "files/alertmanager.yml") . | indent 4 }}
+{{ tpl (.Files.Get "files/alertmanager/alertmanager.yml") . | indent 4 }}

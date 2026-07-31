@@ -5,6 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   datasources.yaml: |
-{{ .Files.Get "files/grafana-datasources.yaml" | indent 4 }}
+{{ .Files.Get "files/grafana/grafana-datasources.yaml" | indent 4 }}
   datasources-tempo.yaml: |
-{{ .Files.Get "files/grafana-datasources-tempo.yaml" | indent 4 }}
+{{ .Files.Get "files/grafana/grafana-datasources-tempo.yaml" | indent 4 }}

@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   init.sql: |
-{{ tpl (.Files.Get "files/init.sql") . | indent 4 }}
+{{ tpl (.Files.Get "files/postgres/init.sql") . | indent 4 }}

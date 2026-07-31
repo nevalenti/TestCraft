@@ -5,6 +5,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   prometheus.yml: |
-{{ .Files.Get "files/prometheus.yml" | indent 4 }}
+{{ .Files.Get "files/prometheus/prometheus.yml" | indent 4 }}
   alert-rules.yml: |
-{{ .Files.Get "files/alert-rules.yml" | indent 4 }}
+{{ .Files.Get "files/prometheus/alert-rules.yml" | indent 4 }}

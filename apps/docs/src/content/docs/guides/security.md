@@ -11,7 +11,7 @@ a deployment to the internet.
 ## Password policy
 
 Keycloak's `testcraft` realm enforces a minimum-length password policy
-(`passwordPolicy` in `infrastructure/helm/testcraft/files/realm.json`,
+(`passwordPolicy` in `infrastructure/helm/testcraft/files/keycloak/realm.json`,
 currently
 `length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)`).
 The Helm-deployed file is the source of truth — `infrastructure/keycloak/realm.json`

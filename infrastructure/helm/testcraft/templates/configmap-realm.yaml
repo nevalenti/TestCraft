@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   testcraft-realm.json: |
-{{ .Files.Get "files/realm.json" | indent 4 }}
+{{ .Files.Get "files/keycloak/realm.json" | indent 4 }}
