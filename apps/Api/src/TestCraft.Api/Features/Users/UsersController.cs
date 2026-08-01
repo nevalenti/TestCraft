@@ -16,7 +16,9 @@ public class UsersController(ISender sender) : ControllerBase
     [HttpGet("avatar")]
     [ProducesResponseType(typeof(AvatarUrlResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> GetAvatarUrl(CancellationToken cancellationToken)
+    public async Task<ActionResult<AvatarUrlResponse>> GetAvatarUrl(
+        CancellationToken cancellationToken
+    )
     {
         var query = new GetAvatarUrl.Query();
         var result = await sender.Send(query, cancellationToken);

@@ -83,6 +83,7 @@ public static class HostingExtensions
         app.UseExceptionHandler();
 
         app.UseRequestId();
+        app.UsePageId();
         app.UseSecurityHeaders();
         app.UseResponseCompression();
 

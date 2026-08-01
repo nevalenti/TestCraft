@@ -25,7 +25,7 @@ public class ShareTokensController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId, RunId = runId };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Created(string.Empty, result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Lists all share tokens for a test run.</summary>

@@ -4,10 +4,13 @@ import keycloak from '@/auth/keycloak';
 import { env } from '@/lib/env';
 import { useNotificationsStore } from '@/stores/notifications';
 
+const pageId = crypto.randomUUID();
+
 const client = axios.create({
   baseURL: `${env.VITE_API_URL}/api/v1`,
   headers: {
     'Content-Type': 'application/json',
+    'X-Page-Id': pageId,
   },
 });
 
