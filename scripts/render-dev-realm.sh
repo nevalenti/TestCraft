@@ -10,6 +10,7 @@ OUT_FILE="infrastructure/keycloak/realm.json"
 jq '
   (.clients[] | select(.clientId == "testcraft-web") | .redirectUris) += ["http://localhost:4173/*"] |
   (.clients[] | select(.clientId == "testcraft-web") | .webOrigins) += ["http://localhost:4173"] |
+  (.clients[] | select(.clientId == "testcraft-web") | .directAccessGrantsEnabled) = true |
   (.clients[] | select(.clientId == "testcraft-api") | .secret) = "testcraft-api-dev-secret" |
   .users = [{
     "username": "e2e@testcraft.pro",

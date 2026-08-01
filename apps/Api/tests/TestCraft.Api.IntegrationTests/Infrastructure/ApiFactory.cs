@@ -31,6 +31,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         );
         Environment.SetEnvironmentVariable("KEYCLOAK_AUDIENCE", "testcraft-web");
         Environment.SetEnvironmentVariable("RABBITMQ_URL", "");
+        Environment.SetEnvironmentVariable("SEQ_URL", "");
+        Environment.SetEnvironmentVariable("LOKI_URL", "");
 
         using var scope = Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();

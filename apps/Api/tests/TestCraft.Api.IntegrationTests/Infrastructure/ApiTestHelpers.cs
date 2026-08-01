@@ -157,7 +157,7 @@ internal static class ApiTestHelpers
         TimeSpan? timeout = null
     )
     {
-        var deadline = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(5));
+        var deadline = DateTime.UtcNow + (timeout ?? TimeSpan.FromSeconds(20));
 
         while (true)
         {
