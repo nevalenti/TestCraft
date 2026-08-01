@@ -4,6 +4,8 @@ using Serilog.Debugging;
 using Serilog.Enrichers.Span;
 using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
+using Serilog.Templates;
+using Serilog.Templates.Themes;
 using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Configuration.Observability;
@@ -29,7 +31,14 @@ public static class LoggingExtensions
                     .ReadFrom.Configuration(context.Configuration)
                     .Enrich.FromLogContext()
                     .Enrich.WithSpan()
-                    .Enrich.WithProperty("environment", environmentName);
+                    .Enrich.WithProperty("environment", environmentName)
+                    .WriteTo.Console(
+                        new ExpressionTemplate(
+                            "{@t:HH:mm:ss} [{@l:u3}] {#if requestId is not null}rid={requestId} {#end}{#if userId is not null}uid={userId} {#end}{@m}\n{@x}",
+                            formatProvider: CultureInfo.InvariantCulture,
+                            theme: TemplateTheme.Literate
+                        )
+                    );
 
                 if (!string.IsNullOrEmpty(loggingOptions.LokiUrl))
                 {
@@ -52,8 +61,7 @@ public static class LoggingExtensions
                         formatProvider: CultureInfo.InvariantCulture
                     );
                 }
-            },
-            writeToProviders: true
+            }
         );
 
         return builder;
@@ -82,6 +90,11 @@ public static class LoggingExtensions
         }
 
         if (httpContext.Request.Path.Value is "/api/health" or "/api/metrics")
+        {
+            return LogEventLevel.Verbose;
+        }
+
+        if (HttpMethods.IsOptions(httpContext.Request.Method))
         {
             return LogEventLevel.Verbose;
         }
