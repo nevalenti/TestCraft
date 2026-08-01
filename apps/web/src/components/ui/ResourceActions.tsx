@@ -5,14 +5,14 @@ import { cn } from '@/lib/cn';
 interface ResourceActionsProps {
   onEdit: () => void;
   onDelete?: () => void;
-  label: string;
+  itemName: string;
   size?: 'sm' | 'xs';
 }
 
 export const ResourceActions = ({
   onEdit,
   onDelete,
-  label,
+  itemName,
   size = 'sm',
 }: ResourceActionsProps) => (
   <>
@@ -22,7 +22,7 @@ export const ResourceActions = ({
         `btn-${size}`,
       )}
       onClick={onEdit}
-      aria-label={`Edit ${label}`}
+      aria-label={`Edit ${itemName}`}
     >
       <PencilIcon className={cn(size === 'xs' ? 'size-3.5' : 'size-4')} />
     </button>
@@ -33,7 +33,7 @@ export const ResourceActions = ({
           `btn-${size}`,
         )}
         onClick={onDelete}
-        aria-label={`Delete ${label}`}
+        aria-label={`Delete ${itemName}`}
       >
         <TrashIcon className={cn(size === 'xs' ? 'size-3.5' : 'size-4')} />
       </button>

@@ -79,7 +79,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
             <ResourceActions
               onEdit={onEdit}
               onDelete={onDelete}
-              label="step"
+              itemName={`step ${step.order}`}
               size="xs"
             />
           </div>

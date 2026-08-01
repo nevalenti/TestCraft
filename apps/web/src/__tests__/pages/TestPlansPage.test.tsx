@@ -165,7 +165,9 @@ describe('TestPlansPage', () => {
     it('shows the Edit Test Plan modal heading on click', async () => {
       setupMocks([makePlan({ name: 'Sprint 1' })]);
       render(<TestPlansPage />);
-      await userEvent.click(screen.getByRole('button', { name: 'Edit plan' }));
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Edit Sprint 1' }),
+      );
       await waitFor(() =>
         expect(
           screen.getByRole('heading', { name: 'Edit Test Plan' }),

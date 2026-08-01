@@ -177,7 +177,9 @@ describe('TestPlanPage', () => {
       render(<TestPlanPage />);
       expect(screen.getByText('Login works')).toBeInTheDocument();
       expect(screen.getByText('Logout works')).toBeInTheDocument();
-      expect(screen.getByText('Plan Cases (2)')).toBeInTheDocument();
+      expect(screen.getByText('Plan Cases').closest('h2')).toHaveTextContent(
+        'Plan Cases2',
+      );
     });
 
     it('enables the Run Plan button', () => {
@@ -194,7 +196,7 @@ describe('TestPlanPage', () => {
       setupMocks({ cases: [makeCase({ testCaseId: 'case-1' })] });
       render(<TestPlanPage />);
       await userEvent.click(
-        screen.getByRole('button', { name: 'Remove from plan' }),
+        screen.getByRole('button', { name: 'Remove Login works from plan' }),
       );
       expect(removeCaseMutate).toHaveBeenCalledWith('case-1');
     });

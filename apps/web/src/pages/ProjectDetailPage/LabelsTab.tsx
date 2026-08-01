@@ -195,14 +195,14 @@ export const LabelsTab = () => {
                     <button
                       className="btn btn-ghost btn-xs"
                       onClick={() => openEdit(label)}
-                      aria-label="Edit label"
+                      aria-label={`Edit ${label.name}`}
                     >
                       <PencilIcon className="size-3.5" />
                     </button>
                     <button
                       className="btn text-error btn-ghost btn-xs"
                       onClick={() => openDelete(label)}
-                      aria-label="Delete label"
+                      aria-label={`Delete ${label.name}`}
                     >
                       <TrashIcon className="size-3.5" />
                     </button>

@@ -105,9 +105,10 @@ describe('ProjectCard', () => {
           onDelete={vi.fn()}
         />,
       );
-      expect(
-        screen.getByRole('link', { name: 'Open project' }),
-      ).toHaveAttribute('href', '/projects/proj-1');
+      expect(screen.getByRole('link', { name: 'Open Alpha' })).toHaveAttribute(
+        'href',
+        '/projects/proj-1',
+      );
     });
   });
 
@@ -122,9 +123,7 @@ describe('ProjectCard', () => {
           onDelete={vi.fn()}
         />,
       );
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Edit project' }),
-      );
+      await userEvent.click(screen.getByRole('button', { name: 'Edit Alpha' }));
       expect(onEdit).toHaveBeenCalledOnce();
     });
 
@@ -139,7 +138,7 @@ describe('ProjectCard', () => {
         />,
       );
       await userEvent.click(
-        screen.getByRole('button', { name: 'Delete project' }),
+        screen.getByRole('button', { name: 'Delete Alpha' }),
       );
       expect(onDelete).toHaveBeenCalledOnce();
     });
@@ -153,10 +152,10 @@ describe('ProjectCard', () => {
         />,
       );
       expect(
-        screen.queryByRole('button', { name: 'Delete project' }),
+        screen.queryByRole('button', { name: 'Delete Alpha' }),
       ).not.toBeInTheDocument();
       expect(
-        screen.getByRole('button', { name: 'Edit project' }),
+        screen.getByRole('button', { name: 'Edit Alpha' }),
       ).toBeInTheDocument();
     });
   });

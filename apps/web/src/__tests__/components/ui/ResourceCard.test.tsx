@@ -26,7 +26,12 @@ describe('ResourceCard', () => {
   describe('given children — renders them', () => {
     it('displays the child content', () => {
       render(
-        <ResourceCard onEdit={vi.fn()} onDelete={vi.fn()} label="project">
+        <ResourceCard
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+          label="project"
+          itemName="project"
+        >
           <span>Card body</span>
         </ResourceCard>,
       );
@@ -42,6 +47,7 @@ describe('ResourceCard', () => {
           onEdit={vi.fn()}
           onDelete={vi.fn()}
           label="project"
+          itemName="project"
         >
           <span>content</span>
         </ResourceCard>,
@@ -55,7 +61,12 @@ describe('ResourceCard', () => {
   describe('without a to prop — does not render a navigation link', () => {
     it('renders no link', () => {
       render(
-        <ResourceCard onEdit={vi.fn()} onDelete={vi.fn()} label="project">
+        <ResourceCard
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+          label="project"
+          itemName="project"
+        >
           <span>content</span>
         </ResourceCard>,
       );
@@ -70,6 +81,7 @@ describe('ResourceCard', () => {
           onEdit={vi.fn()}
           onDelete={vi.fn()}
           label="project"
+          itemName="project"
           testId="project-card"
         >
           <span>content</span>
@@ -84,7 +96,12 @@ describe('ResourceCard', () => {
       const onEdit = vi.fn();
 
       render(
-        <ResourceCard onEdit={onEdit} onDelete={vi.fn()} label="project">
+        <ResourceCard
+          onEdit={onEdit}
+          onDelete={vi.fn()}
+          label="project"
+          itemName="project"
+        >
           <span>content</span>
         </ResourceCard>,
       );
@@ -100,7 +117,12 @@ describe('ResourceCard', () => {
       const onDelete = vi.fn();
 
       render(
-        <ResourceCard onEdit={vi.fn()} onDelete={onDelete} label="project">
+        <ResourceCard
+          onEdit={vi.fn()}
+          onDelete={onDelete}
+          label="project"
+          itemName="project"
+        >
           <span>content</span>
         </ResourceCard>,
       );

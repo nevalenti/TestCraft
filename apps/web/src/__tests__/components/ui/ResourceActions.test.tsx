@@ -8,7 +8,11 @@ describe('ResourceActions', () => {
   describe('given a label — renders accessible edit and delete buttons', () => {
     it('renders an edit button with the label in its aria-label', () => {
       render(
-        <ResourceActions onEdit={vi.fn()} onDelete={vi.fn()} label="project" />,
+        <ResourceActions
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+          itemName="project"
+        />,
       );
       expect(
         screen.getByRole('button', { name: 'Edit project' }),
@@ -17,7 +21,11 @@ describe('ResourceActions', () => {
 
     it('renders a delete button with the label in its aria-label', () => {
       render(
-        <ResourceActions onEdit={vi.fn()} onDelete={vi.fn()} label="project" />,
+        <ResourceActions
+          onEdit={vi.fn()}
+          onDelete={vi.fn()}
+          itemName="project"
+        />,
       );
       expect(
         screen.getByRole('button', { name: 'Delete project' }),
@@ -30,7 +38,7 @@ describe('ResourceActions', () => {
       const onEdit = vi.fn();
 
       render(
-        <ResourceActions onEdit={onEdit} onDelete={vi.fn()} label="suite" />,
+        <ResourceActions onEdit={onEdit} onDelete={vi.fn()} itemName="suite" />,
       );
       await userEvent.click(screen.getByRole('button', { name: 'Edit suite' }));
       expect(onEdit).toHaveBeenCalledOnce();
@@ -42,7 +50,11 @@ describe('ResourceActions', () => {
       const onDelete = vi.fn();
 
       render(
-        <ResourceActions onEdit={vi.fn()} onDelete={onDelete} label="suite" />,
+        <ResourceActions
+          onEdit={vi.fn()}
+          onDelete={onDelete}
+          itemName="suite"
+        />,
       );
       await userEvent.click(
         screen.getByRole('button', { name: 'Delete suite' }),

@@ -8,6 +8,7 @@ interface ResourceCardProps {
   onEdit: () => void;
   onDelete?: () => void;
   label: string;
+  itemName: string;
   cardBg?: string;
   accentText?: string;
   typeIcon?: React.ReactNode;
@@ -30,6 +31,7 @@ export const ResourceCard = ({
   onEdit,
   onDelete,
   label,
+  itemName,
   cardBg = 'bg-base-100',
   accentText = 'text-primary',
   typeIcon,
@@ -52,7 +54,7 @@ export const ResourceCard = ({
         <Link
           to={to}
           className="absolute inset-0 rounded-xl"
-          aria-label={`Open ${label}`}
+          aria-label={`Open ${itemName}`}
         />
       )}
       <div className="flex min-h-[92px] flex-col justify-between p-3.5 pr-9">
@@ -78,7 +80,7 @@ export const ResourceCard = ({
         <ResourceActions
           onEdit={onEdit}
           onDelete={onDelete}
-          label={label}
+          itemName={itemName}
           size="xs"
         />
       </div>

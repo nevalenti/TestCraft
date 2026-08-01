@@ -136,7 +136,7 @@ export function ShareModal({
                   <button
                     className="btn text-error btn-ghost btn-xs"
                     onClick={() => revokeToken.mutate(token.id)}
-                    aria-label="Revoke share link"
+                    aria-label={`Revoke share link ${token.token.slice(0, 12)}`}
                   >
                     <TrashIcon className="size-3.5" />
                   </button>

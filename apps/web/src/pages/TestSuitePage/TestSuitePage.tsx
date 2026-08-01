@@ -94,7 +94,7 @@ export const TestSuitePage = () => {
               onEdit={() => openEdit(testCase)}
               onDelete={() => openDelete(testCase)}
               to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
-              label="test case"
+              itemName={testCase.name}
               cardBg="card-bg-info"
               accentText="text-info"
               typeIcon={<ClipboardDocumentListIcon className="size-4" />}
@@ -150,6 +150,7 @@ export const TestSuitePage = () => {
             onDelete={() => openDelete(testCase)}
             to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
             label="test case"
+            itemName={testCase.name}
             cardBg="card-bg-info"
             accentText="text-info"
             typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}

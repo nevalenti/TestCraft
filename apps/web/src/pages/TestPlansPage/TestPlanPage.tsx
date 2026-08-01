@@ -83,7 +83,7 @@ function SortableItem({ item, onRemove }: SortableItemProps) {
       <button
         className="btn text-error btn-ghost btn-xs"
         onClick={() => onRemove(item.testCaseId)}
-        aria-label="Remove from plan"
+        aria-label={`Remove ${item.testCaseName} from plan`}
       >
         <TrashIcon className="size-3.5" />
       </button>
@@ -237,9 +237,14 @@ export const TestPlanPage = () => {
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <div className="grid gap-6 lg:grid-cols-2">
           <div>
-            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
-              Plan Cases ({sortedCases.length})
-            </p>
+            <h2 className="mb-3 flex items-center gap-2 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
+              Plan Cases
+              {sortedCases.length > 0 && (
+                <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 font-mono text-[10px] font-bold tabular-nums">
+                  {sortedCases.length}
+                </span>
+              )}
+            </h2>
             {renderPlanCases()}
           </div>
 

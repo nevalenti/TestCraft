@@ -99,7 +99,7 @@ export const SuitesTab = () => {
               onEdit={() => openEdit(suite)}
               onDelete={() => openDelete(suite)}
               to={`/projects/${projectId}/suites/${suite.id}`}
-              label="test suite"
+              itemName={suite.name}
               cardBg="card-bg-success"
               accentText="text-success"
               typeIcon={<RectangleStackIcon className="size-4" />}
@@ -141,6 +141,7 @@ export const SuitesTab = () => {
             onDelete={() => openDelete(suite)}
             to={`/projects/${projectId}/suites/${suite.id}`}
             label="test suite"
+            itemName={suite.name}
             cardBg="card-bg-success"
             accentText="text-success"
             typeIcon={<RectangleStackIcon className="size-3.5" />}

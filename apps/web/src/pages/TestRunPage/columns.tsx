@@ -96,14 +96,14 @@ export const createColumns = ({
         <button
           className="btn btn-ghost btn-xs"
           onClick={() => onAttachment(row.original)}
-          aria-label="Manage attachments"
+          aria-label={`Manage attachments for ${row.original.testCaseName}`}
         >
           <PaperClipIcon className="size-3.5" />
         </button>
         <ResourceActions
           onEdit={() => onEdit(row.original)}
           onDelete={() => onDelete(row.original)}
-          label="result"
+          itemName={`result for ${row.original.testCaseName}`}
           size="xs"
         />
       </div>

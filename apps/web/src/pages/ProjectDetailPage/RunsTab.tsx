@@ -151,7 +151,7 @@ export const RunsTab = () => {
               onEdit={() => openEdit(run)}
               onDelete={() => openDelete(run)}
               to={`/projects/${projectId}/runs/${run.id}`}
-              label="test run"
+              itemName={run.name}
               cardBg="card-bg-warning"
               accentText="text-warning"
               typeIcon={getRunIcon(run, 'sm')}
@@ -190,6 +190,7 @@ export const RunsTab = () => {
             onDelete={() => openDelete(run)}
             to={`/projects/${projectId}/runs/${run.id}`}
             label="test run"
+            itemName={run.name}
             cardBg="card-bg-warning"
             accentText="text-warning"
             typeIcon={getRunIcon(run, 'xs')}

@@ -7,7 +7,7 @@ interface ResourceListItemProps {
   to?: string;
   onEdit: () => void;
   onDelete?: () => void;
-  label: string;
+  itemName: string;
   cardBg?: string;
   accentText?: string;
   typeIcon?: React.ReactNode;
@@ -29,7 +29,7 @@ export const ResourceListItem = ({
   to,
   onEdit,
   onDelete,
-  label,
+  itemName,
   cardBg = 'bg-base-100',
   accentText = 'text-primary',
   typeIcon,
@@ -52,7 +52,7 @@ export const ResourceListItem = ({
         <Link
           to={to}
           className="absolute inset-0 rounded-xl"
-          aria-label={`Open ${label}`}
+          aria-label={`Open ${itemName}`}
         />
       )}
       {typeIcon && (
@@ -73,7 +73,7 @@ export const ResourceListItem = ({
         <ResourceActions
           onEdit={onEdit}
           onDelete={onDelete}
-          label={label}
+          itemName={itemName}
           size="xs"
         />
       </div>

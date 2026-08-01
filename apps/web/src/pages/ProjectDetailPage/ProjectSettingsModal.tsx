@@ -218,7 +218,7 @@ function ApiTokensSection({ projectId }: { projectId: string }) {
           </>
         )}
         onRemove={(t) => revokeToken.mutate(t.id)}
-        removeAriaLabel={() => 'Revoke token'}
+        removeAriaLabel={(t) => `Revoke ${t.name}`}
         removeLabel="Revoke"
         isRemoveHidden={(t) => t.isRevoked}
       />

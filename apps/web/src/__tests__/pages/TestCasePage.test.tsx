@@ -186,7 +186,9 @@ describe('TestCasePage', () => {
     it('shows the Edit Step modal heading on click', async () => {
       setupMocks({ steps: [makeStep()] });
       render(<TestCasePage />);
-      await userEvent.click(screen.getByRole('button', { name: 'Edit step' }));
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Edit step 1' }),
+      );
       await waitFor(() =>
         expect(
           screen.getByRole('heading', { name: 'Edit Step' }),
@@ -200,7 +202,7 @@ describe('TestCasePage', () => {
       setupMocks({ steps: [makeStep({ id: 'step-1' })] });
       render(<TestCasePage />);
       await userEvent.click(
-        screen.getByRole('button', { name: 'Delete step' }),
+        screen.getByRole('button', { name: 'Delete step 1' }),
       );
       await waitFor(() =>
         expect(

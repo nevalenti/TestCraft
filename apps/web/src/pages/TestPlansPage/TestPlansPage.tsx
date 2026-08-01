@@ -115,14 +115,14 @@ export const TestPlansPage = () => {
                   <button
                     className="btn btn-ghost btn-xs"
                     onClick={() => startEdit(plan)}
-                    aria-label="Edit plan"
+                    aria-label={`Edit ${plan.name}`}
                   >
                     <PencilIcon className="size-3.5" />
                   </button>
                   <button
                     className="btn text-error btn-ghost btn-xs"
                     onClick={() => deletePlan.mutate(plan.id)}
-                    aria-label="Delete plan"
+                    aria-label={`Delete ${plan.name}`}
                   >
                     <TrashIcon className="size-3.5" />
                   </button>
