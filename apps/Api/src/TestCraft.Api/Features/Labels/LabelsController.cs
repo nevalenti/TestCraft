@@ -28,7 +28,7 @@ public class LabelsController(ISender sender) : ControllerBase
 
     /// <summary>Creates a label.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<LabelResponse>> Create(
         Guid projectId,
         CreateLabel.Command command,
@@ -38,7 +38,7 @@ public class LabelsController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Ok(result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Updates a label.</summary>

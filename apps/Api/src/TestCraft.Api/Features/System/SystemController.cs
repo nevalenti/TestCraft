@@ -14,10 +14,11 @@ namespace TestCraft.Api.Features.System;
 [ApiController]
 [ApiVersionNeutral]
 [Route("api")]
-public class SystemController(
+public partial class SystemController(
     KeycloakAuthOptions keycloakOptions,
     MetricsOptions metricsOptions,
-    IApplicationDbContext dbContext
+    IApplicationDbContext dbContext,
+    ILogger<SystemController> logger
 ) : ControllerBase
 {
     /// <summary>Gets the Keycloak authority used by clients to authenticate.</summary>
@@ -101,12 +102,12 @@ public class SystemController(
     {
         try
         {
-            await dbContext.Database.ExecuteSqlRawAsync("SELECT 1");
-
-            return true;
+            return await dbContext.Database.CanConnectAsync();
         }
-        catch
+        catch (Exception exception)
         {
+            LogDatabaseConnectivityCheckFailed(logger, exception);
+
             return false;
         }
     }
@@ -115,5 +116,11 @@ public class SystemController(
     {
         return FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Database connectivity check failed")]
+    private static partial void LogDatabaseConnectivityCheckFailed(
+        ILogger logger,
+        Exception exception
+    );
 }
 #pragma warning restore S6960

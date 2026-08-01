@@ -38,7 +38,7 @@ public class ApiTokensController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Created(string.Empty, result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Revokes an API token.</summary>

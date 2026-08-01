@@ -37,7 +37,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var created = await response.Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(
             ApiTestHelpers.JsonOptions
@@ -162,7 +162,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
 
         var created = await response.Content.ReadFromJsonAsync<EmailSubscriptionResponse>(
             ApiTestHelpers.JsonOptions

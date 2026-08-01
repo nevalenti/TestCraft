@@ -1,5 +1,6 @@
 using System.Threading.RateLimiting;
 using TestCraft.Api.Errors;
+using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Configuration.Hosting;
 
@@ -24,7 +25,7 @@ public static class RateLimitingExtensions
                     }
 
                     var partitionKey =
-                        httpContext.User.FindFirst("sub")?.Value
+                        httpContext.User.GetUserId()
                         ?? httpContext.Connection.RemoteIpAddress?.ToString()
                         ?? "anonymous";
 

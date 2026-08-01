@@ -154,6 +154,6 @@ public class TestPlansController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Created($"/api/v1/projects/{projectId}/runs/{result.Id}", result);
+        return Created($"{ApiPaths.V1Prefix}/projects/{projectId}/runs/{result.Id}", result);
     }
 }

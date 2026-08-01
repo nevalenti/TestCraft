@@ -61,13 +61,13 @@ public class AttachmentsController(ISender sender) : ControllerBase
         };
         var result = await sender.Send(command, cancellationToken);
 
-        return Created(string.Empty, result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Returns a presigned download URL for an attachment.</summary>
     [HttpGet("{id:guid}/download")]
     [ProducesResponseType(typeof(AttachmentDownloadUrlResponse), StatusCodes.Status200OK)]
-    public async Task<IActionResult> Download(
+    public async Task<ActionResult<AttachmentDownloadUrlResponse>> Download(
         Guid projectId,
         Guid runId,
         Guid resultId,

@@ -34,7 +34,7 @@ public static class LoggingExtensions
                     .Enrich.WithProperty("environment", environmentName)
                     .WriteTo.Console(
                         new ExpressionTemplate(
-                            "{@t:HH:mm:ss} [{@l:u3}] {#if requestId is not null}rid={requestId} {#end}{#if userId is not null}uid={userId} {#end}{@m}\n{@x}",
+                            "{@t:HH:mm:ss} [{@l:u3}] {#if requestId is not null}rid={requestId} {#end}{#if pageId is not null}pid={pageId} {#end}{#if userId is not null}uid={userId} {#end}{@m}\n{@x}",
                             formatProvider: CultureInfo.InvariantCulture,
                             theme: TemplateTheme.Literate
                         )
@@ -84,6 +84,14 @@ public static class LoggingExtensions
         Exception? exception
     )
     {
+        if (
+            exception is OperationCanceledException
+            && httpContext.RequestAborted.IsCancellationRequested
+        )
+        {
+            return LogEventLevel.Debug;
+        }
+
         if (exception is not null)
         {
             return LogEventLevel.Error;

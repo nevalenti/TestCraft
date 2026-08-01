@@ -31,7 +31,7 @@ public class NotificationsController(ISender sender) : ControllerBase
 
     /// <summary>Creates a webhook subscription.</summary>
     [HttpPost("webhooks")]
-    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> CreateWebhook(
         Guid projectId,
         CreateWebhookSubscription.Command command,
@@ -41,7 +41,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Ok(result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Updates a webhook subscription.</summary>
@@ -94,7 +94,7 @@ public class NotificationsController(ISender sender) : ControllerBase
 
     /// <summary>Creates an email subscription.</summary>
     [HttpPost("emails")]
-    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<EmailSubscriptionResponse>> CreateEmail(
         Guid projectId,
         CreateEmailSubscription.Command command,
@@ -104,7 +104,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         var scopedCommand = command with { ProjectId = projectId };
         var result = await sender.Send(scopedCommand, cancellationToken);
 
-        return Ok(result);
+        return StatusCode(StatusCodes.Status201Created, result);
     }
 
     /// <summary>Updates an email subscription.</summary>

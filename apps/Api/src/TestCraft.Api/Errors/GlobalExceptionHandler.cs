@@ -69,6 +69,11 @@ public partial class GlobalExceptionHandler(
 
                 return true;
 
+            case OperationCanceledException when httpContext.RequestAborted.IsCancellationRequested:
+                LogClientDisconnected(logger, httpContext.Request.Method, httpContext.Request.Path);
+
+                return true;
+
             default:
                 LogUnhandledException(
                     logger,
@@ -105,6 +110,16 @@ public partial class GlobalExceptionHandler(
     private static partial void LogForeignKeyConflict(
         ILogger logger,
         Exception exception,
+        string method,
+        PathString path
+    );
+
+    [LoggerMessage(
+        Level = LogLevel.Debug,
+        Message = "Client disconnected before response completed for {Method} {Path}"
+    )]
+    private static partial void LogClientDisconnected(
+        ILogger logger,
         string method,
         PathString path
     );
