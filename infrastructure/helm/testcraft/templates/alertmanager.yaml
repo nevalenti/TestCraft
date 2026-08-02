@@ -28,9 +28,20 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-alertmanager.yaml") . | sha256sum }}
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: alertmanager
           image: {{ .Values.thirdPartyImages.alertmanager }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           args:
             - --config.file=/etc/alertmanager/alertmanager.yml
             - --storage.path=/alertmanager

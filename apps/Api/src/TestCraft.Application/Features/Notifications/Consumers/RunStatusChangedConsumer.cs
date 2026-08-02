@@ -1,14 +1,11 @@
 using MassTransit;
-using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Notifications.Contracts;
 
 namespace TestCraft.Application.Features.Notifications.Consumers;
 
-public partial class RunStatusChangedConsumer(
-    INotificationDispatcher dispatcher,
-    ILogger<RunStatusChangedConsumer> logger
-) : IConsumer<RunStatusChanged>
+public class RunStatusChangedConsumer(INotificationDispatcher dispatcher)
+    : IConsumer<RunStatusChanged>
 {
     public async Task Consume(ConsumeContext<RunStatusChanged> context)
     {
@@ -16,25 +13,12 @@ public partial class RunStatusChangedConsumer(
 
         if (message.NewStatus == "Completed")
         {
-            try
-            {
-                await dispatcher.DispatchRunCompletedAsync(
-                    message.ProjectId,
-                    message.RunId,
-                    message.RunName,
-                    context.CancellationToken
-                );
-            }
-            catch (Exception ex)
-            {
-                LogDispatchFailed(logger, ex, message.RunId);
-            }
+            await dispatcher.DispatchRunCompletedAsync(
+                message.ProjectId,
+                message.RunId,
+                message.RunName,
+                context.CancellationToken
+            );
         }
     }
-
-    [LoggerMessage(
-        Level = LogLevel.Warning,
-        Message = "Notification dispatch failed for run {RunId}"
-    )]
-    private static partial void LogDispatchFailed(ILogger logger, Exception exception, Guid runId);
 }

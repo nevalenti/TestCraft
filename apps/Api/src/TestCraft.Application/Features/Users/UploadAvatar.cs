@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -24,8 +25,37 @@ public static partial class UploadAvatar
         /// <summary>The file's MIME type.</summary>
         public required string ContentType { get; init; }
 
+        /// <summary>The file size, in bytes.</summary>
+        public required long SizeBytes { get; init; }
+
         /// <summary>The file content stream.</summary>
         public required Stream Content { get; init; }
+    }
+
+    private static readonly string[] AllowedContentTypes =
+    [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+    ];
+
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        private const long MaxSizeBytes = 5_242_880;
+
+        public Validator()
+        {
+            RuleFor(command => command.FileName).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.ContentType)
+                .NotEmpty()
+                .Must(contentType => AllowedContentTypes.Contains(contentType))
+                .WithMessage("Avatar must be a JPEG, PNG, WebP, or GIF image");
+            RuleFor(command => command.SizeBytes)
+                .GreaterThan(0)
+                .LessThanOrEqualTo(MaxSizeBytes)
+                .WithMessage("File size must not exceed 5 MB");
+        }
     }
 
     public sealed partial class Handler(

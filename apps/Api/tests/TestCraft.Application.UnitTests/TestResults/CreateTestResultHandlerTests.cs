@@ -18,8 +18,13 @@ public class CreateTestResultHandlerTests
     )> SeedAsync(TestRunStatus status = TestRunStatus.Active)
     {
         var context = TestDbContextFactory.Create();
+
         var project = new Project { Name = "Project", UserId = Guid.NewGuid() };
+        context.Projects.Add(project);
+
         var suite = new TestSuite { Name = "Suite", ProjectId = project.Id };
+        context.TestSuites.Add(suite);
+
         var testCase = new TestCraft.Domain.Entities.TestCase { Name = "Case", SuiteId = suite.Id };
         var run = new TestRun
         {
@@ -28,8 +33,6 @@ public class CreateTestResultHandlerTests
             ProjectId = project.Id,
         };
 
-        context.Projects.Add(project);
-        context.TestSuites.Add(suite);
         context.TestCases.Add(testCase);
         context.TestRuns.Add(run);
         await context.SaveChangesAsync();

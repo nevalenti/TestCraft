@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
@@ -20,6 +21,17 @@ public static class AppendRunLogs
 
         /// <summary>The log lines to append, in order.</summary>
         public required IReadOnlyList<string> Lines { get; init; }
+    }
+
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleFor(command => command.Lines)
+                .Must(lines => lines.Count <= 1000)
+                .WithMessage("A maximum of 1000 log lines can be appended per request");
+            RuleForEach(command => command.Lines).MaximumLength(10_000);
+        }
     }
 
     public sealed class Handler(IApplicationDbContext context, ITestRunNotifier notifier)

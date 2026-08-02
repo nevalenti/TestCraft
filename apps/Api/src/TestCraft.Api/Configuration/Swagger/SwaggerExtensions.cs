@@ -56,7 +56,7 @@ public static class SwaggerExtensions
                 context => context.Request.Path.StartsWithSegments(ApiPaths.DocsPrefix),
                 branch =>
                 {
-                    branch.UseSwaggerBasicAuth();
+                    branch.UseBasicAuth<SwaggerBasicAuthOptions>();
                     branch.UseSwaggerMiddleware(apiVersionDescriptionProvider);
                 }
             );

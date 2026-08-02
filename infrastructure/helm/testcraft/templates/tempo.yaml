@@ -26,9 +26,20 @@ spec:
       labels:
         app: tempo
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: tempo
           image: {{ .Values.thirdPartyImages.tempo }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           args: ["-config.file=/etc/tempo/tempo.yaml"]
           ports:
             - containerPort: 3200

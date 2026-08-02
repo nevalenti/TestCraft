@@ -13,9 +13,19 @@ spec:
       labels:
         app: postgres-exporter
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: postgres-exporter
           image: {{ .Values.thirdPartyImages.postgres_exporter }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: POSTGRES_MONITOR_PASSWORD
               valueFrom:
@@ -61,9 +71,19 @@ spec:
       labels:
         app: redis-exporter
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 59000
+        runAsGroup: 59000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: redis-exporter
           image: {{ .Values.thirdPartyImages.redis_exporter }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: REDIS_ADDR
               value: redis://redis:6379
@@ -109,9 +129,19 @@ spec:
       labels:
         app: rabbitmq-exporter
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: rabbitmq-exporter
           image: {{ .Values.thirdPartyImages.rabbitmq_exporter }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: RABBIT_URL
               value: http://rabbitmq:15672

@@ -25,7 +25,9 @@ public static class GetShareTokens
             CancellationToken cancellationToken
         ) =>
             await context
-                .ShareTokens.Where(st => st.TestRunId == request.RunId)
+                .ShareTokens.Where(st =>
+                    st.TestRunId == request.RunId && st.TestRun!.ProjectId == request.ProjectId
+                )
                 .Select(st => new ShareTokenResponse
                 {
                     Id = st.Id,

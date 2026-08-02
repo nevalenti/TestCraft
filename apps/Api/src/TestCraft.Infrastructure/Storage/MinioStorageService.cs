@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
@@ -6,18 +7,28 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Storage;
 
-public class MinioStorageService(IMinioClient minio, InfrastructureOptions options)
-    : IStorageService
+public static class MinioStorageServiceKeys
 {
-    private readonly IMinioClient _presigningClient = string.IsNullOrEmpty(
-        options.MinioPublicEndpoint
+    public const string PresigningClient = "minio-presigning";
+}
+
+public class MinioStorageService(
+    IMinioClient minio,
+    [FromKeyedServices(MinioStorageServiceKeys.PresigningClient)] IMinioClient presigningClient,
+    InfrastructureOptions options
+) : IStorageService
+{
+    private static readonly HashSet<string> InlineRenderableContentTypes = new(
+        StringComparer.OrdinalIgnoreCase
     )
-        ? minio
-        : new MinioClient()
-            .WithEndpoint(options.MinioPublicEndpoint)
-            .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
-            .WithSSL(options.MinioUseSsl)
-            .Build();
+    {
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/bmp",
+        "image/x-icon",
+    };
 
     public async Task<string> UploadAsync(
         string key,
@@ -28,15 +39,21 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
     {
         await EnsureBucketAsync(cancellationToken);
 
-        await minio.PutObjectAsync(
-            new PutObjectArgs()
-                .WithBucket(options.MinioBucket)
-                .WithObject(key)
-                .WithStreamData(content)
-                .WithObjectSize(content.CanSeek ? content.Length : -1)
-                .WithContentType(contentType),
-            cancellationToken
-        );
+        var putArgs = new PutObjectArgs()
+            .WithBucket(options.MinioBucket)
+            .WithObject(key)
+            .WithStreamData(content)
+            .WithObjectSize(content.CanSeek ? content.Length : -1)
+            .WithContentType(contentType);
+
+        if (!InlineRenderableContentTypes.Contains(contentType))
+        {
+            putArgs = putArgs.WithHeaders(
+                new Dictionary<string, string> { ["Content-Disposition"] = "attachment" }
+            );
+        }
+
+        await minio.PutObjectAsync(putArgs, cancellationToken);
 
         return key;
     }
@@ -55,7 +72,7 @@ public class MinioStorageService(IMinioClient minio, InfrastructureOptions optio
         CancellationToken cancellationToken = default
     )
     {
-        return await _presigningClient.PresignedGetObjectAsync(
+        return await presigningClient.PresignedGetObjectAsync(
             new PresignedGetObjectArgs()
                 .WithBucket(options.MinioBucket)
                 .WithObject(key)

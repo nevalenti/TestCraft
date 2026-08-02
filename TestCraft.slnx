@@ -4,6 +4,7 @@
     <Project Path="apps/Api/src/TestCraft.Application/TestCraft.Application.csproj" />
     <Project Path="apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj" />
     <Project Path="apps/Api/src/TestCraft.Infrastructure/TestCraft.Infrastructure.csproj" />
+    <Project Path="apps/Common/src/TestCraft.Common/TestCraft.Common.csproj" />
     <Project Path="apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj" />
   </Folder>
   <Folder Name="/tests/">

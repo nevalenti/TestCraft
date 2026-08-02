@@ -85,4 +85,15 @@ public class TestRunRulesTests
         var act = () => run.EnsureCanAddResult();
         act.Should().Throw<TestCraft.Domain.Exceptions.DomainException>();
     }
+
+    [Fact]
+    public void CanTransitionTo_UnknownStatus_ThrowsDomainExceptionNotKeyNotFound()
+    {
+        var run = RunWithStatus(TestRunStatus.Active);
+        var invalidStatus = (TestRunStatus)99;
+
+        var act = () => run.CanTransitionTo(invalidStatus);
+
+        act.Should().Throw<TestCraft.Domain.Exceptions.DomainException>();
+    }
 }

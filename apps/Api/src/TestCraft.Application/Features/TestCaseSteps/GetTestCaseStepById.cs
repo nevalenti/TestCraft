@@ -30,7 +30,9 @@ public static class GetTestCaseStepById
         ) =>
             await context
                 .TestCaseSteps.Where(step =>
-                    step.Id == request.Id && step.TestCaseId == request.CaseId
+                    step.Id == request.Id
+                    && step.TestCaseId == request.CaseId
+                    && step.TestCase!.Suite!.ProjectId == request.ProjectId
                 )
                 .Select(step => new TestCaseStepResponse
                 {

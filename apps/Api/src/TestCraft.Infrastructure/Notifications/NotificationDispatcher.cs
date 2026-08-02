@@ -5,12 +5,11 @@ using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Infrastructure.Notifications;
 
 public partial class NotificationDispatcher(
-    AppDbContext context,
+    IApplicationDbContext context,
     IEmailService email,
     IHttpClientFactory httpClientFactory,
     ILogger<NotificationDispatcher> logger

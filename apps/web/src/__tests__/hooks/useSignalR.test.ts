@@ -5,6 +5,7 @@ import { useSignalR } from '@/hooks/useSignalR';
 
 const mockConnection = vi.hoisted(() => ({
   on: vi.fn(),
+  off: vi.fn(),
   onreconnected: vi.fn(),
   start: vi.fn().mockResolvedValue(undefined),
   stop: vi.fn().mockResolvedValue(undefined),
@@ -35,6 +36,7 @@ vi.mock('@/lib/env', () => ({
 
 beforeEach(() => {
   mockConnection.on.mockClear();
+  mockConnection.off.mockClear();
   mockConnection.onreconnected.mockClear();
   mockConnection.start.mockClear().mockResolvedValue(undefined);
   mockConnection.stop.mockClear().mockResolvedValue(undefined);
@@ -120,6 +122,44 @@ describe('useSignalR', () => {
 
       expect(handler1).not.toHaveBeenCalled();
       expect(handler2).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('given a new event name added after mount — subscribes to it too', () => {
+    it('registers the newly added handler on the existing connection', async () => {
+      const resultAdded = vi.fn();
+      const runCompleted = vi.fn();
+
+      const initialHandlers: Record<string, (data: unknown) => void> = {
+        ResultAdded: resultAdded,
+      };
+      const { rerender } = renderHook(
+        ({ handlers }) => useSignalR('run-1', handlers),
+        { initialProps: { handlers: initialHandlers } },
+      );
+
+      await act(async () => {});
+
+      expect(mockConnection.on).not.toHaveBeenCalledWith(
+        'RunCompleted',
+        expect.any(Function),
+      );
+
+      rerender({
+        handlers: { ResultAdded: resultAdded, RunCompleted: runCompleted },
+      });
+
+      expect(mockConnection.on).toHaveBeenCalledWith(
+        'RunCompleted',
+        expect.any(Function),
+      );
+
+      const [, registeredFn] = mockConnection.on.mock.calls.find(
+        ([event]) => event === 'RunCompleted',
+      )!;
+      registeredFn(undefined);
+
+      expect(runCompleted).toHaveBeenCalledOnce();
     });
   });
 

@@ -14,8 +14,9 @@ export const assertOk = async (
   }
 
   const detail = await response.text();
+  const suffix = detail ? `\n${detail}` : '';
   throw new Error(
-    `${errorContext}: ${response.status} ${response.statusText}${detail ? `\n${detail}` : ''}`,
+    `${errorContext}: ${response.status} ${response.statusText}${suffix}`,
   );
 };
 
@@ -36,11 +37,7 @@ export const fetchWithRetry = async (
     } catch (error) {
       if (attempt === RETRY_ATTEMPTS) {
         const message = error instanceof Error ? error.message : String(error);
-        const cause =
-          error instanceof Error && error.cause
-            ? ` (${String(error.cause)})`
-            : '';
-        throw new Error(`${errorContext}: ${message}${cause}`);
+        throw new Error(`${errorContext}: ${message}`, { cause: error });
       }
       await sleep(RETRY_DELAY_MS * attempt);
     }

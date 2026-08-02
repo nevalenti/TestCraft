@@ -89,7 +89,13 @@ web:docker:
     - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
     - curl -sSL -o /tmp/gitlab.tpl https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/gitlab.tpl
   script:
-    - docker build -t $WEB_IMAGE:$CI_COMMIT_SHA -f apps/web/Dockerfile .
+    - >
+      docker build
+      --build-arg VITE_API_URL=https://testcraft.pro
+      --build-arg VITE_KEYCLOAK_URL=https://auth.testcraft.pro
+      --build-arg VITE_KEYCLOAK_REALM=testcraft
+      --build-arg VITE_KEYCLOAK_CLIENT_ID=testcraft-web
+      -t $WEB_IMAGE:$CI_COMMIT_SHA -f apps/web/Dockerfile .
     - trivy image --format template --template "@/tmp/gitlab.tpl" -o gl-container-scanning-report.json --severity CRITICAL,HIGH --ignore-unfixed $WEB_IMAGE:$CI_COMMIT_SHA
     - |
       if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then

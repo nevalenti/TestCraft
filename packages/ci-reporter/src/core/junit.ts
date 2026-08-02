@@ -1,10 +1,12 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
-import { dirname, join, resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import path from 'node:path';
 
-const wildcardToRegExp = (pattern: string): RegExp =>
-  new RegExp(
-    `^${pattern.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')}$`,
-  );
+const wildcardToRegExp = (pattern: string): RegExp => {
+  const escaped = pattern
+    .replaceAll(/[.+^${}()|[\]\\]/g, String.raw`\$&`)
+    .replaceAll('*', '.*');
+  return new RegExp(`^${escaped}$`);
+};
 
 const extractSuites = (xml: string): string => {
   const match = xml.match(/<testsuites[^>]*>([\s\S]*)<\/testsuites>/);
@@ -15,20 +17,20 @@ export const resolveJunitXml = (
   pattern: string,
   workspace: string,
 ): string | null => {
-  const absolute = resolve(workspace, pattern);
+  const absolute = path.resolve(workspace, pattern);
 
   if (!absolute.includes('*')) {
     return existsSync(absolute) ? readFileSync(absolute, 'utf8') : null;
   }
 
-  const dir = dirname(absolute);
+  const dir = path.dirname(absolute);
   if (!existsSync(dir)) return null;
 
   const filePattern = wildcardToRegExp(absolute.slice(dir.length + 1));
   const files = readdirSync(dir)
     .filter((file) => filePattern.test(file))
-    .sort()
-    .map((file) => join(dir, file));
+    .toSorted((a, b) => a.localeCompare(b))
+    .map((file) => path.join(dir, file));
 
   if (files.length === 0) return null;
 
