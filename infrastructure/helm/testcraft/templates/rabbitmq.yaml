@@ -33,6 +33,27 @@ spec:
         fsGroup: 101
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: fix-cookie-permissions
+          image: {{ .Values.thirdPartyImages.rabbitmq }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          command:
+            - sh
+            - -c
+            - |
+              if [ -f /var/lib/rabbitmq/.erlang.cookie ]; then
+                chmod 600 /var/lib/rabbitmq/.erlang.cookie
+                chown 100:101 /var/lib/rabbitmq/.erlang.cookie
+              fi
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/rabbitmq
       containers:
         - name: rabbitmq
           image: {{ .Values.thirdPartyImages.rabbitmq }}
