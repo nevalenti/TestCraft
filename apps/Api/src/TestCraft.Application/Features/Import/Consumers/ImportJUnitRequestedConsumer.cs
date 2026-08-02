@@ -5,6 +5,7 @@ using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Import.Contracts;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.Import.Consumers;
 
@@ -71,12 +72,20 @@ public partial class ImportJUnitRequestedConsumer(
 
             await notifier.RunStatusChangedAsync(run.Id, run.Status.ToString(), cancellationToken);
         }
-        catch (Exception ex)
+        catch (DomainException ex)
         {
             LogImportFailed(logger, ex, job.Id);
 
             job.Status = ImportJobStatus.Failed;
             job.Error = ex.Message;
+            await dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogImportFailed(logger, ex, job.Id);
+
+            job.Status = ImportJobStatus.Failed;
+            job.Error = "Import failed due to an unexpected error";
             await dbContext.SaveChangesAsync(cancellationToken);
         }
     }

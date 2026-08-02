@@ -18,10 +18,19 @@ spec:
       labels:
         app: gateway
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: gateway
           image: {{ .Values.images.gateway.repository }}:{{ .Values.images.gateway.tag }}
           imagePullPolicy: {{ .Values.images.gateway.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
           env:
             - name: SEQ_BASIC_AUTH_USERNAME
               value: admin

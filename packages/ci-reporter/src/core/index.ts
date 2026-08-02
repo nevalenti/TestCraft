@@ -1,10 +1,11 @@
-export { fetchToken } from './auth';
+export { authenticate, fetchServiceToken, fetchToken } from './auth';
 export { assertOk, authHeaders, fetchJson } from './http';
-export { createStdioCapture } from './logStream';
-export type { StdioCapture } from './logStream';
 export { resolveJunitXml } from './junit';
-export { createStateStore } from './state';
+export type { StdioCapture } from './logStream';
+export { createStdioCapture } from './logStream';
 export type { StateStore } from './state';
+export { createStateStore } from './state';
+export type { ApiContext } from './testcraft';
 export {
   appendLogs,
   createRun,
@@ -13,5 +14,4 @@ export {
   pollJob,
   uploadAttachment,
 } from './testcraft';
-export type { ApiContext } from './testcraft';
 export { fetchAuthority, findProjectId, slugify } from './util';

@@ -102,18 +102,30 @@ public static class GetTestRuns
         if (avatarKeys.Count == 0)
             return;
 
+        var distinctKeys = avatarKeys.Values.Distinct().ToList();
+        var urlsByKey = (
+            await Task.WhenAll(
+                distinctKeys.Select(async avatarKey =>
+                    (
+                        AvatarKey: avatarKey,
+                        Url: await storage.GetPresignedUrlAsync(
+                            avatarKey,
+                            TimeSpan.FromMinutes(60),
+                            cancellationToken
+                        )
+                    )
+                )
+            )
+        ).ToDictionary(result => result.AvatarKey, result => result.Url);
+
         for (var i = 0; i < items.Count; i++)
         {
             if (
                 items[i].ExecutedById is { } executedById
                 && avatarKeys.TryGetValue(executedById, out var avatarKey)
+                && urlsByKey.TryGetValue(avatarKey, out var url)
             )
             {
-                var url = await storage.GetPresignedUrlAsync(
-                    avatarKey,
-                    TimeSpan.FromMinutes(60),
-                    cancellationToken
-                );
                 items[i] = items[i] with { ExecutedByAvatarUrl = url };
             }
         }

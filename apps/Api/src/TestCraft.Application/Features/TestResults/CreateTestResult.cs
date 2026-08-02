@@ -116,6 +116,17 @@ public static class CreateTestResult
 
             run.EnsureCanAddResult();
 
+            var caseExists = await context.TestCases.AnyAsync(
+                testCase =>
+                    testCase.Id == request.TestCaseId
+                    && testCase.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
+            if (!caseExists)
+            {
+                throw new NotFoundException();
+            }
+
             var result = new TestResult
             {
                 TestRunId = request.RunId,

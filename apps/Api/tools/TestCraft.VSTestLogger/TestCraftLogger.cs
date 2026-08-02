@@ -248,7 +248,6 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         }
         catch (Exception ex)
         {
-            // non-critical — swallow, mirrors the Node reporters
             await Console.Error.WriteLineAsync(
                 $"[TestCraft] Failed to send {lines.Count} log line(s): {ex.Message}"
             );

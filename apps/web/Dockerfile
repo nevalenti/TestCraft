@@ -13,10 +13,10 @@ COPY packages/types/ ./packages/types/
 COPY apps/web/ ./apps/web/
 COPY apps/Api/openapi/ ./apps/Api/openapi/
 
-ARG VITE_API_URL=https://testcraft.pro
-ARG VITE_KEYCLOAK_URL=https://auth.testcraft.pro
-ARG VITE_KEYCLOAK_REALM=testcraft
-ARG VITE_KEYCLOAK_CLIENT_ID=testcraft-web
+ARG VITE_API_URL=https://build-arg-not-set.invalid
+ARG VITE_KEYCLOAK_URL=https://build-arg-not-set.invalid
+ARG VITE_KEYCLOAK_REALM=build-arg-not-set
+ARG VITE_KEYCLOAK_CLIENT_ID=build-arg-not-set
 
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL

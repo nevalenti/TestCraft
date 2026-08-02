@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 
 namespace TestCraft.Infrastructure.Configuration;
 
-public sealed class InfrastructureOptions : IStartupOptions
+public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
 {
     [Required]
     [Sensitive]
@@ -34,10 +34,14 @@ public sealed class InfrastructureOptions : IStartupOptions
     public string? SmtpPassword { get; init; }
     public string SmtpFromAddress { get; init; } = "noreply@testcraft.local";
 
+    [Required]
     public string KeycloakBaseUrl { get; init; } = string.Empty;
     public string KeycloakRealm { get; init; } = "testcraft";
+
+    [Required]
     public string KeycloakAdminClientId { get; init; } = string.Empty;
 
+    [Required]
     [Sensitive]
     public string KeycloakAdminClientSecret { get; init; } = string.Empty;
 
@@ -72,5 +76,19 @@ public sealed class InfrastructureOptions : IStartupOptions
         };
 
         return OptionsValidator.ValidateAndThrow(options, "infrastructure");
+    }
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        var hasAccessKey = !string.IsNullOrEmpty(MinioAccessKey);
+        var hasSecretKey = !string.IsNullOrEmpty(MinioSecretKey);
+
+        if (hasAccessKey != hasSecretKey)
+        {
+            yield return new ValidationResult(
+                "MinioAccessKey and MinioSecretKey must both be set, or both left unset",
+                [nameof(MinioAccessKey), nameof(MinioSecretKey)]
+            );
+        }
     }
 }

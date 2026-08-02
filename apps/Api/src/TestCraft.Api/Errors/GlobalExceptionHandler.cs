@@ -69,6 +69,21 @@ public partial class GlobalExceptionHandler(
 
                 return true;
 
+            case DbUpdateException dbUpdateException
+                when dbExceptionClassifier.IsUniqueViolation(dbUpdateException):
+                LogUniqueConstraintConflict(
+                    logger,
+                    dbUpdateException,
+                    httpContext.Request.Method,
+                    httpContext.Request.Path
+                );
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.Conflict("A record with these values already exists")
+                );
+
+                return true;
+
             case OperationCanceledException when httpContext.RequestAborted.IsCancellationRequested:
                 LogClientDisconnected(logger, httpContext.Request.Method, httpContext.Request.Path);
 
@@ -108,6 +123,17 @@ public partial class GlobalExceptionHandler(
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Foreign key conflict for {Method} {Path}")]
     private static partial void LogForeignKeyConflict(
+        ILogger logger,
+        Exception exception,
+        string method,
+        PathString path
+    );
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Unique constraint conflict for {Method} {Path}"
+    )]
+    private static partial void LogUniqueConstraintConflict(
         ILogger logger,
         Exception exception,
         string method,

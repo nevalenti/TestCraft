@@ -30,7 +30,14 @@ public static class HangfireExtensions
 
     public static WebApplication UseHangfireJobs(this WebApplication app)
     {
-        var dashboardOptions = new DashboardOptions { Authorization = [] };
+        var hangfireBasicAuthOptions = app.Services.GetRequiredService<HangfireBasicAuthOptions>();
+        var dashboardOptions = new DashboardOptions
+        {
+            Authorization =
+            [
+                new HangfireDashboardAuthorizationFilter(hangfireBasicAuthOptions, app.Environment),
+            ],
+        };
 
         if (app.Environment.IsProduction())
         {
@@ -38,7 +45,7 @@ public static class HangfireExtensions
                 context => context.Request.Path.StartsWithSegments(ApiPaths.HangfirePrefix),
                 branch =>
                 {
-                    branch.UseSwaggerBasicAuth();
+                    branch.UseBasicAuth<HangfireBasicAuthOptions>();
                     branch.UseHangfireDashboard(ApiPaths.HangfirePrefix, dashboardOptions);
                 }
             );

@@ -47,13 +47,6 @@ public static class GetTestRunSummary
     {
         public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
         {
-            var key = CacheKeys.TestRunResponse(request.Id);
-            var cached = await cache.GetAsync<Response>(key, cancellationToken);
-            if (cached is not null)
-            {
-                return cached;
-            }
-
             var exists = await context.TestRuns.AnyAsync(
                 run => run.Id == request.Id && run.ProjectId == request.ProjectId,
                 cancellationToken
@@ -61,6 +54,13 @@ public static class GetTestRunSummary
             if (!exists)
             {
                 throw new NotFoundException();
+            }
+
+            var key = CacheKeys.TestRunResponse(request.Id);
+            var cached = await cache.GetAsync<Response>(key, cancellationToken);
+            if (cached is not null)
+            {
+                return cached;
             }
 
             var counts = await context

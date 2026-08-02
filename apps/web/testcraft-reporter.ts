@@ -51,9 +51,7 @@ class TestCraftReporter implements Reporter {
     if (!this.context) return;
     try {
       await appendLogs(this.context, this.context.runId, lines);
-    } catch {
-      // non-critical — swallow silently
-    }
+    } catch {}
   }
 
   onInit(): void {

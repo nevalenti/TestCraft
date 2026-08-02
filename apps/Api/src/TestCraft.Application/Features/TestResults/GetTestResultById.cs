@@ -30,7 +30,9 @@ public static class GetTestResultById
         ) =>
             await context
                 .TestResults.Where(result =>
-                    result.Id == request.Id && result.TestRunId == request.RunId
+                    result.Id == request.Id
+                    && result.TestRunId == request.RunId
+                    && result.TestRun!.ProjectId == request.ProjectId
                 )
                 .Select(result => new TestResultResponse
                 {

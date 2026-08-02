@@ -17,9 +17,19 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       tolerations:
         - operator: Exists
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: node-exporter
           image: {{ .Values.thirdPartyImages.node_exporter }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           args:
             - --path.procfs=/host/proc
             - --path.sysfs=/host/sys

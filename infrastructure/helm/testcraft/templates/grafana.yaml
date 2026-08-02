@@ -26,9 +26,20 @@ spec:
       labels:
         app: grafana
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 472
+        runAsGroup: 0
+        fsGroup: 0
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: grafana
           image: {{ .Values.thirdPartyImages.grafana }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: GF_SECURITY_ADMIN_USER
               value: admin
@@ -57,6 +68,12 @@ spec:
               port: 3000
             initialDelaySeconds: 10
             periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 15
           resources:
             requests:
               memory: 64Mi

@@ -18,6 +18,18 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
             headers["Cross-Origin-Opener-Policy"] = "same-origin";
             headers["Cross-Origin-Resource-Policy"] = "same-origin";
             headers["Origin-Agent-Cluster"] = "?1";
+            headers["Content-Security-Policy"] =
+                "default-src 'self'; "
+                + "script-src 'self' 'unsafe-inline'; "
+                + "style-src 'self' 'unsafe-inline'; "
+                + "img-src 'self' data:; "
+                + "font-src 'self' data:; "
+                + "connect-src 'self'; "
+                + "object-src 'none'; "
+                + "base-uri 'self'; "
+                + "frame-ancestors 'self'";
+            headers["Permissions-Policy"] =
+                "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
             headers.Remove("X-Powered-By");
             headers.Remove("Server");
 

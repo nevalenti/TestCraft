@@ -28,21 +28,13 @@ public class UpdateWebhookSubscriptionValidatorTests
     [InlineData("")]
     [InlineData(" ")]
     [InlineData("not-a-url")]
+    [InlineData("ftp://example.com/webhook")]
+    [InlineData("http://127.0.0.1/webhook")]
+    [InlineData("http://169.254.169.254/latest/meta-data")]
+    [InlineData("http://192.168.1.5/webhook")]
     public void EmptyOrRelativeUrl_FailsValidation(string url)
     {
         var result = _validator.TestValidate(ValidCommand() with { Url = url });
-        result.ShouldHaveValidationErrorFor(command => command.Url);
-    }
-
-    [Fact]
-    public void NonHttpAbsoluteUrl_FailsValidation()
-    {
-        var result = _validator.TestValidate(
-            ValidCommand() with
-            {
-                Url = "ftp://example.com/webhook",
-            }
-        );
         result.ShouldHaveValidationErrorFor(command => command.Url);
     }
 

@@ -1,19 +1,15 @@
-using System.Security.Cryptography;
 using System.Text;
-using TestCraft.Gateway.Configuration;
 
-namespace TestCraft.Gateway.Security;
+namespace TestCraft.Common.Security;
 
-public static class SeqBasicAuth
+public static class BasicAuthValidator
 {
     public static bool IsAuthorized(
         string authorizationHeader,
-        SeqBasicAuthOptions options
+        string? expectedUsername,
+        string? expectedPassword
     )
     {
-        var expectedUsername = options.SeqBasicAuthUsername;
-        var expectedPassword = options.SeqBasicAuthPassword;
-
         if (
             string.IsNullOrEmpty(expectedUsername)
             || string.IsNullOrEmpty(expectedPassword)
@@ -49,19 +45,7 @@ public static class SeqBasicAuth
         var username = credentials[..separatorIndex];
         var password = credentials[(separatorIndex + 1)..];
 
-        return FixedTimeEquals(username, expectedUsername)
-            && FixedTimeEquals(password, expectedPassword);
-    }
-
-    private static bool FixedTimeEquals(string actual, string expected)
-    {
-        var actualBytes = Encoding.UTF8.GetBytes(actual);
-        var expectedBytes = Encoding.UTF8.GetBytes(expected);
-
-        return actualBytes.Length == expectedBytes.Length
-            && CryptographicOperations.FixedTimeEquals(
-                actualBytes,
-                expectedBytes
-            );
+        return FixedTimeCredentialComparer.Equals(username, expectedUsername)
+            && FixedTimeCredentialComparer.Equals(password, expectedPassword);
     }
 }

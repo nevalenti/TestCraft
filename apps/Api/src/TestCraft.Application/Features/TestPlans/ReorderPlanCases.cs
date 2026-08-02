@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
@@ -22,6 +23,29 @@ public static class ReorderPlanCases
 
         /// <summary>The new order for the given test cases.</summary>
         public required IReadOnlyList<PlanCaseOrder> Cases { get; init; }
+    }
+
+    public sealed class PlanCaseOrderValidator : AbstractValidator<PlanCaseOrder>
+    {
+        public PlanCaseOrderValidator()
+        {
+            RuleFor(caseOrder => caseOrder.Order).GreaterThanOrEqualTo(1);
+        }
+    }
+
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        public Validator()
+        {
+            RuleForEach(command => command.Cases).SetValidator(new PlanCaseOrderValidator());
+            RuleFor(command => command.Cases)
+                .Must(cases =>
+                    cases.Select(caseOrder => caseOrder.TestCaseId).Distinct().Count()
+                    == cases.Count
+                )
+                .WithMessage("Duplicate test case IDs are not allowed")
+                .When(command => command.Cases.Count > 0);
+        }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

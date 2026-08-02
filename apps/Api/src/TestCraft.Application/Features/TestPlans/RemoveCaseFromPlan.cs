@@ -25,7 +25,10 @@ public static class RemoveCaseFromPlan
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var entry = await context.TestPlanCases.FirstOrDefaultAsync(
-                tpc => tpc.TestPlanId == request.TestPlanId && tpc.TestCaseId == request.TestCaseId,
+                tpc =>
+                    tpc.TestPlanId == request.TestPlanId
+                    && tpc.TestCaseId == request.TestCaseId
+                    && tpc.TestPlan!.ProjectId == request.ProjectId,
                 cancellationToken
             );
 

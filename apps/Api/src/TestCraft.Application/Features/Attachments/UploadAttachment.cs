@@ -1,3 +1,4 @@
+using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
@@ -63,6 +64,32 @@ public static class UploadAttachment
         public required Stream Content { get; init; }
     }
 
+    public sealed class Validator : AbstractValidator<Command>
+    {
+        private const long MaxSizeBytes = 52_428_800;
+
+        private static readonly string[] DisallowedContentTypes =
+        [
+            "text/html",
+            "application/xhtml+xml",
+            "image/svg+xml",
+        ];
+
+        public Validator()
+        {
+            RuleFor(command => command.FileName).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.ContentType)
+                .NotEmpty()
+                .MaximumLength(255)
+                .Must(contentType => !DisallowedContentTypes.Contains(contentType))
+                .WithMessage("This content type is not allowed for attachments");
+            RuleFor(command => command.SizeBytes)
+                .GreaterThanOrEqualTo(0)
+                .LessThanOrEqualTo(MaxSizeBytes)
+                .WithMessage("File size must not exceed 50 MB");
+        }
+    }
+
     public sealed class Handler(
         IApplicationDbContext context,
         ICurrentUser currentUser,
@@ -86,8 +113,8 @@ public static class UploadAttachment
                 throw new NotFoundException();
             }
 
-            var storageKey =
-                $"{request.ProjectId}/{request.ResultId}/{Guid.NewGuid()}/{request.FileName}";
+            var extension = Path.GetExtension(request.FileName);
+            var storageKey = $"{request.ProjectId}/{request.ResultId}/{Guid.NewGuid()}{extension}";
 
             await storage.UploadAsync(
                 storageKey,
