@@ -5,11 +5,11 @@ sidebar:
   order: 6
 ---
 
-## `make up` never becomes healthy
+## `just up` never becomes healthy
 
 `docker-compose.yml` wires health checks for Postgres, Redis, RabbitMQ, and
 MinIO, and the exporters wait on `service_healthy` before starting. If
-`make status` shows a service stuck `starting`, check that container's logs
+`just status` shows a service stuck `starting`, check that container's logs
 directly — `docker compose logs -f <service>` — rather than the API, which
 will just look stuck waiting on its dependencies.
 
@@ -29,7 +29,7 @@ match between the API and the database container).
 Keycloak imports the `testcraft` realm from `infrastructure/keycloak/realm.json`
 on first start only — `start-dev --import-realm` skips re-importing once the
 realm already exists in its volume. If you edited `realm.json` after the
-first `make up`, either delete the Keycloak volume or re-import manually;
+first `just up`, either delete the Keycloak volume or re-import manually;
 editing the file alone has no effect on an already-running stack.
 
 Social login (GitHub/Google) buttons only appear if `GITHUB_CLIENT_ID` /
@@ -74,7 +74,7 @@ requests are allowed — the web app talking to the API on the same origin
 local Vite dev server on a different port needs its origin added explicitly
 as a comma-separated list.
 
-## `make e2e-*` fails but a plain `dotnet test`/`pnpm test` run doesn't
+## `just github e2e` (or `gitlab`/`jenkins`) fails but a plain `dotnet test`/`pnpm test` run doesn't
 
 The E2E targets reproduce the exact CI pipeline (via `act`,
 `gitlab-ci-local`, or a throwaway Jenkins controller — see

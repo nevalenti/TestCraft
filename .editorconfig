@@ -30,8 +30,8 @@ trim_trailing_whitespace = false
 [*.{sh,bash}]
 indent_size = 2
 
-[Makefile]
-indent_style = tab
+[Justfile]
+indent_size = 4
 
 [*.cs]
 dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion

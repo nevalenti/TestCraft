@@ -5,7 +5,7 @@ sidebar:
   order: 3
 ---
 
-`.env.example` at the repo root covers the full local stack (`make up`).
+`.env.example` at the repo root covers the full local stack (`just up`).
 Copy it to `.env` and fill in real values before starting.
 
 ## Database

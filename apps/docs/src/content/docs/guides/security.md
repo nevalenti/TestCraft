@@ -15,9 +15,9 @@ Keycloak's `testcraft` realm enforces a minimum-length password policy
 currently
 `length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)`).
 The Helm-deployed file is the source of truth — `infrastructure/keycloak/realm.json`
-(used by local `make up`) is a generated, gitignored copy, rendered from it by
-`scripts/render-dev-realm.sh` via the Makefile's `dev-realm` target, so the
-policy can't drift between the two.
+(used by local `just up`) is a generated, gitignored copy, rendered from it by
+`scripts/render-dev-realm.sh`, run automatically by the Justfile's `render`
+recipe, so the policy can't drift between the two.
 
 ## TLS
 
@@ -27,8 +27,8 @@ Gateway's certificate is issued (`infrastructure/helm/testcraft/templates/certif
 - `letsencrypt` — a cert-manager `ClusterIssuer` using the ACME HTTP-01
   solver against `nginx-acme`; requires `tls.acmeEmail` and real, publicly
   resolvable `tls.dnsNames`.
-- anything else — a self-signed internal CA (`testcraft-ca-issuer`), which is
-  what `make deploy`'s mkcert-based local/internal flow uses.
+- anything else — a self-signed internal CA (`testcraft-ca-issuer`), for
+  local/internal deployments.
 
 Use `letsencrypt` for any deployment reachable from the public internet —
 don't ship the internal CA to real users.
@@ -40,7 +40,7 @@ don't ship the internal CA to real users.
 and is gitignored — it must never be committed. Rotate it like any other
 credential store:
 
-- Change a value, then re-run `make deploy-prod` (or `make deploy-app`) to
+- Change a value, then re-run `just deploy-prod` (or `just deploy-app`) to
   roll it out — neither command touches image tags, so this is safe to run
   on its own.
 - The self-hosted GitHub Actions runner keeps its own copy of

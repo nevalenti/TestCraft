@@ -27,7 +27,7 @@ deploy a specific released version (or roll back to one) instead of riding
 and tag, or:
 
 ```bash
-make deploy-app APP=api TAG=v1.2.3
+just deploy-app api v1.2.3
 ```
 
 ## Database migrations
