@@ -14,10 +14,7 @@ Gateway), so the whole app is reachable from one domain.
 ## Prerequisites
 
 - A running k3s cluster (`sudo k3s kubectl` and `sudo helm` must work)
-- [mkcert](https://github.com/FiloSottile/mkcert) for local/internal TLS
-  certificates (only needed for `make deploy`, not production)
-- Docker, only needed for `make deploy`'s local image build — production
-  pulls prebuilt images from GHCR instead
+- [`just`](https://github.com/casey/just) to run the deploy recipes below
 
 ## Configure secrets
 
@@ -42,7 +39,7 @@ always records exactly what's running and `helm rollback` actually reverts
 the image, not just the chart. Deploy one service at a time:
 
 ```bash
-make deploy-app APP=api TAG=<sha-or-version>
+just deploy-app api <sha-or-version>
 ```
 
 This runs `helm upgrade --install --reset-then-reuse-values` against
@@ -56,36 +53,32 @@ For chart/template/config changes that aren't tied to a specific app image
 (PVC sizes, ingress, dashboards, initial bootstrap, disaster recovery), use:
 
 ```bash
-make deploy-prod
+just deploy-prod
 ```
 
 This re-applies the full chart with `--reset-then-reuse-values`, so it won't disturb
 any app's currently pinned tag. Check progress at any time with:
 
 ```bash
-make status
+just status
 ```
-
-For a local/internal cluster instead of production — mkcert TLS, images
-built and imported from source rather than pulled from GHCR — use
-`make deploy` instead.
 
 ## Continuous deployment
 
 Pushing to `main` deploys automatically: the `api`/`web`/`gateway`/`docs`
 GitHub Actions workflows each build and push a `:<commit-sha>` image to GHCR,
-then, in the same workflow, run `make deploy-app APP=<app> TAG=<sha>` on a
+then, in the same workflow, run `just deploy-app <app> <sha>` on a
 self-hosted runner registered on the production box — only that one service
 restarts, and only after its own tests and image push succeeded. Changes
 under `infrastructure/helm/**` are deployed by `.github/workflows/infra.yml`,
-which runs `make deploy-prod`. To (re)deploy a specific released version on
+which runs `just deploy-prod`. To (re)deploy a specific released version on
 demand, run `.github/workflows/deploy-version.yml` manually and pick the app
 and version tag.
 
-The runner needs Docker-free access to `k3s kubectl` and `helm` (matching the
-`KUBECTL`/`HELM` variables in the `Makefile`), and its workspace must keep
-`infrastructure/helm/testcraft/values.secrets.yaml` in place between runs —
-it's gitignored and never checked out from the repo.
+The runner needs `just`, plus access to `k3s kubectl` and `helm` (matching
+the `kubectl`/`helm_deploy` variables in the `Justfile`), and its workspace
+must keep `infrastructure/helm/testcraft/values.secrets.yaml` in place
+between runs — it's gitignored and never checked out from the repo.
 
 ## Routing
 
@@ -174,7 +167,7 @@ After restoring Postgres, restart the API so it drops any cached state:
 ## Teardown
 
 ```bash
-make destroy
+just destroy
 ```
 
 Deletes the `testcraft` namespace — including all persistent volumes. Make

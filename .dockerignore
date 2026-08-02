@@ -27,6 +27,6 @@ apps/Gateway/**/obj/
 apps/web/test-results/
 docker-compose*.yml
 LICENSE
-Makefile
+Justfile
 node_modules
 Thumbs.db

@@ -263,4 +263,4 @@ jobs:
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
       - name: Deploy web
-        run: make deploy-app APP=web TAG=sha-${{ github.sha }}
+        run: just deploy-app web sha-${{ github.sha }}

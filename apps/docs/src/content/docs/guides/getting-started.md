@@ -8,7 +8,7 @@ sidebar:
 ## Prerequisites
 
 - Docker, to run Postgres, Redis, RabbitMQ, MinIO, Keycloak, and the rest of
-  the stack via `make up`
+  the stack via `just up`
 - .NET 10 SDK, to run the API outside its container (`dotnet run`)
 - Node.js 24 + pnpm, to run the web app outside its container
 
@@ -24,7 +24,7 @@ in `.env` before starting the stack, or the database schema stays empty and
 the API fails on first request:
 
 ```bash
-make up
+just up
 ```
 
 Keycloak imports the `testcraft` realm automatically on first start.

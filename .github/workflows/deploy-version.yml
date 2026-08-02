@@ -48,4 +48,4 @@ jobs:
           echo "tag=$version" >> "$GITHUB_OUTPUT"
 
       - name: Deploy
-        run: make deploy-app APP=${{ inputs.app }} TAG=${{ steps.normalize.outputs.tag }}
+        run: just deploy-app ${{ inputs.app }} ${{ steps.normalize.outputs.tag }}
