@@ -1,4 +1,4 @@
-import { HubConnectionBuilder } from '@microsoft/signalr';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import keycloak from '@/auth/keycloak';
@@ -10,13 +10,17 @@ export function useSignalR(
   onReconnected?: () => void,
 ) {
   const handlersRef = useRef(handlers);
-  const eventNamesRef = useRef(Object.keys(handlers));
   const onReconnectedRef = useRef(onReconnected);
+  const connectionRef = useRef<HubConnection | null>(null);
 
   useLayoutEffect(() => {
     handlersRef.current = handlers;
     onReconnectedRef.current = onReconnected;
   });
+
+  const eventNamesKey = Object.keys(handlers)
+    .toSorted((a, b) => a.localeCompare(b))
+    .join(',');
 
   useEffect(() => {
     if (!runId) return;
@@ -27,10 +31,7 @@ export function useSignalR(
       })
       .withAutomaticReconnect()
       .build();
-
-    for (const event of eventNamesRef.current) {
-      connection.on(event, (data) => handlersRef.current[event]?.(data));
-    }
+    connectionRef.current = connection;
 
     connection.onreconnected(() => {
       (async () => {
@@ -53,6 +54,7 @@ export function useSignalR(
     })();
 
     return () => {
+      connectionRef.current = null;
       (async () => {
         try {
           await connection.invoke('LeaveRun', runId);
@@ -67,4 +69,20 @@ export function useSignalR(
       })();
     };
   }, [runId]);
+
+  useEffect(() => {
+    const connection = connectionRef.current;
+    if (!connection) return;
+
+    const eventNames = eventNamesKey ? eventNamesKey.split(',') : [];
+    for (const event of eventNames) {
+      connection.on(event, (data) => handlersRef.current[event]?.(data));
+    }
+
+    return () => {
+      for (const event of eventNames) {
+        connection.off(event);
+      }
+    };
+  }, [runId, eventNamesKey]);
 }

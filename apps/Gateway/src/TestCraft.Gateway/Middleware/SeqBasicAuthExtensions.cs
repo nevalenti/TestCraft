@@ -1,6 +1,6 @@
+using TestCraft.Common.Security;
 using TestCraft.Gateway;
 using TestCraft.Gateway.Configuration;
-using TestCraft.Gateway.Security;
 
 namespace TestCraft.Gateway.Middleware;
 
@@ -17,9 +17,10 @@ public static class SeqBasicAuthExtensions
                     context.Request.Path.StartsWithSegments(
                         GatewayPaths.SeqPrefix
                     )
-                    && !SeqBasicAuth.IsAuthorized(
+                    && !BasicAuthValidator.IsAuthorized(
                         context.Request.Headers.Authorization.ToString(),
-                        options
+                        options.SeqBasicAuthUsername,
+                        options.SeqBasicAuthPassword
                     )
                 )
                 {

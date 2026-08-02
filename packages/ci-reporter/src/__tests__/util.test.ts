@@ -34,9 +34,12 @@ describe('fetchAuthority / findProjectId', () => {
     it('fetches from /api/auth-config', async () => {
       vi.stubGlobal('fetch', fetchMock);
       fetchMock.mockResolvedValue(
-        new Response(JSON.stringify({ authority: 'https://kc.example.com' }), {
-          status: 200,
-        }),
+        Response.json(
+          { authority: 'https://kc.example.com' },
+          {
+            status: 200,
+          },
+        ),
       );
 
       const authority = await fetchAuthority('https://api.example.com');
@@ -53,13 +56,13 @@ describe('fetchAuthority / findProjectId', () => {
     it('matches by exact name among the returned items', async () => {
       vi.stubGlobal('fetch', fetchMock);
       fetchMock.mockResolvedValue(
-        new Response(
-          JSON.stringify({
+        Response.json(
+          {
             items: [
               { id: '1', name: 'Other Project' },
               { id: '2', name: 'My Project' },
             ],
-          }),
+          },
           { status: 200 },
         ),
       );
@@ -78,7 +81,7 @@ describe('fetchAuthority / findProjectId', () => {
     it('rejects with a descriptive error', async () => {
       vi.stubGlobal('fetch', fetchMock);
       fetchMock.mockResolvedValue(
-        new Response(JSON.stringify({ items: [] }), { status: 200 }),
+        Response.json({ items: [] }, { status: 200 }),
       );
 
       await expect(

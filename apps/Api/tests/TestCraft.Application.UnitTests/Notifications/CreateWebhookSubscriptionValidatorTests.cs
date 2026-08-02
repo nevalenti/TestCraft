@@ -27,6 +27,13 @@ public class CreateWebhookSubscriptionValidatorTests
     [InlineData(" ")]
     [InlineData("not-a-url")]
     [InlineData("ftp://example.com/webhook")]
+    [InlineData("http://127.0.0.1/webhook")]
+    [InlineData("http://localhost/webhook")]
+    [InlineData("http://169.254.169.254/latest/meta-data")]
+    [InlineData("http://10.0.0.5/webhook")]
+    [InlineData("http://172.16.0.5/webhook")]
+    [InlineData("http://192.168.1.5/webhook")]
+    [InlineData("http://[::1]/webhook")]
     public void NonHttpUrl_FailsValidation(string url)
     {
         var result = _validator.TestValidate(ValidCommand() with { Url = url });

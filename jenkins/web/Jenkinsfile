@@ -166,7 +166,14 @@ pipeline {
         stage('Docker build & scan') {
             when { expression { currentBuild.currentResult == 'SUCCESS' } }
             steps {
-                sh "docker build -t web-scan:${env.GIT_COMMIT} -f apps/web/Dockerfile ."
+                sh """
+                    docker build \
+                        --build-arg VITE_API_URL=https://testcraft.pro \
+                        --build-arg VITE_KEYCLOAK_URL=https://auth.testcraft.pro \
+                        --build-arg VITE_KEYCLOAK_REALM=testcraft \
+                        --build-arg VITE_KEYCLOAK_CLIENT_ID=testcraft-web \
+                        -t web-scan:${env.GIT_COMMIT} -f apps/web/Dockerfile .
+                """
                 sh """
                     docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
                         aquasec/trivy:latest image \

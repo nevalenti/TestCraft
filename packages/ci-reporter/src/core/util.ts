@@ -3,8 +3,10 @@ import { authHeaders, fetchJson } from './http';
 export const slugify = (text: string): string =>
   text
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .split('-')
+    .filter(Boolean)
+    .join('-');
 
 export const fetchAuthority = async (apiUrl: string): Promise<string> => {
   const data = await fetchJson<{ authority: string }>(

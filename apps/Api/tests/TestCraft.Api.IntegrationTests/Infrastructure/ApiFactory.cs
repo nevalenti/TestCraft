@@ -30,6 +30,8 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             "https://keycloak.invalid/realms/testcraft"
         );
         Environment.SetEnvironmentVariable("KEYCLOAK_AUDIENCE", "testcraft-web");
+        Environment.SetEnvironmentVariable("KEYCLOAK_ADMIN_CLIENT_ID", "testcraft-admin-test");
+        Environment.SetEnvironmentVariable("KEYCLOAK_ADMIN_CLIENT_SECRET", "test-secret");
         Environment.SetEnvironmentVariable("RABBITMQ_URL", "");
 
         using var scope = Services.CreateScope();

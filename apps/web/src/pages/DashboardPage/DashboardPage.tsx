@@ -102,7 +102,7 @@ export const DashboardPage = () => {
       queries: (projects ?? []).map((project) => ({
         ...testRunQueries.all(project.id),
         refetchInterval: 5000,
-        refetchIntervalInBackground: true,
+        refetchIntervalInBackground: false,
         staleTime: 5000,
       })),
       combine: (results) => {

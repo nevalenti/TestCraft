@@ -18,9 +18,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: [self-hosted, testcraft-production]
     timeout-minutes: 15
+    # Declaring the environment lets required-reviewer/wait-timer rules be configured in repo
+    # settings (Settings > Environments > production) — this YAML alone doesn't enforce them.
+    environment: production
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           ref: main
 

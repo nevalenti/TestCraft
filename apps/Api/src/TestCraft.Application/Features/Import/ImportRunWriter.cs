@@ -22,46 +22,51 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        await using var transaction = await context.Database.BeginTransactionAsync(
-            cancellationToken
-        );
+        var strategy = context.Database.CreateExecutionStrategy();
 
-        var now = DateTimeOffset.UtcNow;
-
-        var run = new TestRun
+        return await strategy.ExecuteAsync(async () =>
         {
-            ProjectId = projectId,
-            Name = name,
-            Environment = environment,
-            Source = source,
-            ExecutedById = userId,
-            ExecutedByName = userName,
-        };
+            await using var transaction = await context.Database.BeginTransactionAsync(
+                cancellationToken
+            );
 
-        if (status != TestRunStatus.Active)
-            run.TransitionTo(status);
+            var now = DateTimeOffset.UtcNow;
 
-        context.TestRuns.Add(run);
-        await context.SaveChangesAsync(cancellationToken);
+            var run = new TestRun
+            {
+                ProjectId = projectId,
+                Name = name,
+                Environment = environment,
+                Source = source,
+                ExecutedById = userId,
+                ExecutedByName = userName,
+            };
 
-        await InsertResultsAsync(
-            context,
-            projectId,
-            run.Id,
-            cases,
-            now,
-            userId,
-            source,
-            cancellationToken
-        );
+            if (status != TestRunStatus.Active)
+                run.TransitionTo(status);
 
-        job.Status = ImportJobStatus.Completed;
-        job.TestRunId = run.Id;
-        await context.SaveChangesAsync(cancellationToken);
+            context.TestRuns.Add(run);
+            await context.SaveChangesAsync(cancellationToken);
 
-        await transaction.CommitAsync(cancellationToken);
+            await InsertResultsAsync(
+                context,
+                projectId,
+                run.Id,
+                cases,
+                now,
+                userId,
+                source,
+                cancellationToken
+            );
 
-        return TestRunResponse.FromEntity(run);
+            job.Status = ImportJobStatus.Completed;
+            job.TestRunId = run.Id;
+            await context.SaveChangesAsync(cancellationToken);
+
+            await transaction.CommitAsync(cancellationToken);
+
+            return TestRunResponse.FromEntity(run);
+        });
     }
 
     public static async Task<TestRunResponse> AppendResultsToRunAsync(
@@ -75,38 +80,45 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        await using var transaction = await context.Database.BeginTransactionAsync(
-            cancellationToken
-        );
+        var strategy = context.Database.CreateExecutionStrategy();
 
-        var run =
-            await context.TestRuns.FirstOrDefaultAsync(
-                testRun => testRun.Id == runId && testRun.ProjectId == projectId,
+        return await strategy.ExecuteAsync(async () =>
+        {
+            await using var transaction = await context.Database.BeginTransactionAsync(
                 cancellationToken
-            )
-            ?? throw new InvalidOperationException($"Run {runId} not found in project {projectId}");
+            );
 
-        var now = DateTimeOffset.UtcNow;
+            var run =
+                await context.TestRuns.FirstOrDefaultAsync(
+                    testRun => testRun.Id == runId && testRun.ProjectId == projectId,
+                    cancellationToken
+                )
+                ?? throw new InvalidOperationException(
+                    $"Run {runId} not found in project {projectId}"
+                );
 
-        await InsertResultsAsync(
-            context,
-            projectId,
-            run.Id,
-            cases,
-            now,
-            userId,
-            source,
-            cancellationToken
-        );
+            var now = DateTimeOffset.UtcNow;
 
-        run.TransitionTo(TestRunStatus.Completed);
-        job.Status = ImportJobStatus.Completed;
-        job.TestRunId = run.Id;
-        await context.SaveChangesAsync(cancellationToken);
+            await InsertResultsAsync(
+                context,
+                projectId,
+                run.Id,
+                cases,
+                now,
+                userId,
+                source,
+                cancellationToken
+            );
 
-        await transaction.CommitAsync(cancellationToken);
+            run.TransitionTo(TestRunStatus.Completed);
+            job.Status = ImportJobStatus.Completed;
+            job.TestRunId = run.Id;
+            await context.SaveChangesAsync(cancellationToken);
 
-        return TestRunResponse.FromEntity(run);
+            await transaction.CommitAsync(cancellationToken);
+
+            return TestRunResponse.FromEntity(run);
+        });
     }
 
     private static async Task InsertResultsAsync(

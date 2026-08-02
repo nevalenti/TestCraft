@@ -54,6 +54,18 @@
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "testcraft-ci",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${TESTCRAFT_CI_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
     }
   ],
   "users": [
@@ -64,6 +76,11 @@
       "clientRoles": {
         "realm-management": ["view-users"]
       }
+    },
+    {
+      "username": "service-account-testcraft-ci",
+      "enabled": true,
+      "serviceAccountClientId": "testcraft-ci"
     }
   ],
   "loginTheme": "dracula",

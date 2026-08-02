@@ -1,5 +1,7 @@
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
@@ -70,6 +72,16 @@ public static class CreateTestCaseStep
             CancellationToken cancellationToken
         )
         {
+            var caseExists = await context.TestCases.AnyAsync(
+                testCase =>
+                    testCase.Id == request.CaseId && testCase.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
+            if (!caseExists)
+            {
+                throw new NotFoundException();
+            }
+
             var step = new TestCaseStep
             {
                 TestCaseId = request.CaseId,

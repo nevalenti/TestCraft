@@ -1,5 +1,9 @@
-const ANSI_PATTERN = new RegExp('[\\u001B\\u009B]\\[[0-9;]*[a-zA-Z]', 'g');
-const stripAnsi = (text: string): string => text.replace(ANSI_PATTERN, '');
+const ANSI_PATTERN = new RegExp(
+  // eslint-disable-next-line sonarjs/no-control-regex -- ESC/CSI control chars are required to strip ANSI codes
+  String.raw`[\u001B\u009B]\[[0-9;]*[a-zA-Z]`,
+  'g',
+);
+const stripAnsi = (text: string): string => text.replaceAll(ANSI_PATTERN, '');
 
 type WriteFn = typeof process.stdout.write;
 
@@ -23,7 +27,7 @@ export const createStdioCapture = (
     else stdoutBuffer = remainder;
 
     const lines = parts.filter((line) => line.length > 0);
-    if (lines.length) onLines(lines);
+    if (lines.length > 0) onLines(lines);
   };
 
   const origStdoutWrite = process.stdout.write.bind(process.stdout);
@@ -49,7 +53,7 @@ export const createStdioCapture = (
       );
       stdoutBuffer = '';
       stderrBuffer = '';
-      if (trailing.length) onLines(trailing);
+      if (trailing.length > 0) onLines(trailing);
     },
   };
 };

@@ -247,7 +247,7 @@ public class AttachmentsApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Upload_FileExceedingConfiguredSizeLimit_IsCurrentlyAccepted()
+    public async Task Upload_FileExceedingConfiguredSizeLimit_ReturnsValidationProblem()
     {
         var client = CreateClient(Guid.NewGuid());
         var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
@@ -260,6 +260,7 @@ public class AttachmentsApiTests(ApiFactory factory)
 
         var response = await client.PostAsync(AttachmentsUrl(projectId, runId, resultId), form);
 
-        response.StatusCode.Should().Be(HttpStatusCode.Created);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

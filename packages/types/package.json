@@ -18,9 +18,11 @@
     "typecheck": "tsc --noEmit",
     "prebuild": "pnpm run generate",
     "build": "tsc",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "lint": "eslint ."
   },
   "devDependencies": {
+    "eslint": "^10.5.0",
     "openapi-typescript": "^7.9.1",
     "typescript": "~6.0.3"
   }
