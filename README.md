@@ -9,12 +9,10 @@
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 [![Gateway](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml)
 [![Docs](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml)
-<br>
+
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](apps/web)
-<br>
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-<br>
 
 </div>
 
