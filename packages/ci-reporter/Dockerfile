@@ -15,7 +15,8 @@ RUN pnpm --filter @testcraft/ci-reporter run build
 FROM node:24-alpine AS runtime
 WORKDIR /app
 
-RUN addgroup -S -g 1001 appgroup && \
+RUN apk update && apk upgrade --no-cache && \
+    addgroup -S -g 1001 appgroup && \
     adduser -S -u 1001 -G appgroup -H appuser
 
 COPY --from=build /app/packages/ci-reporter/dist/cli.js ./cli.js
