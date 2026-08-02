@@ -28,6 +28,8 @@ RUN pnpm --filter testcraft-web run build
 
 FROM nginx:1.27-alpine AS runtime
 
+RUN apk update && apk upgrade --no-cache
+
 RUN rm /etc/nginx/conf.d/default.conf
 
 COPY apps/web/default.conf.template /etc/nginx/templates/default.conf.template
