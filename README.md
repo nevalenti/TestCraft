@@ -9,12 +9,10 @@
 [![E2E](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml)
 [![Gateway](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml)
 [![Docs](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml/badge.svg)](https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml)
-<br>
+
 [![.NET 10](https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white)](apps/Api)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](apps/web)
-<br>
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-<br>
 
 </div>
 
@@ -33,7 +31,7 @@
 
 ## Features
 
-### Test management
+### 🗂️ Test management
 
 - **Projects & suites** — projects → suites → test cases; test case steps support drag-and-drop reordering
 - **Test plans** — curate ordered lists of test cases across suites with drag-and-drop reordering
@@ -41,36 +39,44 @@
 - **Attachments** — file uploads stored in MinIO, scoped to test results
 - **Analytics** — trend charts, flaky test detection, suite breakdown, and run comparison per project
 
-### Test runs
+### ▶️ Test runs
 
 - **Live progress** — track runs in real time via SignalR, with a live log feed per pipeline run
 - **Shareable links** — read-only run views via public share tokens
 - **Notifications** — email (SMTP) and outbound webhooks on run completion
 
-### CI integration
+### 🔁 CI integration
 
 - **GitHub Action** — first-party action reports JUnit results, starts active runs, and uploads Playwright screenshots straight from CI
 - **CI reporter CLI** — `testcraft-ci-reporter`, an npx/Docker equivalent of the GitHub Action for CI systems without native support
 - **Pipeline examples** — ready-to-use pipelines for [GitHub Actions](.github/workflows), [GitLab CI](.gitlab-ci.yml), and [Jenkins](jenkins) covering API, web, and E2E suites
 - **API tokens** — machine-to-machine access for CI pipelines
 
-### Accounts & access
+### 👤 Accounts & access
 
 - **Keycloak auth** — SSO with optional GitHub and Google social login
 - **Project members** — invite collaborators to projects for shared access
-- **Accounts** — profile settings with avatar upload
 
-### Observability
+### 📈 Observability
 
-- Prometheus metrics and Grafana dashboards ship out of the box, alongside Loki/Seq log aggregation
+Prometheus metrics and Grafana dashboards ship out of the box, alongside Loki/Seq log aggregation.
 
 ---
 
 ## Built With
 
-React 19 · ASP.NET Core (.NET 10) · PostgreSQL · Redis · RabbitMQ + MassTransit
-· SignalR · MinIO · Keycloak · YARP · Grafana/Prometheus/Loki/Seq · Helm on
-k3s
+| Layer              | Technology                        |
+| ------------------ | --------------------------------- |
+| **Frontend**       | React 19                          |
+| **Backend**        | ASP.NET Core (.NET 10)            |
+| **Data**           | PostgreSQL · Redis                |
+| **Messaging**      | RabbitMQ + MassTransit            |
+| **Realtime**       | SignalR                           |
+| **Object storage** | MinIO                             |
+| **Auth**           | Keycloak                          |
+| **Gateway**        | YARP                              |
+| **Observability**  | Grafana · Prometheus · Loki · Seq |
+| **Infra**          | Helm on k3s                       |
 
 See [Tech Stack](https://testcraft.pro/docs/reference/tech-stack/) for what
 each layer is used for.
@@ -79,10 +85,18 @@ each layer is used for.
 
 ## Architecture
 
-Clean Architecture on the API (`Domain` → `Application` → `Infrastructure` →
-`Api`), a YARP Gateway as the single public entry point in front of the
-API/web/docs/observability stack, and a React SPA that mirrors the API's
-layering (`api/` → `hooks/` → `pages/`).
+A YARP Gateway is the single public entry point in front of the
+API/web/docs/observability stack. The API follows Clean Architecture, and the
+React SPA mirrors that same layering on the frontend:
+
+```mermaid
+flowchart LR
+    Domain --> Application --> Infrastructure --> Api
+```
+
+```
+apps/web/src:  api/  →  hooks/  →  pages/
+```
 
 See [Architecture](https://testcraft.pro/docs/reference/architecture/) for
 the full repository layout and module boundaries.
@@ -100,9 +114,10 @@ pnpm install
 cp .env.example .env
 ```
 
-`APPLY_MIGRATIONS` defaults to `false` in `.env.example` — set it to `true`
-in `.env` before starting the stack, or the database schema stays empty and
-the API fails on first request:
+> [!IMPORTANT]
+> `APPLY_MIGRATIONS` defaults to `false` in `.env.example` — set it to `true`
+> in `.env` before starting the stack, or the database schema stays empty and
+> the API fails on first request.
 
 ```bash
 make up
@@ -127,7 +142,8 @@ for the API/web/E2E test suites.
 
 ## Production
 
-Requires k3s and Helm. Fill in `infrastructure/helm/testcraft/values.secrets.yaml` (not committed), then:
+Requires k3s and Helm. Fill in
+`infrastructure/helm/testcraft/values.secrets.yaml` (not committed), then:
 
 ```bash
 make deploy
