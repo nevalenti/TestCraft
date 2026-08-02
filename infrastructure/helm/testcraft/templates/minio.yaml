@@ -34,6 +34,21 @@ spec:
         fsGroup: 1000
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: fix-data-permissions
+          image: {{ .Values.thirdPartyImages.minio }}
+          securityContext:
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["CHOWN", "FOWNER"]
+          command: ["chown", "-R", "1000:1000", "/data"]
+          volumeMounts:
+            - name: minio-data
+              mountPath: /data
       containers:
         - name: minio
           image: {{ .Values.thirdPartyImages.minio }}
