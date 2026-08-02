@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useFlakyTests } from '@/hooks/useAnalytics';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { cn } from '@/lib/cn';
 
 export const AnalyticsFlakyTab = () => {
   const projectId = useRequiredParam('projectId');
@@ -93,7 +94,10 @@ export const AnalyticsFlakyTab = () => {
               return (
                 <tr key={stat.testCaseId} className="hover:bg-base-300/70">
                   <td
-                    className={`text-center text-xs font-bold tabular-nums ${rankColor}`}
+                    className={cn(
+                      'text-center text-xs font-bold tabular-nums',
+                      rankColor,
+                    )}
                   >
                     {index + 1}
                   </td>
@@ -115,7 +119,10 @@ export const AnalyticsFlakyTab = () => {
                     <div className="flex items-center justify-end gap-2">
                       <div className="h-1.5 w-16 overflow-hidden rounded-full bg-base-300">
                         <div
-                          className={`h-full rounded-full transition-all ${barColor}`}
+                          className={cn(
+                            'h-full rounded-full transition-all',
+                            barColor,
+                          )}
                           style={{ width: `${pct}%` }}
                         />
                       </div>

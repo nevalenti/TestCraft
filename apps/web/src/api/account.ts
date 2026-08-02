@@ -1,6 +1,8 @@
+import { queryOptions } from '@tanstack/react-query';
 import type { AvatarUrl } from '@testcraft/types';
 
 import client from '@/api/client';
+import { queryKeys } from '@/api/queryKeys';
 
 export const accountApi = {
   getAvatarUrl: async (): Promise<AvatarUrl | null> => {
@@ -18,4 +20,13 @@ export const accountApi = {
     });
     return data;
   },
+};
+
+export const accountQueries = {
+  avatarUrl: () =>
+    queryOptions({
+      queryKey: queryKeys.account.avatarUrl,
+      queryFn: () => accountApi.getAvatarUrl(),
+      staleTime: 55 * 60 * 1000,
+    }),
 };

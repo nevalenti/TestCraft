@@ -3,7 +3,9 @@ import { TestResultStatus, type TestRunSummary } from '@testcraft/types';
 
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { cn } from '@/lib/cn';
 import { statusOptions } from '@/lib/constants';
+import { passRateClass } from '@/lib/format';
 
 type SummaryCountKey = 'passed' | 'failed' | 'blocked' | 'skipped';
 
@@ -12,13 +14,6 @@ const STATUS_TO_SUMMARY_KEY: Record<string, SummaryCountKey> = {
   Failed: 'failed',
   Blocked: 'blocked',
   Skipped: 'skipped',
-};
-
-const passRateClass = (rate: number) => {
-  if (rate >= 80) return 'text-success';
-  if (rate >= 50) return 'text-warning';
-
-  return 'text-error';
 };
 
 interface RunSummaryBarProps {
@@ -70,11 +65,12 @@ export const RunSummaryBar = ({
                 statusFilter === value ? null : (value as TestResultStatus),
               )
             }
-            className={`flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all ${
+            className={cn(
+              'flex items-center gap-2 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all',
               statusFilter === value
                 ? 'border-base-content/25 bg-base-200 shadow-sm'
-                : 'border-border bg-base-100 hover:bg-base-200'
-            }`}
+                : 'border-border bg-base-100 hover:bg-base-200',
+            )}
           >
             <StatusBadge status={value} />
             <span className="font-bold text-base-content/85 tabular-nums">
@@ -90,7 +86,7 @@ export const RunSummaryBar = ({
         {runSummary.total}
       </span>{' '}
       result{runSummary.total === 1 ? '' : 's'} ·{' '}
-      <span className={`font-semibold ${passRateClass(runSummary.passRate)}`}>
+      <span className={cn('font-semibold', passRateClass(runSummary.passRate))}>
         {runSummary.passRate}%
       </span>{' '}
       pass rate

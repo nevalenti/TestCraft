@@ -4,11 +4,11 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 import keycloak from '@/auth/keycloak';
 import { env } from '@/lib/env';
 
-export function useSignalR(
+export const useSignalR = (
   runId: string | undefined,
   handlers: Record<string, (data: unknown) => void>,
   onReconnected?: () => void,
-) {
+) => {
   const handlersRef = useRef(handlers);
   const onReconnectedRef = useRef(onReconnected);
   const connectionRef = useRef<HubConnection | null>(null);
@@ -85,4 +85,4 @@ export function useSignalR(
       }
     };
   }, [runId, eventNamesKey]);
-}
+};

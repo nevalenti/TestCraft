@@ -7,15 +7,7 @@ import { useNavigate } from '@tanstack/react-router';
 
 import keycloak from '@/auth/keycloak';
 import { useAvatarUrl } from '@/hooks/useAccount';
-
-const getInitials = (name: string) =>
-  name
-    .trim()
-    .split(/\s+/)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
+import { getInitials } from '@/lib/format';
 
 export const AccountMenu = () => {
   const navigate = useNavigate();

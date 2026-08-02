@@ -12,8 +12,8 @@ const config: Record<DefectType, { label: string; cls: string }> = {
   [DefectType.ToInvestigate]: { label: 'To Investigate', cls: 'badge-neutral' },
 };
 
-export function DefectTypeBadge({ type }: { type: DefectType }) {
+export const DefectTypeBadge = ({ type }: { type: DefectType }) => {
   const { label, cls } = config[type];
 
   return <span className={cn('badge badge-sm font-medium', cls)}>{label}</span>;
-}
+};

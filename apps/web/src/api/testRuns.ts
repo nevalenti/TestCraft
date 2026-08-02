@@ -70,4 +70,12 @@ export const testRunQueries = {
       queryFn: () => testRunsApi.getSummary(projectId, id),
       enabled: !!projectId && !!id,
     }),
+  logs: (projectId: string, id: string) =>
+    queryOptions({
+      queryKey: queryKeys.testRuns.logs(projectId, id),
+      queryFn: () => testRunsApi.getLogs(projectId, id),
+      enabled: !!projectId && !!id,
+      staleTime: 0,
+      refetchOnWindowFocus: false,
+    }),
 };

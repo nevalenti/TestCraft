@@ -2,8 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateEmailSubscription,
   CreateWebhookSubscription,
-  UpdateEmailSubscription,
-  UpdateWebhookSubscription,
 } from '@testcraft/types';
 
 import { notificationQueries, notificationsApi } from '@/api/notifications';
@@ -21,23 +19,6 @@ export const useCreateWebhook = (projectId: string) => {
       notificationsApi.createWebhook(projectId, input),
     onSuccess: () => {
       notify('Webhook added');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notifications.webhooks(projectId),
-      });
-    },
-  });
-};
-
-export const useUpdateWebhook = (projectId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({
-      id,
-      ...input
-    }: UpdateWebhookSubscription & { id: string }) =>
-      notificationsApi.updateWebhook(projectId, id, input),
-    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.webhooks(projectId),
       });
@@ -70,20 +51,6 @@ export const useCreateEmail = (projectId: string) => {
       notificationsApi.createEmail(projectId, input),
     onSuccess: () => {
       notify('Email subscription added');
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notifications.emails(projectId),
-      });
-    },
-  });
-};
-
-export const useUpdateEmail = (projectId: string) => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ id, ...input }: UpdateEmailSubscription & { id: string }) =>
-      notificationsApi.updateEmail(projectId, id, input),
-    onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.emails(projectId),
       });

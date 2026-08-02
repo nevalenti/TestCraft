@@ -33,19 +33,6 @@ describe('notificationsApi webhooks', () => {
     );
   });
 
-  it("updateWebhook puts to the webhook's own id path", async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: { id: 'w1' } });
-
-    await notificationsApi.updateWebhook('p1', 'w1', {
-      url: 'https://y',
-    } as any);
-
-    expect(client.put).toHaveBeenCalledWith(
-      'projects/p1/notifications/webhooks/w1',
-      { url: 'https://y' },
-    );
-  });
-
   it('deleteWebhook removes the webhook by id', () => {
     notificationsApi.deleteWebhook('p1', 'w1');
 
@@ -74,19 +61,6 @@ describe('notificationsApi emails', () => {
     expect(client.post).toHaveBeenCalledWith(
       'projects/p1/notifications/emails',
       { email: 'a@b.com' },
-    );
-  });
-
-  it("updateEmail puts to the email subscription's own id path", async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: { id: 'e1' } });
-
-    await notificationsApi.updateEmail('p1', 'e1', {
-      email: 'c@d.com',
-    } as any);
-
-    expect(client.put).toHaveBeenCalledWith(
-      'projects/p1/notifications/emails/e1',
-      { email: 'c@d.com' },
     );
   });
 

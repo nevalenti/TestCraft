@@ -16,10 +16,8 @@ vi.mock('@/api/notifications', () => ({
   },
   notificationsApi: {
     createWebhook: vi.fn(),
-    updateWebhook: vi.fn(),
     deleteWebhook: vi.fn(),
     createEmail: vi.fn(),
-    updateEmail: vi.fn(),
     deleteEmail: vi.fn(),
   },
 }));
@@ -33,7 +31,6 @@ import {
   useDeleteEmail,
   useDeleteWebhook,
   useEmails,
-  useUpdateWebhook,
   useWebhooks,
 } from '@/hooks/useNotifications';
 import { notify } from '@/lib/notify';
@@ -112,38 +109,6 @@ describe('useCreateWebhook', () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(notify).toHaveBeenCalledWith('Webhook added');
-    });
-  });
-});
-
-describe('useUpdateWebhook', () => {
-  describe('on mutate — calls API with stripped input', () => {
-    it('calls notificationsApi.updateWebhook with projectId, id, and payload', async () => {
-      vi.mocked(notificationsApi.updateWebhook).mockResolvedValue({
-        id: 'wh-1',
-      } as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useUpdateWebhook('proj-1'), {
-        wrapper,
-      });
-
-      result.current.mutate({
-        id: 'wh-1',
-        url: 'https://new.example.com/hook',
-        events: 'run.completed',
-        isActive: true,
-      } as any);
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notificationsApi.updateWebhook).toHaveBeenCalledWith(
-        'proj-1',
-        'wh-1',
-        {
-          url: 'https://new.example.com/hook',
-          events: 'run.completed',
-          isActive: true,
-        },
-      );
     });
   });
 });

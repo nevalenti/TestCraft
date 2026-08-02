@@ -5,6 +5,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { useRunComparison } from '@/hooks/useAnalytics';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { useTestRuns } from '@/hooks/useTestRuns';
+import { cn } from '@/lib/cn';
 
 const STATUS_BADGE: Record<string, string> = {
   Passed: 'badge-success',
@@ -175,11 +176,12 @@ export const AnalyticsComparisonTab = () => {
               ).map(({ key, label }) => (
                 <button
                   key={key}
-                  className={`rounded-md px-2.5 py-1 text-xs font-medium transition-colors ${
+                  className={cn(
+                    'rounded-md px-2.5 py-1 text-xs font-medium transition-colors',
                     filter === key
                       ? 'bg-base-100 text-base-content shadow-sm'
-                      : 'text-base-content/75 hover:text-base-content'
-                  }`}
+                      : 'text-base-content/75 hover:text-base-content',
+                  )}
                   onClick={() => setFilter(key)}
                 >
                   {label}
@@ -207,7 +209,10 @@ export const AnalyticsComparisonTab = () => {
                   {visibleRows.map((row) => (
                     <tr
                       key={row.testCaseId}
-                      className={`hover:bg-base-300/70 ${rowBg(row.isRegression, row.isFix)}`}
+                      className={cn(
+                        'hover:bg-base-300/70',
+                        rowBg(row.isRegression, row.isFix),
+                      )}
                     >
                       <td className="max-w-xs truncate text-sm font-medium">
                         {row.testCaseName}
@@ -215,7 +220,10 @@ export const AnalyticsComparisonTab = () => {
                       <td>
                         {row.statusInA ? (
                           <span
-                            className={`badge badge-sm ${STATUS_BADGE[row.statusInA] ?? 'badge-ghost'}`}
+                            className={cn(
+                              'badge badge-sm',
+                              STATUS_BADGE[row.statusInA] ?? 'badge-ghost',
+                            )}
                           >
                             {row.statusInA}
                           </span>
@@ -228,7 +236,10 @@ export const AnalyticsComparisonTab = () => {
                       <td>
                         {row.statusInB ? (
                           <span
-                            className={`badge badge-sm ${STATUS_BADGE[row.statusInB] ?? 'badge-ghost'}`}
+                            className={cn(
+                              'badge badge-sm',
+                              STATUS_BADGE[row.statusInB] ?? 'badge-ghost',
+                            )}
                           >
                             {row.statusInB}
                           </span>

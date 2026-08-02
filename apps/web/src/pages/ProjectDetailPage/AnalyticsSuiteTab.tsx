@@ -15,7 +15,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { useSuiteBreakdown } from '@/hooks/useAnalytics';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { useTestRuns } from '@/hooks/useTestRuns';
-import { formatDate } from '@/lib/format';
+import { formatDate, truncate } from '@/lib/format';
 
 const COLORS = {
   passed: '#36d399',
@@ -64,9 +64,6 @@ const SuiteTooltip = ({
     </div>
   );
 };
-
-const truncate = (text: string, maxLength: number) =>
-  text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
 
 export const AnalyticsSuiteTab = () => {
   const projectId = useRequiredParam('projectId');

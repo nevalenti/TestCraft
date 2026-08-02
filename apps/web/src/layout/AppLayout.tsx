@@ -8,7 +8,7 @@ import { Footer } from '@/layout/Footer';
 import { Header } from '@/layout/Header';
 import { Sidebar } from '@/layout/Sidebar';
 
-const AppLayout = () => (
+export const AppLayout = () => (
   <div className="mx-auto flex h-screen w-full max-w-420 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">
     <div className="flex min-h-0 flex-1">
       <Sidebar />
@@ -27,5 +27,3 @@ const AppLayout = () => (
     <CookieConsent />
   </div>
 );
-
-export default AppLayout;

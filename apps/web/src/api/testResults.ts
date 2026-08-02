@@ -91,4 +91,12 @@ export const testResultQueries = {
       queryFn: () => testResultsApi.getById(projectId, runId, id),
       enabled: !!projectId && !!runId && !!id,
     }),
+  feed: (projectId: string, runId: string) =>
+    queryOptions({
+      queryKey: [...queryKeys.testResults.all(projectId, runId), 'feed'],
+      queryFn: () =>
+        testResultsApi.getAll(projectId, runId, undefined, undefined, 1, 500),
+      enabled: !!projectId && !!runId,
+      refetchOnWindowFocus: false,
+    }),
 };

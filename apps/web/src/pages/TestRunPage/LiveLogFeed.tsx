@@ -3,7 +3,8 @@ import { TestResultStatus, TestRunStatus } from '@testcraft/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useResultFeed } from '@/hooks/useResultFeed';
 import { useTestRun } from '@/hooks/useTestRuns';
-import { formatDate } from '@/lib/format';
+import { cn } from '@/lib/cn';
+import { formatDate, formatDuration as formatDurationText } from '@/lib/format';
 
 const STATUS_BORDER: Record<TestResultStatus, string> = {
   [TestResultStatus.Passed]: 'border-l-success',
@@ -12,11 +13,8 @@ const STATUS_BORDER: Record<TestResultStatus, string> = {
   [TestResultStatus.Skipped]: 'border-l-base-content/20',
 };
 
-const formatDuration = (ms: number | null | undefined) => {
-  if (ms === undefined || ms === null) return null;
-  if (ms < 1000) return `${ms}ms`;
-  return `${(ms / 1000).toFixed(2)}s`;
-};
+const formatDuration = (ms: number | null | undefined) =>
+  ms == null ? null : formatDurationText(ms);
 
 interface Props {
   projectId: string;
@@ -64,7 +62,10 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
             return (
               <div
                 key={result.id}
-                className={`flex items-center gap-3 border-t border-l-4 border-t-border px-4 py-3 first:border-t-0 ${STATUS_BORDER[result.status]}`}
+                className={cn(
+                  'flex items-center gap-3 border-t border-l-4 border-t-border px-4 py-3 first:border-t-0',
+                  STATUS_BORDER[result.status],
+                )}
               >
                 <StatusBadge status={result.status} />
                 <span className="min-w-0 flex-1 truncate text-sm font-medium">
