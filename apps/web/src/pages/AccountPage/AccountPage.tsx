@@ -9,15 +9,7 @@ import keycloak from '@/auth/keycloak';
 import { useAvatarUrl, useUploadAvatar } from '@/hooks/useAccount';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { env } from '@/lib/env';
-
-const getInitials = (name: string) =>
-  name
-    .trim()
-    .split(/\s+/)
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join('')
-    .toUpperCase();
+import { getInitials } from '@/lib/format';
 
 const keycloakAccountUrl = `${env.VITE_KEYCLOAK_URL}/realms/${env.VITE_KEYCLOAK_REALM}/account`;
 

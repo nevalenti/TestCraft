@@ -3,13 +3,32 @@ import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/api/testResults', () => ({
-  testResultsApi: { getAll: vi.fn() },
-}));
+vi.mock('@/api/testResults', () => {
+  const testResultsApi = { getAll: vi.fn() };
+  return {
+    testResultsApi,
+    testResultQueries: {
+      feed: vi.fn((projectId: string, runId: string) => ({
+        queryKey: ['projects', projectId, 'runs', runId, 'results', 'feed'],
+        queryFn: () =>
+          testResultsApi.getAll(projectId, runId, undefined, undefined, 1, 500),
+      })),
+    },
+  };
+});
 
-vi.mock('@/api/testRuns', () => ({
-  testRunsApi: { getLogs: vi.fn() },
-}));
+vi.mock('@/api/testRuns', () => {
+  const testRunsApi = { getLogs: vi.fn() };
+  return {
+    testRunsApi,
+    testRunQueries: {
+      logs: vi.fn((projectId: string, runId: string) => ({
+        queryKey: ['projects', projectId, 'runs', runId, 'logs'],
+        queryFn: () => testRunsApi.getLogs(projectId, runId),
+      })),
+    },
+  };
+});
 
 import { testResultsApi } from '@/api/testResults';
 import { testRunsApi } from '@/api/testRuns';

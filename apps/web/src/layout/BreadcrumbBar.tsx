@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router';
 
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { AccountMenu } from '@/layout/AccountMenu';
+import { cn } from '@/lib/cn';
 import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
 
 export const BreadcrumbBar = () => {
@@ -31,8 +32,7 @@ export const BreadcrumbBar = () => {
                 )}
                 {item.href ? (
                   <Link
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    to={item.href as any}
+                    to={item.href}
                     title={item.label}
                     className="flex max-w-48 items-center truncate text-xs font-medium text-base-content/75 transition-colors hover:text-base-content/90"
                   >
@@ -42,9 +42,10 @@ export const BreadcrumbBar = () => {
                   <span
                     aria-current={isLast ? 'page' : undefined}
                     title={item.label}
-                    className={`max-w-64 truncate text-xs font-semibold ${
-                      isLast ? 'text-base-content/90' : 'text-base-content/85'
-                    }`}
+                    className={cn(
+                      'max-w-64 truncate text-xs font-semibold',
+                      isLast ? 'text-base-content/90' : 'text-base-content/85',
+                    )}
                   >
                     {item.label}
                   </span>

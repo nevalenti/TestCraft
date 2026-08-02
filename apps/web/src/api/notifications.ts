@@ -3,8 +3,6 @@ import type {
   CreateEmailSubscription,
   CreateWebhookSubscription,
   EmailSubscription,
-  UpdateEmailSubscription,
-  UpdateWebhookSubscription,
   WebhookSubscription,
 } from '@testcraft/types';
 
@@ -33,17 +31,6 @@ export const notificationsApi = {
     );
     return data;
   },
-  updateWebhook: async (
-    projectId: string,
-    id: string,
-    input: UpdateWebhookSubscription,
-  ) => {
-    const { data } = await client.put<WebhookSubscription>(
-      `${WEBHOOK_BASE(projectId)}/${id}`,
-      input,
-    );
-    return data;
-  },
   deleteWebhook: (projectId: string, id: string) =>
     client.delete(`${WEBHOOK_BASE(projectId)}/${id}`),
   getEmails: async (projectId: string) => {
@@ -55,17 +42,6 @@ export const notificationsApi = {
   createEmail: async (projectId: string, input: CreateEmailSubscription) => {
     const { data } = await client.post<EmailSubscription>(
       EMAIL_BASE(projectId),
-      input,
-    );
-    return data;
-  },
-  updateEmail: async (
-    projectId: string,
-    id: string,
-    input: UpdateEmailSubscription,
-  ) => {
-    const { data } = await client.put<EmailSubscription>(
-      `${EMAIL_BASE(projectId)}/${id}`,
       input,
     );
     return data;

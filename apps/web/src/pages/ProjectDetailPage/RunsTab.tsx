@@ -31,6 +31,7 @@ import {
   useTestRuns,
   useUpdateTestRun,
 } from '@/hooks/useTestRuns';
+import { cn } from '@/lib/cn';
 import { formatDate } from '@/lib/format';
 import { ImportForm } from '@/pages/ProjectDetailPage/ImportForm';
 import { RunForm } from '@/pages/ProjectDetailPage/RunForm';
@@ -101,9 +102,9 @@ export const RunsTab = () => {
     if (run.status === TestRunStatus.Completed) {
       const summary = summaryMap.get(run.id);
       return (summary?.failed ?? 0) > 0 ? (
-        <XCircleIcon className={`${cls} text-error`} />
+        <XCircleIcon className={cn(cls, 'text-error')} />
       ) : (
-        <CheckCircleIcon className={`${cls} text-success`} />
+        <CheckCircleIcon className={cn(cls, 'text-success')} />
       );
     }
     return <PlayCircleIcon className={cls} />;

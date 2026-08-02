@@ -16,12 +16,12 @@ interface ShareModalProps {
   runId: string;
 }
 
-export function ShareModal({
+export const ShareModal = ({
   isOpen,
   onClose,
   projectId,
   runId,
-}: ShareModalProps) {
+}: ShareModalProps) => {
   const { data: tokens, isPending } = useShareTokens(projectId, runId);
   const createToken = useCreateShareToken(projectId, runId);
   const revokeToken = useRevokeShareToken(projectId, runId);
@@ -148,4 +148,4 @@ export function ShareModal({
       </div>
     </Modal>
   );
-}
+};

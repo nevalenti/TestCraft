@@ -3,21 +3,13 @@ import type { TestResultStatus } from '@testcraft/types';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { useSharedRun } from '@/hooks/useShareTokens';
-import { formatDate, formatDateTime } from '@/lib/format';
-
-function formatDuration(ms?: number | null): string {
-  if (ms === undefined || ms === null) return '—';
-  if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
-
-  return `${ms}ms`;
-}
-
-const passRateClass = (rate: number) => {
-  if (rate >= 80) return 'text-success';
-  if (rate >= 50) return 'text-warning';
-
-  return 'text-error';
-};
+import { cn } from '@/lib/cn';
+import {
+  formatDate,
+  formatDateTime,
+  formatDuration,
+  passRateClass,
+} from '@/lib/format';
 
 export const SharePage = () => {
   const token = useRequiredParam('token');
@@ -72,7 +64,9 @@ export const SharePage = () => {
           />
         </div>
         <div className="mt-3">
-          <span className={`text-xl font-bold ${passRateClass(run.passRate)}`}>
+          <span
+            className={cn('text-xl font-bold', passRateClass(run.passRate))}
+          >
             {run.passRate}%
           </span>
           <span className="ml-1.5 text-sm text-base-content/75">pass rate</span>
@@ -92,7 +86,7 @@ export const SharePage = () => {
             </thead>
             <tbody>
               {(run.results ?? []).map((result, index) => (
-                <tr key={index} className="hover">
+                <tr key={`${result.testCaseName}-${index}`} className="hover">
                   <td className="text-xs text-base-content/65 tabular-nums">
                     {index + 1}
                   </td>
@@ -123,19 +117,17 @@ export const SharePage = () => {
   );
 };
 
-function Stat({
+const Stat = ({
   label,
   value,
-  className = '',
+  className,
 }: {
   label: string;
   value: number;
   className?: string;
-}) {
-  return (
-    <div className="rounded-xl border border-border bg-base-100 p-4 text-center">
-      <p className={`text-2xl font-bold tabular-nums ${className}`}>{value}</p>
-      <p className="mt-0.5 text-xs text-base-content/75">{label}</p>
-    </div>
-  );
-}
+}) => (
+  <div className="rounded-xl border border-border bg-base-100 p-4 text-center">
+    <p className={cn('text-2xl font-bold tabular-nums', className)}>{value}</p>
+    <p className="mt-0.5 text-xs text-base-content/75">{label}</p>
+  </div>
+);

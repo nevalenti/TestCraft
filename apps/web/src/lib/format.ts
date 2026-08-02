@@ -25,3 +25,21 @@ export const formatDuration = (ms?: number | null): string => {
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;
   return `${ms}ms`;
 };
+
+export const passRateClass = (rate: number): string => {
+  if (rate >= 80) return 'text-success';
+  if (rate >= 50) return 'text-warning';
+  return 'text-error';
+};
+
+export const getInitials = (name: string): string =>
+  name
+    .trim()
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join('')
+    .toUpperCase();
+
+export const truncate = (text: string, maxLength: number): string =>
+  text.length > maxLength ? text.slice(0, maxLength) + '…' : text;

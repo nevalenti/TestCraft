@@ -1,5 +1,7 @@
 import { TestCasePriority } from '@testcraft/types';
 
+import { cn } from '@/lib/cn';
+
 const config: Record<TestCasePriority, { label: string; cls: string }> = {
   [TestCasePriority.Low]: {
     label: 'Low',
@@ -20,7 +22,7 @@ export const PriorityBadge = ({
   if (!item) return null;
 
   return (
-    <span className={`badge badge-sm font-medium ${item.cls}`}>
+    <span className={cn('badge badge-sm font-medium', item.cls)}>
       {item.label}
     </span>
   );

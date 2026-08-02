@@ -1,6 +1,5 @@
 import {
   CommandLineIcon,
-  PlusIcon,
   QueueListIcon,
   ShareIcon,
   SignalIcon,
@@ -10,12 +9,10 @@ import {
   getSortedRowModel,
   type PaginationState,
   type SortingState,
-  type Table,
   useReactTable,
 } from '@tanstack/react-table';
 import {
   type CreateTestResult,
-  type Paginated,
   type TestResult,
   TestResultStatus,
   type UpdateTestResult,
@@ -24,7 +21,6 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -39,99 +35,17 @@ import {
 } from '@/hooks/useTestResults';
 import { useTestRunRealtime } from '@/hooks/useTestRunRealtime';
 import { useTestRun, useTestRunSummary } from '@/hooks/useTestRuns';
+import { cn } from '@/lib/cn';
 import { RESULTS_PAGE_SIZE } from '@/lib/constants';
 import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';
 import { createColumns } from '@/pages/TestRunPage/columns';
 import { CreateResultForm } from '@/pages/TestRunPage/CreateResultForm';
 import { LiveLogFeed } from '@/pages/TestRunPage/LiveLogFeed';
 import { LogPanel } from '@/pages/TestRunPage/LogPanel';
-import { ResultsTable } from '@/pages/TestRunPage/ResultsTable';
+import { ResultsContent } from '@/pages/TestRunPage/ResultsContent';
 import { RunSummaryBar } from '@/pages/TestRunPage/RunSummaryBar';
 import { ShareModal } from '@/pages/TestRunPage/ShareModal';
 import { UpdateResultForm } from '@/pages/TestRunPage/UpdateResultForm';
-
-interface ResultsContentProps {
-  isPending: boolean;
-  isSummaryPending: boolean;
-  isError: boolean;
-  error: unknown;
-  resultsPage: Paginated<TestResult> | undefined;
-  statusFilter: TestResultStatus | null;
-  debouncedSearch: string;
-  openCreate: () => void;
-  onClearSearch: () => void;
-  onClearFilter: () => void;
-  table: Table<TestResult>;
-  pageCount: number;
-}
-
-const ResultsContent = ({
-  isPending,
-  isSummaryPending,
-  isError,
-  error,
-  resultsPage,
-  statusFilter,
-  debouncedSearch,
-  openCreate,
-  onClearSearch,
-  onClearFilter,
-  table,
-  pageCount,
-}: ResultsContentProps) => {
-  if (isPending || isSummaryPending)
-    return (
-      <div className="flex min-h-80 items-center justify-center">
-        <span className="loading loading-lg loading-spinner text-primary" />
-      </div>
-    );
-
-  if (isError) return <ErrorState error={error} />;
-
-  if (
-    resultsPage?.items.length === 0 &&
-    statusFilter === null &&
-    !debouncedSearch
-  )
-    return (
-      <EmptyState
-        title="No results recorded"
-        description="Add results to track the outcome of each test case in this run."
-        action={
-          <button
-            className="btn gap-1.5 btn-sm btn-primary"
-            onClick={openCreate}
-          >
-            <PlusIcon className="size-4" aria-hidden="true" />
-            Add Result
-          </button>
-        }
-      />
-    );
-
-  if (resultsPage?.items.length === 0)
-    return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="mb-2 text-sm font-semibold text-base-content/85">
-          No results match
-        </p>
-        <div className="flex gap-2">
-          {debouncedSearch && (
-            <button className="btn btn-ghost btn-sm" onClick={onClearSearch}>
-              Clear search
-            </button>
-          )}
-          {statusFilter !== null && (
-            <button className="btn btn-outline btn-sm" onClick={onClearFilter}>
-              Clear filter
-            </button>
-          )}
-        </div>
-      </div>
-    );
-
-  return <ResultsTable table={table} pageCount={pageCount} />;
-};
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam('projectId');
@@ -280,7 +194,10 @@ export const TestRunPage = () => {
         <div className="flex items-center gap-2">
           <div className="join">
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === 'table' ? 'btn-neutral' : 'btn-ghost'}`}
+              className={cn(
+                'btn join-item gap-1.5 btn-sm',
+                view === 'table' ? 'btn-neutral' : 'btn-ghost',
+              )}
               onClick={() => setView('table')}
               aria-label="Table view"
             >
@@ -288,7 +205,10 @@ export const TestRunPage = () => {
               Table
             </button>
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === 'live' ? 'btn-neutral' : 'btn-ghost'}`}
+              className={cn(
+                'btn join-item gap-1.5 btn-sm',
+                view === 'live' ? 'btn-neutral' : 'btn-ghost',
+              )}
               onClick={() => setView('live')}
               aria-label="Live log view"
             >
@@ -296,7 +216,10 @@ export const TestRunPage = () => {
               Live
             </button>
             <button
-              className={`btn join-item gap-1.5 btn-sm ${view === 'logs' ? 'btn-neutral' : 'btn-ghost'}`}
+              className={cn(
+                'btn join-item gap-1.5 btn-sm',
+                view === 'logs' ? 'btn-neutral' : 'btn-ghost',
+              )}
               onClick={() => setView('logs')}
               aria-label="Pipeline logs"
             >
@@ -315,7 +238,10 @@ export const TestRunPage = () => {
       </header>
 
       <section
-        className={`page-content min-h-0 flex-1 ${view === 'logs' ? 'flex overflow-hidden' : 'overflow-y-auto'}`}
+        className={cn(
+          'page-content min-h-0 flex-1',
+          view === 'logs' ? 'flex overflow-hidden' : 'overflow-y-auto',
+        )}
       >
         {viewContent}
       </section>

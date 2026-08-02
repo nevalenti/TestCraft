@@ -102,8 +102,6 @@ export const queryKeys = {
   testResults: {
     all: (projectId: string, runId: string) =>
       ['projects', projectId, 'runs', runId, 'results'] as const,
-    filtered: (projectId: string, runId: string, status: string) =>
-      ['projects', projectId, 'runs', runId, 'results', status] as const,
     detail: (projectId: string, runId: string, id: string) =>
       ['projects', projectId, 'runs', runId, 'results', id] as const,
   },

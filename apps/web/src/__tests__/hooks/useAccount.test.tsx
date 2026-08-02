@@ -3,9 +3,18 @@ import { renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@/api/account', () => ({
-  accountApi: { getAvatarUrl: vi.fn(), uploadAvatar: vi.fn() },
-}));
+vi.mock('@/api/account', () => {
+  const accountApi = { getAvatarUrl: vi.fn(), uploadAvatar: vi.fn() };
+  return {
+    accountApi,
+    accountQueries: {
+      avatarUrl: vi.fn(() => ({
+        queryKey: ['account', 'avatar'],
+        queryFn: accountApi.getAvatarUrl,
+      })),
+    },
+  };
+});
 
 import { accountApi } from '@/api/account';
 import { queryKeys } from '@/api/queryKeys';
