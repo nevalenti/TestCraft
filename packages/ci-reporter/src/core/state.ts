@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import path from 'node:path';
 
 export interface StateStore {
   readState: () => string | null;
@@ -9,7 +9,7 @@ export interface StateStore {
 }
 
 export const createStateStore = (namespace: string): StateStore => {
-  const stateFile = join(tmpdir(), `.testcraft_${namespace}.run_id`);
+  const stateFile = path.join(tmpdir(), `.testcraft_${namespace}.run_id`);
 
   return {
     readState: () => {

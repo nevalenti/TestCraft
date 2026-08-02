@@ -31,8 +31,8 @@ services:
     image: ${RABBITMQ_IMAGE}
     container_name: testcraft-rabbitmq
     environment:
-      RABBITMQ_DEFAULT_USER: ${POSTGRES_USER}
-      RABBITMQ_DEFAULT_PASS: ${POSTGRES_PASSWORD}
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
     ports:
       - '5672:5672'
       - '15672:15672'
@@ -209,8 +209,8 @@ services:
     container_name: testcraft-rabbitmq-exporter
     environment:
       RABBIT_URL: 'http://rabbitmq:15672'
-      RABBIT_USER: ${POSTGRES_USER}
-      RABBIT_PASSWORD: ${POSTGRES_PASSWORD}
+      RABBIT_USER: ${RABBITMQ_USER}
+      RABBIT_PASSWORD: ${RABBITMQ_PASSWORD}
     depends_on:
       rabbitmq:
         condition: service_healthy

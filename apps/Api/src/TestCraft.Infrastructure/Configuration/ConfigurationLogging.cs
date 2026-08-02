@@ -26,6 +26,47 @@ public static partial class ConfigurationLogging
         }
     }
 
+    public static void LogInfrastructureFallbacks(
+        this ILogger logger,
+        InfrastructureOptions options
+    )
+    {
+        if (string.IsNullOrEmpty(options.RedisUrl))
+        {
+            LogDegradedProvider(
+                logger,
+                "Redis",
+                "in-process no-op cache (no cross-instance caching)"
+            );
+        }
+
+        if (string.IsNullOrEmpty(options.RabbitMqUrl))
+        {
+            LogDegradedProvider(
+                logger,
+                "RabbitMQ",
+                "in-memory message bus (no durability, single-instance only)"
+            );
+        }
+
+        if (
+            string.IsNullOrEmpty(options.MinioAccessKey)
+            || string.IsNullOrEmpty(options.MinioSecretKey)
+        )
+        {
+            LogDegradedProvider(
+                logger,
+                "Minio",
+                "unconfigured storage service (uploads and downloads will fail)"
+            );
+        }
+
+        if (string.IsNullOrEmpty(options.SmtpHost))
+        {
+            LogDegradedProvider(logger, "SMTP", "no-op email service (emails will not be sent)");
+        }
+    }
+
     private static string Format(object? value, bool isSensitive)
     {
         if (IsEmpty(value))
@@ -63,5 +104,15 @@ public static partial class ConfigurationLogging
         string configType,
         string configKey,
         string configValue
+    );
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "{Provider} is not configured — falling back to {Fallback}"
+    )]
+    private static partial void LogDegradedProvider(
+        ILogger logger,
+        string provider,
+        string fallback
     );
 }

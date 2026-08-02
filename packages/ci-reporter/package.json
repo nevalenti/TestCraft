@@ -20,6 +20,7 @@
   "scripts": {
     "build": "esbuild src/cli.ts --bundle --platform=node --format=esm --target=node24 --outfile=dist/cli.js --minify --banner:js=\"#!/usr/bin/env node\"",
     "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
@@ -29,6 +30,7 @@
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "^4.1.9",
     "esbuild": "^0.25.0",
+    "eslint": "^10.5.0",
     "typescript": "~6.0.3",
     "vitest": "^4.1.9"
   }

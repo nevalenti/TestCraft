@@ -25,7 +25,10 @@ public static class RemoveTestCaseLabel
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var entry = await context.TestCaseLabels.FirstOrDefaultAsync(
-                tcl => tcl.TestCaseId == request.TestCaseId && tcl.LabelId == request.LabelId,
+                tcl =>
+                    tcl.TestCaseId == request.TestCaseId
+                    && tcl.LabelId == request.LabelId
+                    && tcl.TestCase!.Suite!.ProjectId == request.ProjectId,
                 cancellationToken
             );
 

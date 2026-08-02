@@ -129,9 +129,7 @@ describe('fetchJson', () => {
   describe('fetchJson — given a successful response with a JSON body — parses and returns it', () => {
     it('returns the parsed payload', async () => {
       vi.stubGlobal('fetch', fetchMock);
-      fetchMock.mockResolvedValue(
-        new Response(JSON.stringify({ ok: true }), { status: 200 }),
-      );
+      fetchMock.mockResolvedValue(Response.json({ ok: true }, { status: 200 }));
 
       const result = await fetchJson<{ ok: boolean }>(
         'https://x.test',

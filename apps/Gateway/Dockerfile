@@ -2,10 +2,12 @@ FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
 COPY Directory.Build.props Directory.Packages.props ./
+COPY apps/Common/src/TestCraft.Common/TestCraft.Common.csproj apps/Common/src/TestCraft.Common/
 COPY apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj apps/Gateway/src/TestCraft.Gateway/
 
 RUN dotnet restore apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj
 
+COPY apps/Common/src/ apps/Common/src/
 COPY apps/Gateway/src/ apps/Gateway/src/
 
 RUN dotnet publish apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj -c Release -o /app --no-restore

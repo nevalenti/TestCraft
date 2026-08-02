@@ -2,9 +2,12 @@ import js from '@eslint/js';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sonarjs from 'eslint-plugin-sonarjs';
 import unicorn from 'eslint-plugin-unicorn';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export { js, tseslint };
+
+export const nodeGlobals = globals.node;
 
 export const sharedPlugins = {
   'simple-import-sort': simpleImportSort,

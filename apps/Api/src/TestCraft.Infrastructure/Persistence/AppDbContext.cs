@@ -46,12 +46,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
         return result;
     }
 
-    public override int SaveChanges()
-    {
-        ApplyAuditTimestamps();
-        return base.SaveChanges();
-    }
-
     private void ApplyAuditTimestamps()
     {
         var now = DateTimeOffset.UtcNow;
@@ -96,9 +90,6 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
         }
     }
 
-    // Builds and caches a compiled `e => new DomainEventNotification<TEvent>(e)` per event
-    // type, so the reflection cost of bridging Domain events to MediatR is paid once per
-    // event type rather than on every SaveChangesAsync.
     private static Func<IDomainEvent, INotification> CreateNotificationFactory(Type domainEventType)
     {
         var notificationType = typeof(DomainEventNotification<>).MakeGenericType(domainEventType);

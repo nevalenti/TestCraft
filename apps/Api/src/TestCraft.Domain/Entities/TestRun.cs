@@ -6,13 +6,6 @@ namespace TestCraft.Domain.Entities;
 
 public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
 {
-    private static readonly Dictionary<TestRunStatus, int> StatusOrder = new()
-    {
-        [TestRunStatus.Active] = 0,
-        [TestRunStatus.Completed] = 1,
-        [TestRunStatus.Archived] = 2,
-    };
-
     private readonly List<IDomainEvent> _events = [];
 
     public Guid Id { get; set; }
@@ -39,7 +32,16 @@ public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
         return events;
     }
 
-    public bool CanTransitionTo(TestRunStatus to) => StatusOrder[to] >= StatusOrder[Status];
+    public bool CanTransitionTo(TestRunStatus to) => Rank(to) >= Rank(Status);
+
+    private static int Rank(TestRunStatus status) =>
+        status switch
+        {
+            TestRunStatus.Active => 0,
+            TestRunStatus.Completed => 1,
+            TestRunStatus.Archived => 2,
+            _ => throw new DomainException($"Unknown test run status: {status}"),
+        };
 
     public bool CanAddResult() => Status != TestRunStatus.Archived;
 

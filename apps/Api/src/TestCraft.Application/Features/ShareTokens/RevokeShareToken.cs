@@ -27,7 +27,10 @@ public static class RevokeShareToken
         {
             var shareToken =
                 await context.ShareTokens.FirstOrDefaultAsync(
-                    st => st.Id == request.Id && st.TestRunId == request.RunId,
+                    st =>
+                        st.Id == request.Id
+                        && st.TestRunId == request.RunId
+                        && st.TestRun!.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

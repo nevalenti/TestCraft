@@ -26,9 +26,21 @@ spec:
       labels:
         app: seq
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: seq
           image: {{ .Values.thirdPartyImages.seq }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+              add: ["NET_BIND_SERVICE"]
           env:
             - name: ACCEPT_EULA
               value: "Y"

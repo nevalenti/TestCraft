@@ -43,6 +43,7 @@ public class UsersController(ISender sender) : ControllerBase
         {
             FileName = file.FileName,
             ContentType = file.ContentType,
+            SizeBytes = file.Length,
             Content = stream,
         };
         var result = await sender.Send(command, cancellationToken);

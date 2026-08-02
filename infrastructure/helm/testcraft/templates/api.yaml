@@ -18,10 +18,18 @@ spec:
       labels:
         app: api
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: api
           image: {{ .Values.images.api.repository }}:{{ .Values.images.api.tag }}
           imagePullPolicy: {{ .Values.images.api.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           env:
             - name: POSTGRES_HOST
               value: postgres
@@ -103,6 +111,18 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: SWAGGER_BASIC_AUTH_PASSWORD
+                  optional: true
+            - name: HANGFIRE_BASIC_AUTH_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: HANGFIRE_BASIC_AUTH_USERNAME
+                  optional: true
+            - name: HANGFIRE_BASIC_AUTH_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: HANGFIRE_BASIC_AUTH_PASSWORD
                   optional: true
             - name: MINIO_ENDPOINT
               value: minio:9000

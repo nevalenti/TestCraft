@@ -55,7 +55,8 @@ public static class UpdateTestCase
                 await context.TestCases.FirstOrDefaultAsync(
                     existingTestCase =>
                         existingTestCase.Id == request.Id
-                        && existingTestCase.SuiteId == request.SuiteId,
+                        && existingTestCase.SuiteId == request.SuiteId
+                        && existingTestCase.Suite!.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
 

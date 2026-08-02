@@ -26,9 +26,20 @@ spec:
       labels:
         app: keycloak
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 0
+        fsGroup: 0
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         - name: copy-realm
           image: {{ .Values.thirdPartyImages.busybox }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           command:
             - /bin/sh
             - -c
@@ -36,7 +47,7 @@ spec:
               mkdir -p /data/import
               if [ -n "$GITHUB_CLIENT_ID" ]; then GITHUB_ENABLED=true; else GITHUB_ENABLED=false; fi
               if [ -n "$GOOGLE_CLIENT_ID" ]; then GOOGLE_ENABLED=true; else GOOGLE_ENABLED=false; fi
-              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g; s|\${KEYCLOAK_ADMIN_CLIENT_SECRET}|$KEYCLOAK_ADMIN_CLIENT_SECRET|g" \
+              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g; s|\${KEYCLOAK_ADMIN_CLIENT_SECRET}|$KEYCLOAK_ADMIN_CLIENT_SECRET|g; s|\${TESTCRAFT_CI_CLIENT_SECRET}|$TESTCRAFT_CI_CLIENT_SECRET|g" \
                 /realm-source/testcraft-realm.json > /data/import/testcraft-realm.json
           env:
             - name: GITHUB_CLIENT_ID
@@ -68,6 +79,11 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: KEYCLOAK_ADMIN_CLIENT_SECRET
+            - name: TESTCRAFT_CI_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: TESTCRAFT_CI_CLIENT_SECRET
           volumeMounts:
             - name: data
               mountPath: /data
@@ -75,6 +91,10 @@ spec:
               mountPath: /realm-source
         - name: install-theme
           image: {{ .Values.thirdPartyImages.keycloak }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           command:
             - /bin/sh
             - -c
@@ -95,6 +115,10 @@ spec:
       containers:
         - name: keycloak
           image: {{ .Values.thirdPartyImages.keycloak }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           args: ["start", "--import-realm"]
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME

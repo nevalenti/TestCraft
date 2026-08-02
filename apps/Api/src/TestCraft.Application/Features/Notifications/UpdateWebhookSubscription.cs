@@ -39,15 +39,14 @@ public static class UpdateWebhookSubscription
             RuleFor(command => command.Url)
                 .NotEmpty()
                 .MaximumLength(2000)
-                .Must(BeValidUri)
-                .WithMessage("Must be a valid URL");
+                .Must(WebhookUrlGuard.IsAllowed)
+                .WithMessage(
+                    "Must be a public http(s) URL; loopback, private, and link-local "
+                        + "addresses are not allowed"
+                );
             RuleFor(command => command.Secret).MaximumLength(200);
             RuleFor(command => command.Events).NotEmpty();
         }
-
-        private static bool BeValidUri(string url) =>
-            Uri.TryCreate(url, UriKind.Absolute, out var uri)
-            && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
     }
 
     public sealed class Handler(IApplicationDbContext context)

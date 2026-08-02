@@ -1,7 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Infrastructure.Security;
+using TestCraft.Common.Security;
 
 namespace TestCraft.Infrastructure.Auth;
 

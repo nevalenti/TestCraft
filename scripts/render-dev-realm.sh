@@ -11,6 +11,7 @@ jq '
   (.clients[] | select(.clientId == "testcraft-web") | .redirectUris) += ["http://localhost:4173/*"] |
   (.clients[] | select(.clientId == "testcraft-web") | .webOrigins) += ["http://localhost:4173"] |
   (.clients[] | select(.clientId == "testcraft-api") | .secret) = "testcraft-api-dev-secret" |
+  (.clients[] | select(.clientId == "testcraft-ci") | .secret) = "testcraft-ci-dev-secret" |
   .users = [{
     "username": "e2e@testcraft.pro",
     "email": "e2e@testcraft.pro",

@@ -4,8 +4,13 @@ export const setSecret = (value: string): void => {
   if (value) secrets.push(value);
 };
 
-const redact = (message: string): string =>
-  secrets.reduce((text, secret) => text.split(secret).join('***'), message);
+const redact = (message: string): string => {
+  let text = message;
+  for (const secret of secrets) {
+    text = text.split(secret).join('***');
+  }
+  return text;
+};
 
 export const info = (message: string): void => {
   console.log(redact(message));

@@ -1,6 +1,6 @@
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import path from 'node:path';
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
@@ -10,7 +10,7 @@ describe('resolveJunitXml', () => {
   let workspace: string;
 
   beforeEach(() => {
-    workspace = mkdtempSync(join(tmpdir(), 'ci-reporter-junit-'));
+    workspace = mkdtempSync(path.join(tmpdir(), 'ci-reporter-junit-'));
   });
 
   afterEach(() => {
@@ -20,7 +20,7 @@ describe('resolveJunitXml', () => {
   describe('resolveJunitXml — given a literal path to an existing file — returns its contents', () => {
     it('reads the file verbatim', () => {
       const xml = '<testsuites><testsuite name="A" /></testsuites>';
-      writeFileSync(join(workspace, 'results.xml'), xml, 'utf8');
+      writeFileSync(path.join(workspace, 'results.xml'), xml, 'utf8');
 
       expect(resolveJunitXml('results.xml', workspace)).toBe(xml);
     });
@@ -34,7 +34,7 @@ describe('resolveJunitXml', () => {
 
   describe('resolveJunitXml — given a glob pattern matching no files — returns null', () => {
     it('returns null when the directory exists but nothing matches', () => {
-      writeFileSync(join(workspace, 'unrelated.txt'), 'x', 'utf8');
+      writeFileSync(path.join(workspace, 'unrelated.txt'), 'x', 'utf8');
       expect(resolveJunitXml('*.junit.xml', workspace)).toBeNull();
     });
 
@@ -46,7 +46,7 @@ describe('resolveJunitXml', () => {
   describe('resolveJunitXml — given a glob pattern matching a single file — returns its suites wrapped in <testsuites>', () => {
     it("unwraps and rewraps the single file's suites", () => {
       writeFileSync(
-        join(workspace, 'a.junit.xml'),
+        path.join(workspace, 'a.junit.xml'),
         '<?xml version="1.0"?><testsuites><testsuite name="A"><testcase name="t1" /></testsuite></testsuites>',
         'utf8',
       );
@@ -62,12 +62,12 @@ describe('resolveJunitXml', () => {
   describe('resolveJunitXml — given a glob pattern matching multiple files — merges them into one <testsuites> document, sorted by filename', () => {
     it('combines suites from every matching file in filename order', () => {
       writeFileSync(
-        join(workspace, 'b.junit.xml'),
+        path.join(workspace, 'b.junit.xml'),
         '<testsuites><testsuite name="B" /></testsuites>',
         'utf8',
       );
       writeFileSync(
-        join(workspace, 'a.junit.xml'),
+        path.join(workspace, 'a.junit.xml'),
         '<testsuites><testsuite name="A" /></testsuites>',
         'utf8',
       );
@@ -83,23 +83,27 @@ describe('resolveJunitXml', () => {
 
     it('ignores files that do not match the wildcard', () => {
       writeFileSync(
-        join(workspace, 'a.junit.xml'),
+        path.join(workspace, 'a.junit.xml'),
         '<testsuites><testsuite name="A" /></testsuites>',
         'utf8',
       );
-      writeFileSync(join(workspace, 'a.other.xml'), '<testsuites />', 'utf8');
+      writeFileSync(
+        path.join(workspace, 'a.other.xml'),
+        '<testsuites />',
+        'utf8',
+      );
 
       const result = resolveJunitXml('*.junit.xml', workspace);
 
       expect(result).toContain('<testsuite name="A" />');
-      expect((result!.match(/<testsuite name=/g) ?? []).length).toBe(1);
+      expect(result!.match(/<testsuite name=/g) ?? []).toHaveLength(1);
     });
   });
 
   describe('resolveJunitXml — given a file without a <testsuites> wrapper — strips only the XML declaration', () => {
     it('falls back to trimming the raw content for a single glob match', () => {
       writeFileSync(
-        join(workspace, 'a.junit.xml'),
+        path.join(workspace, 'a.junit.xml'),
         '<?xml version="1.0"?><testsuite name="A" />',
         'utf8',
       );

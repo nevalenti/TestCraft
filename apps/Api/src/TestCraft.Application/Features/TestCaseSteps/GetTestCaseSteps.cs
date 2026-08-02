@@ -32,7 +32,10 @@ public static class GetTestCaseSteps
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestCaseSteps.Where(step => step.TestCaseId == request.CaseId);
+            var query = context.TestCaseSteps.Where(step =>
+                step.TestCaseId == request.CaseId
+                && step.TestCase!.Suite!.ProjectId == request.ProjectId
+            );
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);
 

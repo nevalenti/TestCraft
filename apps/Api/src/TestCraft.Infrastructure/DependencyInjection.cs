@@ -1,3 +1,4 @@
+using System.Net.Http;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +12,7 @@ using TestCraft.Infrastructure.Configuration;
 using TestCraft.Infrastructure.Email;
 using TestCraft.Infrastructure.Notifications;
 using TestCraft.Infrastructure.Persistence;
+using TestCraft.Infrastructure.Security;
 using TestCraft.Infrastructure.Storage;
 
 namespace TestCraft.Infrastructure;
@@ -28,7 +30,8 @@ public static class DependencyInjection
 
         services.AddDbContext<AppDbContext>(dbOptions =>
             dbOptions.UseNpgsql(
-                ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl)
+                ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl),
+                npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()
             )
         );
 
@@ -60,13 +63,27 @@ public static class DependencyInjection
                     (context, config) =>
                     {
                         config.Host(new Uri(options.RabbitMqUrl));
+                        config.UseMessageRetry(retry =>
+                            retry.Exponential(
+                                retryLimit: 3,
+                                minInterval: TimeSpan.FromSeconds(1),
+                                maxInterval: TimeSpan.FromSeconds(30),
+                                intervalDelta: TimeSpan.FromSeconds(5)
+                            )
+                        );
                         config.ConfigureEndpoints(context);
                     }
                 );
             }
             else
             {
-                busConfig.UsingInMemory((context, config) => config.ConfigureEndpoints(context));
+                busConfig.UsingInMemory(
+                    (context, config) =>
+                    {
+                        config.UseMessageRetry(retry => retry.Immediate(3));
+                        config.ConfigureEndpoints(context);
+                    }
+                );
             }
         });
 
@@ -75,13 +92,25 @@ public static class DependencyInjection
             && !string.IsNullOrEmpty(options.MinioSecretKey)
         )
         {
-            services.AddSingleton<IMinioClient>(
-                new MinioClient()
-                    .WithEndpoint(options.MinioEndpoint)
+            var minioClient = new MinioClient()
+                .WithEndpoint(options.MinioEndpoint)
+                .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
+                .WithSSL(options.MinioUseSsl)
+                .Build();
+            services.AddSingleton<IMinioClient>(minioClient);
+
+            var presigningClient = string.IsNullOrEmpty(options.MinioPublicEndpoint)
+                ? minioClient
+                : new MinioClient()
+                    .WithEndpoint(options.MinioPublicEndpoint)
                     .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
                     .WithSSL(options.MinioUseSsl)
-                    .Build()
+                    .Build();
+            services.AddKeyedSingleton<IMinioClient>(
+                MinioStorageServiceKeys.PresigningClient,
+                presigningClient
             );
+
             services.AddScoped<IStorageService, MinioStorageService>();
         }
         else
@@ -100,21 +129,14 @@ public static class DependencyInjection
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddSingleton<IApiTokenHasher, ApiTokenHasher>();
 
-        services.AddHttpClient(
-            "notifications",
-            client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(10);
-            }
-        );
+        services
+            .AddHttpClient("notifications")
+            .ConfigurePrimaryHttpMessageHandler(() =>
+                new SocketsHttpHandler { ConnectCallback = SafeWebhookConnectCallback.ConnectAsync }
+            )
+            .AddStandardResilienceHandler();
 
-        services.AddHttpClient(
-            "keycloak-admin",
-            client =>
-            {
-                client.Timeout = TimeSpan.FromSeconds(10);
-            }
-        );
+        services.AddHttpClient("keycloak-admin").AddStandardResilienceHandler();
         services.AddSingleton<IKeycloakAdminTokenProvider, KeycloakAdminTokenProvider>();
         services.AddScoped<IKeycloakUserDirectory, KeycloakUserDirectory>();
 

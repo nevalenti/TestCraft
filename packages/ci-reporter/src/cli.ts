@@ -1,8 +1,8 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { basename, join, resolve } from 'node:path';
+import path from 'node:path';
 import { parseArgs as parseNodeArgs } from 'node:util';
 
-import { fetchToken } from './core/auth';
+import { authenticate as fetchAuthToken } from './core/auth';
 import { resolveJunitXml } from './core/junit';
 import * as log from './core/log';
 import { createStateStore } from './core/state';
@@ -26,6 +26,8 @@ interface Options {
   apiUrl: string;
   username: string;
   password: string;
+  clientId: string;
+  clientSecret: string;
   projectName: string;
   runName: string;
   junitXml?: string;
@@ -41,6 +43,8 @@ const FLAG_OPTIONS = {
   'api-url': { type: 'string' },
   username: { type: 'string' },
   password: { type: 'string' },
+  'client-id': { type: 'string' },
+  'client-secret': { type: 'string' },
   'project-name': { type: 'string' },
   'run-name': { type: 'string' },
   'junit-xml': { type: 'string' },
@@ -60,7 +64,6 @@ export const parseArgs = (argv: string[]): Options => {
   const hasCommand =
     maybeCommand !== undefined && !maybeCommand.startsWith('-');
   const command = hasCommand ? maybeCommand : 'import';
-  const flagArgs = hasCommand ? rest : argv;
 
   if (!COMMANDS.includes(command as (typeof COMMANDS)[number])) {
     throw new Error(
@@ -68,6 +71,7 @@ export const parseArgs = (argv: string[]): Options => {
     );
   }
 
+  const flagArgs = hasCommand ? rest : argv;
   const { values } = parseNodeArgs({
     args: flagArgs,
     options: FLAG_OPTIONS,
@@ -86,6 +90,8 @@ export const parseArgs = (argv: string[]): Options => {
     apiUrl: opt('api-url', 'TESTCRAFT_API_URL') ?? '',
     username: opt('username', 'TESTCRAFT_USERNAME') ?? '',
     password: opt('password', 'TESTCRAFT_PASSWORD') ?? '',
+    clientId: opt('client-id', 'TESTCRAFT_CLIENT_ID') ?? '',
+    clientSecret: opt('client-secret', 'TESTCRAFT_CLIENT_SECRET') ?? '',
     projectName: opt('project-name', 'TESTCRAFT_PROJECT_NAME') ?? '',
     runName: opt('run-name', 'TESTCRAFT_RUN_NAME') ?? env['CI_JOB_NAME'] ?? '',
     junitXml: opt('junit-xml', 'TESTCRAFT_JUNIT_XML'),
@@ -105,18 +111,24 @@ const writeDotenv = (path: string, runId: string): void => {
   writeFileSync(path, `TESTCRAFT_RUN_ID=${runId}\n`, 'utf8');
 };
 
-const authenticate = async (opts: Options): Promise<string> => {
+const resolveToken = async (opts: Options): Promise<string> => {
   let authority = opts.keycloakAuthority;
   if (!authority) {
     log.info('Fetching auth config…');
     authority = await fetchAuthority(opts.apiUrl);
   }
   log.info('Authenticating with Keycloak…');
-  return fetchToken(authority, opts.username, opts.password);
+
+  const credentials =
+    opts.clientId && opts.clientSecret
+      ? { clientId: opts.clientId, clientSecret: opts.clientSecret }
+      : { username: opts.username, password: opts.password };
+
+  return fetchAuthToken(authority, credentials);
 };
 
 const buildContext = async (opts: Options): Promise<ApiContext> => {
-  const token = await authenticate(opts);
+  const token = await resolveToken(opts);
   log.info(`Resolving project "${opts.projectName}"…`);
   const projectId = await findProjectId(opts.apiUrl, token, opts.projectName);
   return { apiUrl: opts.apiUrl, projectId, token };
@@ -151,7 +163,7 @@ const handleLogs = async (
     );
   }
 
-  const filePath = resolve(process.cwd(), opts.file);
+  const filePath = path.resolve(process.cwd(), opts.file);
   if (!existsSync(filePath)) {
     log.warn(`Log file not found at ${filePath} — skipping`);
     return;
@@ -182,16 +194,22 @@ const uploadScreenshots = async (
   let uploaded = 0;
   for (const result of results) {
     const slug = slugify(result.testCaseName);
-    const pngs = screenshotDirs
-      .filter((dir) => dir.name.toLowerCase().includes(slug))
-      .flatMap((dir) =>
-        readdirSync(join(screenshotsDir, dir.name))
-          .filter((file) => file.endsWith('.png'))
-          .map((file) => join(screenshotsDir, dir.name, file)),
-      );
+    const pngs = screenshotDirs.flatMap((dir) =>
+      dir.name.toLowerCase().includes(slug)
+        ? readdirSync(path.join(screenshotsDir, dir.name))
+            .filter((file) => file.endsWith('.png'))
+            .map((file) => path.join(screenshotsDir, dir.name, file))
+        : [],
+    );
 
     for (const png of pngs) {
-      await uploadAttachment(context, runId, result.id, png, basename(png));
+      await uploadAttachment(
+        context,
+        runId,
+        result.id,
+        png,
+        path.basename(png),
+      );
       uploaded++;
     }
   }
@@ -209,7 +227,7 @@ const handleImport = async (
     );
   }
 
-  const junitXml = resolve(process.cwd(), opts.junitXml);
+  const junitXml = path.resolve(process.cwd(), opts.junitXml);
   const xml = resolveJunitXml(opts.junitXml, process.cwd());
   const savedRunId = opts.runId ?? readState();
 
@@ -261,7 +279,7 @@ const handleImport = async (
 
   if (!opts.screenshotsDir || !completedRunId) return;
 
-  const screenshotsDir = resolve(process.cwd(), opts.screenshotsDir);
+  const screenshotsDir = path.resolve(process.cwd(), opts.screenshotsDir);
   if (!existsSync(screenshotsDir)) {
     log.info(
       `Screenshots directory not found at ${screenshotsDir} — skipping attachments`,
@@ -280,8 +298,12 @@ const run = async (): Promise<void> => {
     return;
   }
 
-  if (!opts.username || !opts.password) {
-    throw new Error('username and password are required when api-url is set');
+  const hasClientCredentials = Boolean(opts.clientId && opts.clientSecret);
+  const hasPasswordCredentials = Boolean(opts.username && opts.password);
+  if (!hasClientCredentials && !hasPasswordCredentials) {
+    throw new Error(
+      'either client-id/client-secret or username/password are required when api-url is set',
+    );
   }
 
   if (!opts.projectName) {
@@ -308,8 +330,10 @@ const run = async (): Promise<void> => {
 };
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  run().catch((error) => {
+  try {
+    await run();
+  } catch (error) {
     log.error(error instanceof Error ? error.message : String(error));
     process.exitCode = 1;
-  });
+  }
 }

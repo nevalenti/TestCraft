@@ -92,4 +92,10 @@ export default defineConfig([
       'unicorn/no-this-outside-of-class': 'off',
     },
   },
+  {
+    files: ['testcraft-reporter.ts'],
+    rules: {
+      'no-empty': ['error', { allowEmptyCatch: true }],
+    },
+  },
 ]);

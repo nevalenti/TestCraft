@@ -6,7 +6,7 @@ using Prometheus;
 using TestCraft.Api.Configuration.Authentication;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Infrastructure.Security;
+using TestCraft.Common.Security;
 
 namespace TestCraft.Api.Features.System;
 

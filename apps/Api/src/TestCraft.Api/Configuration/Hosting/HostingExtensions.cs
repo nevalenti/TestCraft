@@ -33,6 +33,7 @@ public static class HostingExtensions
         var migrationOptions = DatabaseMigrationOptions.Bind(builder.Configuration);
         var metricsOptions = MetricsOptions.Bind(builder.Configuration);
         var swaggerBasicAuthOptions = SwaggerBasicAuthOptions.Bind(builder.Configuration);
+        var hangfireBasicAuthOptions = HangfireBasicAuthOptions.Bind(builder.Configuration);
 
         builder.Services.AddStartupOptions(keycloakAuthOptions);
         builder.Services.AddStartupOptions(corsOptions);
@@ -40,6 +41,7 @@ public static class HostingExtensions
         builder.Services.AddStartupOptions(migrationOptions);
         builder.Services.AddStartupOptions(metricsOptions);
         builder.Services.AddStartupOptions(swaggerBasicAuthOptions);
+        builder.Services.AddStartupOptions(hangfireBasicAuthOptions);
 
         builder.Services.AddInfrastructure(builder.Configuration);
         builder.Services.AddApplication();

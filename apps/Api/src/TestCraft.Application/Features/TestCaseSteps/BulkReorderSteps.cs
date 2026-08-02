@@ -59,6 +59,16 @@ public static class BulkReorderSteps
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
+            var caseExists = await context.TestCases.AnyAsync(
+                testCase =>
+                    testCase.Id == request.CaseId && testCase.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
+            if (!caseExists)
+            {
+                throw new NotFoundException();
+            }
+
             var ids = request.Steps.Select(stepOrder => stepOrder.Id).ToList();
 
             var found = await context
