@@ -1,6 +1,6 @@
 ---
 title: Architecture
-description: Repository layout and module boundaries.
+description: Repository layout, module boundaries, and tech stack.
 sidebar:
   order: 1
 ---
@@ -26,15 +26,18 @@ apps/
     src/lib/                  # Shared helpers
     src/types/                # Shared frontend types
     src/__tests__/            # Vitest tests
-  e2e/                       # Playwright suite
 packages/
   types/                     # Shared TS types, published to web
   ci-reporter/               # CI reporter (npx/Docker) for non-GitHub CI
+e2e/                         # Playwright suite — its own workspace package,
+                              # not a deployed app like the ones under apps/
+Common/src/                  # TestCraft.Common — shared cross-cutting .NET
+                              # code (e.g. security helpers), referenced by
+                              # both apps/Api and apps/Gateway
 infrastructure/
   helm/                      # Helm chart
   keycloak/                  # Realm config, login theme
-  grafana/                   # Dashboard provisioning
-  prometheus/                # Scrape config
+  prometheus/                # Local docker-compose scrape/alertmanager config
 .github/
   actions/testcraft/         # CI reporter for GitHub Actions
   workflows/                 # GitHub Actions pipelines
@@ -43,42 +46,28 @@ jenkins/                     # Jenkins pipelines
 .gitlab/ci/                  # GitLab CI includes (API, web, E2E, docs)
 ```
 
-## Why these boundaries
+## Tech stack
 
-The API follows Clean Architecture / VSA: `Domain` has no dependencies on
-anything else, `Application` depends only on `Domain` and defines interfaces
-(`IEmailService`, `INotificationDispatcher`, ...) that `Infrastructure`
-implements, and `Api` wires concrete implementations to interfaces at
-startup. This keeps request handlers (CQRS commands/queries via MediatR) free
-of EF Core, Redis, or MinIO specifics — they depend on `Application`
-interfaces, which makes them unit-testable without Testcontainers. Anything
-that needs a real Postgres/Redis/MinIO — repository implementations, the
-migration runner — lives in `Infrastructure` and is covered by
-`TestCraft.Api.IntegrationTests` instead (see
-[Running Tests](/docs/guides/testing/)).
+| Layer          | Technology                                                   |
+| -------------- | ------------------------------------------------------------ |
+| Frontend       | React 19, TanStack Query/Router/Table, Zustand, Tailwind CSS |
+| Backend        | ASP.NET Core (.NET 10), CQRS via MediatR                     |
+| Database       | PostgreSQL, EF Core                                          |
+| Cache          | Redis                                                        |
+| Messaging      | MassTransit + RabbitMQ                                       |
+| Real-time      | SignalR                                                      |
+| Object storage | MinIO                                                        |
+| Email          | MailKit (SMTP)                                               |
+| Auth           | Keycloak (SSO, GitHub/Google social login)                   |
+| Reverse proxy  | YARP                                                         |
+| Observability  | Grafana · Prometheus · Loki · Seq                            |
+| E2E testing    | Playwright                                                   |
+| Deployment     | Docker, Helm on k3s                                          |
+| Docs           | Astro + Starlight (this site)                                |
 
-The **Gateway** exists so the browser only ever talks to one origin. Without
-it, the SPA, API, SignalR hubs, Keycloak, Grafana, and every other service
-would each need their own TLS cert and CORS configuration; instead only the
-Gateway is exposed, and everything else routes through it by path prefix
-(see [Production Deployment](/docs/guides/production/#routing)). This is also
-why `CORS_ALLOWED_ORIGINS` is empty by default — same-origin requests through
-the Gateway never need it.
+**Monorepo tooling** — pnpm workspaces + Turborepo; TypeScript across web,
+e2e, ci-reporter, and docs; xUnit + Testcontainers for .NET; Vitest for
+TypeScript.
 
-Work that shouldn't block a request — JUnit/Allure import parsing, dispatching
-notifications when a run's status changes — is handed off via RabbitMQ using
-MassTransit: an endpoint publishes a message and returns immediately (e.g.
-`202 Accepted` with a job id for imports),
-and a consumer in `TestCraft.Application` (`Import/Consumers/*`,
-`Notifications/Consumers/RunStatusChangedConsumer`) does the actual work
-asynchronously.
-
-The web app mirrors the API's separation: `api/` clients are the only code
-that knows about HTTP, `hooks/` wrap them in TanStack Query for caching and
-mutation, and `pages/` only call hooks — never `api/` or `fetch` directly.
-`stores/` (Zustand) hold client-only UI state that TanStack Query doesn't
-own, such as view-mode toggles.
-
-See [Tech Stack](/docs/reference/tech-stack/) for what each layer is built
-with, and [Production Deployment](/docs/guides/production/) for how it's all
-wired together at runtime.
+See [Production Deployment](/docs/guides/production/) for how it's all wired
+together at runtime.

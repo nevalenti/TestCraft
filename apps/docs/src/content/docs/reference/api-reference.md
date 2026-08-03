@@ -2,7 +2,7 @@
 title: API Reference
 description: Where to find the interactive Swagger UI and OpenAPI spec.
 sidebar:
-  order: 4
+  order: 3
 ---
 
 The API is fully documented via OpenAPI/Swagger — generated from XML doc
@@ -30,31 +30,39 @@ types, which the web app's hand-written Axios clients
 
 ## Authentication
 
-All endpoints (other than health/auth-config) require a Keycloak-issued JWT
-bearer token — see the `bearerAuth` security scheme in Swagger UI to
-authenticate requests directly from the docs. For CI/machine-to-machine
-access, see [CI Integration](/docs/guides/ci-integration/).
+All endpoints require a Keycloak-issued JWT bearer token, with the exception
+of the [operational endpoints](#operational-endpoints) below (`ready`,
+`health`, `status`, `auth-config` are fully anonymous; `metrics` uses its own
+separate `METRICS_TOKEN` bearer check instead of a Keycloak token) — see the
+`bearerAuth` security scheme in Swagger UI to authenticate requests directly
+from the docs. For CI/machine-to-machine access, see
+[CI Integration](/docs/guides/ci-integration/).
 
 ## Resource shape
 
-Everything under `/api/v1` nests below `/projects/{projectId}`, matching the
-"everything lives inside a project" model:
+Everything under `/api/v1` nests below `/projects/{projectId}`, except the
+current user's own account:
 
 | Resource                                  | Path prefix                                                                                                                       |
 | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | Projects                                  | `/api/v1/projects`                                                                                                                |
 | Test suites                               | `/api/v1/projects/{projectId}/suites`                                                                                             |
 | Test cases / steps (within a suite)       | `/api/v1/projects/{projectId}/suites/{suiteId}/cases`                                                                             |
+| Test case steps                           | `/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps`                                                              |
 | Test cases (project-wide, e.g. labeling)  | `/api/v1/projects/{projectId}/cases`                                                                                              |
+| Test case labels (attach/detach)          | `/api/v1/projects/{projectId}/cases/{caseId}/labels`                                                                              |
 | Labels                                    | `/api/v1/projects/{projectId}/labels`                                                                                             |
 | Test plans                                | `/api/v1/projects/{projectId}/plans`                                                                                              |
-| Test runs / results / attachments         | `/api/v1/projects/{projectId}/runs`                                                                                               |
+| Test runs                                 | `/api/v1/projects/{projectId}/runs`                                                                                               |
+| Test results (within a run)               | `/api/v1/projects/{projectId}/runs/{runId}/results`                                                                               |
+| Attachments (within a result)             | `/api/v1/projects/{projectId}/runs/{runId}/results/{resultId}/attachments`                                                        |
 | JUnit / Allure import                     | `POST /api/v1/projects/{projectId}/import/{junit,allure}` to queue, `GET /api/v1/projects/{projectId}/import/{id}` to poll status |
 | Analytics (trend, flaky, breakdown, diff) | `/api/v1/projects/{projectId}/analytics`                                                                                          |
 | Notifications (webhooks, emails)          | `/api/v1/projects/{projectId}/notifications`                                                                                      |
 | Members                                   | `/api/v1/projects/{projectId}/members`                                                                                            |
 | API tokens                                | `/api/v1/projects/{projectId}/tokens`                                                                                             |
 | Public share links                        | `/api/v1/projects/{projectId}/runs/{runId}/share` to create, `/api/v1/share/{token}` to read                                      |
+| Account (current user, avatar)            | `/api/v1/account` — not project-scoped                                                                                            |
 
 ## Operational endpoints
 
