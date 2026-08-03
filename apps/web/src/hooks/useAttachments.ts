@@ -47,3 +47,16 @@ export const useDeleteAttachment = (
     },
   });
 };
+
+export const useDownloadAttachment = (
+  projectId: string,
+  runId: string,
+  resultId: string,
+) =>
+  useMutation({
+    mutationFn: (id: string) =>
+      attachmentsApi.getDownloadUrl(projectId, runId, resultId, id),
+    onSuccess: (url) => {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    },
+  });

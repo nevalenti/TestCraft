@@ -140,7 +140,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        importTestCraftResults(env.RUN_NAME, 'apps/e2e/e2e-results/junit.xml', 'apps/e2e/test-results')
+                        importTestCraftResults(env.RUN_NAME, 'e2e/e2e-results/junit.xml', 'e2e/test-results')
                     } catch (err) {
                         echo "WARNING: TestCraft reporting failed: ${err}"
                         currentBuild.result = 'UNSTABLE'
@@ -149,11 +149,11 @@ pipeline {
             }
             post {
                 always {
-                    junit testResults: 'apps/e2e/e2e-results/junit.xml', allowEmptyResults: true
-                    archiveArtifacts artifacts: 'apps/e2e/e2e-results/**', allowEmptyArchive: true
+                    junit testResults: 'e2e/e2e-results/junit.xml', allowEmptyResults: true
+                    archiveArtifacts artifacts: 'e2e/e2e-results/**', allowEmptyArchive: true
                 }
                 failure {
-                    archiveArtifacts artifacts: 'apps/e2e/test-results/**', allowEmptyArchive: true
+                    archiveArtifacts artifacts: 'e2e/test-results/**', allowEmptyArchive: true
                 }
             }
         }

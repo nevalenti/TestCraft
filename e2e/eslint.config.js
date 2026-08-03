@@ -8,7 +8,7 @@ import {
   sharedRules,
   sharedUnicornRules,
   tseslint,
-} from '../../eslint.config.base.mjs';
+} from '../eslint.config.base.mjs';
 
 export default defineConfig([
   globalIgnores(['test-results', 'playwright-report']),

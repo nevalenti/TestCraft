@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'apps/Gateway/**'
+      - 'Common/**'
       - '.github/workflows/gateway.yml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/Gateway/**'
+      - 'Common/**'
       - '.github/workflows/gateway.yml'
   workflow_dispatch:
 

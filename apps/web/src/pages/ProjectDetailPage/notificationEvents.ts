@@ -1,1 +1,1 @@
-export const AVAILABLE_EVENTS = ['RunCompleted', 'FailureThresholdExceeded'];
+export const AVAILABLE_EVENTS = ['run.completed'];

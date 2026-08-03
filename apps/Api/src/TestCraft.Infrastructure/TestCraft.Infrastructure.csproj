@@ -6,7 +6,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TestCraft.Domain\TestCraft.Domain.csproj" />
     <ProjectReference Include="..\TestCraft.Application\TestCraft.Application.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

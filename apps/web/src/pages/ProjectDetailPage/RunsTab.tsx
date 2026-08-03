@@ -5,12 +5,10 @@ import {
   PlusIcon,
   XCircleIcon,
 } from '@heroicons/react/24/solid';
-import { useQueries } from '@tanstack/react-query';
 import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
 import { TestRunStatus } from '@testcraft/types';
 import { useState } from 'react';
 
-import { testRunQueries } from '@/api/testRuns';
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
@@ -29,6 +27,7 @@ import {
   useImportAllure,
   useImportJUnitXml,
   useTestRuns,
+  useTestRunSummaries,
   useUpdateTestRun,
 } from '@/hooks/useTestRuns';
 import { cn } from '@/lib/cn';
@@ -89,13 +88,7 @@ export const RunsTab = () => {
   const completedRuns = (runs ?? []).filter(
     (run) => run.status === TestRunStatus.Completed,
   );
-  const summaryMap = useQueries({
-    queries: completedRuns.map((run) =>
-      testRunQueries.summary(projectId, run.id),
-    ),
-    combine: (results) =>
-      new Map(completedRuns.map((run, index) => [run.id, results[index].data])),
-  });
+  const summaryMap = useTestRunSummaries(completedRuns);
 
   const getRunIcon = (run: TestRun, size: 'sm' | 'xs') => {
     const cls = size === 'sm' ? 'size-4' : 'size-3.5';

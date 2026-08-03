@@ -10,7 +10,7 @@ RUN pnpm install --frozen-lockfile
 
 COPY packages/ci-reporter/ ./packages/ci-reporter/
 
-RUN pnpm --filter @testcraft/ci-reporter run build
+RUN pnpm --filter testcraft-ci-reporter run build
 
 FROM node:24-alpine AS runtime
 WORKDIR /app

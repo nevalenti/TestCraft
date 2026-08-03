@@ -5,17 +5,16 @@ import {
   ClockIcon,
   FolderIcon,
 } from '@heroicons/react/24/solid';
-import { useQueries } from '@tanstack/react-query';
 import { TestRunStatus } from '@testcraft/types';
 import { compareDesc } from 'date-fns';
 import { useMemo } from 'react';
 
-import { testRunQueries } from '@/api/testRuns';
 import keycloak from '@/auth/keycloak';
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useProjects } from '@/hooks/useProjects';
+import { useProjectsTestRuns, useTestRunSummaries } from '@/hooks/useTestRuns';
 import { ActiveRunListItem } from '@/pages/DashboardPage/ActiveRunListItem';
 import { CompletedRunListItem } from '@/pages/DashboardPage/CompletedRunListItem';
 import { StatCard } from '@/pages/DashboardPage/StatCard';
@@ -40,63 +39,37 @@ export const DashboardPage = () => {
     [projects],
   );
 
-  const { activeRuns, recentlyCompletedRuns, totalRuns, runsPending } =
-    useQueries({
-      queries: (projects ?? []).map((project) => ({
-        ...testRunQueries.all(project.id),
-        refetchInterval: 5000,
-        refetchIntervalInBackground: false,
-        staleTime: 5000,
-      })),
-      combine: (results) => {
-        const allRuns = results.flatMap((result) => result.data?.items ?? []);
-        return {
-          activeRuns: allRuns
-            .filter((run) => run.status === TestRunStatus.Active)
-            .toSorted((runA, runB) =>
-              compareDesc(new Date(runA.createdAt), new Date(runB.createdAt)),
-            )
-            .slice(0, 10),
-          recentlyCompletedRuns: allRuns
-            .filter((run) => run.status === TestRunStatus.Completed)
-            .toSorted((runA, runB) =>
-              compareDesc(
-                new Date(runA.updatedAt ?? runA.createdAt),
-                new Date(runB.updatedAt ?? runB.createdAt),
-              ),
-            )
-            .slice(0, 10),
-          totalRuns: results.reduce(
-            (sum, result) => sum + (result.data?.total ?? 0),
-            0,
-          ),
-          runsPending:
-            results.length !== (projects ?? []).length ||
-            results.some((result) => result.isPending),
-        };
-      },
-    });
+  const {
+    runs: allRuns,
+    total: totalRuns,
+    isPending: runsPending,
+  } = useProjectsTestRuns(
+    (projects ?? []).map((project) => project.id),
+    {
+      refetchInterval: 5000,
+      refetchIntervalInBackground: false,
+      staleTime: 5000,
+    },
+  );
 
-  const completedRunSummaries = useQueries({
-    queries: recentlyCompletedRuns.map((run) =>
-      testRunQueries.summary(run.projectId, run.id),
-    ),
-    combine: (results) =>
-      new Map(
-        recentlyCompletedRuns.map((run, index) => [
-          run.id,
-          results[index].data,
-        ]),
+  const activeRuns = allRuns
+    .filter((run) => run.status === TestRunStatus.Active)
+    .toSorted((runA, runB) =>
+      compareDesc(new Date(runA.createdAt), new Date(runB.createdAt)),
+    )
+    .slice(0, 10);
+  const recentlyCompletedRuns = allRuns
+    .filter((run) => run.status === TestRunStatus.Completed)
+    .toSorted((runA, runB) =>
+      compareDesc(
+        new Date(runA.updatedAt ?? runA.createdAt),
+        new Date(runB.updatedAt ?? runB.createdAt),
       ),
-  });
+    )
+    .slice(0, 10);
 
-  const activeRunSummaries = useQueries({
-    queries: activeRuns.map((run) =>
-      testRunQueries.summary(run.projectId, run.id),
-    ),
-    combine: (results) =>
-      new Map(activeRuns.map((run, index) => [run.id, results[index].data])),
-  });
+  const completedRunSummaries = useTestRunSummaries(recentlyCompletedRuns);
+  const activeRunSummaries = useTestRunSummaries(activeRuns);
 
   useBreadcrumbs([{ label: 'Dashboard', href: '/' }]);
 

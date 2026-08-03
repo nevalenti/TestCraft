@@ -39,37 +39,6 @@ public partial class NotificationDispatcher(
         );
     }
 
-    public async Task DispatchThresholdBreachedAsync(
-        Guid projectId,
-        Guid runId,
-        string runName,
-        double failRate,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var payload = new
-        {
-            event_type = "run.threshold_breached",
-            run_id = runId,
-            run_name = runName,
-            project_id = projectId,
-            fail_rate = failRate,
-        };
-        await DispatchWebhooksAsync(
-            projectId,
-            "run.threshold_breached",
-            payload,
-            cancellationToken
-        );
-        await DispatchEmailsAsync(
-            projectId,
-            "run.threshold_breached",
-            runName,
-            $"Test run <b>{runName}</b> exceeded the failure threshold ({failRate:P0} failed).",
-            cancellationToken
-        );
-    }
-
     private async Task DispatchWebhooksAsync(
         Guid projectId,
         string eventType,

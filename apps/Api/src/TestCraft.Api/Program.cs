@@ -1,5 +1,4 @@
 using DotNetEnv;
-using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.Configuration.Database;
 using TestCraft.Api.Configuration.Hosting;
 using TestCraft.Infrastructure.Configuration;

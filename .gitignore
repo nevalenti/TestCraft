@@ -22,7 +22,7 @@ infrastructure/keycloak/realm.json
 .turbo/
 .vite/
 .vscode/
-apps/e2e/tests/.auth/
+e2e/tests/.auth/
 bin/
 coverage/
 dist/
