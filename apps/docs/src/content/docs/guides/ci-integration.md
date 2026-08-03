@@ -6,26 +6,27 @@ sidebar:
 ---
 
 TestCraft imports JUnit XML results and streams live per-test logs from any CI
-system. There are two ways to report into it: the first-party GitHub Action,
-or the `testcraft-ci-reporter` CLI for everything else.
+system: the first-party GitHub Action, or the `testcraft-ci-reporter` CLI for
+everything else.
 
 ## Authentication
 
-Both the action and the CLI authenticate as a TestCraft **service account**
-against Keycloak, then call the TestCraft API. You'll need:
+Both authenticate as a TestCraft **service account** (create one in Keycloak,
+give it access to the relevant project) against Keycloak, then call the API:
 
 - `api-url` — the TestCraft API base URL
-- `username` / `password` — a service account's credentials
-- `keycloak-authority` — optional; when omitted it's fetched from
-  `api-url/api/auth-config`
+- `username` / `password` — service account credentials
+- `keycloak-authority` — optional; defaults to `api-url/api/auth-config`
 
-Service accounts are managed like any other TestCraft user — create one in
-Keycloak and give it access to the relevant project.
+The CLI (and Playwright reporter) also accept `--client-id`/`--client-secret`
+(`TESTCRAFT_CLIENT_ID`/`TESTCRAFT_CLIENT_SECRET`) as an alternative to
+`username`/`password`, using Keycloak's client-credentials grant. Only one
+credential pair is required. The GitHub Action only supports
+`username`/`password`.
 
 ## GitHub Action
 
-The composite action at [`.github/actions/testcraft`](https://github.com/nevalenti/TestCraft/tree/main/.github/actions/testcraft)
-supports two commands:
+[`.github/actions/testcraft`](https://github.com/nevalenti/TestCraft/tree/main/.github/actions/testcraft):
 
 ```yaml
 - name: Start TestCraft run
@@ -40,7 +41,11 @@ supports two commands:
     run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
     source: api
 
-# ... run your tests, then:
+- name: Run tests
+  env:
+    TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
+    TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
+  run: dotnet test
 
 - name: Import results to TestCraft
   if: always()
@@ -53,8 +58,12 @@ supports two commands:
     junit-xml: apps/Api/test-results/*.junit.xml
     run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
     source: api
-    screenshots-dir: apps/e2e/test-results # optional, Playwright only
+    screenshots-dir: e2e/test-results # optional, Playwright only
 ```
+
+Map the `start` step's `run-id` output into `TESTCRAFT_RUN_ID` in your test
+step's `env:` (shown above) — the [VSTest logger](#live-test-logs) and
+Playwright reporter pick it up automatically to stream live per-test logs.
 
 | Input                   | Required | Description                                                                         |
 | ----------------------- | -------- | ----------------------------------------------------------------------------------- |
@@ -64,91 +73,43 @@ supports two commands:
 | `project-name`          | yes      | Project to import results into                                                      |
 | `junit-xml`             | no       | Path or single-directory glob to a JUnit XML report — required for `import`         |
 | `run-name`              | yes      | Display name for the run                                                            |
-| `keycloak-authority`    | no       | Public Keycloak authority — skips the `api-url/api/auth-config` lookup when set     |
+| `keycloak-authority`    | no       | Public Keycloak authority — skips the `auth-config` lookup when set                 |
 | `source`                | no       | Source tag for test suites (`api`, `web`, `e2e`, ...)                               |
 | `screenshots-dir`       | no       | Playwright `test-results` directory — uploads PNGs as attachments to failed results |
 
-The `start` command's `run-id` output feeds `TESTCRAFT_RUN_ID` into the test
-step's environment, which the [VSTest logger](#live-test-logs) and Playwright
-reporter pick up automatically to stream live per-test logs.
-
 ## `testcraft-ci-reporter` CLI
 
-For GitLab CI, Jenkins, or any other CI system, use the CLI equivalent. It's
-published to npm as [`testcraft-ci-reporter`](https://www.npmjs.com/package/testcraft-ci-reporter),
-versioned independently of the app images (see
-[Upgrading](/docs/guides/upgrading/)) — `npx testcraft-ci-reporter@latest <command>`
-works directly, no build step required. This repo's own pipelines instead
-build it from source in the pipeline (either running the bundled esbuild
-output with `node`, or building the image from
-[`packages/ci-reporter/Dockerfile`](https://github.com/nevalenti/TestCraft/tree/main/packages/ci-reporter/Dockerfile)),
-since the tool lives in this monorepo — both approaches below work the same
-way against the published package.
+For GitLab CI, Jenkins, or any other system. Build from source (npm package
+isn't published yet):
 
 ```bash
-# build once (or build the Docker image instead — see below)
 pnpm --filter testcraft-ci-reporter run build
+```
 
-# start a run before tests
-node packages/ci-reporter/dist/cli.js start \
-  --project-name TestCraft \
-  --run-name "#42 api (main)" \
-  --source api \
-  --dotenv .testcraft.env
+| Command  | Purpose                                       | Key flags                                       |
+| -------- | ---------------------------------------------- | ------------------------------------------------ |
+| `start`  | Create a run before tests                     | `--dotenv <path>` writes `TESTCRAFT_RUN_ID` to a file to `source` later |
+| `import` | Import JUnit XML results after tests          | `--junit-xml <glob>`                            |
+| `logs`   | Stream a log file to an existing run          | `--run-id`/`TESTCRAFT_RUN_ID`, `--file`/`TESTCRAFT_LOG_FILE` |
 
-# ... run your tests ...
-
-# import results after
+```bash
 node packages/ci-reporter/dist/cli.js import \
   --project-name TestCraft \
   --junit-xml "apps/Api/test-results/*.junit.xml" \
   --run-name "#42 api (main)" \
   --source api
-
-# stream a log file to an existing run
-node packages/ci-reporter/dist/cli.js logs \
-  --project-name TestCraft \
-  --run-name "#42 api (main)" \
-  --source api \
-  --run-id "$TESTCRAFT_RUN_ID" \
-  --file build.log
 ```
 
-Or, via the Docker image (what the Jenkinsfiles do):
-
-```bash
-docker build -t testcraft-ci-reporter -f packages/ci-reporter/Dockerfile .
-docker run --rm -w /repo -v "$PWD:/repo" \
-  -e TESTCRAFT_USERNAME -e TESTCRAFT_PASSWORD -e TESTCRAFT_API_URL \
-  testcraft-ci-reporter import \
-  --project-name TestCraft \
-  --junit-xml "apps/Api/test-results/*.junit.xml" \
-  --run-name "#42 api (main)" \
-  --source api
-```
-
-Every flag has an environment variable equivalent (`--api-url` ↔
-`TESTCRAFT_API_URL`, `--project-name` ↔ `TESTCRAFT_PROJECT_NAME`, etc.), which
-is how the bundled [Jenkinsfiles](https://github.com/nevalenti/TestCraft/tree/main/jenkins)
+Every flag has an env var equivalent (`--api-url` ↔ `TESTCRAFT_API_URL`,
+etc.) — see the bundled [Jenkinsfiles](https://github.com/nevalenti/TestCraft/tree/main/jenkins)
 and [GitLab CI](https://github.com/nevalenti/TestCraft/tree/main/.gitlab/ci)
-pipelines wire it up — see those directories for complete, working examples
-for API, web, and E2E suites.
-
-Commands: `start`, `import`, `logs`. `start --dotenv <path>` writes
-`TESTCRAFT_RUN_ID=<id>` to a file you can `source` into later pipeline steps.
-`logs` requires `--run-id` (or `TESTCRAFT_RUN_ID`) and `--file` (or
-`TESTCRAFT_LOG_FILE`) — it uploads the file's lines as run logs and no-ops if
-the file doesn't exist yet.
+pipelines for complete examples.
 
 ## Live test logs
 
-Two loggers stream per-test pass/fail lines to a run in real time, so you can
-watch a suite execute from the TestCraft dashboard instead of tailing CI
-output:
+Two loggers stream per-test pass/fail lines to a run in real time:
 
-- **.NET** — `TestCraft.VSTestLogger` (registered via each test project's
-  `<VSTestLogger>` MSBuild property). It's a no-op unless `TESTCRAFT_API_URL`,
+- **.NET** — `TestCraft.VSTestLogger`, no-op unless `TESTCRAFT_API_URL`,
   `TESTCRAFT_RUN_ID`, `TESTCRAFT_USERNAME`, `TESTCRAFT_PASSWORD`, and
-  `TESTCRAFT_PROJECT_NAME` are all set, so it's safe to leave enabled outside CI.
-- **Playwright** — `apps/e2e/reporter.ts`, added to `playwright.config.ts`'s
-  reporter list only when `TESTCRAFT_RUN_ID` is set.
+  `TESTCRAFT_PROJECT_NAME` are all set.
+- **Playwright** — `e2e/reporter.ts`, active only when `TESTCRAFT_RUN_ID` is set.

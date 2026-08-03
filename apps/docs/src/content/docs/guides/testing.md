@@ -13,11 +13,8 @@ just github e2e                    # End-to-end — Playwright, via act
 
 ## API
 
-`TestCraft.Api.IntegrationTests` spins up Postgres via
+Integration tests spin up Postgres via
 [Testcontainers](https://testcontainers.com), so Docker must be running.
-Coverage is collected with `apps/Api/coverlet.runsettings` (40% line floor —
-ratchet it up, never down) and enforced in CI via
-`--collect:"XPlat Code Coverage" --settings apps/Api/coverlet.runsettings`.
 
 ## Web
 
@@ -29,20 +26,11 @@ pnpm --filter testcraft-web run test:ui    # Vitest UI
 
 ## End-to-end
 
-The Playwright suite in `apps/e2e` needs the full stack running — Postgres,
-Keycloak, the API, and the web app. `just github e2e`/`just gitlab e2e`/
-`just jenkins e2e` reproduce the exact CI pipelines locally using
-[`act`](https://github.com/nektos/act), [`gitlab-ci-local`](https://github.com/firecow/gitlab-ci-local),
-or a throwaway Jenkins controller, respectively — see
-[CI Integration](/docs/guides/ci-integration/) for how results get reported
-back to TestCraft.
+The Playwright suite in `e2e` needs the full stack running (Postgres,
+Keycloak, API, web). See [CI Integration](/docs/guides/ci-integration/) for
+how results get reported back to TestCraft.
 
 ## Reproducing CI locally
 
-Beyond the E2E suite, `just github api` / `just gitlab api`,
-`just github web` / `just gitlab web`, and `just github docs` /
-`just gitlab docs` run the other pipelines through the same local emulators
-(plus `just jenkins api` / `just jenkins web` / `just jenkins docs` for the
-Jenkins equivalents). This is the most reliable way to debug a pipeline
-failure that doesn't reproduce with a plain local `dotnet test`/`pnpm test`
-run.
+`just github <api|web|e2e|docs>` (or `gitlab`/`jenkins`) runs each pipeline
+locally — useful when a failure doesn't reproduce with a plain test run.
