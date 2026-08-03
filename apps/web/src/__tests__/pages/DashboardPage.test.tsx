@@ -85,16 +85,11 @@ const setupMocks = ({
       } catch {
         probe = null;
       }
-      if (
-        probe !== null &&
-        typeof probe === 'object' &&
-        'activeRuns' in probe
-      ) {
+      if (probe !== null && typeof probe === 'object' && 'runs' in probe) {
         return {
-          activeRuns,
-          recentlyCompletedRuns,
-          totalRuns: activeRuns.length + recentlyCompletedRuns.length,
-          runsPending,
+          runs: [...activeRuns, ...recentlyCompletedRuns],
+          total: activeRuns.length + recentlyCompletedRuns.length,
+          isPending: runsPending,
         } as unknown as ReturnType<typeof useQueries>;
       }
       return new Map() as unknown as ReturnType<typeof useQueries>;

@@ -5,11 +5,13 @@ on:
     branches: [main]
     paths:
       - 'apps/Api/**'
+      - 'Common/**'
       - '.github/workflows/api.yml'
   pull_request:
     branches: [main]
     paths:
       - 'apps/Api/**'
+      - 'Common/**'
       - '.github/workflows/api.yml'
   workflow_dispatch:
 

@@ -43,7 +43,7 @@ export default defineConfig({
       timeout: 120_000,
     },
     {
-      command: 'dotnet run --project ../Api/src/TestCraft.Api',
+      command: 'dotnet run --project ../apps/Api/src/TestCraft.Api',
       url: 'http://localhost:5000/api/ready',
       reuseExistingServer: !process.env.CI,
       timeout: 120_000,

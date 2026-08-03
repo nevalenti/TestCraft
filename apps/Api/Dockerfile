@@ -3,7 +3,7 @@ WORKDIR /src
 
 COPY Directory.Build.props Directory.Packages.props ./
 COPY apps/Api/.editorconfig apps/Api/
-COPY apps/Common/src/TestCraft.Common/TestCraft.Common.csproj apps/Common/src/TestCraft.Common/
+COPY Common/src/TestCraft.Common/TestCraft.Common.csproj Common/src/TestCraft.Common/
 COPY apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj apps/Api/src/TestCraft.Domain/
 COPY apps/Api/src/TestCraft.Application/TestCraft.Application.csproj apps/Api/src/TestCraft.Application/
 COPY apps/Api/src/TestCraft.Infrastructure/TestCraft.Infrastructure.csproj apps/Api/src/TestCraft.Infrastructure/
@@ -11,7 +11,7 @@ COPY apps/Api/src/TestCraft.Api/TestCraft.Api.csproj apps/Api/src/TestCraft.Api/
 
 RUN dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj
 
-COPY apps/Common/src/ apps/Common/src/
+COPY Common/src/ Common/src/
 COPY apps/Api/src/ apps/Api/src/
 
 RUN dotnet publish apps/Api/src/TestCraft.Api/TestCraft.Api.csproj -c Release -o /app --no-restore

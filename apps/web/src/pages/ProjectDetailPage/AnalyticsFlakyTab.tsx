@@ -20,11 +20,11 @@ export const AnalyticsFlakyTab = () => {
 
   const severity = useMemo(
     () => ({
-      high: sortedTests.filter((test) => test.flakRate >= 0.6).length,
+      high: sortedTests.filter((test) => test.flakRate >= 60).length,
       medium: sortedTests.filter(
-        (test) => test.flakRate >= 0.3 && test.flakRate < 0.6,
+        (test) => test.flakRate >= 30 && test.flakRate < 60,
       ).length,
-      low: sortedTests.filter((test) => test.flakRate < 0.3).length,
+      low: sortedTests.filter((test) => test.flakRate < 30).length,
     }),
     [sortedTests],
   );
@@ -84,7 +84,7 @@ export const AnalyticsFlakyTab = () => {
           </thead>
           <tbody>
             {sortedTests.map((stat, index) => {
-              const pct = Math.round(stat.flakRate * 100);
+              const pct = Math.round(stat.flakRate);
               let barColor = 'bg-info';
               if (pct >= 60) barColor = 'bg-error';
               else if (pct >= 30) barColor = 'bg-warning';

@@ -7,7 +7,8 @@ e2e:
     - changes:
         - 'apps/Api/**/*'
         - 'apps/web/**/*'
-        - 'apps/e2e/**/*'
+        - 'Common/**/*'
+        - 'e2e/**/*'
         - 'packages/**/*'
         - 'pnpm-lock.yaml'
         - 'infrastructure/keycloak/**/*'
@@ -28,7 +29,7 @@ e2e:
     DATABASE_URL: postgresql://e2e:e2e@postgres:5432/testcraft_e2e
     KEYCLOAK_AUTHORITY: http://docker:8080/realms/testcraft
     VITE_KEYCLOAK_URL: http://docker:8080
-    TESTCRAFT_JUNIT_XML: apps/e2e/e2e-results/junit.xml
+    TESTCRAFT_JUNIT_XML: e2e/e2e-results/junit.xml
     TESTCRAFT_RUN_NAME: '#$CI_PIPELINE_IID e2e ($CI_COMMIT_REF_NAME)'
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends curl ca-certificates gnupg jq
@@ -51,12 +52,12 @@ e2e:
     - if [ -f testcraft.env ]; then set -a; . ./testcraft.env; set +a; fi
     - pnpm --filter testcraft-e2e run e2e
   after_script:
-    - node packages/ci-reporter/dist/cli.js import --screenshots-dir apps/e2e/test-results || true
+    - node packages/ci-reporter/dist/cli.js import --screenshots-dir e2e/test-results || true
   artifacts:
     when: always
     reports:
-      junit: apps/e2e/e2e-results/junit.xml
+      junit: e2e/e2e-results/junit.xml
     paths:
-      - apps/e2e/e2e-results/
-      - apps/e2e/test-results/
+      - e2e/e2e-results/
+      - e2e/test-results/
     expire_in: 7 days

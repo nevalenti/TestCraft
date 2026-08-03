@@ -8,12 +8,4 @@ public interface INotificationDispatcher
         string runName,
         CancellationToken cancellationToken = default
     );
-
-    Task DispatchThresholdBreachedAsync(
-        Guid projectId,
-        Guid runId,
-        string runName,
-        double failRate,
-        CancellationToken cancellationToken = default
-    );
 }

@@ -24,6 +24,8 @@ apps/Api/test-results/
 apps/Api/tests/
 apps/Gateway/**/bin/
 apps/Gateway/**/obj/
+Common/**/bin/
+Common/**/obj/
 apps/web/test-results/
 docker-compose*.yml
 LICENSE

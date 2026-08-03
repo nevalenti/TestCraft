@@ -7,11 +7,11 @@ import { PlusIcon } from '@heroicons/react/24/solid';
 import type { Attachment } from '@testcraft/types';
 import { useRef } from 'react';
 
-import { attachmentsApi } from '@/api/attachments';
 import { Modal } from '@/components/ui/Modal';
 import {
   useAttachments,
   useDeleteAttachment,
+  useDownloadAttachment,
   useUploadAttachment,
 } from '@/hooks/useAttachments';
 import { formatDateTime } from '@/lib/format';
@@ -48,6 +48,7 @@ export const AttachmentModal = ({
   );
   const upload = useUploadAttachment(projectId, runId, resultId);
   const del = useDeleteAttachment(projectId, runId, resultId);
+  const download = useDownloadAttachment(projectId, runId, resultId);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -55,14 +56,8 @@ export const AttachmentModal = ({
     e.target.value = '';
   };
 
-  const handleDownload = async (attachment: Attachment) => {
-    const url = await attachmentsApi.getDownloadUrl(
-      projectId,
-      runId,
-      resultId,
-      attachment.id,
-    );
-    window.open(url, '_blank', 'noopener,noreferrer');
+  const handleDownload = (attachment: Attachment) => {
+    download.mutate(attachment.id);
   };
 
   const renderAttachments = () => {
