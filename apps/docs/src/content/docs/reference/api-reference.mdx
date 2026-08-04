@@ -5,6 +5,8 @@ sidebar:
   order: 3
 ---
 
+import { Aside, LinkCard } from '@astrojs/starlight/components';
+
 The API is fully documented via OpenAPI/Swagger — generated from XML doc
 comments and Swashbuckle annotations, so it's always in sync with the code.
 
@@ -12,13 +14,15 @@ comments and Swashbuckle annotations, so it's always in sync with the code.
 
 Interactive docs are mounted at `/api/docs`:
 
-- Local dev: `http://localhost:5000/api/docs`
-- Production: `https://<your-domain>/api/docs` (proxied through the Gateway's
-  `/api/*` route)
+- **Local dev** — `http://localhost:5000/api/docs`
+- **Production** — `https://<your-domain>/api/docs`, proxied through the
+  Gateway's `/api/*` route
 
-In production, Swagger UI is gated behind HTTP Basic Auth — set
-`SWAGGER_BASIC_AUTH_USERNAME` / `SWAGGER_BASIC_AUTH_PASSWORD` (or the Helm
-equivalents) to enable it.
+<Aside type="note">
+  In production, Swagger UI is gated behind HTTP Basic Auth — set
+  `SWAGGER_BASIC_AUTH_USERNAME` / `SWAGGER_BASIC_AUTH_PASSWORD` (or the Helm
+  equivalents) to enable it.
+</Aside>
 
 ## OpenAPI spec
 
@@ -31,12 +35,17 @@ types, which the web app's hand-written Axios clients
 ## Authentication
 
 All endpoints require a Keycloak-issued JWT bearer token, with the exception
-of the [operational endpoints](#operational-endpoints) below (`ready`,
-`health`, `status`, `auth-config` are fully anonymous; `metrics` uses its own
-separate `METRICS_TOKEN` bearer check instead of a Keycloak token) — see the
-`bearerAuth` security scheme in Swagger UI to authenticate requests directly
-from the docs. For CI/machine-to-machine access, see
-[CI Integration](/docs/guides/ci-integration/).
+of the [operational endpoints](#operational-endpoints) below — `ready`,
+`health`, `status`, and `auth-config` are fully anonymous, and `metrics` uses
+its own separate `METRICS_TOKEN` bearer check instead of a Keycloak token.
+Use the `bearerAuth` security scheme in Swagger UI to authenticate requests
+directly from the docs.
+
+<LinkCard
+  title="CI / machine-to-machine access"
+  href="/docs/guides/ci-integration/"
+  description="Authenticate as a service account from GitHub Actions, GitLab CI, or Jenkins."
+/>
 
 ## Resource shape
 

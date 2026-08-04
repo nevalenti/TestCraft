@@ -2,11 +2,15 @@
 title: Security Hardening
 description: Checklist for locking down a production TestCraft deployment.
 sidebar:
-  order: 7
+  order: 5
 ---
 
-None of this is enforced by the chart — apply it before exposing a
-deployment to the internet.
+import { Aside } from '@astrojs/starlight/components';
+
+<Aside type="danger" title="Not enforced by the chart">
+  None of this is applied automatically — work through it before exposing a
+  deployment to the internet.
+</Aside>
 
 ## Password policy
 
@@ -16,19 +20,26 @@ in `infrastructure/helm/testcraft/files/keycloak/realm.json`).
 
 ## TLS
 
-`tls.provider` in `infrastructure/helm/testcraft/values.yaml`:
+Set via `tls.provider` in `infrastructure/helm/testcraft/values.yaml`
+(default: `mkcert`, self-signed):
 
-- `letsencrypt` — cert-manager ACME HTTP-01; requires `tls.acmeEmail` and
+- **`letsencrypt`** — cert-manager ACME HTTP-01; requires `tls.acmeEmail` and
   real, publicly resolvable `tls.dnsNames`. Use this for anything public.
-- anything else — self-signed internal CA. Don't ship this to real users.
+- **anything else** — self-signed internal CA.
+
+  <Aside type="caution">Don't ship a self-signed CA to real users.</Aside>
 
 ## Secrets
 
 `infrastructure/helm/testcraft/values.secrets.yaml` holds every credential
-and is gitignored — never commit it. To rotate: change a value, then re-run
-`just deploy-prod` (or `just deploy-app`). The self-hosted GitHub Actions
-runner keeps its own copy outside the checked-out workspace — update that
-copy too, or the next auto-deploy restores the old secrets.
+and is gitignored — never commit it. To rotate a value, change it and re-run
+`just deploy-prod` (or `just deploy-app`).
+
+<Aside type="caution">
+  The self-hosted GitHub Actions runner keeps its own copy outside the
+  checked-out workspace — update that copy too, or the next auto-deploy restores
+  the old secrets.
+</Aside>
 
 ## Keycloak admin console
 

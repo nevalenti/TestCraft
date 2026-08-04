@@ -1,4 +1,5 @@
 // @ts-check
+import mdx from '@astrojs/mdx';
 import starlight from '@astrojs/starlight';
 import { defineConfig } from 'astro/config';
 
@@ -10,9 +11,12 @@ export default defineConfig({
     starlight({
       title: 'TestCraft',
       logo: {
-        light: './src/assets/logo-light.svg',
-        dark: './src/assets/logo-dark.svg',
+        src: './src/assets/logo-dark.svg',
         replacesTitle: false,
+      },
+      components: {
+        ThemeProvider: './src/components/ThemeProvider.astro',
+        ThemeSelect: './src/components/ThemeSelect.astro',
       },
       expressiveCode: {
         themes: ['dracula'],
@@ -43,7 +47,12 @@ export default defineConfig({
           label: 'Reference',
           items: [{ autogenerate: { directory: 'reference' } }],
         },
+        {
+          label: 'Contributing',
+          items: [{ autogenerate: { directory: 'contributing' } }],
+        },
       ],
     }),
+    mdx(),
   ],
 });

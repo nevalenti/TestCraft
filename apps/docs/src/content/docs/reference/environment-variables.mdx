@@ -5,10 +5,18 @@ sidebar:
   order: 2
 ---
 
+import { Aside } from '@astrojs/starlight/components';
+
 `.env.example` at the repo root covers the full local stack (`just up`).
 Copy it to `.env` and fill in real values before starting. In production
 these map to `infrastructure/helm/testcraft/values.secrets.yaml` instead —
 see [Production Deployment](/docs/guides/production/).
+
+<Aside type="caution">
+  Defaults like `changeme` and `minioadmin` are fine for local development only.
+  Rotate every one of them before deploying — see [Security
+  Hardening](/docs/guides/security/).
+</Aside>
 
 ## Database
 
@@ -31,6 +39,12 @@ see [Production Deployment](/docs/guides/production/).
 | Variable    | Default | Notes                                                                                                           |
 | ----------- | ------- | --------------------------------------------------------------------------------------------------------------- |
 | `REDIS_URL` | —       | Optional — unset falls back to a no-op cache. Production requires a password: `redis://:<password>@redis:6379`. |
+
+<Aside type="note">
+  The local Compose stack runs a Redis container, but `.env.example` leaves
+  `REDIS_URL` unset — local dev uses the no-op cache unless you set it
+  explicitly.
+</Aside>
 
 ## Auth (Keycloak)
 
