@@ -1,12 +1,17 @@
 ---
-title: Using TestCraft
-description: Projects, suites, test cases, runs, plans, analytics, and notifications from the web app.
+title: Core Concepts
+description: The entities TestCraft is built around — projects, suites, cases, runs, plans, analytics, and notifications.
 sidebar:
   order: 2
 ---
 
-The web app, once you're past [getting started](/docs/guides/getting-started/).
-For reporting results _from_ CI, see [CI Integration](/docs/guides/ci-integration/).
+import { Aside } from '@astrojs/starlight/components';
+
+The mental model behind the web app: what each entity is, how they relate,
+and where to configure them. Read this once you're past [Getting
+Started](/docs/guides/getting-started/) and need to know what you're looking
+at. For reporting results _from_ CI, see [CI
+Integration](/docs/guides/ci-integration/).
 
 ## Projects, suites, and test cases
 
@@ -26,13 +31,16 @@ boundaries — useful for a regression pack or release checklist. Add cases
 from the plan's detail page, reorder by drag handle, then **Run Plan** to
 create a test run from exactly that list.
 
-Reach a project's plans at `/projects/<project-id>/plans` (no nav tab yet).
+<Aside type="note">
+  Plans don't have a nav tab yet — reach them at
+  `/projects/<project-id>/plans`.
+</Aside>
 
 ## Test runs
 
-Tracks pass/fail/blocked/skipped results for a set of test cases in one
-environment. Create manually (**New Run**), from a test plan, or from CI
-(GitHub Action or `testcraft-ci-reporter` CLI `start` command).
+A run tracks pass/fail/blocked/skipped results for a set of test cases in one
+environment. Create one manually (**New Run**), from a test plan, or from CI
+(the GitHub Action, or the `testcraft-ci-reporter` CLI's `start` command).
 
 A failed result also records a defect type: `ProductBug` / `AutomationBug` /
 `EnvironmentIssue` / `ToInvestigate`. Screenshots and other files attach to
@@ -49,30 +57,33 @@ optionally with an expiry. Revoke it any time.
 
 ## Importing results
 
-The **Import** button (next to **New Run**) accepts a JUnit XML file or
+The **Import** button, next to **New Run**, accepts a JUnit XML file or
 Allure JSON files directly in the browser, matching them onto existing
 suites/cases by name — unmatched suites/cases are created automatically.
 For the CI-driven equivalent, see [CI Integration](/docs/guides/ci-integration/).
 
 ## Analytics
 
-| View            | Shows                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------- |
-| Trend           | Pass-rate over time                                                                    |
-| Flaky Tests     | Cases alternating pass/fail, ranked by flake rate (high ≥60%, medium 30–60%, low <30%) |
-| Suite Breakdown | Pass/fail counts by suite                                                              |
-| Run Comparison  | Diff two runs                                                                          |
+| View            | Shows                                                                                       |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| Trend           | Pass-rate over time                                                                         |
+| Flaky Tests     | Cases alternating pass/fail, ranked by flake rate (high ≥60%, medium 30–60%, low under 30%) |
+| Suite Breakdown | Pass/fail counts by suite                                                                   |
+| Run Comparison  | Diff two runs                                                                               |
 
 ## Project settings
 
 - **Notifications** — webhooks (URL + optional HMAC-SHA256 secret) and email,
-  both triggered on `run.completed`. Email needs SMTP configured, see
+  both triggered on `run.completed`. Email needs SMTP configured — see
   [Environment Variables](/docs/reference/environment-variables/).
 - **Members** — owners invite collaborators by email; access is immediate.
-- **API Tokens** — create/revoke named, optionally expiring tokens. Shown
-  once at creation, unrecoverable after.
+- **API Tokens** — create and revoke named, optionally expiring tokens.
+
+  <Aside type="danger">
+    Tokens are shown once, at creation, and can't be recovered afterward.
+  </Aside>
 
 ## Account
 
-Top-right avatar — profile, photo upload, and a link to Keycloak's account
-console for editing name/email/password.
+The top-right avatar leads to your profile, photo upload, and Keycloak's
+account console for editing your name, email, and password.

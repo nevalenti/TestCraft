@@ -1,0 +1,73 @@
+---
+title: Getting Started
+description: Run TestCraft locally.
+sidebar:
+  order: 1
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Set up a local development environment in a few minutes.
+
+## Prerequisites
+
+- **Docker**
+- **.NET 10 SDK**
+- **Node.js 24**
+- **pnpm**
+- [**just**](https://github.com/casey/just)
+
+## Setup
+
+<Steps>
+
+1. Clone the repository and install dependencies:
+
+   ```bash
+   git clone https://github.com/nevalenti/TestCraft.git
+   cd TestCraft
+   pnpm install
+   cp .env.example .env
+   ```
+
+2. Set `APPLY_MIGRATIONS=true` in `.env`.
+
+   <Aside type="caution">
+     Skip this and the database schema stays empty — the API will fail on its
+     first request.
+   </Aside>
+
+3. Start the local infrastructure via Docker Compose:
+
+   ```bash
+   just up
+   ```
+
+4. Run the API and the web app outside Docker:
+
+   ```bash
+   # API
+   dotnet run --project apps/Api/src/TestCraft.Api
+   ```
+
+   ```bash
+   # Web app
+   pnpm --filter testcraft-web dev
+   ```
+
+</Steps>
+
+## Where to go
+
+| Service    | URL                                                              |
+| ---------- | ---------------------------------------------------------------- |
+| Web        | [http://localhost:3000](http://localhost:3000)                   |
+| API        | [http://localhost:5000](http://localhost:5000)                   |
+| Swagger UI | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) |
+
+There's no seeded account — open the web app and click **Register** on the
+Keycloak login page to create one. Then start creating projects, suites, and
+test cases; see [Core Concepts](/docs/guides/core-concepts/) for what those
+are.
+
+Stuck? See [Troubleshooting](/docs/guides/troubleshooting/).

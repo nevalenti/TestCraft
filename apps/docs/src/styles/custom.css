@@ -6,11 +6,7 @@
   --sl-font: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Dark mode — mirrors daisyUI's built-in "dracula" theme (the one
-   actually rendered in apps/web; its own [data-theme="dracula"]
-   override in styles.css is shadowed by daisyUI's plugin-injected
-   rule, which comes later in the cascade and wins). */
-:root[data-theme='dark'] {
+:root {
   --sl-color-bg: oklch(28.822% 0.022 277.508);
   --sl-color-bg-nav: oklch(26.805% 0.02 277.508);
   --sl-color-bg-sidebar: oklch(26.805% 0.02 277.508);
@@ -31,28 +27,6 @@
   --sl-color-hairline-shade: oklch(1 0 0 / 0.4);
 }
 
-/* Light mode — mirrors apps/web's "testcraft-light" daisyUI theme */
-:root[data-theme='light'] {
-  --sl-color-bg: oklch(0.99 0.006 277.5);
-  --sl-color-bg-nav: oklch(0.944 0.014 277.5);
-  --sl-color-bg-sidebar: oklch(0.944 0.014 277.5);
-  --sl-color-bg-inline-code: oklch(0.885 0.02 277.5);
-
-  --sl-color-text: oklch(0.24 0.032 277.5);
-  --sl-color-text-accent: oklch(0.32 0.15 346.8);
-
-  --sl-color-accent-low: oklch(0.9 0.05 346.8);
-  --sl-color-accent: oklch(0.58 0.2 346.8);
-  --sl-color-accent-high: oklch(0.32 0.15 346.8);
-
-  --sl-color-white: oklch(0.24 0.032 277.5);
-  --sl-color-black: oklch(0.99 0.006 277.5);
-
-  --sl-color-hairline: oklch(0 0 0 / 0.35);
-  --sl-color-hairline-light: oklch(0 0 0 / 0.2);
-  --sl-color-hairline-shade: oklch(0 0 0 / 0.45);
-}
-
 h1,
 h2,
 h3,
@@ -62,9 +36,6 @@ h5,
   font-family: 'Raleway', ui-sans-serif, system-ui, sans-serif;
 }
 
-/* Header: smaller logo/title, white title text, white (not accent-pink)
-   GitHub icon. Starlight defaults both site-title and social icons to
-   --sl-color-text-accent, which reads as pink here. */
 .site-title {
   font-size: 15px;
   font-weight: 800;
@@ -79,4 +50,20 @@ h5,
 
 .social-icons a {
   color: var(--sl-color-white);
+}
+
+.sl-badge {
+  white-space: nowrap;
+}
+
+.sl-markdown-content td code {
+  overflow-wrap: anywhere;
+}
+.sl-markdown-content td:first-child code {
+  white-space: nowrap;
+}
+
+.starlight-aside {
+  background-color: transparent;
+  border-inline-start-width: 0.25rem;
 }

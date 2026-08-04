@@ -1,9 +1,17 @@
 ---
 title: Running Tests
-description: Run the API, web, and end-to-end test suites locally.
+description: Run TestCraft's own API, web, and end-to-end test suites before opening a PR.
 sidebar:
-  order: 4
+  order: 1
 ---
+
+import { Tabs, TabItem } from '@astrojs/starlight/components';
+
+This is about testing the TestCraft codebase itself, not the test-management
+features TestCraft provides — for that, see [Core
+Concepts](/docs/guides/core-concepts/).
+
+Three suites, one command each:
 
 ```bash
 dotnet test TestCraft.slnx         # API — xUnit + Testcontainers
@@ -11,12 +19,14 @@ pnpm --filter testcraft-web test   # Web — Vitest
 just github e2e                    # End-to-end — Playwright, via act
 ```
 
-## API
+<Tabs>
+<TabItem label="API">
 
 Integration tests spin up Postgres via
 [Testcontainers](https://testcontainers.com), so Docker must be running.
 
-## Web
+</TabItem>
+<TabItem label="Web">
 
 ```bash
 pnpm --filter testcraft-web test           # run once
@@ -24,13 +34,24 @@ pnpm --filter testcraft-web run test:watch # watch mode
 pnpm --filter testcraft-web run test:ui    # Vitest UI
 ```
 
-## End-to-end
+</TabItem>
+<TabItem label="End-to-end">
 
 The Playwright suite in `e2e` needs the full stack running (Postgres,
 Keycloak, API, web). See [CI Integration](/docs/guides/ci-integration/) for
 how results get reported back to TestCraft.
 
+</TabItem>
+</Tabs>
+
 ## Reproducing CI locally
 
 `just github <api|web|e2e|docs>` (or `gitlab`/`jenkins`) runs each pipeline
 locally — useful when a failure doesn't reproduce with a plain test run.
+
+## Related
+
+- [Architecture](/docs/reference/architecture/) — repo layout and where each
+  suite lives.
+- [CI Integration](/docs/guides/ci-integration/) — how these same suites
+  report results back into a running TestCraft instance from CI.
