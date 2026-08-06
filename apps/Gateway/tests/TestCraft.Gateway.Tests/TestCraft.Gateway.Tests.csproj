@@ -22,6 +22,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TestCraft.Gateway\TestCraft.Gateway.csproj" />
-    <ProjectReference Include="..\..\..\Api\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
+    <ProjectReference Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
   </ItemGroup>
 </Project>
