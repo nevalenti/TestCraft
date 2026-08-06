@@ -14,14 +14,7 @@ import {
   useDownloadAttachment,
   useUploadAttachment,
 } from '@/hooks/useAttachments';
-import { formatDateTime } from '@/lib/format';
-
-const formatBytes = (bytes: number): string => {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
+import { formatBytes, formatDateTime } from '@/lib/format';
 
 interface AttachmentModalProps {
   isOpen: boolean;

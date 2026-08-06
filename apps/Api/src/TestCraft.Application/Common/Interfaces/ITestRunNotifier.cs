@@ -1,6 +1,6 @@
 using TestCraft.Application.Features.TestResults;
 
-namespace TestCraft.Application.Features.TestRuns;
+namespace TestCraft.Application.Common.Interfaces;
 
 public interface ITestRunNotifier
 {

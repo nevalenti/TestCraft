@@ -9,7 +9,7 @@ using TestCraft.Api.Errors;
 using TestCraft.Api.Hubs;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
-using TestCraft.Application.Features.TestRuns;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure;
 using TestCraft.Infrastructure.Configuration;
 

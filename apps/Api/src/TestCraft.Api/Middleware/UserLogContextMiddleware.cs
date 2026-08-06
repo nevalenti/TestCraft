@@ -16,13 +16,13 @@ public class UserLogContextMiddleware(RequestDelegate next)
 
         var properties = new List<IDisposable>();
 
-        var userId = user.GetUserId();
+        var userId = user.GetUserIdOrNull();
         if (userId is not null)
         {
             properties.Add(LogContext.PushProperty("userId", userId));
         }
 
-        var username = user.GetUsername();
+        var username = user.GetUsernameOrNull();
         if (username is not null)
         {
             properties.Add(LogContext.PushProperty("username", username));

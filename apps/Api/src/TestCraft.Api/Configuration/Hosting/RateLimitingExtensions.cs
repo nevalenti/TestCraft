@@ -25,7 +25,7 @@ public static class RateLimitingExtensions
                     }
 
                     var partitionKey =
-                        httpContext.User.GetUserId()
+                        httpContext.User.GetUserIdOrNull()
                         ?? httpContext.Connection.RemoteIpAddress?.ToString()
                         ?? "anonymous";
 

@@ -40,5 +40,5 @@ public class TestRunHub(IApplicationDbContext db) : Hub
     }
 
     private bool TryGetUserId(out Guid userId) =>
-        Guid.TryParse(Context.User?.GetUserId(), out userId);
+        Guid.TryParse(Context.User?.GetUserIdOrNull(), out userId);
 }

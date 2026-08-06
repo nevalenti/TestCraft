@@ -1,7 +1,13 @@
 import { expect, type Page } from '@playwright/test';
 
+import { ConfirmDialog } from './confirm-dialog';
+
 export class LabelsPage {
-  constructor(private page: Page) {}
+  readonly confirmDialog: ConfirmDialog;
+
+  constructor(private page: Page) {
+    this.confirmDialog = new ConfirmDialog(page);
+  }
 
   async goto(labelsPath: string) {
     await this.page.goto(labelsPath);
@@ -36,10 +42,7 @@ export class LabelsPage {
     const row = this.getLabelRow(name);
     await row.hover();
     await row.getByRole('button', { name: 'Delete label' }).click();
-    await this.page
-      .locator('dialog[open]')
-      .getByRole('button', { name: 'Delete' })
-      .click();
+    await this.confirmDialog.confirmDelete();
     await expect(this.getLabelRow(name)).toHaveCount(0, { timeout: 10_000 });
   }
 

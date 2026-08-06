@@ -6,6 +6,7 @@ import {
 import { useRef, useState } from 'react';
 
 import { cn } from '@/lib/cn';
+import { formatBytes } from '@/lib/format';
 
 interface FileDropZoneProps {
   id: string;
@@ -170,7 +171,7 @@ export const FileDropZone = ({
                 {file.name}
               </span>
               <span className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
-                {(file.size / 1024).toFixed(1)} KB
+                {formatBytes(file.size)}
               </span>
               <button
                 type="button"
