@@ -127,13 +127,13 @@ public static class LoggingExtensions
             return;
         }
 
-        var userId = user.GetUserId();
+        var userId = user.GetUserIdOrNull();
         if (userId is not null)
         {
             diagnosticContext.Set("userId", userId);
         }
 
-        var username = user.GetUsername();
+        var username = user.GetUsernameOrNull();
         if (username is not null)
         {
             diagnosticContext.Set("username", username);
