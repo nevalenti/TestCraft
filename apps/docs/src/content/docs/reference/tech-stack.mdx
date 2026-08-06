@@ -1,0 +1,25 @@
+---
+title: Tech Stack
+description: Tech stack
+sidebar:
+  order: 1
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+| Layer          | Technology                                                   |
+| -------------- | ------------------------------------------------------------ |
+| Frontend       | React 19, TanStack Query/Router/Table, Zustand, Tailwind CSS |
+| Backend        | ASP.NET Core (.NET 10), CQRS via MediatR                     |
+| Database       | Postgres, EF Core                                            |
+| Cache          | Redis                                                        |
+| Messaging      | MassTransit + RabbitMQ                                       |
+| Real-time      | SignalR                                                      |
+| Object storage | MinIO                                                        |
+| Email          | MailKit (SMTP)                                               |
+| Auth           | Keycloak (SSO, GitHub/Google social login)                   |
+| Reverse proxy  | YARP                                                         |
+| Observability  | Grafana · Prometheus · Loki · Seq                            |
+| E2E testing    | Playwright                                                   |
+| Deployment     | Docker, Helm on k3s                                          |
+| Docs           | Astro + Starlight (this site)                                |

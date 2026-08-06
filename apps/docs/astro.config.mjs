@@ -47,10 +47,6 @@ export default defineConfig({
           label: 'Reference',
           items: [{ autogenerate: { directory: 'reference' } }],
         },
-        {
-          label: 'Contributing',
-          items: [{ autogenerate: { directory: 'contributing' } }],
-        },
       ],
     }),
     mdx(),

@@ -1,0 +1,48 @@
+---
+title: Repository Layout
+description: Repository layout
+sidebar:
+  order: 2
+---
+
+import { FileTree } from '@astrojs/starlight/components';
+
+<FileTree>
+
+- apps/
+  - Api/src/
+    - TestCraft.Domain/ Entities, domain events
+    - TestCraft.Application/ CQRS (MediatR)
+    - TestCraft.Infrastructure/ EF Core, Redis, MinIO, MailKit, MassTransit
+    - TestCraft.Api/ Controllers, SignalR hubs
+  - Gateway/src/ YARP reverse proxy (Web + API)
+  - docs/ This site (Astro Starlight)
+  - web/ React SPA
+    - src/api/ Axios clients, one per domain
+    - src/hooks/ TanStack Query hooks, one per domain
+    - src/stores/ Zustand stores
+    - src/pages/ Route components (hooks only)
+    - src/layout/ App shell
+    - src/components/ Shared components, ui/ primitives
+    - src/auth/ Keycloak provider
+    - src/contexts/ React contexts (theme)
+    - src/lib/ Shared helpers
+    - src/types/ Shared frontend types
+    - src/\_\_tests\_\_/ Vitest tests
+- packages/
+  - types/ Shared TS types, published to web
+  - ci-reporter/ CI reporter (npx/Docker) for non-GitHub CI
+- e2e/ Playwright suite, its own workspace package not a deployed app
+- Common/src/ TestCraft.Common, shared cross-cutting .NET code referenced by both apps/Api and apps/Gateway
+- infrastructure/
+  - helm/ Helm chart
+  - keycloak/ Realm config, login theme
+  - prometheus/ Local docker-compose scrape/alertmanager config
+- .github/
+  - actions/testcraft/ CI reporter for GitHub Actions
+  - workflows/ GitHub Actions pipelines
+- jenkins/ Jenkins pipelines
+- .gitlab-ci.yml GitLab CI entry pipeline
+- .gitlab/ci/ GitLab CI includes (API, web, E2E, docs)
+
+</FileTree>
