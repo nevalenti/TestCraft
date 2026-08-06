@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Infrastructure.Caching;
 

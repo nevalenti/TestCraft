@@ -1,4 +1,4 @@
-namespace TestCraft.Application.Caching;
+namespace TestCraft.Application.Common.Interfaces;
 
 public interface ICacheService
 {

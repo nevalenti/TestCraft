@@ -14,6 +14,6 @@
     <Project Path="apps/Gateway/tests/TestCraft.Gateway.Tests/TestCraft.Gateway.Tests.csproj" />
   </Folder>
   <Folder Name="/tools/">
-    <Project Path="apps/Api/tools/TestCraft.VSTestLogger/TestCraft.VSTestLogger.csproj" />
+    <Project Path="tools/TestCraft.VSTestLogger/TestCraft.VSTestLogger.csproj" />
   </Folder>
 </Solution>

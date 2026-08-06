@@ -22,7 +22,10 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
 
     private static HttpClient CreateHttpClient()
     {
-        if (Environment.GetEnvironmentVariable("NODE_TLS_REJECT_UNAUTHORIZED") != "0")
+        if (
+            Environment.GetEnvironmentVariable("NODE_TLS_REJECT_UNAUTHORIZED")
+            != "0"
+        )
             return new HttpClient();
 
         var handler = new HttpClientHandler
@@ -41,13 +44,18 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     public void Initialize(TestLoggerEvents events, string testRunDirectory) =>
         Initialize(events, new Dictionary<string, string?>());
 
-    public void Initialize(TestLoggerEvents events, Dictionary<string, string?> parameters)
+    public void Initialize(
+        TestLoggerEvents events,
+        Dictionary<string, string?> parameters
+    )
     {
         var apiUrl = Environment.GetEnvironmentVariable("TESTCRAFT_API_URL");
         var runId = Environment.GetEnvironmentVariable("TESTCRAFT_RUN_ID");
         var username = Environment.GetEnvironmentVariable("TESTCRAFT_USERNAME");
         var password = Environment.GetEnvironmentVariable("TESTCRAFT_PASSWORD");
-        var projectName = Environment.GetEnvironmentVariable("TESTCRAFT_PROJECT_NAME");
+        var projectName = Environment.GetEnvironmentVariable(
+            "TESTCRAFT_PROJECT_NAME"
+        );
 
         if (
             string.IsNullOrEmpty(apiUrl)
@@ -58,7 +66,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         )
             return;
 
-        var keycloakAuthority = Environment.GetEnvironmentVariable("TESTCRAFT_KEYCLOAK_AUTHORITY");
+        var keycloakAuthority = Environment.GetEnvironmentVariable(
+            "TESTCRAFT_KEYCLOAK_AUTHORITY"
+        );
 
         try
         {
@@ -68,7 +78,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         }
         catch (Exception ex)
         {
-            Console.Error.WriteLine($"[TestCraft] Logger init failed: {ex.Message}");
+            Console.Error.WriteLine(
+                $"[TestCraft] Logger init failed: {ex.Message}"
+            );
             return;
         }
 
@@ -82,14 +94,24 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
 
     private static string FetchAuthority(string apiUrl)
     {
-        var response = Client.GetAsync($"{apiUrl}/api/auth-config").GetAwaiter().GetResult();
+        var response = Client
+            .GetAsync($"{apiUrl}/api/auth-config")
+            .GetAwaiter()
+            .GetResult();
         response.EnsureSuccessStatusCode();
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
         return document.RootElement.GetProperty("authority").GetString()!;
     }
 
-    private static string FetchToken(string authority, string username, string password)
+    private static string FetchToken(
+        string authority,
+        string username,
+        string password
+    )
     {
         using var form = new FormUrlEncodedContent(
             new Dictionary<string, string>
@@ -105,7 +127,10 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             .GetAwaiter()
             .GetResult();
         response.EnsureSuccessStatusCode();
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
         return document.RootElement.GetProperty("access_token").GetString()!;
     }
@@ -115,24 +140,37 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         var url =
             $"{apiUrl}/api/v1/projects?search={Uri.EscapeDataString(projectName)}&pageSize=500";
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
+        request.Headers.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            _token
+        );
         var response = Client.SendAsync(request).GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
 
         var match = document
             .RootElement.GetProperty("items")
             .EnumerateArray()
-            .FirstOrDefault(item => item.GetProperty("name").GetString() == projectName);
+            .FirstOrDefault(item =>
+                item.GetProperty("name").GetString() == projectName
+            );
 
         if (match.ValueKind == JsonValueKind.Undefined)
-            throw new InvalidOperationException($"Project \"{projectName}\" not found");
+            throw new InvalidOperationException(
+                $"Project \"{projectName}\" not found"
+            );
 
         return match.GetProperty("id").GetString()!;
     }
 
-    private void OnTestRunMessage(object? sender, TestRunMessageEventArgs eventArgs)
+    private void OnTestRunMessage(
+        object? sender,
+        TestRunMessageEventArgs eventArgs
+    )
     {
         var prefix = eventArgs.Level switch
         {
@@ -170,8 +208,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             PostLog($"    {eventArgs.Result.ErrorMessage}");
 
         foreach (
-            var resultMessage in eventArgs.Result.Messages.Where(candidateMessage =>
-                !string.IsNullOrWhiteSpace(candidateMessage.Text)
+            var resultMessage in eventArgs.Result.Messages.Where(
+                candidateMessage =>
+                    !string.IsNullOrWhiteSpace(candidateMessage.Text)
             )
         )
             PostLog(resultMessage.Text!.TrimEnd());
@@ -182,7 +221,10 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     private readonly Lock _bufferLock = new();
     private readonly List<string> _buffer = [];
 
-    private void OnTestRunComplete(object? sender, TestRunCompleteEventArgs eventArgs)
+    private void OnTestRunComplete(
+        object? sender,
+        TestRunCompleteEventArgs eventArgs
+    )
     {
         Flush();
         Task.WaitAll([.. _pending]);
@@ -234,13 +276,24 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
                 $"{_apiUrl}/api/v1/projects/{_projectId}/runs/{_runId}/logs"
             )
             {
-                Content = new StringContent(payload, Encoding.UTF8, "application/json"),
+                Content = new StringContent(
+                    payload,
+                    Encoding.UTF8,
+                    "application/json"
+                ),
             };
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _token);
-            using var response = await Client.SendAsync(request).ConfigureAwait(false);
+            request.Headers.Authorization = new AuthenticationHeaderValue(
+                "Bearer",
+                _token
+            );
+            using var response = await Client
+                .SendAsync(request)
+                .ConfigureAwait(false);
             if (!response.IsSuccessStatusCode)
             {
-                var body = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+                var body = await response
+                    .Content.ReadAsStringAsync()
+                    .ConfigureAwait(false);
                 await Console.Error.WriteLineAsync(
                     $"[TestCraft] Failed to send {lines.Count} log line(s): {(int)response.StatusCode} {body}"
                 );

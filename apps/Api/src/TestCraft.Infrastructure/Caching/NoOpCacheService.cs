@@ -1,4 +1,4 @@
-using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Infrastructure.Caching;
 

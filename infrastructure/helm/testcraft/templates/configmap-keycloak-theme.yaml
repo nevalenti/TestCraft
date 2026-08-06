@@ -5,14 +5,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   theme.properties: |
-{{ .Files.Get "files/keycloak/theme.properties" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/theme.properties" | indent 4 }}
   template.ftl: |
-{{ .Files.Get "files/keycloak/template.ftl" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/template.ftl" | indent 4 }}
   login.ftl: |
-{{ .Files.Get "files/keycloak/login.ftl" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/login.ftl" | indent 4 }}
   register.ftl: |
-{{ .Files.Get "files/keycloak/register.ftl" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/register.ftl" | indent 4 }}
   error.ftl: |
-{{ .Files.Get "files/keycloak/error.ftl" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/error.ftl" | indent 4 }}
   login-verify-email.ftl: |
-{{ .Files.Get "files/keycloak/login-verify-email.ftl" | indent 4 }}
+{{ .Files.Get "files/keycloak/theme/login-verify-email.ftl" | indent 4 }}

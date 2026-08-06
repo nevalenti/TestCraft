@@ -24,6 +24,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\TestCraft.Application\TestCraft.Application.csproj" />
     <ProjectReference Include="..\..\src\TestCraft.Infrastructure\TestCraft.Infrastructure.csproj" />
-    <ProjectReference Include="..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
+    <ProjectReference Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
   </ItemGroup>
 </Project>
