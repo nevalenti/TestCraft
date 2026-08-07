@@ -88,12 +88,12 @@ services:
       - '8080:8080'
     volumes:
       - keycloak_data:/opt/keycloak/data
-      - ./infrastructure/helm/testcraft/files/keycloak/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
-      - ./infrastructure/helm/testcraft/files/keycloak/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
-      - ./infrastructure/helm/testcraft/files/keycloak/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
-      - ./infrastructure/helm/testcraft/files/keycloak/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro
-      - ./infrastructure/helm/testcraft/files/keycloak/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro
-      - ./infrastructure/helm/testcraft/files/keycloak/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro
       - ./infrastructure/keycloak/realm.json:/realm-source/realm.json:ro
     healthcheck:
       test:
