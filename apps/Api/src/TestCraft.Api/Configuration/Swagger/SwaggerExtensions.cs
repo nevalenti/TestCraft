@@ -14,7 +14,7 @@ public static class SwaggerExtensions
         builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
         builder.Services.AddSwaggerGen(options =>
         {
-            options.CustomSchemaIds(type => (type.FullName ?? type.Name).Replace("+", "."));
+            options.CustomSchemaIds(GetSchemaId);
             options.SupportNonNullableReferenceTypes();
 
             options.AddSecurityDefinition(
@@ -43,6 +43,19 @@ public static class SwaggerExtensions
         });
 
         return builder;
+    }
+
+    private static string GetSchemaId(Type type)
+    {
+        if (!type.IsGenericType)
+        {
+            return (type.FullName ?? type.Name).Replace("+", ".");
+        }
+
+        var genericTypeName = type.Name[..type.Name.IndexOf('`')];
+        var genericArgNames = type.GetGenericArguments().Select(GetSchemaId);
+
+        return $"{genericTypeName}{string.Concat(genericArgNames)}".Replace("+", ".");
     }
 
     public static WebApplication UseSwaggerDocs(this WebApplication app)

@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <IsPackable>false</IsPackable>
-    <!-- CA1707: underscores are idiomatic for xUnit test names. -->
     <NoWarn>$(NoWarn);CA1707</NoWarn>
-    <VSTestLogger>junit%3BLogFilePath=$(MSBuildThisFileDirectory)../../test-results/$(MSBuildProjectName).junit.xml;testcraft</VSTestLogger>
+    <VSTestLogger>
+      junit%3BLogFilePath=$(MSBuildThisFileDirectory)../../test-results/$(MSBuildProjectName).junit.xml;testcraft</VSTestLogger>
   </PropertyGroup>
 
   <ItemGroup>
