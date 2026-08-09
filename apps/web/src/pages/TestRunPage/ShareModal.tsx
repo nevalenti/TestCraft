@@ -7,7 +7,7 @@ import {
   useRevokeShareToken,
   useShareTokens,
 } from '@/hooks/useShareTokens';
-import { formatDate } from '@/lib/format';
+import { formatDate, todayLocalDate } from '@/lib/format';
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -95,7 +95,7 @@ export const ShareModal = ({
                 className="input-bordered input input-sm w-full"
                 value={expiresAt}
                 onChange={(event) => setExpiresAt(event.target.value)}
-                min={new Date().toISOString().split('T', 1)[0]}
+                min={todayLocalDate()}
               />
             </div>
             <button

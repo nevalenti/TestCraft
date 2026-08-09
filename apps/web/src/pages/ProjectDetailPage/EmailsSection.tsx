@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { ErrorState } from '@/components/ErrorState';
 import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
 import {
   useCreateEmail,
@@ -10,7 +11,7 @@ import { EventCheckboxes } from '@/pages/ProjectDetailPage/EventCheckboxes';
 import { AVAILABLE_EVENTS } from '@/pages/ProjectDetailPage/notificationEvents';
 
 export const EmailsSection = ({ projectId }: { projectId: string }) => {
-  const { data: emailSubs } = useEmails(projectId);
+  const { data: emailSubs, isError, error } = useEmails(projectId);
   const createEmail = useCreateEmail(projectId);
   const deleteEmail = useDeleteEmail(projectId);
   const [email, setEmail] = useState('');
@@ -51,14 +52,18 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
           Add Email
         </button>
       </div>
-      <SettingsEntityList
-        items={emailSubs ?? []}
-        getKey={(sub) => sub.id}
-        renderPrimary={(sub) => sub.email}
-        renderSecondary={(sub) => sub.events.join(', ')}
-        onRemove={(sub) => deleteEmail.mutate(sub.id)}
-        removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
-      />
+      {isError ? (
+        <ErrorState title="Failed to load email subscriptions" error={error} />
+      ) : (
+        <SettingsEntityList
+          items={emailSubs ?? []}
+          getKey={(sub) => sub.id}
+          renderPrimary={(sub) => sub.email}
+          renderSecondary={(sub) => sub.events.join(', ')}
+          onRemove={(sub) => deleteEmail.mutate(sub.id)}
+          removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
+        />
+      )}
     </div>
   );
 };

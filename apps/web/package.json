@@ -34,7 +34,7 @@
     "date-fns": "^4.4.0",
     "immer": "^11.1.8",
     "keycloak-js": "^26.2.4",
-    "nanoid": "^5.1.15",
+    "nanoid": "^5.1.16",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-hook-form": "^7.80.0",
