@@ -11,6 +11,7 @@ import {
   YAxis,
 } from 'recharts';
 
+import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { useSuiteBreakdown } from '@/hooks/useAnalytics';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
@@ -67,10 +68,18 @@ const SuiteTooltip = ({
 
 export const AnalyticsSuiteTab = () => {
   const projectId = useRequiredParam('projectId');
-  const { data: runs } = useTestRuns(projectId);
+  const {
+    data: runs,
+    isError: isRunsError,
+    error: runsError,
+  } = useTestRuns(projectId);
   const [suiteRunId, setSuiteRunId] = useState('');
 
-  const { data: suiteBreakdown } = useSuiteBreakdown(projectId, suiteRunId);
+  const {
+    data: suiteBreakdown,
+    isError: isSuiteBreakdownError,
+    error: suiteBreakdownError,
+  } = useSuiteBreakdown(projectId, suiteRunId);
 
   const suiteData = useMemo(
     () =>
@@ -81,6 +90,10 @@ export const AnalyticsSuiteTab = () => {
       })),
     [suiteBreakdown],
   );
+
+  if (isRunsError) {
+    return <ErrorState title="Failed to load runs" error={runsError} />;
+  }
 
   const selectedRun = runs?.find((run) => run.id === suiteRunId);
 
@@ -118,7 +131,14 @@ export const AnalyticsSuiteTab = () => {
         />
       )}
 
-      {suiteRunId && suiteData.length === 0 && (
+      {suiteRunId && isSuiteBreakdownError && (
+        <ErrorState
+          title="Failed to load suite breakdown"
+          error={suiteBreakdownError}
+        />
+      )}
+
+      {suiteRunId && !isSuiteBreakdownError && suiteData.length === 0 && (
         <EmptyState
           icon={<Squares2X2Icon className="size-6" />}
           title="No suite data"
@@ -126,7 +146,7 @@ export const AnalyticsSuiteTab = () => {
         />
       )}
 
-      {suiteRunId && suiteData.length > 0 && (
+      {suiteRunId && !isSuiteBreakdownError && suiteData.length > 0 && (
         <div className="rounded-xl border border-border bg-base-100 px-4 pt-4 pb-2">
           {selectedRun && (
             <p className="mb-4 truncate text-xs font-semibold tracking-widest text-base-content/65 uppercase">

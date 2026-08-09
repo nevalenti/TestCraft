@@ -54,14 +54,16 @@ describe('api client', () => {
       expect(config.headers.Authorization).toBe('Bearer fresh-token');
     });
 
-    it('redirects to login when token refresh fails', async () => {
+    it('redirects to login and aborts the request when token refresh fails', async () => {
       vi.mocked(keycloak).authenticated = true;
       vi.mocked(keycloak.updateToken).mockRejectedValue(new Error('expired'));
       await import('@/api/client');
 
       const requestHandler = requestUse.mock.calls[0][0];
-      await requestHandler({ headers: {} as any });
 
+      await expect(
+        requestHandler({ headers: {} as any }),
+      ).rejects.toBeDefined();
       expect(keycloak.login).toHaveBeenCalled();
     });
   });
@@ -135,6 +137,31 @@ describe('api client', () => {
       await expect(
         errorHandler({ config: { method: 'get' }, response: undefined }),
       ).rejects.toBeDefined();
+
+      expect(add).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('response interceptor — given an aborted request from a failed token refresh', () => {
+    it('does not show an error toast', async () => {
+      const add = vi.fn();
+      vi.mocked(useNotificationsStore.getState).mockReturnValue({
+        add,
+      } as any);
+      vi.mocked(keycloak).authenticated = true;
+      vi.mocked(keycloak.updateToken).mockRejectedValue(new Error('expired'));
+      await import('@/api/client');
+
+      const requestHandler = requestUse.mock.calls[0][0];
+      let redirectError: unknown;
+      try {
+        await requestHandler({ headers: {} as any });
+      } catch (error) {
+        redirectError = error;
+      }
+
+      const errorHandler = responseUse.mock.calls[0][1];
+      await expect(errorHandler(redirectError)).rejects.toBe(redirectError);
 
       expect(add).not.toHaveBeenCalled();
     });

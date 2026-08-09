@@ -14,6 +14,8 @@ const client = axios.create({
   },
 });
 
+class AuthRedirectError extends Error {}
+
 // eslint-disable-next-line unicorn/no-top-level-side-effects
 client.interceptors.request.use(async (config) => {
   if (keycloak.authenticated) {
@@ -21,6 +23,7 @@ client.interceptors.request.use(async (config) => {
       await keycloak.updateToken(30);
     } catch {
       keycloak.login();
+      throw new AuthRedirectError('Session expired — redirecting to login');
     }
     config.headers.Authorization = `Bearer ${keycloak.token}`;
   }
@@ -32,6 +35,10 @@ client.interceptors.request.use(async (config) => {
 client.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error instanceof AuthRedirectError) {
+      return Promise.reject(error);
+    }
+
     if (error.config?.method !== 'get') {
       const message =
         error.response?.data?.detail ??

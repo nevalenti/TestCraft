@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { ErrorState } from '@/components/ErrorState';
 import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
 import {
   useCreateWebhook,
@@ -10,7 +11,7 @@ import { EventCheckboxes } from '@/pages/ProjectDetailPage/EventCheckboxes';
 import { AVAILABLE_EVENTS } from '@/pages/ProjectDetailPage/notificationEvents';
 
 export const WebhooksSection = ({ projectId }: { projectId: string }) => {
-  const { data: webhooks } = useWebhooks(projectId);
+  const { data: webhooks, isError, error } = useWebhooks(projectId);
   const createWebhook = useCreateWebhook(projectId);
   const deleteWebhook = useDeleteWebhook(projectId);
   const [url, setUrl] = useState('');
@@ -74,14 +75,18 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
           Add Webhook
         </button>
       </div>
-      <SettingsEntityList
-        items={webhooks ?? []}
-        getKey={(wh) => wh.id}
-        renderPrimary={(wh) => wh.url}
-        renderSecondary={(wh) => wh.events.join(', ')}
-        onRemove={(wh) => deleteWebhook.mutate(wh.id)}
-        removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
-      />
+      {isError ? (
+        <ErrorState title="Failed to load webhooks" error={error} />
+      ) : (
+        <SettingsEntityList
+          items={webhooks ?? []}
+          getKey={(wh) => wh.id}
+          renderPrimary={(wh) => wh.url}
+          renderSecondary={(wh) => wh.events.join(', ')}
+          onRemove={(wh) => deleteWebhook.mutate(wh.id)}
+          removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
+        />
+      )}
     </div>
   );
 };

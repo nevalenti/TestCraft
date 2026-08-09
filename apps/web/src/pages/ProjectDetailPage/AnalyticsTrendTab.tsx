@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { ErrorState } from '@/components/ErrorState';
 import { useRunTrend } from '@/hooks/useAnalytics';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate, truncate } from '@/lib/format';
@@ -8,7 +9,7 @@ import { TrendSection } from '@/pages/ProjectDetailPage/TrendSection';
 
 export const AnalyticsTrendTab = () => {
   const projectId = useRequiredParam('projectId');
-  const { data: trend } = useRunTrend(projectId, 20);
+  const { data: trend, isError, error } = useRunTrend(projectId, 20);
 
   const groups = useMemo(() => {
     const raw = [...(trend ?? [])].toReversed();
@@ -42,6 +43,9 @@ export const AnalyticsTrendTab = () => {
       index,
     }));
   }, [trend]);
+
+  if (isError)
+    return <ErrorState title="Failed to load trend data" error={error} />;
 
   if (groups.length === 0)
     return (

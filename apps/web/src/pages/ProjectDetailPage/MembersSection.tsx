@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import { ErrorState } from '@/components/ErrorState';
 import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
 import {
   useAddProjectMember,
@@ -9,7 +10,7 @@ import {
 import { formatDate } from '@/lib/format';
 
 export const MembersSection = ({ projectId }: { projectId: string }) => {
-  const { data: members } = useProjectMembers(projectId);
+  const { data: members, isError, error } = useProjectMembers(projectId);
   const addMember = useAddProjectMember(projectId);
   const removeMember = useRemoveProjectMember(projectId);
   const [email, setEmail] = useState('');
@@ -53,16 +54,20 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
         </button>
       </div>
 
-      <SettingsEntityList
-        items={members ?? []}
-        getKey={(member) => member.id}
-        renderPrimary={(member) => member.displayName ?? member.email}
-        renderSecondary={(member) =>
-          `${member.email} · added ${formatDate(member.createdAt)}`
-        }
-        onRemove={(member) => removeMember.mutate(member.id)}
-        removeAriaLabel={(member) => `Remove ${member.email}`}
-      />
+      {isError ? (
+        <ErrorState title="Failed to load members" error={error} />
+      ) : (
+        <SettingsEntityList
+          items={members ?? []}
+          getKey={(member) => member.id}
+          renderPrimary={(member) => member.displayName ?? member.email}
+          renderSecondary={(member) =>
+            `${member.email} · added ${formatDate(member.createdAt)}`
+          }
+          onRemove={(member) => removeMember.mutate(member.id)}
+          removeAriaLabel={(member) => `Remove ${member.email}`}
+        />
+      )}
     </div>
   );
 };

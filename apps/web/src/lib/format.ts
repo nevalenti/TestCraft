@@ -20,6 +20,8 @@ export const formatDateTime = (value: unknown): string => {
 export const toDatetimeLocal = (iso: string): string =>
   format(parseISO(iso), "yyyy-MM-dd'T'HH:mm");
 
+export const todayLocalDate = (): string => format(new Date(), 'yyyy-MM-dd');
+
 export const formatDuration = (ms?: number | null): string => {
   if (ms == null) return '—';
   if (ms >= 1000) return `${(ms / 1000).toFixed(2)}s`;

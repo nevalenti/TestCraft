@@ -3,16 +3,17 @@ import type { CreateApiTokenResponse } from '@testcraft/types';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { ErrorState } from '@/components/ErrorState';
 import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
 import {
   useApiTokens,
   useCreateApiToken,
   useRevokeApiToken,
 } from '@/hooks/useApiTokens';
-import { formatDate } from '@/lib/format';
+import { formatDate, todayLocalDate } from '@/lib/format';
 
 export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
-  const { data: tokens } = useApiTokens(projectId);
+  const { data: tokens, isError, error } = useApiTokens(projectId);
   const createToken = useCreateApiToken(projectId);
   const revokeToken = useRevokeApiToken(projectId);
   const { register, handleSubmit, reset } = useForm<{
@@ -87,7 +88,7 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
             id="token-expires"
             type="date"
             className="input-bordered input input-sm w-full"
-            min={new Date().toISOString().split('T', 1)[0]}
+            min={todayLocalDate()}
             {...register('expiresAt')}
           />
         </div>
@@ -104,23 +105,27 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
         </button>
       </form>
 
-      <SettingsEntityList
-        items={tokens ?? []}
-        getKey={(t) => t.id}
-        renderPrimary={(t) => t.name}
-        renderSecondary={(t) => (
-          <>
-            Created {formatDate(t.createdAt)}
-            {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
-            {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
-            {t.isRevoked && ' · revoked'}
-          </>
-        )}
-        onRemove={(t) => revokeToken.mutate(t.id)}
-        removeAriaLabel={() => 'Revoke token'}
-        removeLabel="Revoke"
-        isRemoveHidden={(t) => t.isRevoked}
-      />
+      {isError ? (
+        <ErrorState title="Failed to load API tokens" error={error} />
+      ) : (
+        <SettingsEntityList
+          items={tokens ?? []}
+          getKey={(t) => t.id}
+          renderPrimary={(t) => t.name}
+          renderSecondary={(t) => (
+            <>
+              Created {formatDate(t.createdAt)}
+              {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
+              {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
+              {t.isRevoked && ' · revoked'}
+            </>
+          )}
+          onRemove={(t) => revokeToken.mutate(t.id)}
+          removeAriaLabel={() => 'Revoke token'}
+          removeLabel="Revoke"
+          isRemoveHidden={(t) => t.isRevoked}
+        />
+      )}
     </div>
   );
 };
