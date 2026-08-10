@@ -24,16 +24,16 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
   <Card title="Test management" icon="document">
     <ul>
       <li>Projects → suites → test cases</li>
-      <li>Test plans for regression packs</li>
-      <li>Priority & labels</li>
       <li>JUnit/Allure import</li>
     </ul>
   </Card>
   <Card title="CI-native" icon="rocket">
     <ul>
-      <li>First-party GitHub Action</li>
-      <li>CLI reporter for everything else</li>
-      <li>Example pipelines for GitLab CI and Jenkins</li>
+      <li>First-party GitHub Action support</li>
+      <li>
+        Node.js CLI reporter that can be integrated with any other CI tool
+      </li>
+      <li>Example pipelines for GitHub Actions, GitLab CI and Jenkins</li>
     </ul>
   </Card>
   <Card title="Live test runs" icon="signal">
@@ -41,15 +41,13 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
       <li>Real-time pass/fail feed</li>
       <li>Live pipeline logs</li>
       <li>Shareable run links</li>
-      <li>Webhook or email alerts</li>
     </ul>
   </Card>
   <Card title="Analytics" icon="analytics">
     <ul>
       <li>Pass-rate trends</li>
       <li>Flaky test detection</li>
-      <li>Suite breakdowns</li>
-      <li>Run comparisons</li>
+      <li>Suite breakdowns & run comparisons</li>
     </ul>
   </Card>
   <Card title="Security" icon="padlock">
@@ -63,7 +61,6 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
     <ul>
       <li>Helm chart for k3s</li>
       <li>Automated Postgres & MinIO backups</li>
-      <li>Observability: Prometheus, Grafana, Loki, Seq</li>
     </ul>
   </Card>
 </CardGrid>
@@ -74,6 +71,6 @@ import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
   <LinkCard
     title="Get up and running locally"
     href="/docs/guides/getting-started/"
-    description="Clone the repo, start infra with just up, and run the app."
+    description="Clone the repo, start the infrastructure, and run the app."
   />
 </CardGrid>

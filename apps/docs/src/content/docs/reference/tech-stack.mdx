@@ -7,19 +7,23 @@ sidebar:
 
 import { FileTree } from '@astrojs/starlight/components';
 
-| Layer          | Technology                                                   |
-| -------------- | ------------------------------------------------------------ |
-| Frontend       | React 19, TanStack Query/Router/Table, Zustand, Tailwind CSS |
-| Backend        | ASP.NET Core (.NET 10), CQRS via MediatR                     |
-| Database       | Postgres, EF Core                                            |
-| Cache          | Redis                                                        |
-| Messaging      | MassTransit + RabbitMQ                                       |
-| Real-time      | SignalR                                                      |
-| Object storage | MinIO                                                        |
-| Email          | MailKit (SMTP)                                               |
-| Auth           | Keycloak (SSO, GitHub/Google social login)                   |
-| Reverse proxy  | YARP                                                         |
-| Observability  | Grafana · Prometheus · Loki · Seq                            |
-| E2E testing    | Playwright                                                   |
-| Deployment     | Docker, Helm on k3s                                          |
-| Docs           | Astro + Starlight (this site)                                |
+| Layer           | Technology                                                                                                           |
+| --------------- | -------------------------------------------------------------------------------------------------------------------- |
+| Frontend        | React 19, TanStack Query/Router/Table, Zustand, React Hook Form + Zod, Axios, Recharts, Tailwind CSS + daisyUI, Vite |
+| Backend         | ASP.NET Core (.NET 10), CQRS via MediatR, FluentValidation, Polly                                                    |
+| Database        | Postgres, EF Core                                                                                                    |
+| Cache           | Redis                                                                                                                |
+| Messaging       | MassTransit + RabbitMQ                                                                                               |
+| Background jobs | Hangfire                                                                                                             |
+| Real-time       | SignalR                                                                                                              |
+| Object storage  | MinIO                                                                                                                |
+| Email           | MailKit (SMTP), Mailpit (local dev)                                                                                  |
+| Auth            | Keycloak (SSO, GitHub/Google social login)                                                                           |
+| Reverse proxy   | YARP                                                                                                                 |
+| API docs        | Swashbuckle (OpenAPI), Asp.Versioning                                                                                |
+| Observability   | OpenTelemetry, Grafana, Prometheus, Alertmanager, Tempo, Loki, Seq                                                   |
+| Testing         | xUnit, FluentAssertions, Testcontainers (backend), Vitest (frontend), Playwright (E2E)                               |
+| Monorepo        | pnpm workspaces, Turborepo                                                                                           |
+| CI/CD           | GitHub Actions, GitLab CI, Jenkins                                                                                   |
+| Deployment      | Docker, Helm on k3s                                                                                                  |
+| Docs            | Astro + Starlight                                                                                                    |

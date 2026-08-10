@@ -15,7 +15,9 @@ Set up a local development environment in a few minutes.
 - **.NET 10 SDK**
 - **Node.js 24**
 - **pnpm**
-- [**just**](https://github.com/casey/just)
+- **just**
+- **jq**
+- **yq**
 
 ## Setup
 
@@ -28,6 +30,7 @@ Set up a local development environment in a few minutes.
    cd TestCraft
    pnpm install
    cp .env.example .env
+   cp apps/web/.env.example apps/web/.env
    ```
 
 2. Set `APPLY_MIGRATIONS=true` in `.env`.
