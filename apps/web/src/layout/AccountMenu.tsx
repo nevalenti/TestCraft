@@ -6,7 +6,7 @@ import {
 import { useNavigate } from '@tanstack/react-router';
 
 import keycloak from '@/auth/keycloak';
-import { useAvatarUrl } from '@/hooks/useAccount';
+import { useAvatarUrl } from '@/features/account/hooks';
 import { getInitials } from '@/lib/format';
 
 export const AccountMenu = () => {

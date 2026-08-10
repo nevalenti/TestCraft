@@ -12,9 +12,12 @@ import { useMemo } from 'react';
 import keycloak from '@/auth/keycloak';
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { useProjects } from '@/features/projects/hooks';
+import {
+  useProjectsTestRuns,
+  useTestRunSummaries,
+} from '@/features/testRuns/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useProjects } from '@/hooks/useProjects';
-import { useProjectsTestRuns, useTestRunSummaries } from '@/hooks/useTestRuns';
 import { ActiveRunListItem } from '@/pages/DashboardPage/ActiveRunListItem';
 import { CompletedRunListItem } from '@/pages/DashboardPage/CompletedRunListItem';
 import { StatCard } from '@/pages/DashboardPage/StatCard';

@@ -34,11 +34,11 @@ vi.mock('@/hooks/useRequiredParam', () => ({
   useRequiredParam: vi.fn().mockReturnValue('proj-1'),
 }));
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProject: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestPlans', () => ({
+vi.mock('@/features/testPlans/hooks', () => ({
   useTestPlans: vi.fn(),
   useCreateTestPlan: vi.fn(),
   useUpdateTestPlan: vi.fn(),
@@ -49,13 +49,13 @@ vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 
 import type { TestPlan } from '@testcraft/types';
 
-import { useProject } from '@/hooks/useProjects';
+import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestPlan,
   useDeleteTestPlan,
   useTestPlans,
   useUpdateTestPlan,
-} from '@/hooks/useTestPlans';
+} from '@/features/testPlans/hooks';
 import { TestPlansPage } from '@/pages/TestPlansPage/TestPlansPage';
 
 const makePlan = (overrides: Partial<TestPlan> = {}): TestPlan => ({

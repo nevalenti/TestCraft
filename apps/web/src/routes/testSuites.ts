@@ -1,9 +1,9 @@
 import { createRoute } from '@tanstack/react-router';
 
-import { projectQueries } from '@/api/projects';
-import { testCaseQueries } from '@/api/testCases';
-import { testCaseStepQueries } from '@/api/testCaseSteps';
-import { testSuiteQueries } from '@/api/testSuites';
+import { projectQueries } from '@/features/projects/api';
+import { testCaseQueries } from '@/features/testCases/api';
+import { testCaseStepQueries } from '@/features/testCaseSteps/api';
+import { testSuiteQueries } from '@/features/testSuites/api';
 import { LazyTestCasePage, LazyTestSuitePage } from '@/pages/lazy';
 import { appLayoutRoute } from '@/routes/root';
 

@@ -29,7 +29,7 @@ vi.mock('@tanstack/react-router', () => ({
   ),
 }));
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProjects: vi.fn(),
   useCreateProject: vi.fn(),
   useUpdateProject: vi.fn(),
@@ -45,7 +45,7 @@ import {
   useDeleteProject,
   useProjects,
   useUpdateProject,
-} from '@/hooks/useProjects';
+} from '@/features/projects/hooks';
 import { ProjectsPage } from '@/pages/ProjectsPage/ProjectsPage';
 
 const makeProject = (overrides: Partial<Project> = {}): Project => ({

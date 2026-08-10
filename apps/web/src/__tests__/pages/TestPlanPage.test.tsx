@@ -21,15 +21,15 @@ vi.mock('@/hooks/useRequiredParam', () => ({
   useRequiredParam: vi.fn((key: string) => `${key}-1`),
 }));
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProject: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestCases', () => ({
+vi.mock('@/features/testCases/hooks', () => ({
   useProjectTestCases: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestPlans', () => ({
+vi.mock('@/features/testPlans/hooks', () => ({
   useTestPlan: vi.fn(),
   useTestPlanCases: vi.fn(),
   useAddCaseToPlan: vi.fn(),
@@ -42,8 +42,8 @@ vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 
 import type { TestPlan, TestPlanCase } from '@testcraft/types';
 
-import { useProject } from '@/hooks/useProjects';
-import { useProjectTestCases } from '@/hooks/useTestCases';
+import { useProject } from '@/features/projects/hooks';
+import { useProjectTestCases } from '@/features/testCases/hooks';
 import {
   useAddCaseToPlan,
   useCreateRunFromPlan,
@@ -51,7 +51,7 @@ import {
   useReorderPlanCases,
   useTestPlan,
   useTestPlanCases,
-} from '@/hooks/useTestPlans';
+} from '@/features/testPlans/hooks';
 import { TestPlanPage } from '@/pages/TestPlansPage/TestPlanPage';
 
 const makePlan = (overrides: Partial<TestPlan> = {}): TestPlan => ({

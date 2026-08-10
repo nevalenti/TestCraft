@@ -6,16 +6,16 @@ import { useForm } from 'react-hook-form';
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useModal } from '@/hooks/useModal';
-import { useProject } from '@/hooks/useProjects';
-import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestPlan,
   useDeleteTestPlan,
   useTestPlans,
   useUpdateTestPlan,
-} from '@/hooks/useTestPlans';
+} from '@/features/testPlans/hooks';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate } from '@/lib/format';
 
 export const TestPlansPage = () => {

@@ -1,10 +1,10 @@
 import { useState } from 'react';
 
 import { Modal } from '@/components/ui/Modal';
+import { ApiTokensSection } from '@/features/apiTokens/ApiTokensSection';
+import { NotificationsSection } from '@/features/notifications/NotificationsSection';
+import { MembersSection } from '@/features/projectMembers/MembersSection';
 import { cn } from '@/lib/cn';
-import { ApiTokensSection } from '@/pages/ProjectDetailPage/ApiTokensSection';
-import { MembersSection } from '@/pages/ProjectDetailPage/MembersSection';
-import { NotificationsSection } from '@/pages/ProjectDetailPage/NotificationsSection';
 
 interface ProjectSettingsModalProps {
   isOpen: boolean;
