@@ -8,15 +8,15 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { ViewToggle } from '@/components/ui/ViewToggle';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useModal } from '@/hooks/useModal';
 import {
   useCreateProject,
   useDeleteProject,
   useProjects,
   useUpdateProject,
-} from '@/hooks/useProjects';
+} from '@/features/projects/hooks';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
 import { ProjectCard } from '@/pages/ProjectsPage/ProjectCard';
 import { ProjectForm } from '@/pages/ProjectsPage/ProjectForm';
 import { useViewModeStore } from '@/stores/viewMode';

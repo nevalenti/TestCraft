@@ -1,8 +1,8 @@
 import { createRoute, redirect } from '@tanstack/react-router';
 
-import { projectQueries } from '@/api/projects';
-import { testRunQueries } from '@/api/testRuns';
-import { testSuiteQueries } from '@/api/testSuites';
+import { projectQueries } from '@/features/projects/api';
+import { testRunQueries } from '@/features/testRuns/api';
+import { testSuiteQueries } from '@/features/testSuites/api';
 import {
   LazyProjectDetailPage,
   LazyProjectLabelsPage,

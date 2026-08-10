@@ -20,10 +20,8 @@ import { useForm } from 'react-hook-form';
 
 import { ErrorState } from '@/components/ErrorState';
 import { Modal } from '@/components/ui/Modal';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useProject } from '@/hooks/useProjects';
-import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useProjectTestCases } from '@/hooks/useTestCases';
+import { useProject } from '@/features/projects/hooks';
+import { useProjectTestCases } from '@/features/testCases/hooks';
 import {
   useAddCaseToPlan,
   useCreateRunFromPlan,
@@ -31,7 +29,9 @@ import {
   useReorderPlanCases,
   useTestPlan,
   useTestPlanCases,
-} from '@/hooks/useTestPlans';
+} from '@/features/testPlans/hooks';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { SortableItem } from '@/pages/TestPlansPage/SortableItem';
 
 export const TestPlanPage = () => {

@@ -17,19 +17,19 @@ vi.mock('@/hooks/useRequiredParam', () => ({
   useRequiredParam: vi.fn((key: string) => `${key}-1`),
 }));
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProject: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestSuites', () => ({
+vi.mock('@/features/testSuites/hooks', () => ({
   useTestSuite: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestCases', () => ({
+vi.mock('@/features/testCases/hooks', () => ({
   useTestCase: vi.fn(),
 }));
 
-vi.mock('@/hooks/useTestCaseSteps', () => ({
+vi.mock('@/features/testCaseSteps/hooks', () => ({
   useTestCaseSteps: vi.fn(),
   useCreateTestCaseStep: vi.fn(),
   useUpdateTestCaseStep: vi.fn(),
@@ -41,16 +41,16 @@ vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 
 import type { TestCaseStep } from '@testcraft/types';
 
-import { useProject } from '@/hooks/useProjects';
-import { useTestCase } from '@/hooks/useTestCases';
+import { useProject } from '@/features/projects/hooks';
+import { useTestCase } from '@/features/testCases/hooks';
 import {
   useBulkReorderSteps,
   useCreateTestCaseStep,
   useDeleteTestCaseStep,
   useTestCaseSteps,
   useUpdateTestCaseStep,
-} from '@/hooks/useTestCaseSteps';
-import { useTestSuite } from '@/hooks/useTestSuites';
+} from '@/features/testCaseSteps/hooks';
+import { useTestSuite } from '@/features/testSuites/hooks';
 import { TestCasePage } from '@/pages/TestCasePage/TestCasePage';
 
 const makeStep = (overrides: Partial<TestCaseStep> = {}): TestCaseStep => ({

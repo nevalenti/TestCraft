@@ -1,8 +1,8 @@
 import type { TestResultStatus } from '@testcraft/types';
 
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { useSharedRun } from '@/features/shareTokens/hooks';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useSharedRun } from '@/hooks/useShareTokens';
 import { cn } from '@/lib/cn';
 import {
   formatDate,

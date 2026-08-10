@@ -16,18 +16,18 @@ import { PriorityBadge } from '@/components/ui/PriorityBadge';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { ViewToggle } from '@/components/ui/ViewToggle';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useModal } from '@/hooks/useModal';
-import { useProject } from '@/hooks/useProjects';
-import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestCase,
   useDeleteTestCase,
   useTestCases,
   useUpdateTestCase,
-} from '@/hooks/useTestCases';
-import { useTestSuite } from '@/hooks/useTestSuites';
+} from '@/features/testCases/hooks';
+import { useTestSuite } from '@/features/testSuites/hooks';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate } from '@/lib/format';
 import { TestCaseForm } from '@/pages/TestSuitePage/TestCaseForm';
 import { useViewModeStore } from '@/stores/viewMode';

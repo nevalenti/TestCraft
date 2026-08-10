@@ -31,37 +31,37 @@ export const LazyTestRunPage = lazyPage(
 );
 
 export const LazyProjectSuitesPage = lazyPage(
-  () => import('./ProjectDetailPage/SuitesTab'),
+  () => import('@/features/testSuites/SuitesTab'),
   'SuitesTab',
 );
 
 export const LazyProjectRunsPage = lazyPage(
-  () => import('./ProjectDetailPage/RunsTab'),
+  () => import('@/features/testRuns/RunsTab'),
   'RunsTab',
 );
 
 export const LazyProjectAnalyticsLayout = lazyPage(
-  () => import('./ProjectDetailPage/AnalyticsLayout'),
+  () => import('@/features/analytics/AnalyticsLayout'),
   'AnalyticsLayout',
 );
 
 export const LazyAnalyticsTrendTab = lazyPage(
-  () => import('./ProjectDetailPage/AnalyticsTrendTab'),
+  () => import('@/features/analytics/AnalyticsTrendTab'),
   'AnalyticsTrendTab',
 );
 
 export const LazyAnalyticsFlakyTab = lazyPage(
-  () => import('./ProjectDetailPage/AnalyticsFlakyTab'),
+  () => import('@/features/analytics/AnalyticsFlakyTab'),
   'AnalyticsFlakyTab',
 );
 
 export const LazyAnalyticsSuiteTab = lazyPage(
-  () => import('./ProjectDetailPage/AnalyticsSuiteTab'),
+  () => import('@/features/analytics/AnalyticsSuiteTab'),
   'AnalyticsSuiteTab',
 );
 
 export const LazyAnalyticsComparisonTab = lazyPage(
-  () => import('./ProjectDetailPage/AnalyticsComparisonTab'),
+  () => import('@/features/analytics/AnalyticsComparisonTab'),
   'AnalyticsComparisonTab',
 );
 
@@ -76,7 +76,7 @@ export const LazyTestPlanPage = lazyPage(
 );
 
 export const LazyProjectLabelsPage = lazyPage(
-  () => import('./ProjectDetailPage/LabelsTab'),
+  () => import('@/features/labels/LabelsTab'),
   'LabelsTab',
 );
 

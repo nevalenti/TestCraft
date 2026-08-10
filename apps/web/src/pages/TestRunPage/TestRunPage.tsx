@@ -22,19 +22,19 @@ import { useEffect, useMemo, useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Modal } from '@/components/ui/Modal';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useModal } from '@/hooks/useModal';
-import { useProject } from '@/hooks/useProjects';
-import { useRequiredParam } from '@/hooks/useRequiredParam';
+import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestResult,
   useDeleteTestResult,
   useTestResults,
   useUpdateTestResult,
-} from '@/hooks/useTestResults';
-import { useTestRunRealtime } from '@/hooks/useTestRunRealtime';
-import { useTestRun, useTestRunSummary } from '@/hooks/useTestRuns';
+} from '@/features/testResults/hooks';
+import { useTestRun, useTestRunSummary } from '@/features/testRuns/hooks';
+import { useTestRunRealtime } from '@/features/testRuns/useTestRunRealtime';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
 import { RESULTS_PAGE_SIZE } from '@/lib/constants';
 import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';

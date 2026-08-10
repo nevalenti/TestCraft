@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-import { useResultFeed } from '@/hooks/useResultFeed';
+import { useResultFeed } from '@/features/testRuns/useResultFeed';
 
 interface Props {
   projectId: string;

@@ -12,12 +12,12 @@ vi.mock('@/auth/keycloak', () => ({
   default: { tokenParsed: {}, logout: vi.fn() },
 }));
 
-vi.mock('@/hooks/useAccount', () => ({
+vi.mock('@/features/account/hooks', () => ({
   useAvatarUrl: vi.fn(() => ({ data: undefined })),
 }));
 
 import keycloak from '@/auth/keycloak';
-import { useAvatarUrl } from '@/hooks/useAccount';
+import { useAvatarUrl } from '@/features/account/hooks';
 import { AccountMenu } from '@/layout/AccountMenu';
 
 beforeEach(() => {

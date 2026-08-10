@@ -10,7 +10,7 @@ import {
   useAddTestCaseLabel,
   useLabels,
   useRemoveTestCaseLabel,
-} from '@/hooks/useLabels';
+} from '@/features/labels/hooks';
 
 interface LabelSelectProps {
   projectId: string;

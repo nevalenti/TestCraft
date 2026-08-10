@@ -6,7 +6,7 @@ import {
   useCreateShareToken,
   useRevokeShareToken,
   useShareTokens,
-} from '@/hooks/useShareTokens';
+} from '@/features/shareTokens/hooks';
 import { formatDate, todayLocalDate } from '@/lib/format';
 
 interface ShareModalProps {

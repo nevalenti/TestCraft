@@ -29,19 +29,19 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { Modal } from '@/components/ui/Modal';
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useModal } from '@/hooks/useModal';
-import { useProject } from '@/hooks/useProjects';
-import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useTestCase } from '@/hooks/useTestCases';
+import { useProject } from '@/features/projects/hooks';
+import { useTestCase } from '@/features/testCases/hooks';
 import {
   useBulkReorderSteps,
   useCreateTestCaseStep,
   useDeleteTestCaseStep,
   useTestCaseSteps,
   useUpdateTestCaseStep,
-} from '@/hooks/useTestCaseSteps';
-import { useTestSuite } from '@/hooks/useTestSuites';
+} from '@/features/testCaseSteps/hooks';
+import { useTestSuite } from '@/features/testSuites/hooks';
+import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useModal } from '@/hooks/useModal';
+import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { LabelSelect } from '@/pages/TestCasePage/LabelSelect';
 import { StepDragPreview } from '@/pages/TestCasePage/StepDragPreview';
 import { StepForm } from '@/pages/TestCasePage/StepForm';

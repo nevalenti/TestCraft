@@ -1,8 +1,8 @@
 import { TestResultStatus, TestRunStatus } from '@testcraft/types';
 
 import { StatusBadge } from '@/components/ui/StatusBadge';
-import { useResultFeed } from '@/hooks/useResultFeed';
-import { useTestRun } from '@/hooks/useTestRuns';
+import { useTestRun } from '@/features/testRuns/hooks';
+import { useResultFeed } from '@/features/testRuns/useResultFeed';
 import { cn } from '@/lib/cn';
 import { formatDate, formatDuration as formatDurationText } from '@/lib/format';
 

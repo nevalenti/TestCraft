@@ -9,8 +9,8 @@ import { Link, Outlet } from '@tanstack/react-router';
 import { useState } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
+import { useProject } from '@/features/projects/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
-import { useProject } from '@/hooks/useProjects';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { ProjectSettingsModal } from '@/pages/ProjectDetailPage/ProjectSettingsModal';
 

@@ -13,7 +13,7 @@ import {
   useDeleteAttachment,
   useDownloadAttachment,
   useUploadAttachment,
-} from '@/hooks/useAttachments';
+} from '@/features/attachments/hooks';
 import { formatBytes, formatDateTime } from '@/lib/format';
 
 interface AttachmentModalProps {

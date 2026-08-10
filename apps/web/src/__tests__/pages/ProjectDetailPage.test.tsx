@@ -23,21 +23,21 @@ vi.mock('@/hooks/useRequiredParam', () => ({
   useRequiredParam: vi.fn().mockReturnValue('proj-1'),
 }));
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProject: vi.fn(),
 }));
 
 vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 
-vi.mock('@/pages/ProjectDetailPage/SuitesTab', () => ({
+vi.mock('@/features/testSuites/SuitesTab', () => ({
   SuitesTab: vi.fn(() => <div data-testid="suites-section" />),
 }));
 
-vi.mock('@/pages/ProjectDetailPage/RunsTab', () => ({
+vi.mock('@/features/testRuns/RunsTab', () => ({
   RunsTab: vi.fn(() => <div data-testid="runs-section" />),
 }));
 
-import { useProject } from '@/hooks/useProjects';
+import { useProject } from '@/features/projects/hooks';
 import { ProjectDetailPage } from '@/pages/ProjectDetailPage/ProjectDetailPage';
 
 const makeProject = () => ({

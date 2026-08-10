@@ -6,7 +6,7 @@ import {
 import { useRef } from 'react';
 
 import keycloak from '@/auth/keycloak';
-import { useAvatarUrl, useUploadAvatar } from '@/hooks/useAccount';
+import { useAvatarUrl, useUploadAvatar } from '@/features/account/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { env } from '@/lib/env';
 import { getInitials } from '@/lib/format';

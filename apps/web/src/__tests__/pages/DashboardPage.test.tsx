@@ -24,7 +24,7 @@ vi.mock('@tanstack/react-query', async (importOriginal) => {
   return { ...actual, useQueries: vi.fn() };
 });
 
-vi.mock('@/hooks/useProjects', () => ({
+vi.mock('@/features/projects/hooks', () => ({
   useProjects: vi.fn(),
 }));
 
@@ -33,7 +33,7 @@ vi.mock('@/hooks/useBreadcrumbs', () => ({ useBreadcrumbs: vi.fn() }));
 import { useQueries } from '@tanstack/react-query';
 import { TestRunStatus } from '@testcraft/types';
 
-import { useProjects } from '@/hooks/useProjects';
+import { useProjects } from '@/features/projects/hooks';
 import { DashboardPage } from '@/pages/DashboardPage/DashboardPage';
 
 const makeProject = (id: string, name: string) => ({
