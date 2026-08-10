@@ -78,3 +78,7 @@ jenkins app:
 format:
     pnpm format
     dotnet csharpier format .
+
+lint:
+    pnpm lint
+    dotnet csharpier check .
