@@ -1,5 +1,5 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
-import type { AxiosError } from 'axios';
+import axios from 'axios';
 
 interface ApiProblem {
   title?: string;
@@ -14,7 +14,9 @@ interface Props {
 }
 
 const extractMessage = (error: unknown): string | undefined => {
-  const data = (error as AxiosError<ApiProblem>)?.response?.data;
+  if (!axios.isAxiosError<ApiProblem>(error)) return undefined;
+
+  const data = error.response?.data;
 
   return data?.detail ?? data?.title;
 };
