@@ -20,7 +20,10 @@ describe('ErrorState', () => {
       render(
         <ErrorState
           message="Explicit message"
-          error={{ response: { data: { detail: 'From error' } } }}
+          error={{
+            isAxiosError: true,
+            response: { data: { detail: 'From error' } },
+          }}
           onRetry={vi.fn()}
         />,
       );
@@ -34,6 +37,7 @@ describe('ErrorState', () => {
       render(
         <ErrorState
           error={{
+            isAxiosError: true,
             response: { data: { title: 'Title', detail: 'Detail wins' } },
           }}
           onRetry={vi.fn()}
@@ -47,11 +51,36 @@ describe('ErrorState', () => {
     it('displays the title', () => {
       render(
         <ErrorState
-          error={{ response: { data: { title: 'Only a title' } } }}
+          error={{
+            isAxiosError: true,
+            response: { data: { title: 'Only a title' } },
+          }}
           onRetry={vi.fn()}
         />,
       );
       expect(screen.getByText('Only a title')).toBeInTheDocument();
+    });
+  });
+
+  describe('given a non-axios error — falls back to the generic message', () => {
+    it('ignores response-shaped fields on a plain error', () => {
+      render(
+        <ErrorState
+          error={{ response: { data: { detail: 'Not really axios' } } }}
+          onRetry={vi.fn()}
+        />,
+      );
+      expect(
+        screen.getByText('Please check your connection and try again.'),
+      ).toBeInTheDocument();
+      expect(screen.queryByText('Not really axios')).not.toBeInTheDocument();
+    });
+
+    it('handles a plain Error instance without throwing', () => {
+      render(<ErrorState error={new Error('boom')} onRetry={vi.fn()} />);
+      expect(
+        screen.getByText('Please check your connection and try again.'),
+      ).toBeInTheDocument();
     });
   });
 

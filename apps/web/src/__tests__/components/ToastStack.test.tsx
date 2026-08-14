@@ -2,33 +2,33 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { Notifications } from '@/components/Notifications';
+import { ToastStack } from '@/components/ToastStack';
 import { useNotificationsStore } from '@/stores/notifications';
 
 beforeEach(() => {
   useNotificationsStore.getState().clearAll();
 });
 
-describe('Notifications', () => {
-  describe('Notifications — given no notifications — renders nothing', () => {
+describe('ToastStack', () => {
+  describe('ToastStack — given no notifications — renders nothing', () => {
     it('produces an empty DOM element', () => {
-      const { container } = render(<Notifications />);
+      const { container } = render(<ToastStack />);
 
       expect(container).toBeEmptyDOMElement();
     });
   });
 
-  describe('Notifications — given one notification — renders its message', () => {
+  describe('ToastStack — given one notification — renders its message', () => {
     it('shows the message text', () => {
       useNotificationsStore
         .getState()
         .add({ type: 'success', message: 'Project saved' });
-      render(<Notifications />);
+      render(<ToastStack />);
       expect(screen.getByText('Project saved')).toBeInTheDocument();
     });
   });
 
-  describe('Notifications — given multiple notifications — renders all of them', () => {
+  describe('ToastStack — given multiple notifications — renders all of them', () => {
     it('shows every message', () => {
       useNotificationsStore
         .getState()
@@ -36,18 +36,18 @@ describe('Notifications', () => {
       useNotificationsStore
         .getState()
         .add({ type: 'error', message: 'Second' });
-      render(<Notifications />);
+      render(<ToastStack />);
       expect(screen.getByText('First')).toBeInTheDocument();
       expect(screen.getByText('Second')).toBeInTheDocument();
     });
   });
 
-  describe('Notifications — when the dismiss button is clicked — removes that notification', () => {
+  describe('ToastStack — when the dismiss button is clicked — removes that notification', () => {
     it('takes the message out of the DOM', async () => {
       useNotificationsStore
         .getState()
         .add({ type: 'error', message: 'Something failed' });
-      render(<Notifications />);
+      render(<ToastStack />);
 
       await userEvent.click(screen.getByRole('button', { name: /dismiss/i }));
 
@@ -61,7 +61,7 @@ describe('Notifications', () => {
       useNotificationsStore
         .getState()
         .add({ type: 'info', message: 'Keep me' });
-      render(<Notifications />);
+      render(<ToastStack />);
 
       const [firstDismiss] = screen.getAllByRole('button', {
         name: /dismiss/i,
