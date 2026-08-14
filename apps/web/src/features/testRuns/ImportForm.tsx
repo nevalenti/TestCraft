@@ -1,10 +1,13 @@
 import { CheckCircleIcon } from '@heroicons/react/24/solid';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { AllureResultItem } from '@testcraft/types';
-import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { FormActions } from '@/components/ui/FormActions';
 import { FormField } from '@/components/ui/FormField';
 import { FileDropZone } from '@/features/testRuns/FileDropZone';
+import { detectFormat } from '@/features/testRuns/importFormat';
 import { cn } from '@/lib/cn';
 
 type ImportData =
@@ -22,42 +25,49 @@ interface ImportFormProps {
   isLoading: boolean;
 }
 
-type DetectedFormat = 'junit' | 'allure' | 'mixed' | null;
-type FormErrors = { files?: string; environment?: string };
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const detectFormat = (files: File[]): DetectedFormat => {
-  if (files.length === 0) return null;
-  if (files.every((file) => file.name.toLowerCase().endsWith('.xml')))
-    return 'junit';
-  if (files.every((file) => file.name.toLowerCase().endsWith('.json')))
-    return 'allure';
+const schema = z.object({
+  files: z.array(z.instanceof(File)).superRefine((files, ctx) => {
+    if (files.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please drop a file to import',
+      });
+      return;
+    }
 
-  return 'mixed';
-};
+    const format = detectFormat(files);
 
-const validateImport = (
-  files: File[],
-  environment: string,
-  detectedFormat: DetectedFormat,
-): FormErrors => {
-  const next: FormErrors = {};
+    if (format === 'mixed') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'All files must be the same type (.xml or .json)',
+      });
+      return;
+    }
 
-  if (!environment.trim()) next.environment = 'Environment is required';
-  if (files.length === 0) next.files = 'Please drop a file to import';
-  else if (detectedFormat === 'mixed')
-    next.files = 'All files must be the same type (.xml or .json)';
-  else if (detectedFormat === 'junit' && files.length > 1)
-    next.files = 'JUnit import supports a single XML file';
-  else {
-    const MAX = 5 * 1024 * 1024;
-    const oversized = files.find((file) => file.size > MAX);
+    if (format === 'junit' && files.length > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'JUnit import supports a single XML file',
+      });
+      return;
+    }
 
-    if (oversized)
-      next.files = `"${oversized.name}" exceeds the 5 MB size limit`;
-  }
+    const oversized = files.find((file) => file.size > MAX_FILE_SIZE);
+    if (oversized) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: `"${oversized.name}" exceeds the 5 MB size limit`,
+      });
+    }
+  }),
+  environment: z.string().min(1, 'Environment is required'),
+  name: z.string().optional(),
+});
 
-  return next;
-};
+type FormValues = z.infer<typeof schema>;
 
 const parseAllureFiles = async (
   files: File[],
@@ -68,7 +78,6 @@ const parseAllureFiles = async (
   for (const [i, text] of texts.entries()) {
     try {
       const parsed = JSON.parse(text) as AllureResultItem | AllureResultItem[];
-
       if (Array.isArray(parsed)) results.push(...parsed);
       else results.push(parsed);
     } catch {
@@ -84,64 +93,68 @@ export const ImportForm = ({
   onCancel,
   isLoading,
 }: ImportFormProps) => {
-  const [files, setFiles] = useState<File[]>([]);
-  const [environment, setEnvironment] = useState('');
-  const [name, setName] = useState('');
-  const [errors, setErrors] = useState<FormErrors>({});
+  const {
+    control,
+    register,
+    handleSubmit,
+    setError,
+    watch,
+    formState: { errors },
+  } = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { files: [], environment: '', name: '' },
+  });
 
-  const detectedFormat = detectFormat(files);
+  const detectedFormat = detectFormat(watch('files'));
 
-  const handleFilesChange = (newFiles: File[]) => {
-    setFiles(newFiles);
-    setErrors((previous) => ({ ...previous, files: undefined }));
-  };
+  const submit = handleSubmit(async (data) => {
+    const format = detectFormat(data.files);
 
-  const handleSubmit = async (event: React.SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const next = validateImport(files, environment, detectedFormat);
-
-    setErrors(next);
-    if (Object.keys(next).length > 0) return;
-
-    if (detectedFormat === 'junit') {
-      const xml = await files[0].text();
-
+    if (format === 'junit') {
+      const xml = await data.files[0].text();
       onSubmit({
         type: 'junit',
         xml,
-        environment: environment.trim(),
-        name: name.trim() || undefined,
+        environment: data.environment.trim(),
+        name: data.name?.trim() || undefined,
       });
-    } else if (detectedFormat === 'allure') {
-      const allureData = await parseAllureFiles(files);
-
+    } else if (format === 'allure') {
+      const allureData = await parseAllureFiles(data.files);
       if ('fileError' in allureData) {
-        setErrors((previous) => ({ ...previous, files: allureData.fileError }));
-
+        setError('files', { message: allureData.fileError });
         return;
       }
-
       onSubmit({
         type: 'allure',
         results: allureData.results,
-        environment: environment.trim(),
-        name: name.trim() || undefined,
+        environment: data.environment.trim(),
+        name: data.name?.trim() || undefined,
       });
     }
-  };
+  });
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <FormField label="File" htmlFor="import-files" error={errors.files}>
-        <FileDropZone
-          id="import-files"
-          accept=".xml,.json,application/xml,text/xml,application/json"
-          multiple
-          files={files}
-          onFilesChange={handleFilesChange}
-          hint="Drop a .xml (JUnit) or .json (Allure) file"
-          hasError={!!errors.files}
-          color="secondary"
+    <form onSubmit={submit} className="space-y-4">
+      <FormField
+        label="File"
+        htmlFor="import-files"
+        error={errors.files?.message}
+      >
+        <Controller
+          control={control}
+          name="files"
+          render={({ field }) => (
+            <FileDropZone
+              id="import-files"
+              accept=".xml,.json,application/xml,text/xml,application/json"
+              multiple
+              files={field.value}
+              onFilesChange={field.onChange}
+              hint="Drop a .xml (JUnit) or .json (Allure) file"
+              hasError={!!errors.files}
+              color="secondary"
+            />
+          )}
         />
         {detectedFormat && detectedFormat !== 'mixed' && (
           <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-success">
@@ -156,7 +169,7 @@ export const ImportForm = ({
       <FormField
         label="Environment"
         htmlFor="import-environment"
-        error={errors.environment}
+        error={errors.environment?.message}
       >
         <input
           id="import-environment"
@@ -165,8 +178,7 @@ export const ImportForm = ({
             errors.environment && 'input-error',
           )}
           placeholder="staging"
-          value={environment}
-          onChange={(event) => setEnvironment(event.target.value)}
+          {...register('environment')}
         />
       </FormField>
 
@@ -179,8 +191,7 @@ export const ImportForm = ({
           id="import-name"
           className="input-bordered input w-full bg-base-200"
           placeholder="e.g. api-run-42"
-          value={name}
-          onChange={(event) => setName(event.target.value)}
+          {...register('name')}
         />
       </FormField>
 
