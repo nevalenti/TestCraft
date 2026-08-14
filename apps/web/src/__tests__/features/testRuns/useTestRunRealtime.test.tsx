@@ -80,6 +80,32 @@ describe('useTestRunRealtime', () => {
     ).toEqual(['first']);
   });
 
+  it('ignores a non-array LogsAppended payload without touching the cache', () => {
+    const { queryClient, wrapper } = makeWrapper();
+    queryClient.setQueryData(queryKeys.testRuns.logs('p1', 'r1'), ['line 1']);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderHook(() => useTestRunRealtime('p1', 'r1'), { wrapper });
+
+    handlersRef.current.LogsAppended({ not: 'an array' });
+
+    expect(
+      queryClient.getQueryData(queryKeys.testRuns.logs('p1', 'r1')),
+    ).toEqual(['line 1']);
+  });
+
+  it('ignores a LogsAppended payload with non-string entries without touching the cache', () => {
+    const { queryClient, wrapper } = makeWrapper();
+    queryClient.setQueryData(queryKeys.testRuns.logs('p1', 'r1'), ['line 1']);
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    renderHook(() => useTestRunRealtime('p1', 'r1'), { wrapper });
+
+    handlersRef.current.LogsAppended(['ok', 42, null]);
+
+    expect(
+      queryClient.getQueryData(queryKeys.testRuns.logs('p1', 'r1')),
+    ).toEqual(['line 1']);
+  });
+
   it('invalidates results, summary, run detail, and logs on reconnect', () => {
     const { queryClient, wrapper } = makeWrapper();
     const spy = vi.spyOn(queryClient, 'invalidateQueries');

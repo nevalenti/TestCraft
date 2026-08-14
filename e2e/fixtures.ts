@@ -1,8 +1,11 @@
 import { test as base } from '@playwright/test';
 
+import { AccountPage } from './pages/account.page';
 import { AnalyticsPage } from './pages/analytics.page';
 import { LabelsPage } from './pages/labels.page';
+import { ProjectSettingsPage } from './pages/project-settings.page';
 import { ProjectsPage } from './pages/projects.page';
+import { SharePage } from './pages/share.page';
 import { SuitesPage } from './pages/suites.page';
 import { TestCasesPage } from './pages/test-cases.page';
 import { TestPlansPage } from './pages/test-plans.page';
@@ -22,6 +25,9 @@ type Fixtures = {
   testPlansPage: TestPlansPage;
   analyticsPage: AnalyticsPage;
   labelsPage: LabelsPage;
+  projectSettingsPage: ProjectSettingsPage;
+  accountPage: AccountPage;
+  sharePage: SharePage;
 };
 
 export const test = base.extend<Fixtures>({
@@ -34,4 +40,8 @@ export const test = base.extend<Fixtures>({
   testPlansPage: async ({ page }, use) => use(new TestPlansPage(page)),
   analyticsPage: async ({ page }, use) => use(new AnalyticsPage(page)),
   labelsPage: async ({ page }, use) => use(new LabelsPage(page)),
+  projectSettingsPage: async ({ page }, use) =>
+    use(new ProjectSettingsPage(page)),
+  accountPage: async ({ page }, use) => use(new AccountPage(page)),
+  sharePage: async ({ page }, use) => use(new SharePage(page)),
 });
