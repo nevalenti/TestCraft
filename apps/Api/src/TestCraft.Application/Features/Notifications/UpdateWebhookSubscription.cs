@@ -14,7 +14,7 @@ public static class UpdateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project the subscription belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public Guid ProjectId { get; init; }
 
         /// <summary>The subscription to update.</summary>
         public Guid Id { get; init; }

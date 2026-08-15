@@ -22,5 +22,15 @@ jq '
     "credentials": [
       { "type": "password", "value": "e2e-test-password", "temporary": false }
     ]
+  }, {
+    "username": "e2e-member@testcraft.pro",
+    "email": "e2e-member@testcraft.pro",
+    "emailVerified": true,
+    "enabled": true,
+    "firstName": "E2E",
+    "lastName": "Member",
+    "credentials": [
+      { "type": "password", "value": "e2e-test-password", "temporary": false }
+    ]
   }] + .users
 ' "$BASE_FILE" > "$OUT_FILE"

@@ -2,7 +2,7 @@ import { Outlet } from '@tanstack/react-router';
 
 import { CookieConsent } from '@/components/CookieConsent';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { Notifications } from '@/components/Notifications';
+import { ToastStack } from '@/components/ToastStack';
 import { BreadcrumbBar } from '@/layout/BreadcrumbBar';
 import { Footer } from '@/layout/Footer';
 import { Header } from '@/layout/Header';
@@ -23,7 +23,7 @@ export const AppLayout = () => (
       </div>
     </div>
     <Footer />
-    <Notifications />
+    <ToastStack />
     <CookieConsent />
   </div>
 );

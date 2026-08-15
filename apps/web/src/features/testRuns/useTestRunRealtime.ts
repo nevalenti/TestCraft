@@ -4,6 +4,9 @@ import { useCallback } from 'react';
 import { queryKeys } from '@/api/queryKeys';
 import { useSignalR } from '@/hooks/useSignalR';
 
+const isStringArray = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string');
+
 export const useTestRunRealtime = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
 
@@ -38,9 +41,14 @@ export const useTestRunRealtime = (projectId: string, runId: string) => {
         });
       },
       LogsAppended: (data) => {
+        if (!isStringArray(data)) {
+          console.error('LogsAppended: expected a string array, got', data);
+          return;
+        }
+
         queryClient.setQueryData<string[]>(
           queryKeys.testRuns.logs(projectId, runId),
-          (previous = []) => [...previous, ...(data as string[])],
+          (previous = []) => [...previous, ...data],
         );
       },
     },

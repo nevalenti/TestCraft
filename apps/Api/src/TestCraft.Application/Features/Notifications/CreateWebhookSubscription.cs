@@ -35,7 +35,7 @@ public static class CreateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project to subscribe to.</summary>
-        public required Guid ProjectId { get; init; }
+        public Guid ProjectId { get; init; }
 
         /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }

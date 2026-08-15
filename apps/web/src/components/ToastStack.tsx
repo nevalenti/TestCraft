@@ -29,7 +29,7 @@ const typeConfig: Record<string, { cls: string; dismissCls: string }> = {
 
 const MAX_VISIBLE = 4;
 
-export const Notifications = () => {
+export const ToastStack = () => {
   const notifications = useNotificationsStore((store) => store.notifications);
   const remove = useNotificationsStore((store) => store.remove);
   const { isShowing: isCookieBannerShowing } = useCookieConsent();
