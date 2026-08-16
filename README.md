@@ -4,7 +4,7 @@
 
 # <a href="https://testcraft.pro">TestCraft</a>
 
-_A self-hosted alternative to TestRail & Xray._
+_A self-hosted alternative to TestRail._
 
 <p>
   <a href="https://testcraft.pro/docs"><strong>Documentation</strong></a>
