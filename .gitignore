@@ -37,3 +37,4 @@ packages/types/src/generated/
 playwright-report/
 terraform.tfvars
 test-results/
+TestResults/
