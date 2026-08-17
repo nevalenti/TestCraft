@@ -7,10 +7,13 @@
 *.tfstate.lock.info
 *.tsbuildinfo
 *.user
+*.key
+*.pem
 .env
 .env.*
 infrastructure/image-versions.env
 infrastructure/keycloak/realm.json
+infrastructure/nginx/tls/
 .eslintcache
 .gitlab-ci-local-variables.yml
 .gitlab-ci-local/

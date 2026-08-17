@@ -1,0 +1,530 @@
+{
+    "failed_checks": [
+        {
+            "file": "/testcraft/templates/alertmanager.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.alertmanager",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.alertmanager.app-alertmanager",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/api.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.api",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.api.app-api",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/docs.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.docs",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.docs.app-docs",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/exporters.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.postgres-exporter",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Deployment.testcraft.rabbitmq-exporter",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Deployment.testcraft.redis-exporter",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.postgres-exporter.app-postgres-exporter",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.rabbitmq-exporter.app-rabbitmq-exporter",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.redis-exporter.app-redis-exporter",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/gateway.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.gateway",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_25",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.gateway.app-gateway",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/grafana.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.grafana",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.grafana.app-grafana",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/keycloak.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.keycloak",
+                    "check_ids": [
+                        "CKV_K8S_10",
+                        "CKV_K8S_11",
+                        "CKV_K8S_12",
+                        "CKV_K8S_13",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.keycloak.app-keycloak",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/kube-state-metrics.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.kube-state-metrics",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.kube-state-metrics.app-kube-state-metrics",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/loki.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.loki",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.loki.app-loki",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/minio-backup.yaml",
+            "findings": [
+                {
+                    "resource": "CronJob.testcraft.minio-backup",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/minio.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.minio",
+                    "check_ids": [
+                        "CKV_K8S_10",
+                        "CKV_K8S_11",
+                        "CKV_K8S_12",
+                        "CKV_K8S_13",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_25",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.minio.app-minio",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/node-exporter.yaml",
+            "findings": [
+                {
+                    "resource": "DaemonSet.testcraft.node-exporter",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_17",
+                        "CKV_K8S_19",
+                        "CKV_K8S_22",
+                        "CKV_K8S_26",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8",
+                        "CKV_K8S_9"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.node-exporter.app-node-exporter",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/postgres-backup.yaml",
+            "findings": [
+                {
+                    "resource": "CronJob.testcraft.postgres-backup",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/postgres-restore-verify.yaml",
+            "findings": [
+                {
+                    "resource": "CronJob.testcraft.postgres-restore-verify",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_20",
+                        "CKV_K8S_22",
+                        "CKV_K8S_23",
+                        "CKV_K8S_28",
+                        "CKV_K8S_29",
+                        "CKV_K8S_30",
+                        "CKV_K8S_31",
+                        "CKV_K8S_35",
+                        "CKV_K8S_37",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/postgres.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.postgres",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.postgres.app-postgres",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/prometheus.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.prometheus",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.prometheus.app-prometheus",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/rabbitmq.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.rabbitmq",
+                    "check_ids": [
+                        "CKV_K8S_10",
+                        "CKV_K8S_11",
+                        "CKV_K8S_12",
+                        "CKV_K8S_13",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_25",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.rabbitmq.app-rabbitmq",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/redis.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.redis",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.redis.app-redis",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/seq.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.seq",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_25",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.seq.app-seq",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/tempo.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.tempo",
+                    "check_ids": [
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.tempo.app-tempo",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/testcraft/templates/web.yaml",
+            "findings": [
+                {
+                    "resource": "Deployment.testcraft.web",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43",
+                        "CKV_K8S_8"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.web.app-web",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        }
+    ]
+}

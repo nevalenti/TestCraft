@@ -1,0 +1,44 @@
+{
+    "failed_checks": [
+        {
+            "file": "/infrastructure/keycloak/e2e.Dockerfile",
+            "findings": [
+                {
+                    "resource": "/infrastructure/keycloak/e2e.Dockerfile.",
+                    "check_ids": [
+                        "CKV_DOCKER_2",
+                        "CKV_DOCKER_3"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/jenkins/controller/Dockerfile",
+            "findings": [
+                {
+                    "resource": "/jenkins/controller/Dockerfile.",
+                    "check_ids": [
+                        "CKV_DOCKER_2"
+                    ]
+                },
+                {
+                    "resource": "/jenkins/controller/Dockerfile.USER",
+                    "check_ids": [
+                        "CKV_DOCKER_8"
+                    ]
+                }
+            ]
+        },
+        {
+            "file": "/packages/ci-reporter/Dockerfile",
+            "findings": [
+                {
+                    "resource": "/packages/ci-reporter/Dockerfile.",
+                    "check_ids": [
+                        "CKV_DOCKER_2"
+                    ]
+                }
+            ]
+        }
+    ]
+}
