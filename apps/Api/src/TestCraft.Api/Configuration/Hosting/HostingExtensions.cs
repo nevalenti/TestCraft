@@ -17,7 +17,7 @@ namespace TestCraft.Api.Configuration.Hosting;
 
 public static class HostingExtensions
 {
-    public static WebApplicationBuilder ConfigureServices(this WebApplicationBuilder builder)
+    public static void ConfigureServices(this WebApplicationBuilder builder)
     {
         builder.Host.UseDefaultServiceProvider(
             (context, options) =>
@@ -64,7 +64,7 @@ public static class HostingExtensions
         builder.Services.AddSignalR();
         builder.Services.AddScoped<ITestRunNotifier, SignalRTestRunNotifier>();
 
-        return builder
+        builder
             .AddSerilogLogging(loggingOptions)
             .AddOpenTelemetryTracing(loggingOptions)
             .AddKeycloakAuthentication(keycloakAuthOptions)
@@ -78,7 +78,7 @@ public static class HostingExtensions
             .AddOutputCaching();
     }
 
-    public static WebApplication ConfigureApplication(this WebApplication app)
+    public static void ConfigurePipeline(this WebApplication app)
     {
         app.UseForwardedHeaders();
 
@@ -118,7 +118,5 @@ public static class HostingExtensions
         app.MapHub<TestRunHub>("/hubs/test-run");
 
         app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
-
-        return app;
     }
 }

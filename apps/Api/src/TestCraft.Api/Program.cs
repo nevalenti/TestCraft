@@ -16,6 +16,6 @@ app.Logger.LogInfrastructureFallbacks(app.Services.GetRequiredService<Infrastruc
 
 await app.MigrateDatabaseAsync();
 
-app.ConfigureApplication();
+app.ConfigurePipeline();
 
 await app.RunAsync();
