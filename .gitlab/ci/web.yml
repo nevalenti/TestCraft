@@ -24,11 +24,11 @@ web:build-test:
     paths:
       - .pnpm-store
   before_script:
-    - corepack enable && corepack prepare pnpm@11.3.0 --activate
+    - corepack enable && corepack prepare pnpm@10.34.5 --activate
     - pnpm config set store-dir .pnpm-store
     - pnpm install --frozen-lockfile
   script:
-    - pnpm audit --audit-level=high --filter testcraft-web
+    - pnpm audit --audit-level=high
     - pnpm --filter testcraft-web run lint
     - pnpm --filter testcraft-web run typecheck
     - pnpm turbo build --filter testcraft-web

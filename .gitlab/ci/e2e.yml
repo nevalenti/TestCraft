@@ -36,7 +36,7 @@ e2e:
     - curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-27.3.1.tgz | tar xz --strip-components=1 -C /usr/local/bin docker/docker
     - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
     - apt-get install -y --no-install-recommends nodejs
-    - corepack enable && corepack prepare pnpm@11.3.0 --activate
+    - corepack enable && corepack prepare pnpm@10.34.5 --activate
   script:
     - set -a && . infrastructure/keycloak/e2e.env && set +a
     - scripts/render-dev-realm.sh

@@ -55,7 +55,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Audit dependencies
-        run: pnpm audit --audit-level=high --filter testcraft-web
+        run: pnpm audit --audit-level=high
 
       - name: Lint
         run: pnpm --filter testcraft-web run lint
