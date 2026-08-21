@@ -8,7 +8,7 @@ public class CreateTestPlanValidatorTests
     private readonly CreateTestPlan.Validator _validator = new();
 
     private static CreateTestPlan.Command ValidCommand() =>
-        new() { ProjectId = Guid.NewGuid(), Name = "Release 1.0 Plan" };
+        new() { ProjectId = ProjectId.New(), Name = "Release 1.0 Plan" };
 
     [Fact]
     public void ValidCommand_PassesValidation()

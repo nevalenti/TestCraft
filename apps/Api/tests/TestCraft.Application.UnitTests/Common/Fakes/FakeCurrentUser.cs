@@ -4,6 +4,6 @@ namespace TestCraft.Application.UnitTests.Common.Fakes;
 
 internal sealed class FakeCurrentUser : ICurrentUser
 {
-    public Guid UserId { get; init; } = Guid.NewGuid();
+    public UserId UserId { get; init; } = UserId.New();
     public string? UserName { get; init; } = "test-user";
 }

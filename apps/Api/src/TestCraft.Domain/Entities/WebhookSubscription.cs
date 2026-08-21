@@ -2,8 +2,8 @@ namespace TestCraft.Domain.Entities;
 
 public class WebhookSubscription
 {
-    public Guid Id { get; set; }
-    public Guid ProjectId { get; set; }
+    public WebhookSubscriptionId Id { get; set; }
+    public ProjectId ProjectId { get; set; }
     public required string Url { get; set; }
     public string? Secret { get; set; }
     public required string Events { get; set; }

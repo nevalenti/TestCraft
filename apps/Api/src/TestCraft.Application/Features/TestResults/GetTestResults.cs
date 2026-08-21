@@ -13,10 +13,10 @@ public static class GetTestResults
     public sealed record Query : IRequest<Paginated<TestResultResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to list results for.</summary>
-        public Guid RunId { get; init; }
+        public TestRunId RunId { get; init; }
 
         /// <summary>Filters results to this status.</summary>
         public TestResultStatus? Status { get; init; }

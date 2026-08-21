@@ -14,16 +14,16 @@ namespace TestCraft.Application.Features.TestResults;
 public record TestResultResponse
 {
     /// <summary>The result's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestResultId Id { get; init; }
 
     /// <summary>The run this result belongs to.</summary>
-    public required Guid TestRunId { get; init; }
+    public required TestRunId TestRunId { get; init; }
 
     /// <summary>The test case that was executed.</summary>
-    public required Guid TestCaseId { get; init; }
+    public required TestCaseId TestCaseId { get; init; }
 
     /// <summary>The suite the test case belongs to.</summary>
-    public required Guid SuiteId { get; init; }
+    public required TestSuiteId SuiteId { get; init; }
 
     /// <summary>The test case's name, denormalized for display.</summary>
     public required string TestCaseName { get; init; }
@@ -44,7 +44,7 @@ public record TestResultResponse
     public required DateTimeOffset ExecutedAt { get; init; }
 
     /// <summary>The user who recorded the result, if any.</summary>
-    public Guid? ExecutedById { get; init; }
+    public UserId? ExecutedById { get; init; }
 
     /// <summary>When the result was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
@@ -59,13 +59,15 @@ public static class CreateTestResult
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        public Guid RunId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId RunId { get; init; }
 
         /// <summary>The test case that was executed.</summary>
-        public required Guid TestCaseId { get; init; }
+        public required TestCaseId TestCaseId { get; init; }
 
         /// <summary>The result status.</summary>
         public required TestResultStatus Status { get; init; }
@@ -87,7 +89,7 @@ public static class CreateTestResult
     {
         public Validator()
         {
-            RuleFor(command => command.TestCaseId).NotEmpty();
+            RuleFor(command => command.TestCaseId).Must(id => id.Value != Guid.Empty);
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Notes).MaximumLength(5000);
         }
@@ -128,6 +130,7 @@ public static class CreateTestResult
 
             var result = new TestResult
             {
+                Id = TestResultId.New(),
                 TestRunId = request.RunId,
                 TestCaseId = request.TestCaseId,
                 Status = request.Status,

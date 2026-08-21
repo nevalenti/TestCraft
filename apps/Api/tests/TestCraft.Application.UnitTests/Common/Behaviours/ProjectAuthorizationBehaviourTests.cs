@@ -10,14 +10,21 @@ namespace TestCraft.Application.UnitTests.Common.Behaviours;
 
 public class ProjectAuthorizationBehaviourTests
 {
-    private sealed record TestRequest(Guid ProjectId) : IRequest<string>, IProjectScopedRequest;
+    private sealed record TestRequest(ProjectId ProjectId)
+        : IRequest<string>,
+            IProjectScopedRequest;
 
     [Fact]
     public async Task Handle_UserOwnsProject_InvokesNext()
     {
         await using var context = TestDbContextFactory.Create();
-        var ownerId = Guid.NewGuid();
-        var project = new Project { Name = "Project", UserId = ownerId };
+        var ownerId = UserId.New();
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Project",
+            UserId = ownerId,
+        };
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -39,13 +46,19 @@ public class ProjectAuthorizationBehaviourTests
     public async Task Handle_UserIsProjectMember_InvokesNext()
     {
         await using var context = TestDbContextFactory.Create();
-        var ownerId = Guid.NewGuid();
-        var memberId = Guid.NewGuid();
-        var project = new Project { Name = "Project", UserId = ownerId };
+        var ownerId = UserId.New();
+        var memberId = UserId.New();
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Project",
+            UserId = ownerId,
+        };
         context.Projects.Add(project);
         context.ProjectMembers.Add(
             new ProjectMember
             {
+                Id = ProjectMemberId.New(),
                 ProjectId = project.Id,
                 UserId = memberId,
                 Email = "member@test.com",
@@ -71,7 +84,12 @@ public class ProjectAuthorizationBehaviourTests
     public async Task Handle_UserHasNoAccessToProject_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var project = new Project { Name = "Project", UserId = Guid.NewGuid() };
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Project",
+            UserId = UserId.New(),
+        };
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -102,7 +120,7 @@ public class ProjectAuthorizationBehaviourTests
 
         var act = () =>
             behaviour.Handle(
-                new TestRequest(Guid.NewGuid()),
+                new TestRequest(ProjectId.New()),
                 PipelineTestHelpers.NextReturning("next-called"),
                 CancellationToken.None
             );

@@ -10,8 +10,8 @@ public class UpdateTestPlanValidatorTests
     private static UpdateTestPlan.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            Id = TestPlanId.New(),
             Name = "Release 1.0 Plan",
         };
 

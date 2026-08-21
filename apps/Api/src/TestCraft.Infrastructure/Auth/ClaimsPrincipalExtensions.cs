@@ -5,7 +5,7 @@ namespace TestCraft.Infrastructure.Auth;
 
 public static class ClaimsPrincipalExtensions
 {
-    public static Guid GetUserId(this ClaimsPrincipal user)
+    public static UserId GetUserId(this ClaimsPrincipal user)
     {
         var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
         if (sub is null || !Guid.TryParse(sub, out var userId))
@@ -13,7 +13,7 @@ public static class ClaimsPrincipalExtensions
             throw new DomainException("Token is missing a valid subject claim");
         }
 
-        return userId;
+        return UserId.From(userId);
     }
 
     public static string? GetUserName(this ClaimsPrincipal user) =>

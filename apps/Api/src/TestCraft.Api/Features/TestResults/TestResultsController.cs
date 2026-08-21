@@ -17,8 +17,8 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestResultResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         [FromQuery] GetTestResults.Query query,
         CancellationToken cancellationToken
     )
@@ -33,9 +33,9 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestResultResponse>> GetById(
-        Guid projectId,
-        Guid runId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId id,
         CancellationToken cancellationToken
     )
     {
@@ -54,8 +54,8 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> Create(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         CreateTestResult.Command command,
         CancellationToken cancellationToken
     )
@@ -79,8 +79,8 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpPost("by-name")]
     [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> CreateByName(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         CreateTestResultByName.Command command,
         CancellationToken cancellationToken
     )
@@ -104,9 +104,9 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestResultResponse>> Update(
-        Guid projectId,
-        Guid runId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId id,
         UpdateTestResult.Command command,
         CancellationToken cancellationToken
     )
@@ -121,9 +121,9 @@ public class TestResultsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid runId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId id,
         CancellationToken cancellationToken
     )
     {

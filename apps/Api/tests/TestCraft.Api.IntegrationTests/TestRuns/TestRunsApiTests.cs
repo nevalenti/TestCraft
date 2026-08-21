@@ -167,7 +167,7 @@ public class TestRunsApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
-        var runId = Guid.NewGuid();
+        var runId = TestRunId.New();
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{runId}",

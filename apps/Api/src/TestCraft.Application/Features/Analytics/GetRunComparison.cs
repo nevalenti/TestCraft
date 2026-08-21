@@ -24,7 +24,7 @@ public record RunComparison
 public record ComparisonRow
 {
     /// <summary>The test case's identifier.</summary>
-    public required Guid TestCaseId { get; init; }
+    public required TestCaseId TestCaseId { get; init; }
 
     /// <summary>The test case's name.</summary>
     public required string TestCaseName { get; init; }
@@ -48,13 +48,13 @@ public static class GetRunComparison
     public sealed record Query : IRequest<RunComparison>, IProjectScopedRequest
     {
         /// <summary>The project both runs belong to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The baseline run.</summary>
-        public required Guid RunAId { get; init; }
+        public required TestRunId RunAId { get; init; }
 
         /// <summary>The run being compared against the baseline.</summary>
-        public required Guid RunBId { get; init; }
+        public required TestRunId RunBId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

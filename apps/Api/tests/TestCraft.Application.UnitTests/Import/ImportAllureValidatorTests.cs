@@ -12,7 +12,7 @@ public class ImportAllureValidatorTests
     private static ImportAllure.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Results = [PassingResult()],
             Environment = "ci",
         };

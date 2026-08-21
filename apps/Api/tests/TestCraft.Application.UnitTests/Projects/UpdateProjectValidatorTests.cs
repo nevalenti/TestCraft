@@ -8,7 +8,7 @@ public class UpdateProjectValidatorTests
     private readonly UpdateProject.Validator _validator = new();
 
     private static UpdateProject.Command ValidCommand() =>
-        new() { Id = Guid.NewGuid(), Name = "Renamed Project" };
+        new() { Id = ProjectId.New(), Name = "Renamed Project" };
 
     [Fact]
     public void ValidCommand_PassesValidation()

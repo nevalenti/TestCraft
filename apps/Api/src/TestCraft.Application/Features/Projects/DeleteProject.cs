@@ -12,9 +12,9 @@ public static class DeleteProject
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project to delete.</summary>
-        public required Guid Id { get; init; }
+        public required ProjectId Id { get; init; }
 
-        Guid IProjectScopedRequest.ProjectId => Id;
+        ProjectId IProjectScopedRequest.ProjectId => Id;
     }
 
     public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)

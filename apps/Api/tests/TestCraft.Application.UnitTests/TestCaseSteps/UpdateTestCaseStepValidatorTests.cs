@@ -10,9 +10,9 @@ public class UpdateTestCaseStepValidatorTests
     private static UpdateTestCaseStep.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            CaseId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            CaseId = TestCaseId.New(),
+            Id = TestCaseStepId.New(),
             Order = 1,
             Action = "Click submit",
             ExpectedResult = "Form is submitted",

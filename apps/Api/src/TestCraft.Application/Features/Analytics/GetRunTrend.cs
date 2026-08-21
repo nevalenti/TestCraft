@@ -10,7 +10,7 @@ namespace TestCraft.Application.Features.Analytics;
 public record TrendPoint
 {
     /// <summary>The run's identifier.</summary>
-    public required Guid RunId { get; init; }
+    public required TestRunId RunId { get; init; }
 
     /// <summary>The run's display name.</summary>
     public required string RunName { get; init; }
@@ -46,7 +46,7 @@ public static class GetRunTrend
     public sealed record Query : IRequest<IReadOnlyList<TrendPoint>>, IProjectScopedRequest
     {
         /// <summary>The project to report on.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>Maximum number of most recent runs to include.</summary>
         public int Limit { get; init; } = 20;

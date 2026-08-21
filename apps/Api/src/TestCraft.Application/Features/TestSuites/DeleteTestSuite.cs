@@ -12,10 +12,11 @@ public static class DeleteTestSuite
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to delete.</summary>
-        public required Guid Id { get; init; }
+        public required TestSuiteId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

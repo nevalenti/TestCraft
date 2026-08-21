@@ -10,7 +10,7 @@ public class CreateEmailSubscriptionValidatorTests
     private static CreateEmailSubscription.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Email = "notify@example.com",
             Events = ["run.completed"],
         };

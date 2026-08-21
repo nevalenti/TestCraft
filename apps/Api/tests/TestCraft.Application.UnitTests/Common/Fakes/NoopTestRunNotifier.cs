@@ -6,31 +6,31 @@ namespace TestCraft.Application.UnitTests.Common.Fakes;
 internal sealed class NoopTestRunNotifier : ITestRunNotifier
 {
     public Task ResultAddedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     ) => Task.CompletedTask;
 
     public Task ResultUpdatedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     ) => Task.CompletedTask;
 
     public Task ResultDeletedAsync(
-        Guid runId,
-        Guid resultId,
+        TestRunId runId,
+        TestResultId resultId,
         CancellationToken cancellationToken = default
     ) => Task.CompletedTask;
 
     public Task RunStatusChangedAsync(
-        Guid runId,
+        TestRunId runId,
         string newStatus,
         CancellationToken cancellationToken = default
     ) => Task.CompletedTask;
 
     public Task LogsAppendedAsync(
-        Guid runId,
+        TestRunId runId,
         IReadOnlyList<string> lines,
         CancellationToken cancellationToken = default
     ) => Task.CompletedTask;

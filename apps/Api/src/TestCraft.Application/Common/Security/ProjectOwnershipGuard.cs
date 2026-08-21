@@ -8,8 +8,8 @@ internal static class ProjectOwnershipGuard
 {
     public static async Task EnsureOwnerAsync(
         IApplicationDbContext context,
-        Guid projectId,
-        Guid userId,
+        ProjectId projectId,
+        UserId userId,
         CancellationToken cancellationToken
     )
     {

@@ -10,10 +10,10 @@ namespace TestCraft.Application.Features.TestSuites;
 public record TestSuiteResponse
 {
     /// <summary>The suite's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestSuiteId Id { get; init; }
 
     /// <summary>The project the suite belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The suite's display name.</summary>
     public required string Name { get; init; }
@@ -37,7 +37,8 @@ public static class CreateTestSuite
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the suite in.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite's display name.</summary>
         public required string Name { get; init; }
@@ -65,6 +66,7 @@ public static class CreateTestSuite
         {
             var suite = new TestSuite
             {
+                Id = TestSuiteId.New(),
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Description = request.Description,

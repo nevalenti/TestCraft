@@ -17,7 +17,7 @@ public class ProjectTestCasesController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestCaseResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         [FromQuery] GetTestCasesByProject.Query query,
         CancellationToken cancellationToken
     )

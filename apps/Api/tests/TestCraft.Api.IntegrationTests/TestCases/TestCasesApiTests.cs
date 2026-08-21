@@ -175,7 +175,7 @@ public class TestCasesApiTests(ApiFactory factory)
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
         var suite = await client.CreateSuiteAsync(project.Id);
-        var caseId = Guid.NewGuid();
+        var caseId = TestCaseId.New();
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{caseId}",

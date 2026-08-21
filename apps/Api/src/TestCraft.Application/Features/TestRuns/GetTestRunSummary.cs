@@ -14,10 +14,10 @@ public static class GetTestRunSummary
     public sealed record Query : IRequest<Response>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The run to summarize.</summary>
-        public required Guid Id { get; init; }
+        public required TestRunId Id { get; init; }
     }
 
     /// <summary>Aggregated result counts for a run.</summary>

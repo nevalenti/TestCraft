@@ -11,10 +11,10 @@ namespace TestCraft.Application.Features.Notifications;
 public record WebhookSubscriptionResponse
 {
     /// <summary>The subscription's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required WebhookSubscriptionId Id { get; init; }
 
     /// <summary>The project the subscription belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The URL event payloads are posted to.</summary>
     public required string Url { get; init; }
@@ -35,7 +35,8 @@ public static class CreateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project to subscribe to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }
@@ -74,6 +75,7 @@ public static class CreateWebhookSubscription
         {
             var subscription = new WebhookSubscription
             {
+                Id = WebhookSubscriptionId.New(),
                 ProjectId = request.ProjectId,
                 Url = request.Url,
                 Secret = request.Secret,

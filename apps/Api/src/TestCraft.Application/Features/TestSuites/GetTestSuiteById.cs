@@ -12,10 +12,10 @@ public static class GetTestSuiteById
     public sealed record Query : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to look up.</summary>
-        public required Guid Id { get; init; }
+        public required TestSuiteId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

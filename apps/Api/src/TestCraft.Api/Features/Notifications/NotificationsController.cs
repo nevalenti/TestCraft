@@ -19,7 +19,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         StatusCodes.Status200OK
     )]
     public async Task<ActionResult<IReadOnlyList<WebhookSubscriptionResponse>>> GetWebhooks(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -33,7 +33,7 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpPost("webhooks")]
     [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> CreateWebhook(
-        Guid projectId,
+        ProjectId projectId,
         CreateWebhookSubscription.Command command,
         CancellationToken cancellationToken
     )
@@ -48,8 +48,8 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpPut("webhooks/{id:guid}")]
     [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> UpdateWebhook(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        WebhookSubscriptionId id,
         UpdateWebhookSubscription.Command command,
         CancellationToken cancellationToken
     )
@@ -64,8 +64,8 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpDelete("webhooks/{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteWebhook(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        WebhookSubscriptionId id,
         CancellationToken cancellationToken
     )
     {
@@ -82,7 +82,7 @@ public class NotificationsController(ISender sender) : ControllerBase
         StatusCodes.Status200OK
     )]
     public async Task<ActionResult<IReadOnlyList<EmailSubscriptionResponse>>> GetEmails(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -96,7 +96,7 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpPost("emails")]
     [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<EmailSubscriptionResponse>> CreateEmail(
-        Guid projectId,
+        ProjectId projectId,
         CreateEmailSubscription.Command command,
         CancellationToken cancellationToken
     )
@@ -111,8 +111,8 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpPut("emails/{id:guid}")]
     [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<EmailSubscriptionResponse>> UpdateEmail(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        EmailSubscriptionId id,
         UpdateEmailSubscription.Command command,
         CancellationToken cancellationToken
     )
@@ -127,8 +127,8 @@ public class NotificationsController(ISender sender) : ControllerBase
     [HttpDelete("emails/{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> DeleteEmail(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        EmailSubscriptionId id,
         CancellationToken cancellationToken
     )
     {

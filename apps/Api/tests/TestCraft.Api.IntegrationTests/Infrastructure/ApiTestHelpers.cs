@@ -36,13 +36,13 @@ internal static class ApiTestHelpers
 
     public static async Task<TestSuiteResponse> CreateSuiteAsync(
         this HttpClient client,
-        Guid projectId,
+        ProjectId projectId,
         string name = "Suite"
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites",
-            new CreateTestSuite.Command { Name = name }
+            new CreateTestSuite.Command { ProjectId = projectId, Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestSuiteResponse>(JsonOptions))!;
@@ -50,15 +50,20 @@ internal static class ApiTestHelpers
 
     public static async Task<TestCaseResponse> CreateCaseAsync(
         this HttpClient client,
-        Guid projectId,
-        Guid suiteId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
         string name = "Case",
         TestCasePriority? priority = null
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases",
-            new CreateTestCase.Command { Name = name, Priority = priority }
+            new CreateTestCase.Command
+            {
+                ProjectId = projectId,
+                Name = name,
+                Priority = priority,
+            }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions))!;
@@ -66,14 +71,19 @@ internal static class ApiTestHelpers
 
     public static async Task<TestRunResponse> CreateRunAsync(
         this HttpClient client,
-        Guid projectId,
+        ProjectId projectId,
         string name = "Run",
         string environment = "staging"
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs",
-            new CreateTestRun.Command { Name = name, Environment = environment }
+            new CreateTestRun.Command
+            {
+                ProjectId = projectId,
+                Name = name,
+                Environment = environment,
+            }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
@@ -81,8 +91,8 @@ internal static class ApiTestHelpers
 
     public static async Task<TestRunResponse> GetRunAsync(
         this HttpClient client,
-        Guid projectId,
-        Guid runId
+        ProjectId projectId,
+        TestRunId runId
     )
     {
         var response = await client.GetAsync($"/api/v1/projects/{projectId}/runs/{runId}");
@@ -92,14 +102,19 @@ internal static class ApiTestHelpers
 
     public static async Task<LabelResponse> CreateLabelAsync(
         this HttpClient client,
-        Guid projectId,
+        ProjectId projectId,
         string name = "Bug",
         string color = "#FF0000"
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/labels",
-            new CreateLabel.Command { Name = name, Color = color }
+            new CreateLabel.Command
+            {
+                ProjectId = projectId,
+                Name = name,
+                Color = color,
+            }
         );
 
         return (await response.Content.ReadFromJsonAsync<LabelResponse>(JsonOptions))!;
@@ -107,13 +122,13 @@ internal static class ApiTestHelpers
 
     public static async Task<TestPlanResponse> CreatePlanAsync(
         this HttpClient client,
-        Guid projectId,
+        ProjectId projectId,
         string name = "Plan"
     )
     {
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/plans",
-            new CreateTestPlan.Command { Name = name }
+            new CreateTestPlan.Command { ProjectId = projectId, Name = name }
         );
 
         return (await response.Content.ReadFromJsonAsync<TestPlanResponse>(JsonOptions))!;
@@ -121,9 +136,9 @@ internal static class ApiTestHelpers
 
     public static async Task<TestResultResponse> CreateResultAsync(
         this HttpClient client,
-        Guid projectId,
-        Guid runId,
-        Guid testCaseId,
+        ProjectId projectId,
+        TestRunId runId,
+        TestCaseId testCaseId,
         TestResultStatus status = TestResultStatus.Passed
     )
     {
@@ -131,6 +146,7 @@ internal static class ApiTestHelpers
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
             new CreateTestResult.Command
             {
+                ProjectId = projectId,
                 TestCaseId = testCaseId,
                 Status = status,
                 ExecutedAt = DateTimeOffset.UtcNow,
@@ -142,18 +158,18 @@ internal static class ApiTestHelpers
 
     public static async Task<HttpResponseMessage> AddMemberAsync(
         this HttpClient client,
-        Guid projectId,
+        ProjectId projectId,
         string email
     ) =>
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{projectId}/members",
-            new AddProjectMember.Command { Email = email }
+            new AddProjectMember.Command { ProjectId = projectId, Email = email }
         );
 
     public static async Task<ImportJobResponse> WaitForImportJobAsync(
         this HttpClient client,
-        Guid projectId,
-        Guid jobId,
+        ProjectId projectId,
+        ImportJobId jobId,
         TimeSpan? timeout = null
     )
     {

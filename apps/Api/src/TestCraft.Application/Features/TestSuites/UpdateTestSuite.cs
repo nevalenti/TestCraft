@@ -13,10 +13,12 @@ public static class UpdateTestSuite
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestSuiteId Id { get; init; }
 
         /// <summary>The suite's new display name.</summary>
         public required string Name { get; init; }

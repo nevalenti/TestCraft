@@ -14,10 +14,12 @@ public static class AppendRunLogs
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to append logs to.</summary>
-        public Guid RunId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId RunId { get; init; }
 
         /// <summary>The log lines to append, in order.</summary>
         public required IReadOnlyList<string> Lines { get; init; }
@@ -51,7 +53,12 @@ public static class AppendRunLogs
                 return;
 
             var entries = request
-                .Lines.Select(line => new RunLog { RunId = request.RunId, Message = line })
+                .Lines.Select(line => new RunLog
+                {
+                    Id = RunLogId.New(),
+                    RunId = request.RunId,
+                    Message = line,
+                })
                 .ToList();
 
             context.RunLogs.AddRange(entries);

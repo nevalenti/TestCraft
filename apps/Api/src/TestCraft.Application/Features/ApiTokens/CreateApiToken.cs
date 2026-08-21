@@ -10,13 +10,13 @@ namespace TestCraft.Application.Features.ApiTokens;
 public record ApiTokenResponse
 {
     /// <summary>The token's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ApiTokenId Id { get; init; }
 
     /// <summary>The token's display name.</summary>
     public required string Name { get; init; }
 
     /// <summary>The project the token grants access to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>When the token was last used to authenticate, if ever.</summary>
     public DateTimeOffset? LastUsedAt { get; init; }
@@ -35,7 +35,7 @@ public record ApiTokenResponse
 public record CreateApiTokenResponse
 {
     /// <summary>The token's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ApiTokenId Id { get; init; }
 
     /// <summary>The token's display name.</summary>
     public required string Name { get; init; }
@@ -50,7 +50,8 @@ public static class CreateApiToken
     public sealed record Command : IRequest<CreateApiTokenResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the token for.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The token's display name.</summary>
         public required string Name { get; init; }
@@ -83,6 +84,7 @@ public static class CreateApiToken
 
             var token = new ApiToken
             {
+                Id = ApiTokenId.New(),
                 Name = request.Name,
                 TokenHash = tokenHash,
                 ProjectId = request.ProjectId,

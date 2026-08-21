@@ -11,7 +11,7 @@ public static class GetApiTokens
     public sealed record Query : IRequest<IReadOnlyList<ApiTokenResponse>>, IProjectScopedRequest
     {
         /// <summary>The project to list tokens for.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

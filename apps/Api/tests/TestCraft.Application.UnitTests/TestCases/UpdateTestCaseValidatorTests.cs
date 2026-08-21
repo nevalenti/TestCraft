@@ -11,9 +11,9 @@ public class UpdateTestCaseValidatorTests
     private static UpdateTestCase.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            SuiteId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            SuiteId = TestSuiteId.New(),
+            Id = TestCaseId.New(),
             Name = "Login works",
             Priority = TestCasePriority.Medium,
         };

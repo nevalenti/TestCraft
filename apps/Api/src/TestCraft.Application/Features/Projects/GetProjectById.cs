@@ -12,9 +12,9 @@ public static class GetProjectById
     public sealed record Query : IRequest<ProjectResponse>, IProjectScopedRequest
     {
         /// <summary>The project to look up.</summary>
-        public required Guid Id { get; init; }
+        public required ProjectId Id { get; init; }
 
-        Guid IProjectScopedRequest.ProjectId => Id;
+        ProjectId IProjectScopedRequest.ProjectId => Id;
     }
 
     public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)

@@ -13,7 +13,8 @@ public static class UpdateProject
     public sealed record Command : IRequest<ProjectResponse>, IProjectScopedRequest
     {
         /// <summary>The project to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId Id { get; init; }
 
         /// <summary>The project's new display name.</summary>
         public required string Name { get; init; }
@@ -21,7 +22,7 @@ public static class UpdateProject
         /// <summary>The project's new description.</summary>
         public string? Description { get; init; }
 
-        Guid IProjectScopedRequest.ProjectId => Id;
+        ProjectId IProjectScopedRequest.ProjectId => Id;
     }
 
     public sealed class Validator : AbstractValidator<Command>

@@ -12,7 +12,7 @@ public static class GetTestSuites
     public sealed record Query : IRequest<Paginated<TestSuiteResponse>>, IProjectScopedRequest
     {
         /// <summary>The project to list suites for.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>Filters suites whose name contains this text.</summary>
         public string? Search { get; init; }

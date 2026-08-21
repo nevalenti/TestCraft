@@ -11,9 +11,9 @@ public class UpdateTestResultValidatorTests
     private static UpdateTestResult.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            RunId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            RunId = TestRunId.New(),
+            Id = TestResultId.New(),
             Status = TestResultStatus.Failed,
         };
 

@@ -12,13 +12,13 @@ public static class GetTestCaseStepById
     public sealed record Query : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The test case the step belongs to.</summary>
-        public required Guid CaseId { get; init; }
+        public required TestCaseId CaseId { get; init; }
 
         /// <summary>The step to look up.</summary>
-        public required Guid Id { get; init; }
+        public required TestCaseStepId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

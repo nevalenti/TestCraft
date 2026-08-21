@@ -12,10 +12,11 @@ public static class RemoveProjectMember
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project to remove the member from.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The membership to remove.</summary>
-        public required Guid Id { get; init; }
+        public required ProjectMemberId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)

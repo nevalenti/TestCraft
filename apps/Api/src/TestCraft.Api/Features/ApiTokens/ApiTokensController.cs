@@ -16,7 +16,7 @@ public class ApiTokensController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ApiTokenResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ApiTokenResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -30,7 +30,7 @@ public class ApiTokensController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(CreateApiTokenResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<CreateApiTokenResponse>> Create(
-        Guid projectId,
+        ProjectId projectId,
         CreateApiToken.Command command,
         CancellationToken cancellationToken
     )
@@ -45,8 +45,8 @@ public class ApiTokensController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Revoke(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        ApiTokenId id,
         CancellationToken cancellationToken
     )
     {

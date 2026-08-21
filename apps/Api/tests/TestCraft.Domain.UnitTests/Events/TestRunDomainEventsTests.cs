@@ -11,8 +11,8 @@ public class TestRunDomainEventsTests
     {
         var run = new TestRun
         {
-            Id = Guid.NewGuid(),
-            ProjectId = Guid.NewGuid(),
+            Id = TestRunId.New(),
+            ProjectId = ProjectId.New(),
             Name = "Smoke Run",
             Environment = "ci",
         };

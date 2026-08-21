@@ -13,7 +13,7 @@ public static class BulkReorderSteps
     public sealed record StepOrder
     {
         /// <summary>The step to reorder.</summary>
-        public required Guid Id { get; init; }
+        public required TestCaseStepId Id { get; init; }
 
         /// <summary>The step's new order position.</summary>
         public required int Order { get; init; }
@@ -23,10 +23,12 @@ public static class BulkReorderSteps
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case whose steps are being reordered.</summary>
-        public Guid CaseId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestCaseId CaseId { get; init; }
 
         /// <summary>The new order for every step. Must cover all existing steps.</summary>
         public required IReadOnlyList<StepOrder> Steps { get; init; }

@@ -14,10 +14,10 @@ public static class GetTestPlanCases
             IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to list test cases for.</summary>
-        public required Guid TestPlanId { get; init; }
+        public required TestPlanId TestPlanId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

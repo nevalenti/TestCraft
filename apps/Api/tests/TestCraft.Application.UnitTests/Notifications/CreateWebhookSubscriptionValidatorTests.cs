@@ -10,7 +10,7 @@ public class CreateWebhookSubscriptionValidatorTests
     private static CreateWebhookSubscription.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Url = "https://example.com/webhook",
             Events = ["run.completed"],
         };

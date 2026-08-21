@@ -30,7 +30,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ProjectResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<ProjectResponse>> GetById(
-        Guid id,
+        ProjectId id,
         CancellationToken cancellationToken
     )
     {
@@ -57,7 +57,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(ProjectResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<ProjectResponse>> Update(
-        Guid id,
+        ProjectId id,
         UpdateProject.Command command,
         CancellationToken cancellationToken
     )
@@ -71,7 +71,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     /// <summary>Deletes a project.</summary>
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
+    public async Task<IActionResult> Delete(ProjectId id, CancellationToken cancellationToken)
     {
         var command = new DeleteProject.Command { Id = id };
         await sender.Send(command, cancellationToken);

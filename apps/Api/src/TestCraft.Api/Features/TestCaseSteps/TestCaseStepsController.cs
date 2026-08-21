@@ -19,9 +19,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestCaseStepResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseStepResponse>>> GetAll(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
         [FromQuery] GetTestCaseSteps.Query query,
         CancellationToken cancellationToken
     )
@@ -36,10 +36,10 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseStepResponse>> GetById(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
+        TestCaseStepId id,
         CancellationToken cancellationToken
     )
     {
@@ -58,9 +58,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestCaseStepResponse>> Create(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
         CreateTestCaseStep.Command command,
         CancellationToken cancellationToken
     )
@@ -85,9 +85,9 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpPut("reorder")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> BulkReorder(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
         BulkReorderSteps.Command command,
         CancellationToken cancellationToken
     )
@@ -102,10 +102,10 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseStepResponse>> Update(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
+        TestCaseStepId id,
         UpdateTestCaseStep.Command command,
         CancellationToken cancellationToken
     )
@@ -120,10 +120,10 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid suiteId,
-        Guid caseId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId caseId,
+        TestCaseStepId id,
         CancellationToken cancellationToken
     )
     {

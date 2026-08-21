@@ -11,10 +11,10 @@ public static class GetShareTokens
     public sealed record Query : IRequest<IReadOnlyList<ShareTokenResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The run to list share tokens for.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

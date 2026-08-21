@@ -10,7 +10,7 @@ public class FakeKeycloakUserDirectory : IKeycloakUserDirectory
     );
 
     public void Register(string email, Guid userId, string? displayName = null) =>
-        _users[email] = new KeycloakUser(userId, email, displayName);
+        _users[email] = new KeycloakUser(UserId.From(userId), email, displayName);
 
     public Task<KeycloakUser?> FindByEmailAsync(
         string email,

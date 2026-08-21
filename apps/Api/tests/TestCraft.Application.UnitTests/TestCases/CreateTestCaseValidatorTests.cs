@@ -11,8 +11,8 @@ public class CreateTestCaseValidatorTests
     private static CreateTestCase.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            SuiteId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            SuiteId = TestSuiteId.New(),
             Name = "Login works",
         };
 

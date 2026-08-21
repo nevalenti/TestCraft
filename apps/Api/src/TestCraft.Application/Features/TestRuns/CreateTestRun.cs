@@ -12,7 +12,8 @@ public static class CreateTestRun
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the run in.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run's display name.</summary>
         public required string Name { get; init; }
@@ -47,6 +48,7 @@ public static class CreateTestRun
         {
             var run = new TestRun
             {
+                Id = TestRunId.New(),
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Environment = request.Environment,

@@ -12,7 +12,7 @@ public static class GetTestRuns
     public sealed record Query : IRequest<Paginated<TestRunResponse>>, IProjectScopedRequest
     {
         /// <summary>The project to list runs for.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>Filters runs whose name contains this text.</summary>
         public string? Search { get; init; }

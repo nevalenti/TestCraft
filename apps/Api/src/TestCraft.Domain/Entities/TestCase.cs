@@ -4,11 +4,11 @@ namespace TestCraft.Domain.Entities;
 
 public class TestCase : IAuditableEntity, ISoftDeletableEntity
 {
-    public Guid Id { get; set; }
+    public TestCaseId Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
     public TestCasePriority Priority { get; set; } = TestCasePriority.Medium;
-    public Guid SuiteId { get; set; }
+    public TestSuiteId SuiteId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

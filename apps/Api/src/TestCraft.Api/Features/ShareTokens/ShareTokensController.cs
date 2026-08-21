@@ -16,8 +16,8 @@ public class ShareTokensController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ShareTokenResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<ShareTokenResponse>> Create(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         CreateShareToken.Command command,
         CancellationToken cancellationToken
     )
@@ -32,8 +32,8 @@ public class ShareTokensController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ShareTokenResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ShareTokenResponse>>> GetAll(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         CancellationToken cancellationToken
     )
     {
@@ -47,9 +47,9 @@ public class ShareTokensController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Revoke(
-        Guid projectId,
-        Guid runId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        ShareTokenId id,
         CancellationToken cancellationToken
     )
     {

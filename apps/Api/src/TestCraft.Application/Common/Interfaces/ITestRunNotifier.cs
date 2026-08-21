@@ -5,28 +5,28 @@ namespace TestCraft.Application.Common.Interfaces;
 public interface ITestRunNotifier
 {
     Task ResultAddedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     );
     Task ResultUpdatedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     );
     Task ResultDeletedAsync(
-        Guid runId,
-        Guid resultId,
+        TestRunId runId,
+        TestResultId resultId,
         CancellationToken cancellationToken = default
     );
     Task RunStatusChangedAsync(
-        Guid runId,
+        TestRunId runId,
         string newStatus,
         CancellationToken cancellationToken = default
     );
 
     Task LogsAppendedAsync(
-        Guid runId,
+        TestRunId runId,
         IReadOnlyList<string> lines,
         CancellationToken cancellationToken = default
     );

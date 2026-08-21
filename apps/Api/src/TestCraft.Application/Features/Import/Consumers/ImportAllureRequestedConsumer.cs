@@ -73,8 +73,12 @@ public partial class ImportAllureRequestedConsumer(
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Import job {JobId} not found")]
-    private static partial void LogJobNotFound(ILogger logger, Guid jobId);
+    private static partial void LogJobNotFound(ILogger logger, ImportJobId jobId);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Allure import job {JobId} failed")]
-    private static partial void LogImportFailed(ILogger logger, Exception exception, Guid jobId);
+    private static partial void LogImportFailed(
+        ILogger logger,
+        Exception exception,
+        ImportJobId jobId
+    );
 }

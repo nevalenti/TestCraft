@@ -12,10 +12,10 @@ namespace TestCraft.Application.Features.Attachments;
 public record AttachmentResponse
 {
     /// <summary>The attachment's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required AttachmentId Id { get; init; }
 
     /// <summary>The test result this attachment belongs to.</summary>
-    public required Guid TestResultId { get; init; }
+    public required TestResultId TestResultId { get; init; }
 
     /// <summary>The original file name.</summary>
     public required string FileName { get; init; }
@@ -43,13 +43,14 @@ public static class UploadAttachment
     public sealed record Command : IRequest<AttachmentResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test result belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the test result belongs to.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
 
         /// <summary>The test result to attach the file to.</summary>
-        public required Guid ResultId { get; init; }
+        public required TestResultId ResultId { get; init; }
 
         /// <summary>The original file name.</summary>
         public required string FileName { get; init; }
@@ -125,6 +126,7 @@ public static class UploadAttachment
 
             var attachment = new Attachment
             {
+                Id = AttachmentId.New(),
                 TestResultId = request.ResultId,
                 FileName = request.FileName,
                 ContentType = request.ContentType,

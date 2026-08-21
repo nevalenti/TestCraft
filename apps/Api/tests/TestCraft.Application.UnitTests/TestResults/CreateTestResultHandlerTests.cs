@@ -19,15 +19,26 @@ public class CreateTestResultHandlerTests
     {
         var context = TestDbContextFactory.Create();
 
-        var project = new Project { Name = "Project", UserId = Guid.NewGuid() };
+        var project = new Project { Id = ProjectId.New(), Name = "Project", UserId = UserId.New() };
         context.Projects.Add(project);
 
-        var suite = new TestSuite { Name = "Suite", ProjectId = project.Id };
+        var suite = new TestSuite
+        {
+            Id = TestSuiteId.New(),
+            Name = "Suite",
+            ProjectId = project.Id,
+        };
         context.TestSuites.Add(suite);
 
-        var testCase = new TestCraft.Domain.Entities.TestCase { Name = "Case", SuiteId = suite.Id };
+        var testCase = new TestCraft.Domain.Entities.TestCase
+        {
+            Id = TestCaseId.New(),
+            Name = "Case",
+            SuiteId = suite.Id,
+        };
         var run = new TestRun
         {
+            Id = TestRunId.New(),
             Name = "Run",
             Environment = "ci",
             ProjectId = project.Id,
@@ -46,7 +57,7 @@ public class CreateTestResultHandlerTests
         return (context, run, testCase);
     }
 
-    private static CreateTestResult.Command MakeCommand(TestRun run, Guid caseId) =>
+    private static CreateTestResult.Command MakeCommand(TestRun run, TestCaseId caseId) =>
         new()
         {
             ProjectId = run.ProjectId,
@@ -120,9 +131,9 @@ public class CreateTestResultHandlerTests
 
         var command = new CreateTestResult.Command
         {
-            ProjectId = Guid.NewGuid(),
-            RunId = Guid.NewGuid(),
-            TestCaseId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            RunId = TestRunId.New(),
+            TestCaseId = TestCaseId.New(),
             Status = TestResultStatus.Passed,
             ExecutedAt = DateTimeOffset.UtcNow,
         };
@@ -144,7 +155,7 @@ public class CreateTestResultHandlerTests
             new NoopTestRunNotifier()
         );
 
-        var command = MakeCommand(run, testCase.Id) with { ProjectId = Guid.NewGuid() };
+        var command = MakeCommand(run, testCase.Id) with { ProjectId = ProjectId.New() };
 
         var act = () => handler.Handle(command, CancellationToken.None);
 

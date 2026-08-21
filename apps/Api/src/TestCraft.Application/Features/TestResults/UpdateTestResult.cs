@@ -15,13 +15,16 @@ public static class UpdateTestResult
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the result belongs to.</summary>
-        public Guid RunId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId RunId { get; init; }
 
         /// <summary>The result to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestResultId Id { get; init; }
 
         /// <summary>The result's new status.</summary>
         public required TestResultStatus Status { get; init; }

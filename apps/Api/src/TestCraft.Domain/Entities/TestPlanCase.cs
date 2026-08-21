@@ -2,8 +2,8 @@ namespace TestCraft.Domain.Entities;
 
 public class TestPlanCase
 {
-    public Guid TestPlanId { get; set; }
-    public Guid TestCaseId { get; set; }
+    public TestPlanId TestPlanId { get; set; }
+    public TestCaseId TestCaseId { get; set; }
     public int Order { get; set; }
 
     public TestPlan? TestPlan { get; set; }

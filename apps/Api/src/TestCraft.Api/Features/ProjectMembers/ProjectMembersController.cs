@@ -16,7 +16,7 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<ProjectMemberResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ProjectMemberResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -30,7 +30,7 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ProjectMemberResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<ProjectMemberResponse>> Add(
-        Guid projectId,
+        ProjectId projectId,
         AddProjectMember.Command command,
         CancellationToken cancellationToken
     )
@@ -45,8 +45,8 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Remove(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        ProjectMemberId id,
         CancellationToken cancellationToken
     )
     {

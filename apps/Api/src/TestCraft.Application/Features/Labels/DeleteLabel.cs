@@ -12,10 +12,11 @@ public static class DeleteLabel
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the label belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The label to delete.</summary>
-        public required Guid Id { get; init; }
+        public required LabelId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

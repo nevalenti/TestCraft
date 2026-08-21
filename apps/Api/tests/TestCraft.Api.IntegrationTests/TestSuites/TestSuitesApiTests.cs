@@ -95,7 +95,7 @@ public class TestSuitesApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
-        var suiteId = Guid.NewGuid();
+        var suiteId = TestSuiteId.New();
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suiteId}",

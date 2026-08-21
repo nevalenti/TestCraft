@@ -11,7 +11,7 @@ namespace TestCraft.Application.Features.Projects;
 public record ProjectResponse
 {
     /// <summary>The project's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ProjectId Id { get; init; }
 
     /// <summary>The project's display name.</summary>
     public required string Name { get; init; }
@@ -68,6 +68,7 @@ public static class CreateProject
         {
             var project = new Project
             {
+                Id = ProjectId.New(),
                 UserId = currentUser.UserId,
                 Name = request.Name,
                 Description = request.Description,

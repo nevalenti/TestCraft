@@ -35,13 +35,16 @@ public class AttachmentsApiTests(ApiFactory factory)
         return form;
     }
 
-    private static string AttachmentsUrl(Guid projectId, Guid runId, Guid resultId) =>
-        $"/api/v1/projects/{projectId}/runs/{runId}/results/{resultId}/attachments";
+    private static string AttachmentsUrl(
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId resultId
+    ) => $"/api/v1/projects/{projectId}/runs/{runId}/results/{resultId}/attachments";
 
     private static async Task<(
-        Guid ProjectId,
-        Guid RunId,
-        Guid ResultId
+        ProjectId ProjectId,
+        TestRunId RunId,
+        TestResultId ResultId
     )> CreateProjectRunResultAsync(HttpClient client)
     {
         var project = await client.CreateProjectAsync();
@@ -183,7 +186,7 @@ public class AttachmentsApiTests(ApiFactory factory)
         var client = factory.CreateClient();
 
         var response = await client.PostAsync(
-            AttachmentsUrl(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid()),
+            AttachmentsUrl(ProjectId.New(), TestRunId.New(), TestResultId.New()),
             BuildFileContent()
         );
 
@@ -198,7 +201,7 @@ public class AttachmentsApiTests(ApiFactory factory)
         var run = await client.CreateRunAsync(project.Id);
 
         var response = await client.PostAsync(
-            AttachmentsUrl(project.Id, run.Id, Guid.NewGuid()),
+            AttachmentsUrl(project.Id, run.Id, TestResultId.New()),
             BuildFileContent()
         );
 

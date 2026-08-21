@@ -25,9 +25,9 @@ public class TestResultsApiTests(ApiFactory factory)
     }
 
     private static async Task<(
-        Guid ProjectId,
-        Guid RunId,
-        Guid TestCaseId
+        ProjectId ProjectId,
+        TestRunId RunId,
+        TestCaseId TestCaseId
     )> CreateProjectRunCaseAsync(HttpClient client)
     {
         var project = await client.CreateProjectAsync();
@@ -297,7 +297,7 @@ public class TestResultsApiTests(ApiFactory factory)
             $"/api/v1/projects/{projectId}/runs/{runId}/results",
             new CreateTestResult.Command
             {
-                TestCaseId = Guid.Empty,
+                TestCaseId = TestCaseId.From(Guid.Empty),
                 Status = TestResultStatus.Passed,
                 ExecutedAt = DateTimeOffset.UtcNow,
             }
@@ -316,7 +316,7 @@ public class TestResultsApiTests(ApiFactory factory)
             $"/api/v1/projects/{Guid.NewGuid()}/runs/{Guid.NewGuid()}/results",
             new CreateTestResult.Command
             {
-                TestCaseId = Guid.NewGuid(),
+                TestCaseId = TestCaseId.New(),
                 Status = TestResultStatus.Passed,
                 ExecutedAt = DateTimeOffset.UtcNow,
             }

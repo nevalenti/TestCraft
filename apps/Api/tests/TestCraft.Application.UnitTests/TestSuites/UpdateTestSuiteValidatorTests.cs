@@ -10,8 +10,8 @@ public class UpdateTestSuiteValidatorTests
     private static UpdateTestSuite.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            Id = TestSuiteId.New(),
             Name = "Regression Suite",
         };
 

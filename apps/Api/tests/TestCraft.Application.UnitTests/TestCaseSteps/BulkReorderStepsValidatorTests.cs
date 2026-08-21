@@ -10,12 +10,12 @@ public class BulkReorderStepsValidatorTests
     private static BulkReorderSteps.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            CaseId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            CaseId = TestCaseId.New(),
             Steps =
             [
-                new BulkReorderSteps.StepOrder { Id = Guid.NewGuid(), Order = 1 },
-                new BulkReorderSteps.StepOrder { Id = Guid.NewGuid(), Order = 2 },
+                new BulkReorderSteps.StepOrder { Id = TestCaseStepId.New(), Order = 1 },
+                new BulkReorderSteps.StepOrder { Id = TestCaseStepId.New(), Order = 2 },
             ],
         };
 
@@ -38,7 +38,7 @@ public class BulkReorderStepsValidatorTests
     {
         var command = ValidCommand() with
         {
-            Steps = [new BulkReorderSteps.StepOrder { Id = Guid.NewGuid(), Order = 0 }],
+            Steps = [new BulkReorderSteps.StepOrder { Id = TestCaseStepId.New(), Order = 0 }],
         };
 
         var result = _validator.TestValidate(command);
@@ -48,7 +48,7 @@ public class BulkReorderStepsValidatorTests
     [Fact]
     public void DuplicateStepIds_FailsValidation()
     {
-        var duplicateId = Guid.NewGuid();
+        var duplicateId = TestCaseStepId.New();
         var command = ValidCommand() with
         {
             Steps =
