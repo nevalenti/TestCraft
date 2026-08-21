@@ -16,7 +16,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     [HttpGet("trend")]
     [ProducesResponseType(typeof(IReadOnlyList<TrendPoint>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<TrendPoint>>> GetTrend(
-        Guid projectId,
+        ProjectId projectId,
         [FromQuery] int limit = 20,
         CancellationToken cancellationToken = default
     )
@@ -31,8 +31,8 @@ public class AnalyticsController(ISender sender) : ControllerBase
     [HttpGet("runs/{runId:guid}/suite-breakdown")]
     [ProducesResponseType(typeof(IReadOnlyList<SuiteBreakdown>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<SuiteBreakdown>>> GetSuiteBreakdown(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         CancellationToken cancellationToken
     )
     {
@@ -46,7 +46,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     [HttpGet("flaky")]
     [ProducesResponseType(typeof(IReadOnlyList<FlakyTestStat>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<FlakyTestStat>>> GetFlaky(
-        Guid projectId,
+        ProjectId projectId,
         [FromQuery] int minRuns = 3,
         CancellationToken cancellationToken = default
     )
@@ -61,9 +61,9 @@ public class AnalyticsController(ISender sender) : ControllerBase
     [HttpGet("runs/compare")]
     [ProducesResponseType(typeof(RunComparison), StatusCodes.Status200OK)]
     public async Task<ActionResult<RunComparison>> Compare(
-        Guid projectId,
-        [FromQuery] Guid runAId,
-        [FromQuery] Guid runBId,
+        ProjectId projectId,
+        [FromQuery] TestRunId runAId,
+        [FromQuery] TestRunId runBId,
         CancellationToken cancellationToken
     )
     {

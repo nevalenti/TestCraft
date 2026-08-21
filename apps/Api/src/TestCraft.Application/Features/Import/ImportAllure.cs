@@ -13,16 +13,16 @@ namespace TestCraft.Application.Features.Import;
 public record ImportJobResponse
 {
     /// <summary>The import job's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ImportJobId Id { get; init; }
 
     /// <summary>The project the import job belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The job's current processing status.</summary>
     public required ImportJobStatus Status { get; init; }
 
     /// <summary>The run created from this import, once processing succeeds.</summary>
-    public Guid? TestRunId { get; init; }
+    public TestRunId? TestRunId { get; init; }
 
     /// <summary>The failure message, if the job failed.</summary>
     public string? Error { get; init; }
@@ -42,7 +42,8 @@ public static class ImportAllure
         public const string DefaultRunName = "Allure Import";
 
         /// <summary>The project to import the run into.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The Allure test results to import.</summary>
         public required IReadOnlyList<AllureResultItem> Results { get; init; }
@@ -123,6 +124,7 @@ public static class ImportAllure
         {
             var job = new ImportJob
             {
+                Id = ImportJobId.New(),
                 ProjectId = request.ProjectId,
                 Status = ImportJobStatus.Pending,
                 CreatedById = currentUser.UserId,

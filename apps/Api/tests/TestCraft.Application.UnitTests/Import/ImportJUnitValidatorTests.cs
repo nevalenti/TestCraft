@@ -10,7 +10,7 @@ public class ImportJUnitValidatorTests
     private static ImportJUnit.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Xml = "<testsuites></testsuites>",
             Environment = "ci",
         };

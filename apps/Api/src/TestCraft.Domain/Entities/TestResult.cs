@@ -4,15 +4,15 @@ namespace TestCraft.Domain.Entities;
 
 public class TestResult : IAuditableEntity, ISoftDeletableEntity
 {
-    public Guid Id { get; set; }
+    public TestResultId Id { get; set; }
     public TestResultStatus Status { get; set; }
     public string? Notes { get; set; }
     public long? DurationMs { get; set; }
     public DefectType? DefectType { get; set; }
     public DateTimeOffset ExecutedAt { get; set; }
-    public Guid? ExecutedById { get; set; }
-    public Guid TestRunId { get; set; }
-    public Guid TestCaseId { get; set; }
+    public UserId? ExecutedById { get; set; }
+    public TestRunId TestRunId { get; set; }
+    public TestCaseId TestCaseId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

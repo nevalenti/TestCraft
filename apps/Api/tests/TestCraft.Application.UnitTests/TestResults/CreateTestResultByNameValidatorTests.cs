@@ -11,8 +11,8 @@ public class CreateTestResultByNameValidatorTests
     private static CreateTestResultByName.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            RunId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            RunId = TestRunId.New(),
             SuiteName = "Checkout",
             TestCaseName = "Applies discount code",
             Status = TestResultStatus.Passed,

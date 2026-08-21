@@ -12,16 +12,16 @@ public static class GetAttachmentDownloadUrl
     public sealed record Query : IRequest<AttachmentDownloadUrlResponse>, IProjectScopedRequest
     {
         /// <summary>The project the attachment belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the attachment belongs to.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
 
         /// <summary>The test result the attachment belongs to.</summary>
-        public required Guid ResultId { get; init; }
+        public required TestResultId ResultId { get; init; }
 
         /// <summary>The attachment to generate a download URL for.</summary>
-        public required Guid AttachmentId { get; init; }
+        public required AttachmentId AttachmentId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context, IStorageService storage)

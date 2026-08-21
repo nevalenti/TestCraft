@@ -11,8 +11,8 @@ public class UpdateTestRunValidatorTests
     private static UpdateTestRun.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            Id = TestRunId.New(),
             Name = "Nightly Run",
             Environment = "staging",
             Status = TestRunStatus.Active,

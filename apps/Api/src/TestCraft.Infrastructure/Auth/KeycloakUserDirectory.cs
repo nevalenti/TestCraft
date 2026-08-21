@@ -39,7 +39,7 @@ internal sealed class KeycloakUserDirectory(
         var fullName = $"{match.FirstName} {match.LastName}".Trim();
         var displayName = string.IsNullOrWhiteSpace(fullName) ? match.Username : fullName;
 
-        return new KeycloakUser(Guid.Parse(match.Id), match.Email, displayName);
+        return new KeycloakUser(UserId.From(Guid.Parse(match.Id)), match.Email, displayName);
     }
 
     private sealed record KeycloakUserDto(

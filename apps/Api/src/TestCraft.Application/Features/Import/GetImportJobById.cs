@@ -12,10 +12,10 @@ public static class GetImportJobById
     public sealed record Query : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
         /// <summary>The project the import job belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The import job to look up.</summary>
-        public required Guid Id { get; init; }
+        public required ImportJobId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

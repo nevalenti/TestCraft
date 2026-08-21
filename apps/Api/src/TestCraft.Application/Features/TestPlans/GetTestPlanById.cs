@@ -12,10 +12,10 @@ public static class GetTestPlanById
     public sealed record Query : IRequest<TestPlanDetailResponse>, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to look up.</summary>
-        public required Guid Id { get; init; }
+        public required TestPlanId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

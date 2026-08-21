@@ -11,10 +11,10 @@ namespace TestCraft.Application.Features.Notifications;
 public record EmailSubscriptionResponse
 {
     /// <summary>The subscription's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required EmailSubscriptionId Id { get; init; }
 
     /// <summary>The project the subscription belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The email address being notified.</summary>
     public required string Email { get; init; }
@@ -35,7 +35,8 @@ public static class CreateEmailSubscription
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project to subscribe to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The email address to notify.</summary>
         public required string Email { get; init; }
@@ -63,6 +64,7 @@ public static class CreateEmailSubscription
         {
             var subscription = new EmailSubscription
             {
+                Id = EmailSubscriptionId.New(),
                 ProjectId = request.ProjectId,
                 Email = request.Email,
                 Events = JsonSerializer.Serialize(request.Events),

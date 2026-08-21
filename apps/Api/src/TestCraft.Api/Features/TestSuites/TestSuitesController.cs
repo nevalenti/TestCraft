@@ -17,7 +17,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestSuiteResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestSuiteResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         [FromQuery] GetTestSuites.Query query,
         CancellationToken cancellationToken
     )
@@ -32,8 +32,8 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestSuiteResponse>> GetById(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId id,
         CancellationToken cancellationToken
     )
     {
@@ -47,7 +47,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestSuiteResponse>> Create(
-        Guid projectId,
+        ProjectId projectId,
         CreateTestSuite.Command command,
         CancellationToken cancellationToken
     )
@@ -62,8 +62,8 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestSuiteResponse>> Update(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId id,
         UpdateTestSuite.Command command,
         CancellationToken cancellationToken
     )
@@ -78,8 +78,8 @@ public class TestSuitesController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId id,
         CancellationToken cancellationToken
     )
     {

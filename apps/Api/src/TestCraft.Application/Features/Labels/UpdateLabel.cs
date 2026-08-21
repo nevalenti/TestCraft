@@ -13,10 +13,12 @@ public static class UpdateLabel
     public sealed record Command : IRequest<LabelResponse>, IProjectScopedRequest
     {
         /// <summary>The project the label belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The label to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public LabelId Id { get; init; }
 
         /// <summary>The label's new display name.</summary>
         public required string Name { get; init; }

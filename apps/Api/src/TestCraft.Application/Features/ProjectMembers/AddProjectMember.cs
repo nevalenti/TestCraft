@@ -11,7 +11,7 @@ namespace TestCraft.Application.Features.ProjectMembers;
 public record ProjectMemberResponse
 {
     /// <summary>The membership's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ProjectMemberId Id { get; init; }
 
     /// <summary>The member's email address.</summary>
     public required string Email { get; init; }
@@ -29,7 +29,8 @@ public static class AddProjectMember
     public sealed record Command : IRequest<ProjectMemberResponse>, IProjectScopedRequest
     {
         /// <summary>The project to add the member to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The email address of the user to add.</summary>
         public required string Email { get; init; }
@@ -71,6 +72,7 @@ public static class AddProjectMember
 
             var member = new ProjectMember
             {
+                Id = ProjectMemberId.New(),
                 ProjectId = request.ProjectId,
                 UserId = keycloakUser.Id,
                 Email = keycloakUser.Email,

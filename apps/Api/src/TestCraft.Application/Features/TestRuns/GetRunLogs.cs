@@ -12,10 +12,10 @@ public static class GetRunLogs
     public sealed record Query : IRequest<IReadOnlyList<string>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to fetch logs for.</summary>
-        public Guid RunId { get; init; }
+        public TestRunId RunId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

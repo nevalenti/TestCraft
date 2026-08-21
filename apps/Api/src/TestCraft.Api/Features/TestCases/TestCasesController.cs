@@ -17,8 +17,8 @@ public class TestCasesController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestCaseResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
-        Guid projectId,
-        Guid suiteId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
         [FromQuery] GetTestCases.Query query,
         CancellationToken cancellationToken
     )
@@ -33,9 +33,9 @@ public class TestCasesController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseResponse>> GetById(
-        Guid projectId,
-        Guid suiteId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId id,
         CancellationToken cancellationToken
     )
     {
@@ -54,8 +54,8 @@ public class TestCasesController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestCaseResponse>> Create(
-        Guid projectId,
-        Guid suiteId,
+        ProjectId projectId,
+        TestSuiteId suiteId,
         CreateTestCase.Command command,
         CancellationToken cancellationToken
     )
@@ -79,9 +79,9 @@ public class TestCasesController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestCaseResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseResponse>> Update(
-        Guid projectId,
-        Guid suiteId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId id,
         UpdateTestCase.Command command,
         CancellationToken cancellationToken
     )
@@ -96,9 +96,9 @@ public class TestCasesController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid suiteId,
-        Guid id,
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId id,
         CancellationToken cancellationToken
     )
     {

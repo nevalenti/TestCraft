@@ -10,7 +10,7 @@ public class CreateLabelValidatorTests
     private static CreateLabel.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Name = "Regression",
             Color = "#FF00AA",
         };

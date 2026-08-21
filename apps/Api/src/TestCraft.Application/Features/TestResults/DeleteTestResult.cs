@@ -13,13 +13,14 @@ public static class DeleteTestResult
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the result belongs to.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
 
         /// <summary>The result to delete.</summary>
-        public required Guid Id { get; init; }
+        public required TestResultId Id { get; init; }
     }
 
     public sealed class Handler(

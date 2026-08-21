@@ -11,13 +11,13 @@ public static class GetAttachments
     public sealed record Query : IRequest<IReadOnlyList<AttachmentResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the test result belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the test result belongs to.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
 
         /// <summary>The test result to list attachments for.</summary>
-        public required Guid ResultId { get; init; }
+        public required TestResultId ResultId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

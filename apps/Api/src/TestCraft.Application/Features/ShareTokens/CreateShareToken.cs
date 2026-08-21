@@ -12,10 +12,10 @@ namespace TestCraft.Application.Features.ShareTokens;
 public record ShareTokenResponse
 {
     /// <summary>The share token's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required ShareTokenId Id { get; init; }
 
     /// <summary>The run the token grants access to.</summary>
-    public required Guid TestRunId { get; init; }
+    public required TestRunId TestRunId { get; init; }
 
     /// <summary>The token value used in the public share link.</summary>
     public required string Token { get; init; }
@@ -33,10 +33,12 @@ public static class CreateShareToken
     public sealed record Command : IRequest<ShareTokenResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to share.</summary>
-        public Guid RunId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId RunId { get; init; }
 
         /// <summary>When the share link should expire, if it should.</summary>
         public DateTimeOffset? ExpiresAt { get; init; }
@@ -69,6 +71,7 @@ public static class CreateShareToken
 
             var shareToken = new ShareToken
             {
+                Id = ShareTokenId.New(),
                 TestRunId = request.RunId,
                 Token = token,
                 ExpiresAt = request.ExpiresAt,

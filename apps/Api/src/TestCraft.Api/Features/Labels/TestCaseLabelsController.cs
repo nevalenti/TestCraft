@@ -16,9 +16,9 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
     [HttpPost("{labelId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Add(
-        Guid projectId,
-        Guid caseId,
-        Guid labelId,
+        ProjectId projectId,
+        TestCaseId caseId,
+        LabelId labelId,
         CancellationToken cancellationToken
     )
     {
@@ -37,9 +37,9 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
     [HttpDelete("{labelId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Remove(
-        Guid projectId,
-        Guid caseId,
-        Guid labelId,
+        ProjectId projectId,
+        TestCaseId caseId,
+        LabelId labelId,
         CancellationToken cancellationToken
     )
     {

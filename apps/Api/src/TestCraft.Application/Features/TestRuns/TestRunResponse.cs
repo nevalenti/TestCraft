@@ -23,10 +23,10 @@ public record TestRunResponse
         };
 
     /// <summary>The run's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestRunId Id { get; init; }
 
     /// <summary>The project the run belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The run's display name.</summary>
     public required string Name { get; init; }
@@ -41,7 +41,7 @@ public record TestRunResponse
     public string? Source { get; init; }
 
     /// <summary>The user who executed the run, if any.</summary>
-    public Guid? ExecutedById { get; init; }
+    public UserId? ExecutedById { get; init; }
 
     /// <summary>The executing user's display name, denormalized for display.</summary>
     public string? ExecutedByName { get; init; }

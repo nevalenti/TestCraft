@@ -13,13 +13,14 @@ public static class AddTestCaseLabel
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case to label.</summary>
-        public required Guid TestCaseId { get; init; }
+        public required TestCaseId TestCaseId { get; init; }
 
         /// <summary>The label to attach.</summary>
-        public required Guid LabelId { get; init; }
+        public required LabelId LabelId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

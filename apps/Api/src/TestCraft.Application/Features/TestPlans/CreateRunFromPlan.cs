@@ -16,10 +16,12 @@ public static class CreateRunFromPlan
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to create the run from.</summary>
-        public required Guid TestPlanId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The name to give the created run.</summary>
         public required string Name { get; init; }
@@ -62,6 +64,7 @@ public static class CreateRunFromPlan
             var now = DateTimeOffset.UtcNow;
             var run = new TestRun
             {
+                Id = TestRunId.New(),
                 ProjectId = request.ProjectId,
                 Name = request.Name,
                 Environment = request.Environment,
@@ -77,6 +80,7 @@ public static class CreateRunFromPlan
                 context.TestResults.Add(
                     new TestResult
                     {
+                        Id = TestResultId.New(),
                         TestRunId = run.Id,
                         TestCaseId = caseId,
                         Status = TestResultStatus.Blocked,

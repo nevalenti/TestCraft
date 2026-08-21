@@ -16,8 +16,8 @@ public partial class NotificationDispatcher(
 ) : INotificationDispatcher
 {
     public async Task DispatchRunCompletedAsync(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         string runName,
         CancellationToken cancellationToken = default
     )
@@ -40,7 +40,7 @@ public partial class NotificationDispatcher(
     }
 
     private async Task DispatchWebhooksAsync(
-        Guid projectId,
+        ProjectId projectId,
         string eventType,
         object payload,
         CancellationToken cancellationToken
@@ -91,7 +91,7 @@ public partial class NotificationDispatcher(
     }
 
     private async Task DispatchEmailsAsync(
-        Guid projectId,
+        ProjectId projectId,
         string eventType,
         string runName,
         string body,
@@ -141,7 +141,7 @@ public partial class NotificationDispatcher(
         ILogger logger,
         string url,
         int statusCode,
-        Guid projectId,
+        ProjectId projectId,
         string eventType
     );
 
@@ -152,7 +152,7 @@ public partial class NotificationDispatcher(
     static partial void LogWebhookException(
         ILogger logger,
         string url,
-        Guid projectId,
+        ProjectId projectId,
         string eventType,
         Exception ex
     );
@@ -164,7 +164,7 @@ public partial class NotificationDispatcher(
     static partial void LogEmailException(
         ILogger logger,
         string recipient,
-        Guid projectId,
+        ProjectId projectId,
         string eventType,
         Exception ex
     );

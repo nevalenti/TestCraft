@@ -8,7 +8,7 @@ public class AddProjectMemberValidatorTests
     private readonly AddProjectMember.Validator _validator = new();
 
     private static AddProjectMember.Command ValidCommand() =>
-        new() { ProjectId = Guid.NewGuid(), Email = "teammate@example.com" };
+        new() { ProjectId = ProjectId.New(), Email = "teammate@example.com" };
 
     [Fact]
     public void ValidCommand_PassesValidation()

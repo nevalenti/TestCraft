@@ -31,10 +31,10 @@ public static class GetSuiteBreakdown
     public sealed record Query : IRequest<IReadOnlyList<SuiteBreakdown>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to break down by suite.</summary>
-        public required Guid RunId { get; init; }
+        public required TestRunId RunId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

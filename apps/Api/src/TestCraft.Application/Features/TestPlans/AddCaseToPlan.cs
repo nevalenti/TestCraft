@@ -13,13 +13,15 @@ public static class AddCaseToPlan
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to add the test case to.</summary>
-        public required Guid TestPlanId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The test case to add.</summary>
-        public required Guid TestCaseId { get; init; }
+        public required TestCaseId TestCaseId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

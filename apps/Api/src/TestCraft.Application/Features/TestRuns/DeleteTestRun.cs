@@ -13,10 +13,11 @@ public static class DeleteTestRun
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to delete.</summary>
-        public required Guid Id { get; init; }
+        public required TestRunId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context, ICacheService cache)

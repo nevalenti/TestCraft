@@ -15,7 +15,8 @@ public static class ImportJUnit
     public sealed record Command : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
         /// <summary>The project to import the run into.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The raw JUnit XML report content.</summary>
         public required string Xml { get; init; }
@@ -30,7 +31,7 @@ public static class ImportJUnit
         public string? Source { get; init; }
 
         /// <summary>An existing active run to import results into, instead of creating one.</summary>
-        public Guid? RunId { get; init; }
+        public TestRunId? RunId { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -69,6 +70,7 @@ public static class ImportJUnit
         {
             var job = new ImportJob
             {
+                Id = ImportJobId.New(),
                 ProjectId = request.ProjectId,
                 Status = ImportJobStatus.Pending,
                 CreatedById = currentUser.UserId,

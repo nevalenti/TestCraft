@@ -35,6 +35,7 @@ public static class SwaggerExtensions
 
             options.OperationFilter<AnonymousEndpointsOperationFilter>();
             options.OperationFilter<ProblemResponsesOperationFilter>();
+            options.SchemaFilter<VogenSchemaFilter>();
 
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TestCraft.Api.xml"));
             options.IncludeXmlComments(

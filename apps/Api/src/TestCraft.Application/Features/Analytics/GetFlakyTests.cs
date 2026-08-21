@@ -10,7 +10,7 @@ namespace TestCraft.Application.Features.Analytics;
 public record FlakyTestStat
 {
     /// <summary>The test case's identifier.</summary>
-    public required Guid TestCaseId { get; init; }
+    public required TestCaseId TestCaseId { get; init; }
 
     /// <summary>The test case's name.</summary>
     public required string TestCaseName { get; init; }
@@ -34,7 +34,7 @@ public static class GetFlakyTests
     public sealed record Query : IRequest<IReadOnlyList<FlakyTestStat>>, IProjectScopedRequest
     {
         /// <summary>The project to scan.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>Minimum number of runs a test must have to be considered.</summary>
         public int MinRuns { get; init; } = 3;

@@ -13,16 +13,16 @@ public static class GetTestCases
     public sealed record Query : IRequest<Paginated<TestCaseResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to list test cases for.</summary>
-        public Guid SuiteId { get; init; }
+        public TestSuiteId SuiteId { get; init; }
 
         /// <summary>Filters test cases whose name contains this text.</summary>
         public string? Search { get; init; }
 
         /// <summary>Filters test cases that have this label attached.</summary>
-        public Guid? LabelId { get; init; }
+        public LabelId? LabelId { get; init; }
 
         /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }

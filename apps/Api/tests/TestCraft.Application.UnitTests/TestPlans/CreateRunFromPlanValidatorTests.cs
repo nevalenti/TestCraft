@@ -10,8 +10,8 @@ public class CreateRunFromPlanValidatorTests
     private static CreateRunFromPlan.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            TestPlanId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            TestPlanId = TestPlanId.New(),
             Name = "Release 1.0 Run",
             Environment = "staging",
         };

@@ -15,13 +15,16 @@ public static class UpdateTestCase
     public sealed record Command : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite the test case belongs to.</summary>
-        public Guid SuiteId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestSuiteId SuiteId { get; init; }
 
         /// <summary>The test case to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestCaseId Id { get; init; }
 
         /// <summary>The test case's new display name.</summary>
         public required string Name { get; init; }

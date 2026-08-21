@@ -12,10 +12,10 @@ namespace TestCraft.Application.Features.TestCaseSteps;
 public record TestCaseStepResponse
 {
     /// <summary>The step's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestCaseStepId Id { get; init; }
 
     /// <summary>The test case the step belongs to.</summary>
-    public required Guid TestCaseId { get; init; }
+    public required TestCaseId TestCaseId { get; init; }
 
     /// <summary>The step's position within the test case.</summary>
     public required int Order { get; init; }
@@ -39,10 +39,12 @@ public static class CreateTestCaseStep
     public sealed record Command : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case to add the step to.</summary>
-        public Guid CaseId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestCaseId CaseId { get; init; }
 
         /// <summary>The step's position within the test case.</summary>
         public required int Order { get; init; }
@@ -84,6 +86,7 @@ public static class CreateTestCaseStep
 
             var step = new TestCaseStep
             {
+                Id = TestCaseStepId.New(),
                 TestCaseId = request.CaseId,
                 Order = request.Order,
                 Action = request.Action,

@@ -14,10 +14,12 @@ public static class UpdateTestRun
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId Id { get; init; }
 
         /// <summary>The run's new display name.</summary>
         public required string Name { get; init; }

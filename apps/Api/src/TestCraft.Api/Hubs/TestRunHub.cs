@@ -11,14 +11,19 @@ public class TestRunHub(IApplicationDbContext db) : Hub
 {
     public async Task JoinRun(string runId)
     {
-        if (!Guid.TryParse(runId, out var runGuid) || !TryGetUserId(out var userId))
+        var userId = TryGetUserId();
+        if (!Guid.TryParse(runId, out var runGuid) || userId is null)
         {
             return;
         }
 
+        var parsedRunId = TestRunId.From(runGuid);
+
         var hasAccess = await db.Projects.AnyAsync(project =>
             (project.UserId == userId || project.Members.Any(member => member.UserId == userId))
-            && db.TestRuns.Any(testRun => testRun.Id == runGuid && testRun.ProjectId == project.Id)
+            && db.TestRuns.Any(testRun =>
+                testRun.Id == parsedRunId && testRun.ProjectId == project.Id
+            )
         );
 
         if (!hasAccess)
@@ -26,7 +31,7 @@ public class TestRunHub(IApplicationDbContext db) : Hub
             return;
         }
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"run:{runGuid}");
+        await Groups.AddToGroupAsync(Context.ConnectionId, $"run:{parsedRunId}");
     }
 
     public async Task LeaveRun(string runId)
@@ -36,9 +41,9 @@ public class TestRunHub(IApplicationDbContext db) : Hub
             return;
         }
 
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{runGuid}");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{TestRunId.From(runGuid)}");
     }
 
-    private bool TryGetUserId(out Guid userId) =>
-        Guid.TryParse(Context.User?.GetUserIdOrNull(), out userId);
+    private UserId? TryGetUserId() =>
+        Guid.TryParse(Context.User?.GetUserIdOrNull(), out var guid) ? UserId.From(guid) : null;
 }

@@ -23,9 +23,9 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     }
 
     private static async Task<(
-        Guid ProjectId,
-        Guid SuiteId,
-        Guid CaseId
+        ProjectId ProjectId,
+        TestSuiteId SuiteId,
+        TestCaseId CaseId
     )> CreateProjectSuiteCaseAsync(HttpClient client)
     {
         var project = await client.CreateProjectAsync();
@@ -268,7 +268,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/reorder",
             new BulkReorderSteps.Command
             {
-                Steps = [new BulkReorderSteps.StepOrder { Id = Guid.NewGuid(), Order = 1 }],
+                Steps = [new BulkReorderSteps.StepOrder { Id = TestCaseStepId.New(), Order = 1 }],
             }
         );
 
@@ -281,7 +281,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
     {
         var client = CreateClient(Guid.NewGuid());
         var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
-        var stepId = Guid.NewGuid();
+        var stepId = TestCaseStepId.New();
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{stepId}",

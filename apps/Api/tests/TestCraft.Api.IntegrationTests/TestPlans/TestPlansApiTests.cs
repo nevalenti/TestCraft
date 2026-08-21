@@ -64,7 +64,7 @@ public class TestPlansApiTests(ApiFactory factory)
 
         var addResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
         addResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
@@ -86,11 +86,11 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
 
         var detail = await (
@@ -111,7 +111,7 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
 
         var removeResponse = await client.DeleteAsync(
@@ -138,18 +138,18 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case1.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case1.Id }
         );
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case2.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case2.Id }
         );
 
         var runResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/run",
             new CreateRunFromPlan.Command
             {
-                TestPlanId = Guid.Empty,
+                TestPlanId = TestPlanId.New(),
                 Name = "Sprint Run",
                 Environment = "staging",
             }
@@ -265,18 +265,18 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case1.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case1.Id }
         );
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = case2.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case2.Id }
         );
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
             new ReorderPlanCases.Command
             {
-                TestPlanId = Guid.Empty,
+                TestPlanId = TestPlanId.New(),
                 Cases =
                 [
                     new ReorderPlanCases.PlanCaseOrder(case2.Id, 0),
@@ -306,12 +306,12 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
-            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+            new ReorderPlanCases.Command { TestPlanId = TestPlanId.New(), Cases = [] }
         );
         reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
@@ -333,15 +333,15 @@ public class TestPlansApiTests(ApiFactory factory)
 
         await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = Guid.Empty, TestCaseId = testCase.Id }
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
         );
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
             new ReorderPlanCases.Command
             {
-                TestPlanId = Guid.Empty,
-                Cases = [new ReorderPlanCases.PlanCaseOrder(Guid.NewGuid(), 5)],
+                TestPlanId = TestPlanId.New(),
+                Cases = [new ReorderPlanCases.PlanCaseOrder(TestCaseId.New(), 5)],
             }
         );
         reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
@@ -361,7 +361,7 @@ public class TestPlansApiTests(ApiFactory factory)
 
         var response = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{Guid.NewGuid()}/cases/order",
-            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+            new ReorderPlanCases.Command { TestPlanId = TestPlanId.New(), Cases = [] }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -379,7 +379,7 @@ public class TestPlansApiTests(ApiFactory factory)
 
         var response = await other.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
-            new ReorderPlanCases.Command { TestPlanId = Guid.Empty, Cases = [] }
+            new ReorderPlanCases.Command { TestPlanId = TestPlanId.New(), Cases = [] }
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);

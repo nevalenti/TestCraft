@@ -19,10 +19,12 @@ public static class CreateTestResultByName
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        public Guid RunId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestRunId RunId { get; init; }
 
         /// <summary>The suite name, created if it doesn't already exist.</summary>
         public required string SuiteName { get; init; }
@@ -90,6 +92,7 @@ public static class CreateTestResultByName
             {
                 suite = new TestSuite
                 {
+                    Id = TestSuiteId.New(),
                     ProjectId = request.ProjectId,
                     Name = request.SuiteName,
                     Source = request.Source,
@@ -107,13 +110,19 @@ public static class CreateTestResultByName
 
             if (testCase is null)
             {
-                testCase = new TestCase { SuiteId = suite.Id, Name = request.TestCaseName };
+                testCase = new TestCase
+                {
+                    Id = TestCaseId.New(),
+                    SuiteId = suite.Id,
+                    Name = request.TestCaseName,
+                };
                 context.TestCases.Add(testCase);
                 await context.SaveChangesAsync(cancellationToken);
             }
 
             var result = new TestResult
             {
+                Id = TestResultId.New(),
                 TestRunId = request.RunId,
                 TestCaseId = testCase.Id,
                 Status = request.Status,

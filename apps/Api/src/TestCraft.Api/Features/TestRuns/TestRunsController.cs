@@ -17,7 +17,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(Paginated<TestRunResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestRunResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         [FromQuery] GetTestRuns.Query query,
         CancellationToken cancellationToken
     )
@@ -32,8 +32,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestRunResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestRunResponse>> GetById(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         CancellationToken cancellationToken
     )
     {
@@ -47,8 +47,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}/summary")]
     [ProducesResponseType(typeof(GetTestRunSummary.Response), StatusCodes.Status200OK)]
     public async Task<ActionResult<GetTestRunSummary.Response>> GetSummary(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         CancellationToken cancellationToken
     )
     {
@@ -62,7 +62,7 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestRunResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestRunResponse>> Create(
-        Guid projectId,
+        ProjectId projectId,
         CreateTestRun.Command command,
         CancellationToken cancellationToken
     )
@@ -77,8 +77,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestRunResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestRunResponse>> Update(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         UpdateTestRun.Command command,
         CancellationToken cancellationToken
     )
@@ -93,8 +93,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}/logs")]
     [ProducesResponseType(typeof(IReadOnlyList<string>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<string>>> GetLogs(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         CancellationToken cancellationToken
     )
     {
@@ -108,8 +108,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpPost("{id:guid}/logs")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AppendLogs(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         AppendRunLogs.Command command,
         CancellationToken cancellationToken
     )
@@ -124,8 +124,8 @@ public class TestRunsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId id,
         CancellationToken cancellationToken
     )
     {

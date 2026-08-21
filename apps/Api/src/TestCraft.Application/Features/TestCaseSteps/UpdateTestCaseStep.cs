@@ -13,13 +13,16 @@ public static class UpdateTestCaseStep
     public sealed record Command : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case the step belongs to.</summary>
-        public Guid CaseId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestCaseId CaseId { get; init; }
 
         /// <summary>The step to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestCaseStepId Id { get; init; }
 
         /// <summary>The step's new position within the test case.</summary>
         public required int Order { get; init; }

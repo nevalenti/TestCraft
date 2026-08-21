@@ -11,13 +11,15 @@ public static class RemoveCaseFromPlan
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to remove the test case from.</summary>
-        public required Guid TestPlanId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The test case to remove.</summary>
-        public required Guid TestCaseId { get; init; }
+        public required TestCaseId TestCaseId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

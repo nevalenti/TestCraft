@@ -11,9 +11,9 @@ public class CreateTestResultValidatorTests
     private static CreateTestResult.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            RunId = Guid.NewGuid(),
-            TestCaseId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            RunId = TestRunId.New(),
+            TestCaseId = TestCaseId.New(),
             Status = TestResultStatus.Passed,
             ExecutedAt = DateTimeOffset.UtcNow,
         };
@@ -28,7 +28,12 @@ public class CreateTestResultValidatorTests
     [Fact]
     public void EmptyTestCaseId_FailsValidation()
     {
-        var result = _validator.TestValidate(ValidCommand() with { TestCaseId = Guid.Empty });
+        var result = _validator.TestValidate(
+            ValidCommand() with
+            {
+                TestCaseId = TestCaseId.From(Guid.Empty),
+            }
+        );
         result.ShouldHaveValidationErrorFor(command => command.TestCaseId);
     }
 

@@ -3,8 +3,8 @@ namespace TestCraft.Application.Common.Interfaces;
 public interface INotificationDispatcher
 {
     Task DispatchRunCompletedAsync(
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         string runName,
         CancellationToken cancellationToken = default
     );

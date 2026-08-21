@@ -12,13 +12,14 @@ public static class DeleteTestCase
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite the test case belongs to.</summary>
-        public required Guid SuiteId { get; init; }
+        public required TestSuiteId SuiteId { get; init; }
 
         /// <summary>The test case to delete.</summary>
-        public required Guid Id { get; init; }
+        public required TestCaseId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

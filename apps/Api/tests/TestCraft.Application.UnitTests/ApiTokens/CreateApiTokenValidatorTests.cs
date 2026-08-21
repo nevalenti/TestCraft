@@ -8,7 +8,7 @@ public class CreateApiTokenValidatorTests
     private readonly CreateApiToken.Validator _validator = new();
 
     private static CreateApiToken.Command ValidCommand() =>
-        new() { ProjectId = Guid.NewGuid(), Name = "CI token" };
+        new() { ProjectId = ProjectId.New(), Name = "CI token" };
 
     [Fact]
     public void ValidCommand_PassesValidation()

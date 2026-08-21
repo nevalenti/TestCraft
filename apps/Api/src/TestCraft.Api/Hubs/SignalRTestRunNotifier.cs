@@ -7,7 +7,7 @@ namespace TestCraft.Api.Hubs;
 public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestRunNotifier
 {
     public Task ResultAddedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     ) =>
@@ -16,7 +16,7 @@ public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestR
             .SendAsync("ResultAdded", result, cancellationToken);
 
     public Task ResultUpdatedAsync(
-        Guid runId,
+        TestRunId runId,
         TestResultResponse result,
         CancellationToken cancellationToken = default
     ) =>
@@ -25,8 +25,8 @@ public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestR
             .SendAsync("ResultUpdated", result, cancellationToken);
 
     public Task ResultDeletedAsync(
-        Guid runId,
-        Guid resultId,
+        TestRunId runId,
+        TestResultId resultId,
         CancellationToken cancellationToken = default
     ) =>
         hubContext
@@ -34,7 +34,7 @@ public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestR
             .SendAsync("ResultDeleted", resultId.ToString(), cancellationToken);
 
     public Task RunStatusChangedAsync(
-        Guid runId,
+        TestRunId runId,
         string newStatus,
         CancellationToken cancellationToken = default
     ) =>
@@ -43,7 +43,7 @@ public class SignalRTestRunNotifier(IHubContext<TestRunHub> hubContext) : ITestR
             .SendAsync("RunStatusChanged", newStatus, cancellationToken);
 
     public Task LogsAppendedAsync(
-        Guid runId,
+        TestRunId runId,
         IReadOnlyList<string> lines,
         CancellationToken cancellationToken = default
     ) =>

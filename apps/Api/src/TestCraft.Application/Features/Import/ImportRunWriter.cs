@@ -10,12 +10,12 @@ internal static class ImportRunWriter
 {
     public static async Task<TestRunResponse> CreateRunWithResultsAsync(
         IApplicationDbContext context,
-        Guid projectId,
+        ProjectId projectId,
         string name,
         string environment,
         TestRunStatus status,
         IReadOnlyList<ParsedTestCase> cases,
-        Guid userId,
+        UserId userId,
         string? userName,
         string? source,
         ImportJob job,
@@ -34,6 +34,7 @@ internal static class ImportRunWriter
 
             var run = new TestRun
             {
+                Id = TestRunId.New(),
                 ProjectId = projectId,
                 Name = name,
                 Environment = environment,
@@ -71,10 +72,10 @@ internal static class ImportRunWriter
 
     public static async Task<TestRunResponse> AppendResultsToRunAsync(
         IApplicationDbContext context,
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         IReadOnlyList<ParsedTestCase> cases,
-        Guid userId,
+        UserId userId,
         string? source,
         ImportJob job,
         CancellationToken cancellationToken
@@ -123,11 +124,11 @@ internal static class ImportRunWriter
 
     private static async Task InsertResultsAsync(
         IApplicationDbContext context,
-        Guid projectId,
-        Guid runId,
+        ProjectId projectId,
+        TestRunId runId,
         IReadOnlyList<ParsedTestCase> cases,
         DateTimeOffset now,
-        Guid userId,
+        UserId userId,
         string? source,
         CancellationToken cancellationToken
     )
@@ -153,9 +154,9 @@ internal static class ImportRunWriter
         );
     }
 
-    private static async Task<Dictionary<string, Guid>> ResolveSuitesAsync(
+    private static async Task<Dictionary<string, TestSuiteId>> ResolveSuitesAsync(
         IApplicationDbContext context,
-        Guid projectId,
+        ProjectId projectId,
         IReadOnlyList<ParsedTestCase> cases,
         string? source,
         CancellationToken cancellationToken
@@ -193,6 +194,7 @@ internal static class ImportRunWriter
 
             var suite = new TestSuite
             {
+                Id = TestSuiteId.New(),
                 ProjectId = projectId,
                 Name = suiteName,
                 Source = source,
@@ -215,9 +217,11 @@ internal static class ImportRunWriter
         return suiteMap;
     }
 
-    private static async Task<Dictionary<(Guid SuiteId, string Name), Guid>> ResolveTestCasesAsync(
+    private static async Task<
+        Dictionary<(TestSuiteId SuiteId, string Name), TestCaseId>
+    > ResolveTestCasesAsync(
         IApplicationDbContext context,
-        IReadOnlyDictionary<string, Guid> suiteMap,
+        IReadOnlyDictionary<string, TestSuiteId> suiteMap,
         IReadOnlyList<ParsedTestCase> cases,
         CancellationToken cancellationToken
     )
@@ -236,7 +240,7 @@ internal static class ImportRunWriter
             testCase => testCase.Id
         );
 
-        var newCases = new Dictionary<(Guid SuiteId, string Name), TestCase>();
+        var newCases = new Dictionary<(TestSuiteId SuiteId, string Name), TestCase>();
         foreach (var parsedCase in cases)
         {
             var suiteId = suiteMap[parsedCase.SuiteName];
@@ -247,7 +251,12 @@ internal static class ImportRunWriter
                 continue;
             }
 
-            var testCase = new TestCase { SuiteId = suiteId, Name = parsedCase.CaseName };
+            var testCase = new TestCase
+            {
+                Id = TestCaseId.New(),
+                SuiteId = suiteId,
+                Name = parsedCase.CaseName,
+            };
 
             if (parsedCase.Steps is { Count: > 0 })
             {
@@ -256,6 +265,7 @@ internal static class ImportRunWriter
                     testCase.Steps.Add(
                         new TestCaseStep
                         {
+                            Id = TestCaseStepId.New(),
                             Order = step.Order,
                             Action = step.Action,
                             ExpectedResult = step.ExpectedResult,
@@ -283,12 +293,12 @@ internal static class ImportRunWriter
 
     private static async Task InsertTestResultsAsync(
         IApplicationDbContext context,
-        Guid runId,
-        Dictionary<string, Guid> suiteMap,
-        Dictionary<(Guid SuiteId, string Name), Guid> caseMap,
+        TestRunId runId,
+        Dictionary<string, TestSuiteId> suiteMap,
+        Dictionary<(TestSuiteId SuiteId, string Name), TestCaseId> caseMap,
         IReadOnlyList<ParsedTestCase> cases,
         DateTimeOffset now,
-        Guid userId,
+        UserId userId,
         CancellationToken cancellationToken
     )
     {
@@ -305,6 +315,7 @@ internal static class ImportRunWriter
             context.TestResults.Add(
                 new TestResult
                 {
+                    Id = TestResultId.New(),
                     TestRunId = runId,
                     TestCaseId = caseMap[key],
                     Status = parsedCase.Status,

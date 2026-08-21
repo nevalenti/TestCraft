@@ -8,7 +8,7 @@ public class CreateTestSuiteValidatorTests
     private readonly CreateTestSuite.Validator _validator = new();
 
     private static CreateTestSuite.Command ValidCommand() =>
-        new() { ProjectId = Guid.NewGuid(), Name = "Regression Suite" };
+        new() { ProjectId = ProjectId.New(), Name = "Regression Suite" };
 
     [Fact]
     public void ValidCommand_PassesValidation()

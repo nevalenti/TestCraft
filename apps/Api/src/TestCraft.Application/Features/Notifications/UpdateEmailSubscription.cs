@@ -14,10 +14,12 @@ public static class UpdateEmailSubscription
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project the subscription belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The subscription to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public EmailSubscriptionId Id { get; init; }
 
         /// <summary>The email address to notify.</summary>
         public required string Email { get; init; }

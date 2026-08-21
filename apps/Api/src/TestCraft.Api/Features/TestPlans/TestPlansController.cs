@@ -17,7 +17,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<TestPlanResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<TestPlanResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -31,8 +31,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(TestPlanDetailResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestPlanDetailResponse>> GetById(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         CancellationToken cancellationToken
     )
     {
@@ -46,7 +46,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(TestPlanResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestPlanResponse>> Create(
-        Guid projectId,
+        ProjectId projectId,
         CreateTestPlan.Command command,
         CancellationToken cancellationToken
     )
@@ -61,8 +61,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(TestPlanResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<TestPlanResponse>> Update(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         UpdateTestPlan.Command command,
         CancellationToken cancellationToken
     )
@@ -77,8 +77,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         CancellationToken cancellationToken
     )
     {
@@ -92,8 +92,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPost("{id:guid}/cases")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> AddCase(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         AddCaseToPlan.Command command,
         CancellationToken cancellationToken
     )
@@ -108,9 +108,9 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}/cases/{caseId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> RemoveCase(
-        Guid projectId,
-        Guid id,
-        Guid caseId,
+        ProjectId projectId,
+        TestPlanId id,
+        TestCaseId caseId,
         CancellationToken cancellationToken
     )
     {
@@ -129,8 +129,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}/cases/order")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> ReorderCases(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         ReorderPlanCases.Command command,
         CancellationToken cancellationToken
     )
@@ -145,8 +145,8 @@ public class TestPlansController(ISender sender) : ControllerBase
     [HttpPost("{id:guid}/run")]
     [ProducesResponseType(typeof(TestRunResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<TestRunResponse>> CreateRun(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        TestPlanId id,
         CreateRunFromPlan.Command command,
         CancellationToken cancellationToken
     )

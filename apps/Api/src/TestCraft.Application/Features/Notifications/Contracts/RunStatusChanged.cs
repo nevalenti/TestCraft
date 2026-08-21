@@ -1,8 +1,8 @@
 namespace TestCraft.Application.Features.Notifications.Contracts;
 
 public record RunStatusChanged(
-    Guid RunId,
-    Guid ProjectId,
+    TestRunId RunId,
+    ProjectId ProjectId,
     string RunName,
     string NewStatus,
     string OldStatus

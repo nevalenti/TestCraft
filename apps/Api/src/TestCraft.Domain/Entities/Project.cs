@@ -2,10 +2,10 @@ namespace TestCraft.Domain.Entities;
 
 public class Project : IAuditableEntity, ISoftDeletableEntity
 {
-    public Guid Id { get; set; }
+    public ProjectId Id { get; set; }
     public required string Name { get; set; }
     public string? Description { get; set; }
-    public Guid UserId { get; set; }
+    public UserId UserId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

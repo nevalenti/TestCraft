@@ -12,8 +12,13 @@ public class ProjectOwnershipGuardTests
     public async Task EnsureOwnerAsync_UserOwnsProject_DoesNotThrow()
     {
         await using var context = TestDbContextFactory.Create();
-        var ownerId = Guid.NewGuid();
-        var project = new Project { Name = "Owned Project", UserId = ownerId };
+        var ownerId = UserId.New();
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Owned Project",
+            UserId = ownerId,
+        };
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -32,7 +37,12 @@ public class ProjectOwnershipGuardTests
     public async Task EnsureOwnerAsync_UserDoesNotOwnProject_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var project = new Project { Name = "Someone Else's Project", UserId = Guid.NewGuid() };
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Someone Else's Project",
+            UserId = UserId.New(),
+        };
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -40,7 +50,7 @@ public class ProjectOwnershipGuardTests
             ProjectOwnershipGuard.EnsureOwnerAsync(
                 context,
                 project.Id,
-                Guid.NewGuid(),
+                UserId.New(),
                 CancellationToken.None
             );
 
@@ -55,8 +65,8 @@ public class ProjectOwnershipGuardTests
         var act = () =>
             ProjectOwnershipGuard.EnsureOwnerAsync(
                 context,
-                Guid.NewGuid(),
-                Guid.NewGuid(),
+                ProjectId.New(),
+                UserId.New(),
                 CancellationToken.None
             );
 

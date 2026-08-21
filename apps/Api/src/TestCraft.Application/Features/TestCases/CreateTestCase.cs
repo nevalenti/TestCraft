@@ -14,10 +14,10 @@ namespace TestCraft.Application.Features.TestCases;
 public record TestCaseResponse
 {
     /// <summary>The test case's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestCaseId Id { get; init; }
 
     /// <summary>The suite the test case belongs to.</summary>
-    public required Guid SuiteId { get; init; }
+    public required TestSuiteId SuiteId { get; init; }
 
     /// <summary>The test case's display name.</summary>
     public required string Name { get; init; }
@@ -47,10 +47,12 @@ public static class CreateTestCase
     public sealed record Command : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to create the test case in.</summary>
-        public Guid SuiteId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestSuiteId SuiteId { get; init; }
 
         /// <summary>The test case's display name.</summary>
         public required string Name { get; init; }
@@ -93,6 +95,7 @@ public static class CreateTestCase
 
             var testCase = new TestCase
             {
+                Id = TestCaseId.New(),
                 SuiteId = request.SuiteId,
                 Name = request.Name,
                 Description = request.Description,

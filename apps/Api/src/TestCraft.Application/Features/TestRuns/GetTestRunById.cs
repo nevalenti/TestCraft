@@ -12,10 +12,10 @@ public static class GetTestRunById
     public sealed record Query : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The run to look up.</summary>
-        public required Guid Id { get; init; }
+        public required TestRunId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)

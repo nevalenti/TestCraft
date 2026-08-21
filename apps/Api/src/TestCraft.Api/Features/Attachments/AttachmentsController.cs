@@ -18,9 +18,9 @@ public class AttachmentsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<AttachmentResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<AttachmentResponse>>> GetAll(
-        Guid projectId,
-        Guid runId,
-        Guid resultId,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId resultId,
         CancellationToken cancellationToken
     )
     {
@@ -40,9 +40,9 @@ public class AttachmentsController(ISender sender) : ControllerBase
     [RequestSizeLimit(52_428_800)]
     [ProducesResponseType(typeof(AttachmentResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<AttachmentResponse>> Upload(
-        Guid projectId,
-        Guid runId,
-        Guid resultId,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId resultId,
         IFormFile file,
         CancellationToken cancellationToken
     )
@@ -68,10 +68,10 @@ public class AttachmentsController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}/download")]
     [ProducesResponseType(typeof(AttachmentDownloadUrlResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<AttachmentDownloadUrlResponse>> Download(
-        Guid projectId,
-        Guid runId,
-        Guid resultId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId resultId,
+        AttachmentId id,
         CancellationToken cancellationToken
     )
     {
@@ -91,10 +91,10 @@ public class AttachmentsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid runId,
-        Guid resultId,
-        Guid id,
+        ProjectId projectId,
+        TestRunId runId,
+        TestResultId resultId,
+        AttachmentId id,
         CancellationToken cancellationToken
     )
     {

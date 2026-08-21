@@ -12,10 +12,10 @@ public static class GetTestCaseSteps
     public sealed record Query : IRequest<Paginated<TestCaseStepResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case to list steps for.</summary>
-        public Guid CaseId { get; init; }
+        public TestCaseId CaseId { get; init; }
 
         /// <summary>The page number to return, starting at 1.</summary>
         public int? Page { get; init; }

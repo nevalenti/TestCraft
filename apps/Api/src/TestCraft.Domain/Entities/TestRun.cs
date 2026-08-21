@@ -8,14 +8,14 @@ public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
 {
     private readonly List<IDomainEvent> _events = [];
 
-    public Guid Id { get; set; }
+    public TestRunId Id { get; set; }
     public required string Name { get; set; }
     public required string Environment { get; set; }
     public TestRunStatus Status { get; private set; } = TestRunStatus.Active;
     public string? Source { get; set; }
-    public Guid? ExecutedById { get; set; }
+    public UserId? ExecutedById { get; set; }
     public string? ExecutedByName { get; set; }
-    public Guid ProjectId { get; set; }
+    public ProjectId ProjectId { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
     public DateTimeOffset UpdatedAt { get; set; }
     public bool IsDeleted { get; set; }

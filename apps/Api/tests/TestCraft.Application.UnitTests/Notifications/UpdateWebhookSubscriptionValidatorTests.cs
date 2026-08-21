@@ -10,8 +10,8 @@ public class UpdateWebhookSubscriptionValidatorTests
     private static UpdateWebhookSubscription.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            Id = WebhookSubscriptionId.New(),
             Url = "https://example.com/webhook",
             Events = ["run.completed"],
             IsActive = true,

@@ -16,7 +16,7 @@ public class LabelsController(ISender sender) : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyList<LabelResponse>), StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<LabelResponse>>> GetAll(
-        Guid projectId,
+        ProjectId projectId,
         CancellationToken cancellationToken
     )
     {
@@ -30,7 +30,7 @@ public class LabelsController(ISender sender) : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status201Created)]
     public async Task<ActionResult<LabelResponse>> Create(
-        Guid projectId,
+        ProjectId projectId,
         CreateLabel.Command command,
         CancellationToken cancellationToken
     )
@@ -45,8 +45,8 @@ public class LabelsController(ISender sender) : ControllerBase
     [HttpPut("{id:guid}")]
     [ProducesResponseType(typeof(LabelResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<LabelResponse>> Update(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        LabelId id,
         UpdateLabel.Command command,
         CancellationToken cancellationToken
     )
@@ -61,8 +61,8 @@ public class LabelsController(ISender sender) : ControllerBase
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        LabelId id,
         CancellationToken cancellationToken
     )
     {

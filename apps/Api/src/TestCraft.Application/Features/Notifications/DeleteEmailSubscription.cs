@@ -12,10 +12,11 @@ public static class DeleteEmailSubscription
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the subscription belongs to.</summary>
-        public required Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The subscription to delete.</summary>
-        public required Guid Id { get; init; }
+        public required EmailSubscriptionId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

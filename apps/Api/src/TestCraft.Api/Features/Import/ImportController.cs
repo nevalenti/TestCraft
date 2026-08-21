@@ -17,8 +17,8 @@ public class ImportController(ISender sender) : ControllerBase
     [HttpGet("{id:guid}")]
     [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status200OK)]
     public async Task<ActionResult<ImportJobResponse>> GetById(
-        Guid projectId,
-        Guid id,
+        ProjectId projectId,
+        ImportJobId id,
         CancellationToken cancellationToken
     )
     {
@@ -32,7 +32,7 @@ public class ImportController(ISender sender) : ControllerBase
     [HttpPost("junit")]
     [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status202Accepted)]
     public async Task<ActionResult<ImportJobResponse>> ImportJUnit(
-        Guid projectId,
+        ProjectId projectId,
         ImportJUnit.Command command,
         CancellationToken cancellationToken
     )
@@ -47,7 +47,7 @@ public class ImportController(ISender sender) : ControllerBase
     [HttpPost("allure")]
     [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status202Accepted)]
     public async Task<ActionResult<ImportJobResponse>> ImportAllure(
-        Guid projectId,
+        ProjectId projectId,
         ImportAllure.Command command,
         CancellationToken cancellationToken
     )

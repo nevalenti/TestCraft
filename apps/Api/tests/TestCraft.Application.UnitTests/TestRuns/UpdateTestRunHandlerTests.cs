@@ -43,9 +43,15 @@ public class UpdateTestRunHandlerTests
     {
         var publisher = new RecordingPublisher();
         var context = TestDbContextFactory.Create(publisher);
-        var project = new Project { Name = "Project", UserId = Guid.NewGuid() };
+        var project = new Project
+        {
+            Id = ProjectId.New(),
+            Name = "Project",
+            UserId = UserId.New(),
+        };
         var run = new TestRun
         {
+            Id = TestRunId.New(),
             Name = "Nightly Run",
             Environment = "ci",
             ProjectId = project.Id,
@@ -138,8 +144,8 @@ public class UpdateTestRunHandlerTests
 
         var command = new UpdateTestRun.Command
         {
-            ProjectId = Guid.NewGuid(),
-            Id = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            Id = TestRunId.New(),
             Name = "Run",
             Environment = "ci",
             Status = TestRunStatus.Active,
@@ -158,7 +164,7 @@ public class UpdateTestRunHandlerTests
 
         var command = new UpdateTestRun.Command
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Id = run.Id,
             Name = run.Name,
             Environment = run.Environment,

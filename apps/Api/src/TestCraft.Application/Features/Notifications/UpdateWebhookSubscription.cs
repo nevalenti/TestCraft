@@ -14,10 +14,12 @@ public static class UpdateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project the subscription belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The subscription to update.</summary>
-        public Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public WebhookSubscriptionId Id { get; init; }
 
         /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }

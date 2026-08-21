@@ -10,9 +10,9 @@ public class UploadAttachmentValidatorTests
     private static UploadAttachment.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
-            RunId = Guid.NewGuid(),
-            ResultId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
+            RunId = TestRunId.New(),
+            ResultId = TestResultId.New(),
             FileName = "screenshot.png",
             ContentType = "image/png",
             SizeBytes = 1024,

@@ -12,10 +12,12 @@ public static class DeleteTestPlan
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to delete.</summary>
-        public required Guid Id { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public TestPlanId Id { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>

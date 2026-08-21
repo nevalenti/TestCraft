@@ -11,7 +11,7 @@ namespace TestCraft.Application.Features.TestPlans;
 public record TestPlanResponse
 {
     /// <summary>The plan's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestPlanId Id { get; init; }
 
     /// <summary>The plan's display name.</summary>
     public required string Name { get; init; }
@@ -20,7 +20,7 @@ public record TestPlanResponse
     public string? Description { get; init; }
 
     /// <summary>The project the plan belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>The number of non-deleted test cases in the plan.</summary>
     public required int CaseCount { get; init; }
@@ -33,7 +33,7 @@ public record TestPlanResponse
 public record TestPlanDetailResponse
 {
     /// <summary>The plan's identifier.</summary>
-    public required Guid Id { get; init; }
+    public required TestPlanId Id { get; init; }
 
     /// <summary>The plan's display name.</summary>
     public required string Name { get; init; }
@@ -42,7 +42,7 @@ public record TestPlanDetailResponse
     public string? Description { get; init; }
 
     /// <summary>The project the plan belongs to.</summary>
-    public required Guid ProjectId { get; init; }
+    public required ProjectId ProjectId { get; init; }
 
     /// <summary>When the plan was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
@@ -55,7 +55,7 @@ public record TestPlanDetailResponse
 public record TestPlanCaseResponse
 {
     /// <summary>The test case's identifier.</summary>
-    public required Guid TestCaseId { get; init; }
+    public required TestCaseId TestCaseId { get; init; }
 
     /// <summary>The test case's display name.</summary>
     public required string TestCaseName { get; init; }
@@ -73,7 +73,8 @@ public static class CreateTestPlan
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the plan in.</summary>
-        public Guid ProjectId { get; init; }
+        [System.Text.Json.Serialization.JsonIgnore]
+        public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan's display name.</summary>
         public required string Name { get; init; }
@@ -100,6 +101,7 @@ public static class CreateTestPlan
         {
             var plan = new TestPlan
             {
+                Id = TestPlanId.New(),
                 Name = request.Name,
                 Description = request.Description,
                 ProjectId = request.ProjectId,

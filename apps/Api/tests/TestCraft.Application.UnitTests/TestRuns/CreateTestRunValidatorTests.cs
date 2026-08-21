@@ -10,7 +10,7 @@ public class CreateTestRunValidatorTests
     private static CreateTestRun.Command ValidCommand() =>
         new()
         {
-            ProjectId = Guid.NewGuid(),
+            ProjectId = ProjectId.New(),
             Name = "Nightly Run",
             Environment = "staging",
         };
