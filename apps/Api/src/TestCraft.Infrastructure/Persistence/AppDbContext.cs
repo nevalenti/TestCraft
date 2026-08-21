@@ -41,51 +41,12 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        configurationBuilder
-            .Properties<ApiTokenId>()
-            .HaveConversion<VogenGuidConverter<ApiTokenId>>();
-        configurationBuilder
-            .Properties<AttachmentId>()
-            .HaveConversion<VogenGuidConverter<AttachmentId>>();
-        configurationBuilder
-            .Properties<EmailSubscriptionId>()
-            .HaveConversion<VogenGuidConverter<EmailSubscriptionId>>();
-        configurationBuilder
-            .Properties<ImportJobId>()
-            .HaveConversion<VogenGuidConverter<ImportJobId>>();
-        configurationBuilder.Properties<LabelId>().HaveConversion<VogenGuidConverter<LabelId>>();
-        configurationBuilder
-            .Properties<ProjectId>()
-            .HaveConversion<VogenGuidConverter<ProjectId>>();
-        configurationBuilder
-            .Properties<ProjectMemberId>()
-            .HaveConversion<VogenGuidConverter<ProjectMemberId>>();
-        configurationBuilder.Properties<RunLogId>().HaveConversion<VogenGuidConverter<RunLogId>>();
-        configurationBuilder
-            .Properties<ShareTokenId>()
-            .HaveConversion<VogenGuidConverter<ShareTokenId>>();
-        configurationBuilder
-            .Properties<TestCaseId>()
-            .HaveConversion<VogenGuidConverter<TestCaseId>>();
-        configurationBuilder
-            .Properties<TestCaseStepId>()
-            .HaveConversion<VogenGuidConverter<TestCaseStepId>>();
-        configurationBuilder
-            .Properties<TestPlanId>()
-            .HaveConversion<VogenGuidConverter<TestPlanId>>();
-        configurationBuilder
-            .Properties<TestResultId>()
-            .HaveConversion<VogenGuidConverter<TestResultId>>();
-        configurationBuilder
-            .Properties<TestRunId>()
-            .HaveConversion<VogenGuidConverter<TestRunId>>();
-        configurationBuilder
-            .Properties<TestSuiteId>()
-            .HaveConversion<VogenGuidConverter<TestSuiteId>>();
-        configurationBuilder.Properties<UserId>().HaveConversion<VogenGuidConverter<UserId>>();
-        configurationBuilder
-            .Properties<WebhookSubscriptionId>()
-            .HaveConversion<VogenGuidConverter<WebhookSubscriptionId>>();
+        foreach (var idType in VogenGuidValueObjects.AllIn(typeof(ProjectId).Assembly))
+        {
+            configurationBuilder
+                .Properties(idType)
+                .HaveConversion(typeof(VogenGuidConverter<>).MakeGenericType(idType));
+        }
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using TestCraft.Application.Common.Interfaces;
@@ -39,7 +40,11 @@ internal sealed class KeycloakUserDirectory(
         var fullName = $"{match.FirstName} {match.LastName}".Trim();
         var displayName = string.IsNullOrWhiteSpace(fullName) ? match.Username : fullName;
 
-        return new KeycloakUser(UserId.From(Guid.Parse(match.Id)), match.Email, displayName);
+        return new KeycloakUser(
+            UserId.Parse(match.Id, CultureInfo.InvariantCulture),
+            match.Email,
+            displayName
+        );
     }
 
     private sealed record KeycloakUserDto(

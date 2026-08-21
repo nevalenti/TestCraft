@@ -31,7 +31,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks",
             new CreateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
                 Events = ["run.completed"],
             }
@@ -66,7 +66,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/webhooks",
                 new CreateWebhookSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
                     Events = ["run.completed"],
                 }
@@ -96,7 +96,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks",
             new CreateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "not-a-url",
                 Events = ["run.completed"],
             }
@@ -116,7 +116,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks",
             new CreateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
                 Events = [],
             }
@@ -136,7 +136,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks",
             new CreateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "ftp://example.com/hook",
                 Events = ["run.completed"],
             }
@@ -156,7 +156,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails",
             new CreateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
                 Events = ["run.completed"],
             }
@@ -188,7 +188,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/emails",
                 new CreateEmailSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "delete-me@example.com",
                     Events = ["run.completed"],
                 }
@@ -217,7 +217,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails",
             new CreateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "not-an-email",
                 Events = ["run.completed"],
             }
@@ -236,7 +236,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails",
             new CreateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
                 Events = [],
             }
@@ -271,7 +271,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/webhooks",
                 new CreateWebhookSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
                     Events = ["run.completed"],
                 }
@@ -282,7 +282,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/updated-hook",
                 Events = ["run.completed", "run.failed"],
                 IsActive = false,
@@ -310,7 +310,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{Guid.NewGuid()}",
             new UpdateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
                 Events = ["run.completed"],
                 IsActive = true,
@@ -332,7 +332,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/webhooks",
                 new CreateWebhookSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
                     Events = ["run.completed"],
                 }
@@ -343,7 +343,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
                 Events = [],
                 IsActive = true,
@@ -365,7 +365,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/webhooks",
                 new CreateWebhookSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
                     Events = ["run.completed"],
                 }
@@ -376,7 +376,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "ftp://example.com/hook",
                 Events = ["run.completed"],
                 IsActive = true,
@@ -398,7 +398,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/emails",
                 new CreateEmailSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
                     Events = ["run.completed"],
                 }
@@ -409,7 +409,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "updated@example.com",
                 Events = ["run.completed", "run.failed"],
                 IsActive = false,
@@ -437,7 +437,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails/{Guid.NewGuid()}",
             new UpdateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
                 Events = ["run.completed"],
                 IsActive = true,
@@ -459,7 +459,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/emails",
                 new CreateEmailSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
                     Events = ["run.completed"],
                 }
@@ -470,7 +470,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
                 Events = [],
                 IsActive = true,
@@ -492,7 +492,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 $"/api/v1/projects/{project.Id}/notifications/emails",
                 new CreateEmailSubscription.Command
                 {
-                    ProjectId = ProjectId.From(Guid.Empty),
+                    ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
                     Events = ["run.completed"],
                 }
@@ -503,7 +503,7 @@ public class NotificationsApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
-                ProjectId = ProjectId.From(Guid.Empty),
+                ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "not-an-email",
                 Events = ["run.completed"],
                 IsActive = true,

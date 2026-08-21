@@ -16,6 +16,13 @@ public sealed class VogenGuidConverter<T>(Func<Guid, T> fromGuid, Func<T, Guid> 
 
     private static Func<Guid, T> CompileFromGuid()
     {
+        if (!VogenGuidValueObjects.IsGuidValueObject(typeof(T)))
+        {
+            throw new InvalidOperationException(
+                $"{typeof(T)} is not a Vogen Guid-backed value object."
+            );
+        }
+
         var method = typeof(T).GetMethod(
             "From",
             BindingFlags.Public | BindingFlags.Static,

@@ -12,12 +12,10 @@ public class TestRunHub(IApplicationDbContext db) : Hub
     public async Task JoinRun(string runId)
     {
         var userId = TryGetUserId();
-        if (!Guid.TryParse(runId, out var runGuid) || userId is null)
+        if (!TestRunId.TryParse(runId, out var parsedRunId) || userId is null)
         {
             return;
         }
-
-        var parsedRunId = TestRunId.From(runGuid);
 
         var hasAccess = await db.Projects.AnyAsync(project =>
             (project.UserId == userId || project.Members.Any(member => member.UserId == userId))
@@ -36,14 +34,14 @@ public class TestRunHub(IApplicationDbContext db) : Hub
 
     public async Task LeaveRun(string runId)
     {
-        if (!Guid.TryParse(runId, out var runGuid))
+        if (!TestRunId.TryParse(runId, out var parsedRunId))
         {
             return;
         }
 
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{TestRunId.From(runGuid)}");
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"run:{parsedRunId}");
     }
 
     private UserId? TryGetUserId() =>
-        Guid.TryParse(Context.User?.GetUserIdOrNull(), out var guid) ? UserId.From(guid) : null;
+        UserId.TryParse(Context.User?.GetUserIdOrNull(), out var userId) ? userId : null;
 }
