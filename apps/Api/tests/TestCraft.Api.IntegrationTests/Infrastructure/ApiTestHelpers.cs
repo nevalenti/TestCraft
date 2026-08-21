@@ -16,6 +16,8 @@ namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
 internal static class ApiTestHelpers
 {
+    public static readonly ProjectId AnyProjectId = ProjectId.From(Guid.Empty);
+
     public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         Converters = { new JsonStringEnumConverter() },

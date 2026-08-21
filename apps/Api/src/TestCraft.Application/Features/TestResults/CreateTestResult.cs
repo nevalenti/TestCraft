@@ -5,6 +5,7 @@ using TestCraft.Application.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
@@ -89,7 +90,7 @@ public static class CreateTestResult
     {
         public Validator()
         {
-            RuleFor(command => command.TestCaseId).Must(id => id.Value != Guid.Empty);
+            RuleFor(command => command.TestCaseId).NotEmptyId();
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Notes).MaximumLength(5000);
         }
