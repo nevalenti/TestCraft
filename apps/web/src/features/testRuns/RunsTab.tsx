@@ -19,6 +19,7 @@ import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { RunStatusBadge } from '@/components/ui/RunStatusBadge';
 import { ViewToggle } from '@/components/ui/ViewToggle';
+import { ImportForm } from '@/features/import/ImportForm';
 import {
   useCreateTestRun,
   useDeleteTestRun,
@@ -28,7 +29,6 @@ import {
   useTestRunSummaries,
   useUpdateTestRun,
 } from '@/features/testRuns/hooks';
-import { ImportForm } from '@/features/testRuns/ImportForm';
 import { RunForm } from '@/features/testRuns/RunForm';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useModal } from '@/hooks/useModal';

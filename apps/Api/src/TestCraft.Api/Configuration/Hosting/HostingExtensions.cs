@@ -5,6 +5,7 @@ using Prometheus;
 
 using TestCraft.Api.Configuration.Authentication;
 using TestCraft.Api.Configuration.Database;
+using TestCraft.Api.Configuration.Hangfire;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Api.Configuration.Swagger;
 using TestCraft.Api.Errors;
@@ -12,6 +13,7 @@ using TestCraft.Api.Hubs;
 using TestCraft.Api.Middleware;
 using TestCraft.Application;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Common.Http;
 using TestCraft.Infrastructure;
 using TestCraft.Infrastructure.Configuration;
 

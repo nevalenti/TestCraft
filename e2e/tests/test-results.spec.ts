@@ -2,9 +2,9 @@ import path from 'node:path';
 
 import { expect, test } from '../fixtures';
 import { ProjectsPage } from '../pages/projects.page';
-import { SuitesPage } from '../pages/suites.page';
 import { TestCasesPage } from '../pages/test-cases.page';
 import { TestRunsPage } from '../pages/test-runs.page';
+import { TestSuitesPage } from '../pages/test-suites.page';
 
 const AUTH_FILE = path.join(import.meta.dirname, '.auth/user.json');
 
@@ -31,7 +31,7 @@ test.describe('Test Results', () => {
     await page.getByRole('tab', { name: /Test Suites/i }).click();
     await page.waitForURL(/\/projects\/[^/]+\/suites$/, { timeout: 15_000 });
 
-    const suites = new SuitesPage(page);
+    const suites = new TestSuitesPage(page);
     await suites.create('E2E Results Suite');
     await suites.open('E2E Results Suite');
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+$/, {

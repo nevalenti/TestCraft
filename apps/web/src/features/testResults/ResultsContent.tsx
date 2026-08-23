@@ -4,7 +4,7 @@ import type { Paginated, TestResult, TestResultStatus } from '@testcraft/types';
 
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { ResultsTable } from '@/pages/TestRunPage/ResultsTable';
+import { ResultsTable } from '@/features/testResults/ResultsTable';
 
 interface ResultsContentProps {
   isPending: boolean;

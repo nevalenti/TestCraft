@@ -8,8 +8,8 @@ import {
 import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
+import { importsApi } from '@/features/import/importsApi';
 import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
-import { importsApi } from '@/features/testRuns/importsApi';
 import { notify } from '@/lib/notify';
 
 export const useTestRuns = (projectId: string, search?: string) =>

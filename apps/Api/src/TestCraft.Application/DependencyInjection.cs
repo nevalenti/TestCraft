@@ -18,6 +18,7 @@ public static class DependencyInjection
             config.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly);
             config.AddOpenBehavior(typeof(ProjectAuthorizationBehaviour<,>));
             config.AddOpenBehavior(typeof(ValidationBehaviour<,>));
+            config.AddOpenBehavior(typeof(PerformanceBehaviour<,>));
         });
 
         services.AddScoped<ExpiredShareTokenCleanupJob>();

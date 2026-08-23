@@ -1,6 +1,6 @@
 import { expect, type Page } from '@playwright/test';
 
-import { ConfirmDialog } from './confirm-dialog';
+import { ConfirmDialog } from '../components/confirm-dialog';
 
 export class TestResultsPage {
   readonly confirmDialog: ConfirmDialog;

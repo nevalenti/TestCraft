@@ -3,7 +3,7 @@ using Hangfire.Dashboard;
 using TestCraft.Api.Middleware;
 using TestCraft.Common.Security;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Hangfire;
 
 /// <summary>
 /// Default-deny authorization enforced by Hangfire itself, independent of the outer Basic Auth

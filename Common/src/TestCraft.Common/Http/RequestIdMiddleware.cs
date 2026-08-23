@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+
 using Serilog.Context;
 
-namespace TestCraft.Gateway.Middleware;
+namespace TestCraft.Common.Http;
 
 public class RequestIdMiddleware(RequestDelegate next)
 {

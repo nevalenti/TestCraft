@@ -1,7 +1,7 @@
 using TestCraft.Api.Middleware;
 using TestCraft.Infrastructure.Configuration;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Hangfire;
 
 public sealed class HangfireBasicAuthOptions : IStartupOptions, IBasicAuthCredentials
 {

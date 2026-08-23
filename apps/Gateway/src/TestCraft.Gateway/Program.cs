@@ -1,3 +1,4 @@
+using TestCraft.Common.Http;
 using TestCraft.Gateway.Configuration;
 using TestCraft.Gateway.Middleware;
 

@@ -26,6 +26,7 @@ infrastructure/nginx/tls/
 .vite/
 .vscode/
 e2e/tests/.auth/
+artifacts/
 bin/
 coverage/
 dist/

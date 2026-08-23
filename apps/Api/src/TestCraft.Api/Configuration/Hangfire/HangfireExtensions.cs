@@ -5,7 +5,7 @@ using TestCraft.Api.Middleware;
 using TestCraft.Application.Features.ShareTokens;
 using TestCraft.Infrastructure.Configuration;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Hangfire;
 
 public static class HangfireExtensions
 {

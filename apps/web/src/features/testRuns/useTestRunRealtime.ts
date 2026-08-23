@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
 import { queryKeys } from '@/api/queryKeys';
-import { useSignalR } from '@/hooks/useSignalR';
+import { useSignalR } from '@/features/testRuns/useSignalR';
 
 const isStringArray = (value: unknown): value is string[] =>
   Array.isArray(value) && value.every((item) => typeof item === 'string');

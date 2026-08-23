@@ -2,7 +2,7 @@ using MassTransit;
 
 using MediatR;
 
-using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Notifications.Contracts;

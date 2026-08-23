@@ -1,7 +1,7 @@
 using System.Threading.RateLimiting;
 
 using TestCraft.Api.Errors;
-using TestCraft.Api.Extensions;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Configuration.Hosting;
 
