@@ -65,7 +65,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Format check
-        run: dotnet csharpier check apps/Gateway
+        run: dotnet format style --verify-no-changes --no-restore TestCraft.slnx --include apps/Gateway
 
       - name: Build
         run: |

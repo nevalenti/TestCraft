@@ -42,7 +42,7 @@ api:build-test:
     - dotnet tool restore
     - dotnet list TestCraft.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.log
     - '! grep -q "has the following vulnerable packages" vulnerable-packages.log'
-    - dotnet csharpier check .
+    - dotnet format style --verify-no-changes --no-restore TestCraft.slnx
     - dotnet build TestCraft.slnx --no-restore --configuration Release
     - dotnet test TestCraft.slnx --no-build --configuration Release
   after_script:
