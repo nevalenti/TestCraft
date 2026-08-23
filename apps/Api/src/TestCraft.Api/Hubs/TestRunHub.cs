@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+
 using TestCraft.Api.Extensions;
 using TestCraft.Application.Common.Interfaces;
 

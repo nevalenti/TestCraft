@@ -1,4 +1,5 @@
 using Serilog.Context;
+
 using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Middleware;

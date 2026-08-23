@@ -1,4 +1,5 @@
 using System.Globalization;
+
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Enrichers.Span;
@@ -6,6 +7,7 @@ using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
+
 using TestCraft.Api.Extensions;
 
 namespace TestCraft.Api.Configuration.Observability;

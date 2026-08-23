@@ -1,8 +1,12 @@
 using System.Diagnostics;
+
 using Asp.Versioning;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 using Prometheus;
+
 using TestCraft.Api.Configuration.Authentication;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Application.Common.Interfaces;

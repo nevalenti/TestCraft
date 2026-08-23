@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.ShareTokens;

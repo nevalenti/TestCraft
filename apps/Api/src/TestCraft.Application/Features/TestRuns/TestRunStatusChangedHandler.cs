@@ -1,5 +1,7 @@
 using MassTransit;
+
 using MediatR;
+
 using TestCraft.Application.Caching;
 using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Interfaces;

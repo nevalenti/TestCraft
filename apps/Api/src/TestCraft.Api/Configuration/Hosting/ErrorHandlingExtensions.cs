@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.Timeouts;
+
 using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Configuration.Hosting;

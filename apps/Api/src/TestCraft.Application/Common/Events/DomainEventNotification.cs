@@ -1,4 +1,5 @@
 using MediatR;
+
 using TestCraft.Domain.Events;
 
 namespace TestCraft.Application.Common.Events;

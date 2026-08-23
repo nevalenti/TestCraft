@@ -1,5 +1,7 @@
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.Users;

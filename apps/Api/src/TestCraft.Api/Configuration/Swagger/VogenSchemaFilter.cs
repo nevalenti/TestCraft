@@ -1,5 +1,7 @@
 using Microsoft.OpenApi;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
+
 using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Api.Configuration.Swagger;

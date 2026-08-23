@@ -1,7 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
+
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Configuration;
 

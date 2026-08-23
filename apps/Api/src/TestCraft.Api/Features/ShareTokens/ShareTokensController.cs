@@ -1,7 +1,10 @@
 using Asp.Versioning;
+
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
 using TestCraft.Application.Features.ShareTokens;
 
 namespace TestCraft.Api.Features.ShareTokens;
