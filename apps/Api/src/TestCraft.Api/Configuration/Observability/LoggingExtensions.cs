@@ -8,7 +8,7 @@ using Serilog.Sinks.Grafana.Loki;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
 
-using TestCraft.Api.Extensions;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Configuration.Observability;
 
@@ -135,7 +135,7 @@ public static class LoggingExtensions
             diagnosticContext.Set("userId", userId);
         }
 
-        var username = user.GetUsernameOrNull();
+        var username = user.GetUserName();
         if (username is not null)
         {
             diagnosticContext.Set("username", username);

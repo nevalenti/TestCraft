@@ -4,10 +4,8 @@ using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
+public class TestRun : SoftDeletableEntity
 {
-    private readonly List<IDomainEvent> _events = [];
-
     public TestRunId Id { get; set; }
     public required string Name { get; set; }
     public required string Environment { get; set; }
@@ -16,21 +14,10 @@ public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
     public UserId? ExecutedById { get; set; }
     public string? ExecutedByName { get; set; }
     public ProjectId ProjectId { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
 
     public Project? Project { get; set; }
     public ICollection<TestResult> TestResults { get; set; } = [];
     public ICollection<ShareToken> ShareTokens { get; set; } = [];
-
-    public IReadOnlyList<IDomainEvent> PopDomainEvents()
-    {
-        var events = _events.ToList();
-        _events.Clear();
-        return events;
-    }
 
     public bool CanTransitionTo(TestRunStatus to) => Rank(to) >= Rank(Status);
 
@@ -55,7 +42,7 @@ public class TestRun : IAuditableEntity, ISoftDeletableEntity, IHasDomainEvents
 
         var oldStatus = Status;
         Status = to;
-        _events.Add(new TestRunStatusChangedEvent(Id, ProjectId, Name, oldStatus, to));
+        RaiseDomainEvent(new TestRunStatusChangedEvent(Id, ProjectId, Name, oldStatus, to));
     }
 
     public void EnsureCanAddResult()

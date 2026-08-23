@@ -1,4 +1,4 @@
-namespace TestCraft.Application.Caching;
+namespace TestCraft.Application.Common.Caching;
 
 public static class CacheKeys
 {

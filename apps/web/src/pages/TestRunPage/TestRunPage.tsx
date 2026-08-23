@@ -23,12 +23,16 @@ import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Modal } from '@/components/ui/Modal';
 import { useProject } from '@/features/projects/hooks';
+import { createColumns } from '@/features/testResults/columns';
+import { CreateResultForm } from '@/features/testResults/CreateResultForm';
 import {
   useCreateTestResult,
   useDeleteTestResult,
   useTestResults,
   useUpdateTestResult,
 } from '@/features/testResults/hooks';
+import { ResultsContent } from '@/features/testResults/ResultsContent';
+import { UpdateResultForm } from '@/features/testResults/UpdateResultForm';
 import { useTestRun, useTestRunSummary } from '@/features/testRuns/hooks';
 import { useTestRunRealtime } from '@/features/testRuns/useTestRunRealtime';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
@@ -38,14 +42,10 @@ import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
 import { RESULTS_PAGE_SIZE } from '@/lib/constants';
 import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';
-import { createColumns } from '@/pages/TestRunPage/columns';
-import { CreateResultForm } from '@/pages/TestRunPage/CreateResultForm';
 import { LiveLogFeed } from '@/pages/TestRunPage/LiveLogFeed';
 import { LogPanel } from '@/pages/TestRunPage/LogPanel';
-import { ResultsContent } from '@/pages/TestRunPage/ResultsContent';
 import { RunSummaryBar } from '@/pages/TestRunPage/RunSummaryBar';
 import { ShareModal } from '@/pages/TestRunPage/ShareModal';
-import { UpdateResultForm } from '@/pages/TestRunPage/UpdateResultForm';
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam('projectId');

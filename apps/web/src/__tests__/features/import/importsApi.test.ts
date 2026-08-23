@@ -5,7 +5,7 @@ vi.mock('@/api/client', () => ({
 }));
 
 import client from '@/api/client';
-import { importsApi } from '@/features/testRuns/importsApi';
+import { importsApi } from '@/features/import/importsApi';
 
 beforeEach(() => {
   vi.clearAllMocks();

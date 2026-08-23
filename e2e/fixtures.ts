@@ -6,18 +6,18 @@ import { LabelsPage } from './pages/labels.page';
 import { ProjectSettingsPage } from './pages/project-settings.page';
 import { ProjectsPage } from './pages/projects.page';
 import { SharePage } from './pages/share.page';
-import { SuitesPage } from './pages/suites.page';
 import { TestCasesPage } from './pages/test-cases.page';
 import { TestPlansPage } from './pages/test-plans.page';
 import { TestResultsPage } from './pages/test-results.page';
 import { TestRunsPage } from './pages/test-runs.page';
 import { TestStepsPage } from './pages/test-steps.page';
+import { TestSuitesPage } from './pages/test-suites.page';
 
 export { expect } from '@playwright/test';
 
 type Fixtures = {
   projectsPage: ProjectsPage;
-  suitesPage: SuitesPage;
+  suitesPage: TestSuitesPage;
   testCasesPage: TestCasesPage;
   testRunsPage: TestRunsPage;
   testStepsPage: TestStepsPage;
@@ -32,7 +32,7 @@ type Fixtures = {
 
 export const test = base.extend<Fixtures>({
   projectsPage: async ({ page }, use) => use(new ProjectsPage(page)),
-  suitesPage: async ({ page }, use) => use(new SuitesPage(page)),
+  suitesPage: async ({ page }, use) => use(new TestSuitesPage(page)),
   testCasesPage: async ({ page }, use) => use(new TestCasesPage(page)),
   testRunsPage: async ({ page }, use) => use(new TestRunsPage(page)),
   testStepsPage: async ({ page }, use) => use(new TestStepsPage(page)),

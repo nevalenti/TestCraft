@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Http.Timeouts;
 
-using TestCraft.Api.Errors;
-
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Errors;
 
 public static class ErrorHandlingExtensions
 {

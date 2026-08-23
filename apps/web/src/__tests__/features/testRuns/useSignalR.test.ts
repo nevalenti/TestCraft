@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { useSignalR } from '@/hooks/useSignalR';
+import { useSignalR } from '@/features/testRuns/useSignalR';
 
 const mockConnection = vi.hoisted(() => ({
   on: vi.fn(),

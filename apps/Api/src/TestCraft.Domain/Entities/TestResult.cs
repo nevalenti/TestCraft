@@ -2,7 +2,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestResult : IAuditableEntity, ISoftDeletableEntity
+public class TestResult : SoftDeletableEntity
 {
     public TestResultId Id { get; set; }
     public TestResultStatus Status { get; set; }
@@ -13,10 +13,6 @@ public class TestResult : IAuditableEntity, ISoftDeletableEntity
     public UserId? ExecutedById { get; set; }
     public TestRunId TestRunId { get; set; }
     public TestCaseId TestCaseId { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
-    public DateTimeOffset UpdatedAt { get; set; }
-    public bool IsDeleted { get; set; }
-    public DateTimeOffset? DeletedAt { get; set; }
 
     public TestRun? TestRun { get; set; }
     public TestCase? TestCase { get; set; }

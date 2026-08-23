@@ -6,9 +6,12 @@ namespace TestCraft.Infrastructure.Auth;
 
 public static class ClaimsPrincipalExtensions
 {
+    public static string? GetUserIdOrNull(this ClaimsPrincipal user) =>
+        user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+
     public static UserId GetUserId(this ClaimsPrincipal user)
     {
-        var sub = user.FindFirstValue(ClaimTypes.NameIdentifier) ?? user.FindFirstValue("sub");
+        var sub = user.GetUserIdOrNull();
         if (!UserId.TryParse(sub, out var userId))
         {
             throw new DomainException("Token is missing a valid subject claim");

@@ -4,7 +4,7 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-using TestCraft.Application.Caching;
+using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;

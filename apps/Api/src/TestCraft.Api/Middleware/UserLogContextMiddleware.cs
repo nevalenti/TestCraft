@@ -1,6 +1,6 @@
 using Serilog.Context;
 
-using TestCraft.Api.Extensions;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Middleware;
 
@@ -23,7 +23,7 @@ public class UserLogContextMiddleware(RequestDelegate next)
             properties.Add(LogContext.PushProperty("userId", userId));
         }
 
-        var username = user.GetUsernameOrNull();
+        var username = user.GetUserName();
         if (username is not null)
         {
             properties.Add(LogContext.PushProperty("username", username));

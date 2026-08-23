@@ -5,15 +5,15 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const handlersRef = vi.hoisted(() => ({ current: null as any }));
 
-vi.mock('@/hooks/useSignalR', () => ({
+vi.mock('@/features/testRuns/useSignalR', () => ({
   useSignalR: vi.fn((_runId, handlers) => {
     handlersRef.current = handlers;
   }),
 }));
 
 import { queryKeys } from '@/api/queryKeys';
+import { useSignalR } from '@/features/testRuns/useSignalR';
 import { useTestRunRealtime } from '@/features/testRuns/useTestRunRealtime';
-import { useSignalR } from '@/hooks/useSignalR';
 
 const makeWrapper = () => {
   const queryClient = new QueryClient();

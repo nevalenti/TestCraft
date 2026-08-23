@@ -9,7 +9,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { createColumns } from '@/pages/TestRunPage/columns';
+import { createColumns } from '@/features/testResults/columns';
 
 const baseResult: TestResult = {
   id: 'res1',
