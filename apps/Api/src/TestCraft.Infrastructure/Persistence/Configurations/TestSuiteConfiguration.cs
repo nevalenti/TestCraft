@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Infrastructure.Persistence.Configurations;

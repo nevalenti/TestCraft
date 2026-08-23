@@ -1,4 +1,5 @@
 using FluentAssertions;
+
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Events;

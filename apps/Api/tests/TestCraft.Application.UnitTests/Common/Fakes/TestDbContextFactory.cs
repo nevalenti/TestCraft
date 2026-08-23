@@ -1,5 +1,7 @@
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+
 using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Application.UnitTests.Common.Fakes;

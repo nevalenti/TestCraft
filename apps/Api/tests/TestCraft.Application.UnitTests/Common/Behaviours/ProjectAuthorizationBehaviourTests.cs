@@ -1,5 +1,7 @@
 using FluentAssertions;
+
 using MediatR;
+
 using TestCraft.Application.Common.Behaviours;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Security;

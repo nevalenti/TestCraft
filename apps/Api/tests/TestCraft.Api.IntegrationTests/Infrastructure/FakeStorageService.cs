@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;

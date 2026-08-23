@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Persistence;

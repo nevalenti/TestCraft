@@ -1,7 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+
 using Npgsql;
+
 using Polly;
 using Polly.Retry;
+
 using TestCraft.Infrastructure.Persistence;
 
 namespace TestCraft.Api.Configuration.Database;

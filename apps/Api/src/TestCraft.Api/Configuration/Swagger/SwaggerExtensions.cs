@@ -1,7 +1,10 @@
 using Asp.Versioning.ApiExplorer;
+
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
+
 using TestCraft.Api.Middleware;
 
 namespace TestCraft.Api.Configuration.Swagger;

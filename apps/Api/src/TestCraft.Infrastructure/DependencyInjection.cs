@@ -1,9 +1,13 @@
 using System.Net.Http;
+
 using MassTransit;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 using Minio;
+
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Auth;
 using TestCraft.Infrastructure.Caching;

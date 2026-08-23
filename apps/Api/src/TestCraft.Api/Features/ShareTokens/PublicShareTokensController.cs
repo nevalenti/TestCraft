@@ -1,7 +1,9 @@
 using MediatR;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+
 using TestCraft.Api.Configuration.Hosting;
 using TestCraft.Application.Features.ShareTokens;
 

@@ -1,4 +1,5 @@
 using Hangfire.Dashboard;
+
 using TestCraft.Api.Middleware;
 using TestCraft.Common.Security;
 

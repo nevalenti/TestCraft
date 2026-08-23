@@ -1,4 +1,5 @@
 using System.Globalization;
+
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Enrichers.Span;

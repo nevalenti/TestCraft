@@ -1,6 +1,9 @@
 using System.Globalization;
+
 using Microsoft.OpenApi;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
+
 using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Configuration.Swagger;

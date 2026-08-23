@@ -1,7 +1,10 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
+
 using MediatR;
+
 using Microsoft.EntityFrameworkCore;
+
 using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;

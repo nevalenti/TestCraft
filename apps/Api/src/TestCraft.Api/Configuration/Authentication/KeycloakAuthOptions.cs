@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration.Authentication;

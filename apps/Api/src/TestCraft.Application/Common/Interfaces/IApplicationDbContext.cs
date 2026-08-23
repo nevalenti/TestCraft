@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Common.Interfaces;

@@ -1,8 +1,11 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+
 using FluentAssertions;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.ProjectMembers;
