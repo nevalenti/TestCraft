@@ -11,7 +11,7 @@ using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.TestRuns;
 

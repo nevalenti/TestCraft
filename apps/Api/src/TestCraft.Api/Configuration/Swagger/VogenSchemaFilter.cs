@@ -2,7 +2,7 @@ using Microsoft.OpenApi;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Persistence.Vogen;
 
 namespace TestCraft.Api.Configuration.Swagger;
 

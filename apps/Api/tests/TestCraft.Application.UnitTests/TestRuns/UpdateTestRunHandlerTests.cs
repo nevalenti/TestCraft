@@ -10,7 +10,7 @@ using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Events;
 using TestCraft.Domain.Exceptions;
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Persistence;
 
 namespace TestCraft.Application.UnitTests.TestRuns;
 

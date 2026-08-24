@@ -6,6 +6,7 @@ COPY apps/Api/.editorconfig apps/Api/
 COPY Common/src/TestCraft.Common/TestCraft.Common.csproj Common/src/TestCraft.Common/
 COPY apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj apps/Api/src/TestCraft.Domain/
 COPY apps/Api/src/TestCraft.Application/TestCraft.Application.csproj apps/Api/src/TestCraft.Application/
+COPY apps/Api/src/TestCraft.Persistence/TestCraft.Persistence.csproj apps/Api/src/TestCraft.Persistence/
 COPY apps/Api/src/TestCraft.Infrastructure/TestCraft.Infrastructure.csproj apps/Api/src/TestCraft.Infrastructure/
 COPY apps/Api/src/TestCraft.Api/TestCraft.Api.csproj apps/Api/src/TestCraft.Api/
 

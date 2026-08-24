@@ -2,7 +2,6 @@ using System.Net.Http;
 
 using MassTransit;
 
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -14,9 +13,9 @@ using TestCraft.Infrastructure.Caching;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Infrastructure.Email;
 using TestCraft.Infrastructure.Notifications;
-using TestCraft.Infrastructure.Persistence;
 using TestCraft.Infrastructure.Security;
 using TestCraft.Infrastructure.Storage;
+using TestCraft.Persistence;
 
 namespace TestCraft.Infrastructure;
 
@@ -31,17 +30,14 @@ public static class DependencyInjection
 
         services.AddStartupOptions(options);
 
-        services.AddDbContext<AppDbContext>(dbOptions =>
-            dbOptions.UseNpgsql(
-                ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl),
-                npgsqlOptions => npgsqlOptions.EnableRetryOnFailure()
-            )
+        services.AddPersistence(
+            ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl)
         );
 
         if (!string.IsNullOrEmpty(options.RedisUrl))
         {
             services.AddStackExchangeRedisCache(cacheOptions =>
-                cacheOptions.Configuration = ConnectionStringHelpers.ToRedisConfiguration(
+                cacheOptions.Configuration = RedisConnectionStringHelpers.ToRedisConfiguration(
                     options.RedisUrl
                 )
             );
@@ -51,10 +47,6 @@ public static class DependencyInjection
         {
             services.AddSingleton<ICacheService, NoOpCacheService>();
         }
-
-        services.AddScoped<IApplicationDbContext>(provider =>
-            provider.GetRequiredService<AppDbContext>()
-        );
 
         services.AddMassTransit(busConfig =>
         {
@@ -145,7 +137,6 @@ public static class DependencyInjection
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
-        services.AddSingleton<IDbExceptionClassifier, PostgresExceptionClassifier>();
 
         return services;
     }

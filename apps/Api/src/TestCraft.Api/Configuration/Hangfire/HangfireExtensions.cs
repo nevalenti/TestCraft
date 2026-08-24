@@ -4,6 +4,7 @@ using Hangfire.PostgreSql;
 using TestCraft.Api.Middleware;
 using TestCraft.Application.Features.ShareTokens;
 using TestCraft.Infrastructure.Configuration;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.Configuration.Hangfire;
 
