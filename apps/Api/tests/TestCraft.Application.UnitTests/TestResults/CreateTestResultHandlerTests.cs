@@ -6,7 +6,7 @@ using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Persistence;
 
 namespace TestCraft.Application.UnitTests.TestResults;
 

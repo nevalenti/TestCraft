@@ -10,7 +10,7 @@ using Npgsql;
 using Testcontainers.PostgreSql;
 
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Infrastructure.Persistence;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
