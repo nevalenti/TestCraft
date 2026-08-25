@@ -56,7 +56,7 @@ vi.mock('@/features/testRuns/api', () => ({
   },
 }));
 
-vi.mock('@/features/import/importsApi', () => ({
+vi.mock('@/features/testRuns/import/importsApi', () => ({
   importsApi: {
     junit: vi.fn(),
     allure: vi.fn(),
@@ -65,8 +65,8 @@ vi.mock('@/features/import/importsApi', () => ({
 
 vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
 
-import { importsApi } from '@/features/import/importsApi';
 import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
+import { importsApi } from '@/features/testRuns/import/importsApi';
 import { RunsTab } from '@/features/testRuns/RunsTab';
 import { useViewModeStore } from '@/stores/viewMode';
 

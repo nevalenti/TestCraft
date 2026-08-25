@@ -4,7 +4,6 @@ namespace TestCraft.Api.Configuration.Database;
 
 public static class DatabaseMigrationExtensions
 {
-    /// <summary>Local-dev convenience only, gated by APPLY_MIGRATIONS. Production uses the standalone TestCraft.Migrator.</summary>
     public static async Task MigrateDatabaseAsync(this WebApplication app)
     {
         var migrationOptions = app.Services.GetRequiredService<DatabaseMigrationOptions>();

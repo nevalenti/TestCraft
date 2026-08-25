@@ -1,14 +1,9 @@
 using Hangfire.Dashboard;
 
-using TestCraft.Api.Middleware;
 using TestCraft.Common.Security;
 
 namespace TestCraft.Api.Configuration.Hangfire;
 
-/// <summary>
-/// Default-deny authorization enforced by Hangfire itself, independent of the outer Basic Auth
-/// middleware — so a future pipeline-ordering change can't accidentally leave the dashboard open.
-/// </summary>
 public class HangfireDashboardAuthorizationFilter(
     HangfireBasicAuthOptions options,
     IWebHostEnvironment environment
