@@ -27,7 +27,10 @@ public class TestRun : SoftDeletableEntity
             TestRunStatus.Active => 0,
             TestRunStatus.Completed => 1,
             TestRunStatus.Archived => 2,
-            _ => throw new DomainException($"Unknown test run status: {status}"),
+            _ => throw new DomainException($"Unknown test run status: {status}")
+            {
+                ErrorCode = DomainErrorCodes.UnknownRunStatus,
+            },
         };
 
     public bool CanAddResult() => Status != TestRunStatus.Archived;
@@ -35,7 +38,10 @@ public class TestRun : SoftDeletableEntity
     public void TransitionTo(TestRunStatus to)
     {
         if (!CanTransitionTo(to))
-            throw new DomainException($"Cannot transition run status from {Status} to {to}");
+            throw new DomainException($"Cannot transition run status from {Status} to {to}")
+            {
+                ErrorCode = DomainErrorCodes.InvalidRunStatusTransition,
+            };
 
         if (Status == to)
             return;
@@ -48,6 +54,9 @@ public class TestRun : SoftDeletableEntity
     public void EnsureCanAddResult()
     {
         if (!CanAddResult())
-            throw new DomainException($"Cannot modify results in a {Status} test run");
+            throw new DomainException($"Cannot modify results in a {Status} test run")
+            {
+                ErrorCode = DomainErrorCodes.RunNotModifiable,
+            };
     }
 }

@@ -16,7 +16,10 @@ public static class ClaimsPrincipalExtensions
             var sub = user.GetUserIdOrNull();
             if (!UserId.TryParse(sub, out var userId))
             {
-                throw new DomainException("Token is missing a valid subject claim");
+                throw new DomainException("Token is missing a valid subject claim")
+                {
+                    ErrorCode = DomainErrorCodes.MissingSubjectClaim,
+                };
             }
 
             return userId;

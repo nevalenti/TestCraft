@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.TestCaseSteps;
 
@@ -85,7 +86,10 @@ public static class BulkReorderSteps
 
             if (found.Count != ids.Count)
             {
-                throw new DomainException("One or more steps not found");
+                throw new DomainException("One or more steps not found")
+                {
+                    ErrorCode = DomainErrorCodes.StepsNotFound,
+                };
             }
 
             var entities = await context

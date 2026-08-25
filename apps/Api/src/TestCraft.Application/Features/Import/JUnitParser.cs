@@ -3,6 +3,7 @@ using System.Xml.Linq;
 
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Domain.Enums;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.Import;
 
@@ -20,15 +21,21 @@ public static class JUnitParser
             using var reader = XmlReader.Create(new StringReader(xml), settings);
             doc = XDocument.Load(reader);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            throw new DomainException("Invalid JUnit XML: could not parse the document");
+            throw new DomainException("Invalid JUnit XML: could not parse the document", ex)
+            {
+                ErrorCode = DomainErrorCodes.InvalidJUnitXml,
+            };
         }
 
         var root = doc.Root;
         if (root is null)
         {
-            throw new DomainException("Invalid JUnit XML: could not parse the document");
+            throw new DomainException("Invalid JUnit XML: could not parse the document")
+            {
+                ErrorCode = DomainErrorCodes.InvalidJUnitXml,
+            };
         }
 
         string runName;

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.ProjectMembers;
 
@@ -68,10 +69,16 @@ public static class AddProjectMember
 
             var keycloakUser =
                 await keycloakUsers.FindByEmailAsync(request.Email, cancellationToken)
-                ?? throw new DomainException("No user found with that email address");
+                ?? throw new DomainException("No user found with that email address")
+                {
+                    ErrorCode = DomainErrorCodes.UserNotFound,
+                };
 
             if (keycloakUser.Id == currentUser.UserId)
-                throw new DomainException("You already own this project");
+                throw new DomainException("You already own this project")
+                {
+                    ErrorCode = DomainErrorCodes.AlreadyProjectOwner,
+                };
 
             var member = new ProjectMember
             {
@@ -89,7 +96,10 @@ public static class AddProjectMember
             }
             catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
             {
-                throw new DomainException("This user is already a member of the project");
+                throw new DomainException("This user is already a member of the project")
+                {
+                    ErrorCode = DomainErrorCodes.MemberAlreadyExists,
+                };
             }
 
             return new ProjectMemberResponse

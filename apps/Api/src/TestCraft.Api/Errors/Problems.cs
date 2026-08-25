@@ -55,13 +55,14 @@ public static class Problems
             Detail = detail,
         };
 
-    public static ProblemResponse Unprocessable(string detail) =>
+    public static ProblemResponse Unprocessable(string detail, string? code = null) =>
         new()
         {
             Type = AboutBlank,
             Title = "Unprocessable Content",
             Status = StatusCodes.Status422UnprocessableEntity,
             Detail = detail,
+            Code = code,
         };
 
     public static ProblemResponse TooManyRequests() =>
@@ -73,11 +74,12 @@ public static class Problems
             Detail = "Rate limit exceeded, please try again later.",
         };
 
-    public static ProblemResponse Internal() =>
+    public static ProblemResponse Internal(string? detail = null) =>
         new()
         {
             Type = AboutBlank,
             Title = "An unexpected error occurred",
             Status = StatusCodes.Status500InternalServerError,
+            Detail = detail,
         };
 }
