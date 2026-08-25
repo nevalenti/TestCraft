@@ -11,7 +11,7 @@ import {
 import { AVAILABLE_EVENTS } from '@/features/notifications/notificationEvents';
 
 export const WebhooksSection = ({ projectId }: { projectId: string }) => {
-  const { data: webhooks, isError, error } = useWebhooks(projectId);
+  const { data: webhooks, isError, error, refetch } = useWebhooks(projectId);
   const createWebhook = useCreateWebhook(projectId);
   const deleteWebhook = useDeleteWebhook(projectId);
   const [url, setUrl] = useState('');
@@ -76,7 +76,11 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
         </button>
       </div>
       {isError ? (
-        <ErrorState title="Failed to load webhooks" error={error} />
+        <ErrorState
+          title="Failed to load webhooks"
+          error={error}
+          onRetry={refetch}
+        />
       ) : (
         <SettingsEntityList
           items={webhooks ?? []}

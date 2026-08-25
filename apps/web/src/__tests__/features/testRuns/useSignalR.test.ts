@@ -7,6 +7,7 @@ const mockConnection = vi.hoisted(() => ({
   on: vi.fn(),
   off: vi.fn(),
   onreconnected: vi.fn(),
+  onreconnecting: vi.fn(),
   start: vi.fn().mockResolvedValue(undefined),
   stop: vi.fn().mockResolvedValue(undefined),
   invoke: vi.fn().mockResolvedValue(undefined),
@@ -38,6 +39,7 @@ beforeEach(() => {
   mockConnection.on.mockClear();
   mockConnection.off.mockClear();
   mockConnection.onreconnected.mockClear();
+  mockConnection.onreconnecting.mockClear();
   mockConnection.start.mockClear().mockResolvedValue(undefined);
   mockConnection.stop.mockClear().mockResolvedValue(undefined);
   mockConnection.invoke.mockClear().mockResolvedValue(undefined);

@@ -17,7 +17,13 @@ import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 export const LabelsTab = () => {
   const projectId = useRequiredParam('projectId');
-  const { data: labels, isPending, isError, error } = useLabels(projectId);
+  const {
+    data: labels,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useLabels(projectId);
   const createLabel = useCreateLabel(projectId);
   const updateLabel = useUpdateLabel(projectId);
   const deleteLabel = useDeleteLabel(projectId);
@@ -40,7 +46,7 @@ export const LabelsTab = () => {
           <span className="loading loading-md loading-spinner text-primary" />
         </div>
       );
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (!labels || labels.length === 0)
       return (
         <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-center">

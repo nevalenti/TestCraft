@@ -35,6 +35,7 @@ export const DashboardPage = () => {
     isPending: projectsPending,
     isError,
     error,
+    refetch,
   } = useProjects();
 
   const projectMap = useMemo(
@@ -76,7 +77,7 @@ export const DashboardPage = () => {
 
   useBreadcrumbs([{ label: 'Dashboard', href: '/' }]);
 
-  if (isError) return <ErrorState error={error} />;
+  if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
   const isLoading = projectsPending || runsPending;
 

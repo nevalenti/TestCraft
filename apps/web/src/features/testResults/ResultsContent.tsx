@@ -11,6 +11,7 @@ interface ResultsContentProps {
   isSummaryPending: boolean;
   isError: boolean;
   error: unknown;
+  onRetry: () => void;
   resultsPage: Paginated<TestResult> | undefined;
   statusFilter: TestResultStatus | null;
   debouncedSearch: string;
@@ -26,6 +27,7 @@ export const ResultsContent = ({
   isSummaryPending,
   isError,
   error,
+  onRetry,
   resultsPage,
   statusFilter,
   debouncedSearch,
@@ -42,7 +44,7 @@ export const ResultsContent = ({
       </div>
     );
 
-  if (isError) return <ErrorState error={error} />;
+  if (isError) return <ErrorState error={error} onRetry={onRetry} />;
 
   if (
     resultsPage?.items.length === 0 &&

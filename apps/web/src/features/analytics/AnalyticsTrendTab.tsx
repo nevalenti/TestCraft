@@ -9,7 +9,7 @@ import { formatDate, truncate } from '@/lib/format';
 
 export const AnalyticsTrendTab = () => {
   const projectId = useRequiredParam('projectId');
-  const { data: trend, isError, error } = useRunTrend(projectId, 20);
+  const { data: trend, isError, error, refetch } = useRunTrend(projectId, 20);
 
   const groups = useMemo(() => {
     const raw = [...(trend ?? [])].toReversed();
@@ -45,7 +45,13 @@ export const AnalyticsTrendTab = () => {
   }, [trend]);
 
   if (isError)
-    return <ErrorState title="Failed to load trend data" error={error} />;
+    return (
+      <ErrorState
+        title="Failed to load trend data"
+        error={error}
+        onRetry={refetch}
+      />
+    );
 
   if (groups.length === 0)
     return (

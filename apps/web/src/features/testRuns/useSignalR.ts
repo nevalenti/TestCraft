@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef } from 'react';
 
 import keycloak from '@/auth/keycloak';
 import { env } from '@/lib/env';
+import { notify } from '@/lib/notify';
 
 export const useSignalR = (
   runId: string | undefined,
@@ -40,8 +41,16 @@ export const useSignalR = (
           onReconnectedRef.current?.();
         } catch (error) {
           console.error(error);
+          notify(
+            'Live updates reconnected but failed to resume — refresh to catch up.',
+            'error',
+          );
         }
       })();
+    });
+
+    connection.onreconnecting(() => {
+      notify('Live updates disconnected, reconnecting…', 'error');
     });
 
     (async () => {
@@ -50,6 +59,10 @@ export const useSignalR = (
         await connection.invoke('JoinRun', runId);
       } catch (error) {
         console.error(error);
+        notify(
+          'Live updates are unavailable — refresh the page to retry.',
+          'error',
+        );
       }
     })();
 
@@ -58,13 +71,19 @@ export const useSignalR = (
       (async () => {
         try {
           await connection.invoke('LeaveRun', runId);
-        } catch {
-          // ignore cleanup errors
+        } catch (error) {
+          console.debug(
+            'Failed to leave SignalR run group during cleanup',
+            error,
+          );
         }
         try {
           await connection.stop();
-        } catch {
-          // ignore cleanup errors
+        } catch (error) {
+          console.debug(
+            'Failed to stop SignalR connection during cleanup',
+            error,
+          );
         }
       })();
     };

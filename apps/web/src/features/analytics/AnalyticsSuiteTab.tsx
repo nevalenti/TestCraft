@@ -72,6 +72,7 @@ export const AnalyticsSuiteTab = () => {
     data: runs,
     isError: isRunsError,
     error: runsError,
+    refetch: refetchRuns,
   } = useTestRuns(projectId);
   const [suiteRunId, setSuiteRunId] = useState('');
 
@@ -79,6 +80,7 @@ export const AnalyticsSuiteTab = () => {
     data: suiteBreakdown,
     isError: isSuiteBreakdownError,
     error: suiteBreakdownError,
+    refetch: refetchSuiteBreakdown,
   } = useSuiteBreakdown(projectId, suiteRunId);
 
   const suiteData = useMemo(
@@ -92,7 +94,13 @@ export const AnalyticsSuiteTab = () => {
   );
 
   if (isRunsError) {
-    return <ErrorState title="Failed to load runs" error={runsError} />;
+    return (
+      <ErrorState
+        title="Failed to load runs"
+        error={runsError}
+        onRetry={refetchRuns}
+      />
+    );
   }
 
   const selectedRun = runs?.find((run) => run.id === suiteRunId);
@@ -135,6 +143,7 @@ export const AnalyticsSuiteTab = () => {
         <ErrorState
           title="Failed to load suite breakdown"
           error={suiteBreakdownError}
+          onRetry={refetchSuiteBreakdown}
         />
       )}
 
