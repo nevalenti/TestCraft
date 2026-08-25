@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.Projects;
 
@@ -85,7 +86,10 @@ public static class CreateProject
             }
             catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
             {
-                throw new DomainException("A project with this name already exists");
+                throw new DomainException("A project with this name already exists")
+                {
+                    ErrorCode = DomainErrorCodes.ProjectNameTaken,
+                };
             }
 
             return new ProjectResponse

@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.Projects;
 
@@ -62,7 +63,10 @@ public static class UpdateProject
             }
             catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
             {
-                throw new DomainException("A project with this name already exists");
+                throw new DomainException("A project with this name already exists")
+                {
+                    ErrorCode = DomainErrorCodes.ProjectNameTaken,
+                };
             }
 
             return await context

@@ -11,7 +11,8 @@ namespace TestCraft.Api.Errors;
 
 public partial class GlobalExceptionHandler(
     ILogger<GlobalExceptionHandler> logger,
-    IDbExceptionClassifier dbExceptionClassifier
+    IDbExceptionClassifier dbExceptionClassifier,
+    IHostEnvironment hostEnvironment
 ) : IExceptionHandler
 {
     public async ValueTask<bool> TryHandleAsync(
@@ -30,13 +31,14 @@ public partial class GlobalExceptionHandler(
             case DomainException domainException:
                 LogDomainRuleViolation(
                     logger,
+                    domainException,
                     httpContext.Request.Method,
                     httpContext.Request.Path,
                     domainException.Message
                 );
                 await ProblemWriter.WriteAsync(
                     httpContext,
-                    Problems.Unprocessable(domainException.Message)
+                    Problems.Unprocessable(domainException.Message, domainException.ErrorCode)
                 );
 
                 return true;
@@ -98,7 +100,14 @@ public partial class GlobalExceptionHandler(
                     httpContext.Request.Method,
                     httpContext.Request.Path
                 );
-                await ProblemWriter.WriteAsync(httpContext, Problems.Internal());
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.Internal(
+                        hostEnvironment.IsDevelopment()
+                            ? $"{exception.GetType().Name}: {exception.Message}"
+                            : null
+                    )
+                );
 
                 return true;
         }
@@ -118,6 +127,7 @@ public partial class GlobalExceptionHandler(
     )]
     private static partial void LogDomainRuleViolation(
         ILogger logger,
+        Exception exception,
         string method,
         PathString path,
         string reason

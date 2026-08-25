@@ -7,6 +7,7 @@ public record ProblemResponse
     public required int Status { get; init; }
     public string? Detail { get; init; }
     public string? Instance { get; init; }
+    public string? Code { get; init; }
 }
 
 public record FieldError(string Field, string Message);
