@@ -65,6 +65,7 @@ export const TestCasePage = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useTestCaseSteps(projectId, suiteId, caseId);
   const createStep = useCreateTestCaseStep(projectId, suiteId, caseId);
   const updateStep = useUpdateTestCaseStep(projectId, suiteId, caseId);
@@ -159,7 +160,7 @@ export const TestCasePage = () => {
           <span className="loading loading-lg loading-spinner text-primary" />
         </div>
       );
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedSteps.length === 0)
       return (
         <EmptyState

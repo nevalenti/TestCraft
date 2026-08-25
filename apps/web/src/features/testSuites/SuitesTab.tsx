@@ -41,6 +41,7 @@ export const SuitesTab = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useTestSuites(projectId, debouncedSearch || undefined);
   const createSuite = useCreateTestSuite(projectId);
   const updateSuite = useUpdateTestSuite(projectId);
@@ -79,7 +80,7 @@ export const SuitesTab = () => {
         </div>
       );
 
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
     if (suites?.length === 0)
       return (

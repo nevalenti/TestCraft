@@ -10,7 +10,12 @@ import {
 import { formatDate } from '@/lib/format';
 
 export const MembersSection = ({ projectId }: { projectId: string }) => {
-  const { data: members, isError, error } = useProjectMembers(projectId);
+  const {
+    data: members,
+    isError,
+    error,
+    refetch,
+  } = useProjectMembers(projectId);
   const addMember = useAddProjectMember(projectId);
   const removeMember = useRemoveProjectMember(projectId);
   const [email, setEmail] = useState('');
@@ -55,7 +60,11 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
       </div>
 
       {isError ? (
-        <ErrorState title="Failed to load members" error={error} />
+        <ErrorState
+          title="Failed to load members"
+          error={error}
+          onRetry={refetch}
+        />
       ) : (
         <SettingsEntityList
           items={members ?? []}

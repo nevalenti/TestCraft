@@ -46,6 +46,7 @@ export const TestPlanPage = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useTestPlanCases(projectId, planId);
   const { data: allCases } = useProjectTestCases(projectId);
   const addCase = useAddCaseToPlan(projectId, planId);
@@ -127,7 +128,7 @@ export const TestPlanPage = () => {
         </div>
       );
     }
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedCases.length === 0) {
       return (
         <p className="text-sm text-base-content/65">

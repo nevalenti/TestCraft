@@ -75,12 +75,14 @@ export const TestRunPage = () => {
     isPending: isSummaryPending,
     isError: isSummaryError,
     error: summaryError,
+    refetch: refetchSummary,
   } = useTestRunSummary(projectId, runId);
   const {
     data: resultsPage,
     isPending,
     isError,
     error,
+    refetch,
   } = useTestResults(
     projectId,
     runId,
@@ -148,7 +150,11 @@ export const TestRunPage = () => {
     viewContent = (
       <>
         {isSummaryError ? (
-          <ErrorState title="Failed to load run summary" error={summaryError} />
+          <ErrorState
+            title="Failed to load run summary"
+            error={summaryError}
+            onRetry={refetchSummary}
+          />
         ) : (
           runSummary &&
           runSummary.total > 0 && (
@@ -168,6 +174,7 @@ export const TestRunPage = () => {
             isSummaryPending={isSummaryPending}
             isError={isError}
             error={error}
+            onRetry={refetch}
             resultsPage={resultsPage}
             statusFilter={statusFilter}
             debouncedSearch={debouncedSearch}

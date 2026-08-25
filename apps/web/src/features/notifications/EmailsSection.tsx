@@ -11,7 +11,7 @@ import {
 import { AVAILABLE_EVENTS } from '@/features/notifications/notificationEvents';
 
 export const EmailsSection = ({ projectId }: { projectId: string }) => {
-  const { data: emailSubs, isError, error } = useEmails(projectId);
+  const { data: emailSubs, isError, error, refetch } = useEmails(projectId);
   const createEmail = useCreateEmail(projectId);
   const deleteEmail = useDeleteEmail(projectId);
   const [email, setEmail] = useState('');
@@ -53,7 +53,11 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
         </button>
       </div>
       {isError ? (
-        <ErrorState title="Failed to load email subscriptions" error={error} />
+        <ErrorState
+          title="Failed to load email subscriptions"
+          error={error}
+          onRetry={refetch}
+        />
       ) : (
         <SettingsEntityList
           items={emailSubs ?? []}

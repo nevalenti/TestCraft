@@ -48,6 +48,7 @@ export const TestSuitePage = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useTestCases(projectId, suiteId, debouncedSearch || undefined);
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
@@ -75,7 +76,7 @@ export const TestSuitePage = () => {
           <span className="loading loading-lg loading-spinner text-primary" />
         </div>
       );
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (testCases?.length === 0)
       return (
         <EmptyState

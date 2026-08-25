@@ -13,7 +13,7 @@ import {
 import { formatDate, todayLocalDate } from '@/lib/format';
 
 export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
-  const { data: tokens, isError, error } = useApiTokens(projectId);
+  const { data: tokens, isError, error, refetch } = useApiTokens(projectId);
   const createToken = useCreateApiToken(projectId);
   const revokeToken = useRevokeApiToken(projectId);
   const { register, handleSubmit, reset } = useForm<{
@@ -106,7 +106,11 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
       </form>
 
       {isError ? (
-        <ErrorState title="Failed to load API tokens" error={error} />
+        <ErrorState
+          title="Failed to load API tokens"
+          error={error}
+          onRetry={refetch}
+        />
       ) : (
         <SettingsEntityList
           items={tokens ?? []}

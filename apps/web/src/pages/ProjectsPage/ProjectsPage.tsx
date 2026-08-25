@@ -32,6 +32,7 @@ export const ProjectsPage = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useProjects(debouncedSearch || undefined);
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
@@ -39,7 +40,7 @@ export const ProjectsPage = () => {
 
   useBreadcrumbs([{ label: 'Projects' }]);
 
-  if (isError) return <ErrorState error={error} />;
+  if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
   const handleCreate = (input: CreateProject) =>
     createProject.mutate(input, { onSuccess: close });

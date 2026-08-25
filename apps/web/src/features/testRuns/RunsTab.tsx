@@ -50,6 +50,7 @@ export const RunsTab = () => {
     isPending,
     isError,
     error,
+    refetch,
   } = useTestRuns(projectId, debouncedSearch || undefined);
   const createRun = useCreateTestRun(projectId);
   const updateRun = useUpdateTestRun(projectId);
@@ -125,7 +126,7 @@ export const RunsTab = () => {
         </div>
       );
 
-    if (isError) return <ErrorState error={error} />;
+    if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
     if (runs?.length === 0)
       return (

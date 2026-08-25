@@ -21,7 +21,13 @@ import { formatDate } from '@/lib/format';
 export const TestPlansPage = () => {
   const projectId = useRequiredParam('projectId');
   const { data: project } = useProject(projectId);
-  const { data: plans, isPending, isError, error } = useTestPlans(projectId);
+  const {
+    data: plans,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useTestPlans(projectId);
   const createPlan = useCreateTestPlan(projectId);
   const updatePlan = useUpdateTestPlan(projectId);
   const deletePlan = useDeleteTestPlan(projectId);
@@ -55,7 +61,7 @@ export const TestPlansPage = () => {
       </div>
     );
 
-  if (isError) return <ErrorState error={error} />;
+  if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
   const startCreate = () => {
     resetCreate({ name: '', description: '' });
