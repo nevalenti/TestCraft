@@ -245,6 +245,29 @@
             ]
         },
         {
+            "file": "/testcraft/templates/migrator-job.yaml",
+            "findings": [
+                {
+                    "resource": "Job.testcraft.migrator",
+                    "check_ids": [
+                        "CKV_K8S_14",
+                        "CKV_K8S_15",
+                        "CKV_K8S_22",
+                        "CKV_K8S_35",
+                        "CKV_K8S_38",
+                        "CKV_K8S_40",
+                        "CKV_K8S_43"
+                    ]
+                },
+                {
+                    "resource": "Pod.testcraft.migrator.app-migrator",
+                    "check_ids": [
+                        "CKV2_K8S_6"
+                    ]
+                }
+            ]
+        },
+        {
             "file": "/testcraft/templates/minio-backup.yaml",
             "findings": [
                 {

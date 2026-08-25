@@ -34,16 +34,7 @@ deploy-prod: namespace tls-secret helm-deps
     scripts/rollout.sh {{ prepend("deployment/", apps) }}
 
 deploy-app app tag: namespace tls-secret helm-deps
-    #!/usr/bin/env bash
-    set -euo pipefail
-    scripts/image-exists.sh {{ ghcr_owner }}/testcraft-{{ app }} {{ tag }} || {
-        echo "ghcr.io/{{ ghcr_owner }}/testcraft-{{ app }}:{{ tag }} does not exist - refusing to deploy" >&2
-        exit 1
-    }
-    {{ helm_deploy }} \
-        --set images.{{ app }}.tag={{ tag }} \
-        --set images.{{ app }}.pullPolicy=IfNotPresent
-    scripts/rollout.sh deployment/{{ app }}
+    scripts/deploy-app.sh {{ app }} {{ tag }} {{ ghcr_owner }}
 
 destroy:
     {{ kubectl }} delete namespace testcraft --ignore-not-found

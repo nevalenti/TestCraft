@@ -4,15 +4,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Yarp.ReverseProxy" />
     <PackageReference Include="Serilog.AspNetCore" />
     <PackageReference Include="Serilog.Enrichers.Span" />
     <PackageReference Include="Serilog.Settings.Configuration" />
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
     <PackageReference Include="Serilog.Sinks.Seq" />
+    <PackageReference Include="Yarp.ReverseProxy" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ using TestCraft.Infrastructure.Auth;
 using TestCraft.Infrastructure.Caching;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Infrastructure.Email;
+using TestCraft.Infrastructure.FeatureToggles;
 using TestCraft.Infrastructure.Notifications;
 using TestCraft.Infrastructure.Security;
 using TestCraft.Infrastructure.Storage;
@@ -121,6 +122,10 @@ public static class DependencyInjection
         {
             services.AddScoped<IEmailService, NoOpEmailService>();
         }
+        services.AddKeyedSingleton<IFeatureToggle>(
+            FeatureToggleNames.NotificationDeliveryRetry,
+            new FeatureToggle(options.NotificationDeliveryRetryEnabled)
+        );
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
         services.AddSingleton<IApiTokenHasher, ApiTokenHasher>();
 

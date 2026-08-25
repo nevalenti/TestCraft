@@ -42,3 +42,4 @@ playwright-report/
 terraform.tfvars
 test-results/
 TestResults/
+*.received.txt

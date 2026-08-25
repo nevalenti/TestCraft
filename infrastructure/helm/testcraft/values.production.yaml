@@ -2,6 +2,9 @@ images:
   api:
     repository: ghcr.io/nevalenti/testcraft-api
     pullPolicy: Always
+  migrator:
+    repository: ghcr.io/nevalenti/testcraft-migrator
+    pullPolicy: Always
   web:
     repository: ghcr.io/nevalenti/testcraft-web
     pullPolicy: Always
