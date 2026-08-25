@@ -1,0 +1,1 @@
+﻿{"id":"Guid_1","suiteId":"Guid_2","name":"Contract Case","priority":"Medium","stepCount":0,"createdAt":"TIMESTAMP","updatedAt":"TIMESTAMP","labels":[]}

@@ -35,6 +35,8 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     public string? SmtpPassword { get; init; }
     public string SmtpFromAddress { get; init; } = "noreply@testcraft.local";
 
+    public bool NotificationDeliveryRetryEnabled { get; init; } = true;
+
     [Required]
     public string KeycloakBaseUrl { get; init; } = string.Empty;
     public string KeycloakRealm { get; init; } = "testcraft";
@@ -68,6 +70,11 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
             SmtpUser = configuration["SMTP_USER"],
             SmtpPassword = configuration["SMTP_PASSWORD"],
             SmtpFromAddress = configuration["SMTP_FROM_ADDRESS"] ?? "noreply@testcraft.local",
+            NotificationDeliveryRetryEnabled =
+                !bool.TryParse(
+                    configuration["NOTIFICATION_DELIVERY_RETRY_ENABLED"],
+                    out var retryEnabled
+                ) || retryEnabled,
             KeycloakBaseUrl = realmIndex >= 0 ? authority[..realmIndex] : authority,
             KeycloakRealm =
                 realmIndex >= 0 ? authority[(realmIndex + realmMarker.Length)..] : "testcraft",

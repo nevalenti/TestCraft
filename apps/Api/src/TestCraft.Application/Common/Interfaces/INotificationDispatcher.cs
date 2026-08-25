@@ -8,4 +8,6 @@ public interface INotificationDispatcher
         string runName,
         CancellationToken cancellationToken = default
     );
+
+    Task RetryPendingDeliveriesAsync(CancellationToken cancellationToken = default);
 }

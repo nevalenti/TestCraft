@@ -2,6 +2,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 
 using TestCraft.Api.Middleware;
+using TestCraft.Application.Features.Notifications;
 using TestCraft.Application.Features.ShareTokens;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
@@ -61,6 +62,18 @@ public static class HangfireExtensions
             "cleanup-expired-share-tokens",
             job => job.RunAsync(CancellationToken.None),
             Cron.Hourly
+        );
+
+        RecurringJob.AddOrUpdate<NotificationDeliveryRetryJob>(
+            "retry-notification-deliveries",
+            job => job.RunAsync(CancellationToken.None),
+            "*/5 * * * *"
+        );
+
+        RecurringJob.AddOrUpdate<NotificationDeliveryCleanupJob>(
+            "cleanup-notification-deliveries",
+            job => job.RunAsync(CancellationToken.None),
+            Cron.Daily
         );
 
         return app;

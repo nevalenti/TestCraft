@@ -1,6 +1,17 @@
 {
     "failed_checks": [
         {
+            "file": "/apps/Api/Migrator.Dockerfile",
+            "findings": [
+                {
+                    "resource": "/apps/Api/Migrator.Dockerfile.",
+                    "check_ids": [
+                        "CKV_DOCKER_2"
+                    ]
+                }
+            ]
+        },
+        {
             "file": "/infrastructure/keycloak/e2e.Dockerfile",
             "findings": [
                 {

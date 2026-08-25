@@ -182,6 +182,8 @@ spec:
                   optional: true
             - name: APPLY_MIGRATIONS
               value: "true"
+            - name: NOTIFICATION_DELIVERY_RETRY_ENABLED
+              value: "true"
           ports:
             - containerPort: 8080
           readinessProbe:
@@ -193,7 +195,7 @@ spec:
             failureThreshold: 6
           livenessProbe:
             httpGet:
-              path: /api/health
+              path: /api/ready
               port: 8080
             initialDelaySeconds: 30
             periodSeconds: 15

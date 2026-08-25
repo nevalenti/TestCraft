@@ -15,10 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TestCraft.Domain\TestCraft.Domain.csproj" />
+    <InternalsVisibleTo Include="TestCraft.Application.UnitTests" />
   </ItemGroup>
 
   <ItemGroup>
-    <InternalsVisibleTo Include="TestCraft.Application.UnitTests" />
+    <ProjectReference Include="..\TestCraft.Domain\TestCraft.Domain.csproj" />
   </ItemGroup>
 </Project>
