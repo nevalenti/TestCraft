@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 using TestCraft.Persistence;
 
-#pragma warning disable CA1848 // one-off console entry point, LoggerMessage source-gen is not worth it for two calls
+#pragma warning disable CA1848
 
 Env.NoClobber().TraversePath().Load();
 

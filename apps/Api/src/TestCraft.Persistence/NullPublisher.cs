@@ -2,7 +2,6 @@ using MediatR;
 
 namespace TestCraft.Persistence;
 
-/// <summary>No-op IPublisher for contexts that need an AppDbContext without domain-event dispatch (design-time tooling, the standalone Migrator).</summary>
 public sealed class NullPublisher : IPublisher
 {
     public Task Publish(object notification, CancellationToken cancellationToken = default) =>

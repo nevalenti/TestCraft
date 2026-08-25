@@ -6,8 +6,8 @@ import { z } from 'zod';
 
 import { FormActions } from '@/components/ui/FormActions';
 import { FormField } from '@/components/ui/FormField';
-import { FileDropZone } from '@/features/import/FileDropZone';
-import { detectFormat } from '@/features/import/importFormat';
+import { FileDropZone } from '@/features/testRuns/import/FileDropZone';
+import { detectFormat } from '@/features/testRuns/import/importFormat';
 import { cn } from '@/lib/cn';
 
 type ImportData =

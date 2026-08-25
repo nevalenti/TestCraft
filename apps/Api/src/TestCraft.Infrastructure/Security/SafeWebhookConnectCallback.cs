@@ -5,12 +5,6 @@ using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Infrastructure.Security;
 
-/// <summary>
-/// Connects the "notifications" HttpClient's underlying socket only to a public IP address,
-/// re-validated at connect time rather than at webhook-creation time — closing the DNS-rebinding
-/// gap where a hostname resolves to a public address at validation time but a private/internal
-/// one at delivery time.
-/// </summary>
 public static class SafeWebhookConnectCallback
 {
     public static async ValueTask<Stream> ConnectAsync(

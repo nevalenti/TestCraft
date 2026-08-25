@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 
-import { FileDropZone } from '@/features/import/FileDropZone';
+import { FileDropZone } from '@/features/testRuns/import/FileDropZone';
 
 const xmlFile = new File(['<xml/>'], 'report.xml', { type: 'text/xml' });
 const jsonFile = new File(['{}'], 'result.json', { type: 'application/json' });

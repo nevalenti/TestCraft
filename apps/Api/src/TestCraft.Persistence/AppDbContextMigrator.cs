@@ -8,7 +8,6 @@ using Polly.Retry;
 
 namespace TestCraft.Persistence;
 
-/// <summary>Applies pending migrations with retry, for use by both the API's local-dev self-migration and the standalone Migrator.</summary>
 public static partial class AppDbContextMigrator
 {
     private const int MaxMigrationRetries = 5;

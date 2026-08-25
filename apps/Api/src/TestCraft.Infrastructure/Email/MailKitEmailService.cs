@@ -8,10 +8,6 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Email;
 
-/// <summary>
-/// Sends email via SMTP. Only registered when SMTP_HOST is configured -
-/// see <see cref="DependencyInjection.AddInfrastructure"/>.
-/// </summary>
 public class MailKitEmailService(InfrastructureOptions options) : IEmailService
 {
     public async Task SendAsync(

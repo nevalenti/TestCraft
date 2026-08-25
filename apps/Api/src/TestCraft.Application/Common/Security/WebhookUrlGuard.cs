@@ -3,10 +3,6 @@ using System.Net.Sockets;
 
 namespace TestCraft.Application.Common.Security;
 
-/// <summary>
-/// Validates that a webhook URL is a well-formed public http(s) endpoint, guarding against
-/// SSRF via URLs that target loopback, private, link-local, or other non-routable addresses.
-/// </summary>
 public static class WebhookUrlGuard
 {
     public static bool IsAllowed(string url)

@@ -10,61 +10,65 @@ public static partial class ConfigurationLogging
     private const string RedactedValue = "<redacted>";
     private const string NotSetValue = "(not set)";
 
-    public static void LogStartupConfiguration(this ILogger logger, IServiceProvider services)
+    extension(ILogger logger)
     {
-        foreach (var configuration in services.GetServices<IStartupOptions>())
+        public void LogStartupConfiguration(IServiceProvider services)
         {
-            var type = configuration.GetType();
-            foreach (
-                var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            )
+            foreach (var configuration in services.GetServices<IStartupOptions>())
             {
-                var isSensitive = property.GetCustomAttribute<SensitiveAttribute>() is not null;
-                var value = Format(property.GetValue(configuration), isSensitive);
+                var type = configuration.GetType();
+                foreach (
+                    var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                )
+                {
+                    var isSensitive = property.GetCustomAttribute<SensitiveAttribute>() is not null;
+                    var value = Format(property.GetValue(configuration), isSensitive);
 
-                LogConfigurationValue(logger, type.Name, property.Name, value);
+                    LogConfigurationValue(logger, type.Name, property.Name, value);
+                }
             }
         }
-    }
 
-    public static void LogInfrastructureFallbacks(
-        this ILogger logger,
-        InfrastructureOptions options
-    )
-    {
-        if (string.IsNullOrEmpty(options.RedisUrl))
+        public void LogInfrastructureFallbacks(InfrastructureOptions options)
         {
-            LogDegradedProvider(
-                logger,
-                "Redis",
-                "in-process no-op cache (no cross-instance caching)"
-            );
-        }
+            if (string.IsNullOrEmpty(options.RedisUrl))
+            {
+                LogDegradedProvider(
+                    logger,
+                    "Redis",
+                    "in-process no-op cache (no cross-instance caching)"
+                );
+            }
 
-        if (string.IsNullOrEmpty(options.RabbitMqUrl))
-        {
-            LogDegradedProvider(
-                logger,
-                "RabbitMQ",
-                "in-memory message bus (no durability, single-instance only)"
-            );
-        }
+            if (string.IsNullOrEmpty(options.RabbitMqUrl))
+            {
+                LogDegradedProvider(
+                    logger,
+                    "RabbitMQ",
+                    "in-memory message bus (no durability, single-instance only)"
+                );
+            }
 
-        if (
-            string.IsNullOrEmpty(options.MinioAccessKey)
-            || string.IsNullOrEmpty(options.MinioSecretKey)
-        )
-        {
-            LogDegradedProvider(
-                logger,
-                "Minio",
-                "unconfigured storage service (uploads and downloads will fail)"
-            );
-        }
+            if (
+                string.IsNullOrEmpty(options.MinioAccessKey)
+                || string.IsNullOrEmpty(options.MinioSecretKey)
+            )
+            {
+                LogDegradedProvider(
+                    logger,
+                    "Minio",
+                    "unconfigured storage service (uploads and downloads will fail)"
+                );
+            }
 
-        if (string.IsNullOrEmpty(options.SmtpHost))
-        {
-            LogDegradedProvider(logger, "SMTP", "no-op email service (emails will not be sent)");
+            if (string.IsNullOrEmpty(options.SmtpHost))
+            {
+                LogDegradedProvider(
+                    logger,
+                    "SMTP",
+                    "no-op email service (emails will not be sent)"
+                );
+            }
         }
     }
 

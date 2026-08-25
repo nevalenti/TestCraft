@@ -25,7 +25,7 @@ vi.mock('@/features/testRuns/api', () => ({
   },
 }));
 
-vi.mock('@/features/import/importsApi', () => ({
+vi.mock('@/features/testRuns/import/importsApi', () => ({
   importsApi: {
     junit: vi.fn(),
     allure: vi.fn(),
@@ -35,7 +35,6 @@ vi.mock('@/features/import/importsApi', () => ({
 vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
 
 import { queryKeys } from '@/api/queryKeys';
-import { importsApi } from '@/features/import/importsApi';
 import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
 import {
   useCreateTestRun,
@@ -47,6 +46,7 @@ import {
   useTestRunSummary,
   useUpdateTestRun,
 } from '@/features/testRuns/hooks';
+import { importsApi } from '@/features/testRuns/import/importsApi';
 import { notify } from '@/lib/notify';
 
 const makeWrapper = () => {
