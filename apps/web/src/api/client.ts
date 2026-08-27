@@ -46,9 +46,14 @@ client.interceptors.response.use(
         error.message ??
         'An unexpected error occurred.';
 
+      const requestId = error.response?.headers?.['x-request-id'];
+      const displayMessage = requestId
+        ? `${message} (ref: ${requestId})`
+        : message;
+
       useNotificationsStore
         .getState()
-        .add({ type: 'error', message, timeout: 10_000 });
+        .add({ type: 'error', message: displayMessage, timeout: 10_000 });
     }
 
     return Promise.reject(error);

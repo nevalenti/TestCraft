@@ -15,7 +15,8 @@ RUN dotnet publish apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj -
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 WORKDIR /app
 
-RUN apk update && apk upgrade --no-cache && \
+ARG APK_CACHE_BUST=0
+RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache && \
     apk add --no-cache curl libmsquic && \
     addgroup -S -g 1001 appgroup && \
     adduser -S -u 1001 -G appgroup -H appuser

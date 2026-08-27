@@ -20,7 +20,8 @@ RUN dotnet publish apps/Api/src/TestCraft.Api/TestCraft.Api.csproj -c Release -o
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
 WORKDIR /app
 
-RUN apk update && apk upgrade --no-cache && \
+ARG APK_CACHE_BUST=0
+RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache && \
     apk add --no-cache curl krb5-libs && \
     addgroup -S -g 1001 appgroup && \
     adduser -S -u 1001 -G appgroup -H appuser

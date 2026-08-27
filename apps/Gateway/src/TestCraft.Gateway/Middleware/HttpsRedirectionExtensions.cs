@@ -15,8 +15,16 @@ public static class HttpsRedirectionExtensions
                     GatewayPaths.AcmeChallengePrefix,
                     StringComparison.Ordinal
                 );
+                var isMetricsScrape = path.Equals(
+                    GatewayPaths.MetricsPath,
+                    StringComparison.Ordinal
+                );
 
-                if (!context.Request.IsHttps && !isAcmeChallenge)
+                if (
+                    !context.Request.IsHttps
+                    && !isAcmeChallenge
+                    && !isMetricsScrape
+                )
                 {
                     context.Response.StatusCode =
                         StatusCodes.Status307TemporaryRedirect;

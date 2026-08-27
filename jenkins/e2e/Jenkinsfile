@@ -52,8 +52,7 @@ pipeline {
         stage('Resolve branch') {
             steps {
                 script {
-                    env.GIT_LOCAL_BRANCH = sh(script: "git -c safe.directory='*' rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    env.RUN_NAME = "#${env.BUILD_NUMBER} e2e (${env.GIT_LOCAL_BRANCH})"
+                    env.RUN_NAME = "#${env.BUILD_NUMBER} e2e (${env.BRANCH_NAME})"
                 }
             }
         }

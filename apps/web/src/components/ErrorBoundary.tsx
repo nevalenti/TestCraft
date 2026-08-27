@@ -1,6 +1,8 @@
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
 
+import { reportError } from '@/lib/errorReporting';
+
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -19,6 +21,8 @@ export class ErrorBoundary extends Component<Props, State> {
   state: State = { error: null };
 
   componentDidCatch(error: Error, info: ErrorInfo) {
+    reportError(error, { componentStack: info.componentStack });
+
     if (this.props.onError) {
       this.props.onError(error, info);
     } else {

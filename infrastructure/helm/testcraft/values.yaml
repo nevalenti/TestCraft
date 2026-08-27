@@ -39,6 +39,7 @@ thirdPartyImages:
   rabbitmq_exporter: kbudde/rabbitmq-exporter:v0.29.0
   kube_state_metrics: registry.k8s.io/kube-state-metrics/kube-state-metrics:v2.13.0
   node_exporter: prom/node-exporter:v1.8.2
+  glitchtip: glitchtip/glitchtip:v6.0.3
 
 tls:
   provider: mkcert
@@ -46,6 +47,7 @@ tls:
   dnsNames:
     - testcraft.pro
     - auth.testcraft.pro
+    - glitchtip.testcraft.pro
 
 ingress-nginx:
   enabled: false
@@ -84,6 +86,8 @@ secrets:
   postgresAppPassword: ""
   postgresKeycloakPassword: ""
   postgresMonitorPassword: ""
+  postgresGlitchtipPassword: ""
+  glitchtipSecretKey: ""
   rabbitmqUser: ""
   rabbitmqPassword: ""
   redisPassword: ""

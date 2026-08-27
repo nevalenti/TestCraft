@@ -92,8 +92,7 @@ pipeline {
         stage('Resolve branch') {
             steps {
                 script {
-                    env.GIT_LOCAL_BRANCH = sh(script: "git -c safe.directory='*' rev-parse --abbrev-ref HEAD", returnStdout: true).trim()
-                    env.RUN_NAME = "#${env.BUILD_NUMBER} api (${env.GIT_LOCAL_BRANCH})"
+                    env.RUN_NAME = "#${env.BUILD_NUMBER} api (${env.BRANCH_NAME})"
                 }
             }
         }
@@ -218,7 +217,8 @@ pipeline {
         stage('Docker push') {
             when {
                 allOf {
-                    expression { env.GIT_LOCAL_BRANCH == 'main' }
+                    not { expression { env.CHANGE_ID } }
+                    expression { env.BRANCH_NAME == 'main' }
                     expression { currentBuild.currentResult == 'SUCCESS' }
                 }
             }

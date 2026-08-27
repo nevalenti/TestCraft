@@ -1,13 +1,15 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
-namespace TestCraft.Api.Configuration.Observability;
+using TestCraft.Gateway;
 
-public static class TracingExtensions
+namespace TestCraft.Gateway.Configuration;
+
+public static class GatewayTracingExtensions
 {
     public static WebApplicationBuilder AddOpenTelemetryTracing(
         this WebApplicationBuilder builder,
-        ApiLoggingOptions loggingOptions
+        GatewayLoggingOptions loggingOptions
     )
     {
         if (string.IsNullOrEmpty(loggingOptions.OtelExporterEndpoint))
@@ -17,18 +19,21 @@ public static class TracingExtensions
 
         builder
             .Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(loggingOptions.OtelServiceName))
+            .ConfigureResource(resource =>
+                resource.AddService(loggingOptions.ServiceName)
+            )
             .WithTracing(tracing =>
                 tracing
                     .AddAspNetCoreInstrumentation(options =>
                         options.Filter = context =>
-                            context.Request.Path.Value is not ("/api/health" or "/api/metrics")
+                            context.Request.Path.Value
+                                is not GatewayPaths.MetricsPath
                     )
                     .AddHttpClientInstrumentation()
-                    .AddSource("MassTransit")
-                    .AddSource("Npgsql")
                     .AddOtlpExporter(otlp =>
-                        otlp.Endpoint = new Uri(loggingOptions.OtelExporterEndpoint)
+                        otlp.Endpoint = new Uri(
+                            loggingOptions.OtelExporterEndpoint
+                        )
                     )
             );
 

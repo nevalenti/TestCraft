@@ -1,0 +1,196 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: glitchtip-migrate
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      labels:
+        app: glitchtip-migrate
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate
+          image: {{ .Values.thirdPartyImages.glitchtip }}
+          command: ["./manage.py", "migrate"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_GLITCHTIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: POSTGRES_GLITCHTIP_PASSWORD
+            - name: DATABASE_URL
+              value: "postgres://testcraft_glitchtip:$(POSTGRES_GLITCHTIP_PASSWORD)@postgres:5432/glitchtip_db"
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: "50m"
+            limits:
+              memory: 256Mi
+              cpu: "500m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip-web
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: glitchtip-web
+  template:
+    metadata:
+      labels:
+        app: glitchtip-web
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          image: {{ .Values.thirdPartyImages.glitchtip }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_GLITCHTIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: POSTGRES_GLITCHTIP_PASSWORD
+            - name: DATABASE_URL
+              value: "postgres://testcraft_glitchtip:$(POSTGRES_GLITCHTIP_PASSWORD)@postgres:5432/glitchtip_db"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: REDIS_PASSWORD
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@redis:6379/1"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: GLITCHTIP_SECRET_KEY
+            - name: PORT
+              value: "8000"
+            - name: GLITCHTIP_DOMAIN
+              value: "https://glitchtip.testcraft.pro"
+            - name: DEFAULT_FROM_EMAIL
+              value: "alerts@testcraft.pro"
+            - name: ENABLE_OPEN_USER_REGISTRATION
+              value: "false"
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /_health/
+              port: 8000
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 1Gi
+              cpu: "1"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip-worker
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glitchtip-worker
+  template:
+    metadata:
+      labels:
+        app: glitchtip-worker
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: worker
+          image: {{ .Values.thirdPartyImages.glitchtip }}
+          command: ["./bin/run-celery-with-beat.sh"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          env:
+            - name: POSTGRES_GLITCHTIP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: POSTGRES_GLITCHTIP_PASSWORD
+            - name: DATABASE_URL
+              value: "postgres://testcraft_glitchtip:$(POSTGRES_GLITCHTIP_PASSWORD)@postgres:5432/glitchtip_db"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: REDIS_PASSWORD
+            - name: REDIS_URL
+              value: "redis://:$(REDIS_PASSWORD)@redis:6379/1"
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: GLITCHTIP_SECRET_KEY
+            - name: GLITCHTIP_DOMAIN
+              value: "https://glitchtip.testcraft.pro"
+            - name: DEFAULT_FROM_EMAIL
+              value: "alerts@testcraft.pro"
+          resources:
+            requests:
+              memory: 256Mi
+              cpu: "100m"
+            limits:
+              memory: 1Gi
+              cpu: "1"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: glitchtip
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: glitchtip-web
+  ports:
+    - port: 8000
+      targetPort: 8000

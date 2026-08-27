@@ -4811,84 +4811,6 @@
         "security": []
       }
     },
-    "/api/ready": {
-      "get": {
-        "tags": ["System"],
-        "summary": "Returns whether the API process has started.",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.Errors.ProblemResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": []
-      }
-    },
-    "/api/health": {
-      "get": {
-        "tags": ["System"],
-        "summary": "Returns the API's health, including database connectivity.",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.System.StatusResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal Server Error",
-            "content": {
-              "application/problem+json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TestCraft.Api.Errors.ProblemResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": []
-      }
-    },
     "/api/status": {
       "get": {
         "tags": ["System"],
@@ -10270,15 +10192,6 @@
           "heapTotal": {
             "type": "integer",
             "format": "int64"
-          }
-        },
-        "additionalProperties": false
-      },
-      "TestCraft.Api.System.StatusResponse": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "string"
           }
         },
         "additionalProperties": false

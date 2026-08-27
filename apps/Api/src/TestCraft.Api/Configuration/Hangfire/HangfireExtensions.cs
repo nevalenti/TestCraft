@@ -28,6 +28,8 @@ public static class HangfireExtensions
 
         builder.Services.AddHangfireServer();
 
+        GlobalJobFilters.Filters.Add(new HangfireMetricsFilter());
+
         return builder;
     }
 
