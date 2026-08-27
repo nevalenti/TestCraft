@@ -14,7 +14,8 @@ RUN pnpm --filter testcraft-docs run build
 
 FROM nginx:1.27-alpine AS runtime
 
-RUN apk update && apk upgrade --no-cache
+ARG APK_CACHE_BUST=0
+RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
 
 RUN rm /etc/nginx/conf.d/default.conf
 

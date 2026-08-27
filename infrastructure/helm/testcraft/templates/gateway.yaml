@@ -45,6 +45,14 @@ spec:
               value: http://loki:3100
             - name: SEQ_URL
               value: http://seq
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://tempo:4317
+            - name: METRICS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: METRICS_TOKEN
+                  optional: true
           ports:
             - containerPort: 80
             - containerPort: 443

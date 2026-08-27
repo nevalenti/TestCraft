@@ -17,18 +17,21 @@ ARG VITE_API_URL=https://build-arg-not-set.invalid
 ARG VITE_KEYCLOAK_URL=https://build-arg-not-set.invalid
 ARG VITE_KEYCLOAK_REALM=build-arg-not-set
 ARG VITE_KEYCLOAK_CLIENT_ID=build-arg-not-set
+ARG VITE_GLITCHTIP_DSN=
 
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_KEYCLOAK_URL=$VITE_KEYCLOAK_URL
 ENV VITE_KEYCLOAK_REALM=$VITE_KEYCLOAK_REALM
 ENV VITE_KEYCLOAK_CLIENT_ID=$VITE_KEYCLOAK_CLIENT_ID
+ENV VITE_GLITCHTIP_DSN=$VITE_GLITCHTIP_DSN
 
 RUN pnpm --filter @testcraft/types run build
 RUN pnpm --filter testcraft-web run build
 
 FROM nginx:1.27-alpine AS runtime
 
-RUN apk update && apk upgrade --no-cache
+ARG APK_CACHE_BUST=0
+RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
 
 RUN rm /etc/nginx/conf.d/default.conf
 

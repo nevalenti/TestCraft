@@ -103,6 +103,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
 
+      - name: Get current date
+        id: date
+        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
+
       - name: Log in to GHCR
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
@@ -129,6 +133,8 @@ jobs:
           file: apps/docs/Dockerfile
           load: true
           tags: docs-scan:${{ github.sha }}
+          build-args: |
+            APK_CACHE_BUST=${{ steps.date.outputs.date }}
           cache-from: type=gha,scope=docs
 
       - name: Scan image with Trivy
@@ -157,6 +163,8 @@ jobs:
           push: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            APK_CACHE_BUST=${{ steps.date.outputs.date }}
           cache-from: type=gha,scope=docs
           cache-to: type=gha,mode=max,scope=docs
           provenance: false

@@ -20,6 +20,11 @@ scrape_configs:
       - targets: ["api:8080"]
     metrics_path: /api/metrics
 
+  - job_name: testcraft-gateway
+    static_configs:
+      - targets: ["gateway:80"]
+    metrics_path: /metrics
+
   - job_name: postgres
     static_configs:
       - targets: ["postgres-exporter:9187"]

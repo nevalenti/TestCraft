@@ -71,6 +71,7 @@ public static class HostingExtensions
         builder
             .AddSerilogLogging(loggingOptions)
             .AddOpenTelemetryTracing(loggingOptions)
+            .AddObservabilityHealthChecks()
             .AddKeycloakAuthentication(keycloakAuthOptions)
             .AddApiControllers()
             .AddApiVersioningSupport()
@@ -98,6 +99,7 @@ public static class HostingExtensions
         app.UseRouting();
 
         app.UseHttpMetrics();
+        app.UseObservabilityHealthChecks();
 
         app.UseCors(CorsExtensions.DefaultPolicyName);
 

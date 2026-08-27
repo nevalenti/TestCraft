@@ -33,28 +33,6 @@ public partial class SystemController(
         return Ok(new AuthConfigResponse(keycloakOptions.KeycloakAuthority));
     }
 
-    /// <summary>Returns whether the API process has started.</summary>
-    [HttpGet("ready")]
-    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
-    public ActionResult<StatusResponse> GetReady()
-    {
-        return Ok(new StatusResponse("ok"));
-    }
-
-    /// <summary>Returns the API's health, including database connectivity.</summary>
-    [HttpGet("health")]
-    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(StatusResponse), StatusCodes.Status503ServiceUnavailable)]
-    public async Task<ActionResult<StatusResponse>> GetHealth()
-    {
-        if (await PingDbAsync())
-        {
-            return Ok(new StatusResponse("healthy"));
-        }
-
-        return StatusCode(StatusCodes.Status503ServiceUnavailable, new StatusResponse("unhealthy"));
-    }
-
     /// <summary>Returns detailed runtime status and diagnostics.</summary>
     [HttpGet("status")]
     [ProducesResponseType(typeof(SystemStatusResponse), StatusCodes.Status200OK)]

@@ -100,12 +100,15 @@ public partial class NotificationDispatcher(
             {
                 delivery.RecordFailedAttempt(result.Error!);
                 if (delivery.Status == NotificationDeliveryStatus.Abandoned)
+                {
+                    NotificationMetrics.RecordAbandoned(delivery.Channel);
                     LogDeliveryAbandoned(
                         logger,
                         delivery.Channel,
                         delivery.Target,
                         delivery.AttemptCount
                     );
+                }
             }
         }
 

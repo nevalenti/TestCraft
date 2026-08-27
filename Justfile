@@ -68,7 +68,6 @@ jenkins app:
 
 format:
     pnpm format
-    dotnet csharpier format .
     dotnet format style --no-restore TestCraft.slnx
 
 lint:

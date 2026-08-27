@@ -1,4 +1,55 @@
 groups:
+  - name: testcraft.api.rules
+    rules:
+      - alert: ApiHighErrorRate
+        expr: |
+          sum(rate(http_requests_total{job="testcraft-api", status_code=~"5.."}[5m]))
+          /
+          sum(rate(http_requests_total{job="testcraft-api"}[5m]))
+          > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "API 5xx error rate above 5%"
+          description: "{{ $value | humanizePercentage }} of testcraft-api requests have returned a 5xx status over the last 5 minutes."
+
+      - alert: ApiHighLatencyP95
+        expr: |
+          histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="testcraft-api"}[5m])))
+          > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API p95 latency above 1s"
+          description: "p95 request latency for testcraft-api has been above 1 second for 10 minutes: {{ $value }}s."
+
+      - alert: ApiRateLimitRejectionsHigh
+        expr: sum(rate(http_requests_total{job="testcraft-api", status_code="429"}[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API is rejecting a sustained volume of requests via rate limiting"
+          description: "testcraft-api has returned 429 responses at a sustained rate of {{ $value | printf \"%.2f\" }}/s for 10 minutes - check for an abusive client or an undersized rate limit."
+
+      - alert: NotificationDeliveryAbandoned
+        expr: increase(notification_deliveries_abandoned_total{job="testcraft-api"}[15m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Notification deliveries are being abandoned on {{ $labels.channel }}"
+          description: "{{ $value }} {{ $labels.channel }} notification deliveries were abandoned after exhausting retries in the last 15 minutes. Check the target endpoint/SMTP relay for outages."
+
+      - alert: HangfireJobFailed
+        expr: increase(hangfire_jobs_failed_total{job="testcraft-api"}[15m]) > 0
+        labels:
+          severity: warning
+        annotations:
+          summary: "Hangfire job {{ $labels.job_name }} failed"
+          description: "{{ $labels.job_name }} has failed {{ $value }} time(s) in the last 15 minutes. Check the Hangfire dashboard for the failure details."
+
   - name: testcraft.rules
     rules:
       - alert: TargetDown

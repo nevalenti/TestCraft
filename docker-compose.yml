@@ -10,6 +10,7 @@ services:
       - '5432:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./infrastructure/postgres/init-local.sql:/docker-entrypoint-initdb.d/init-local.sql:ro
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER}']
       interval: 10s
@@ -185,6 +186,56 @@ services:
     ports:
       - '1025:1025'
       - '8025:8025'
+
+  glitchtip-migrate:
+    image: ${GLITCHTIP_IMAGE}
+    container_name: testcraft-glitchtip-migrate
+    command: ./manage.py migrate
+    environment:
+      DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/glitchtip'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  glitchtip:
+    image: ${GLITCHTIP_IMAGE}
+    container_name: testcraft-glitchtip
+    environment:
+      DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/glitchtip'
+      REDIS_URL: 'redis://redis:6379/1'
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-local-dev-only-not-secret}
+      PORT: '8000'
+      EMAIL_URL: 'consolemail://'
+      GLITCHTIP_DOMAIN: 'http://localhost:8001'
+      DEFAULT_FROM_EMAIL: 'alerts@testcraft.local'
+      ENABLE_OPEN_USER_REGISTRATION: 'true'
+    ports:
+      - '8001:8000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      glitchtip-migrate:
+        condition: service_completed_successfully
+
+  glitchtip-worker:
+    image: ${GLITCHTIP_IMAGE}
+    container_name: testcraft-glitchtip-worker
+    command: ./bin/run-celery-with-beat.sh
+    environment:
+      DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/glitchtip'
+      REDIS_URL: 'redis://redis:6379/1'
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-local-dev-only-not-secret}
+      GLITCHTIP_DOMAIN: 'http://localhost:8001'
+      DEFAULT_FROM_EMAIL: 'alerts@testcraft.local'
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      glitchtip-migrate:
+        condition: service_completed_successfully
 
   postgres-exporter:
     image: ${POSTGRES_EXPORTER_IMAGE}
