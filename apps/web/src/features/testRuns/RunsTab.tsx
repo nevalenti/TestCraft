@@ -28,7 +28,7 @@ import {
   useTestRunSummaries,
   useUpdateTestRun,
 } from '@/features/testRuns/hooks';
-import { ImportForm } from '@/features/testRuns/import/ImportForm';
+import { ImportForm } from '@/features/testRuns/resultImport/ImportForm';
 import { RunForm } from '@/features/testRuns/RunForm';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useModal } from '@/hooks/useModal';
