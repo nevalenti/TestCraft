@@ -39,9 +39,6 @@ deploy-app app tag: namespace tls-secret helm-deps
 destroy:
     {{ kubectl }} delete namespace testcraft --ignore-not-found
 
-status:
-    {{ kubectl }} get all -n testcraft
-
 github app job=(if app == "e2e" { "e2e" } else { "build-test" }):
     #!/usr/bin/env bash
     set -euo pipefail
