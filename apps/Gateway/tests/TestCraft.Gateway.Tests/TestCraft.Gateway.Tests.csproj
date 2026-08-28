@@ -1,4 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CA1707</NoWarn>
@@ -22,6 +23,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\TestCraft.Gateway\TestCraft.Gateway.csproj" />
-    <ProjectReference Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
+    <ProjectReference
+      Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
   </ItemGroup>
+
 </Project>
