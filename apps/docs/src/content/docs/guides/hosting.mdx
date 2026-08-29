@@ -1,0 +1,54 @@
+---
+title: Hosting
+description: Deploy TestCraft to a Kubernetes cluster.
+sidebar:
+  order: 2
+---
+
+import { Aside, Steps } from '@astrojs/starlight/components';
+
+Deploy TestCraft to a Kubernetes cluster using the Helm chart at `infrastructure/helm/testcraft`.
+
+## Prerequisites
+
+- A cluster with `kubectl` access
+- Helm 3
+- [cert-manager](https://cert-manager.io/) >= 1.13, already installed in the cluster (needed for TLS)
+
+## Deploy
+
+<Steps>
+
+1. Copy the secrets template and fill it in:
+
+   ```bash
+   cp infrastructure/helm/testcraft/values.secrets.yaml.example \
+      infrastructure/helm/testcraft/values.secrets.yaml
+   ```
+
+   <Aside type="caution">
+     Don't commit `values.secrets.yaml` — it ends up holding real passwords
+     and client secrets.
+   </Aside>
+
+2. Pull in the chart's dependencies:
+
+   ```bash
+   helm dependency build infrastructure/helm/testcraft
+   ```
+
+3. Install (or upgrade) the release:
+
+   ```bash
+   helm upgrade --install testcraft infrastructure/helm/testcraft \
+     --namespace testcraft --create-namespace \
+     -f infrastructure/helm/testcraft/values.production.yaml \
+     -f infrastructure/helm/testcraft/values.secrets.yaml
+   ```
+
+</Steps>
+
+- `values.yaml` — chart defaults
+- `values.production.yaml` — production overrides (image repos, ingress, TLS)
+- `values.secrets.yaml` — your credentials
+
