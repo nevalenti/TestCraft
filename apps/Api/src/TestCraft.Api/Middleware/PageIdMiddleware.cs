@@ -4,6 +4,7 @@ namespace TestCraft.Api.Middleware;
 
 public class PageIdMiddleware(RequestDelegate next)
 {
+    public const string ItemsKey = "pageId";
     private const string HeaderName = "x-page-id";
 
     public async Task InvokeAsync(HttpContext context)
@@ -14,6 +15,8 @@ public class PageIdMiddleware(RequestDelegate next)
             await next(context);
             return;
         }
+
+        context.Items[ItemsKey] = incoming;
 
         using (LogContext.PushProperty("pageId", incoming))
         {

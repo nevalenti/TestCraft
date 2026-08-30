@@ -7,12 +7,16 @@ namespace TestCraft.Api.Configuration.Authentication;
 public sealed class KeycloakAuthOptions : IStartupOptions
 {
     [Required]
+    [NotSensitive]
     public string KeycloakAuthority { get; init; } = string.Empty;
 
+    [NotSensitive]
     public string? KeycloakIssuer { get; init; }
 
+    [NotSensitive]
     public string KeycloakAudience { get; init; } = "testcraft-web";
 
+    [NotSensitive]
     public bool KeycloakRequireHttpsMetadata { get; init; } = true;
 
     public static KeycloakAuthOptions Bind(IConfiguration configuration)

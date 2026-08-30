@@ -16,7 +16,10 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     [Sensitive]
     public string? RabbitMqUrl { get; init; }
 
+    [NotSensitive]
     public string MinioEndpoint { get; init; } = "localhost:9000";
+
+    [NotSensitive]
     public string MinioPublicEndpoint { get; init; } = string.Empty;
 
     [Sensitive]
@@ -24,24 +27,40 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
 
     [Sensitive]
     public string MinioSecretKey { get; init; } = string.Empty;
+
+    [NotSensitive]
     public string MinioBucket { get; init; } = "testcraft";
+
+    [NotSensitive]
     public bool MinioUseSsl { get; init; }
 
+    [NotSensitive]
     public string? SmtpHost { get; init; }
+
+    [NotSensitive]
     public int SmtpPort { get; init; } = 587;
+
+    [NotSensitive]
     public string? SmtpUser { get; init; }
 
     [Sensitive]
     public string? SmtpPassword { get; init; }
+
+    [NotSensitive]
     public string SmtpFromAddress { get; init; } = "noreply@testcraft.local";
 
+    [NotSensitive]
     public bool NotificationDeliveryRetryEnabled { get; init; } = true;
 
     [Required]
+    [NotSensitive]
     public string KeycloakBaseUrl { get; init; } = string.Empty;
+
+    [NotSensitive]
     public string KeycloakRealm { get; init; } = "testcraft";
 
     [Required]
+    [NotSensitive]
     public string KeycloakAdminClientId { get; init; } = string.Empty;
 
     [Required]

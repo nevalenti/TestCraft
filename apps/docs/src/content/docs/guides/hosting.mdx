@@ -27,8 +27,8 @@ Deploy TestCraft to a Kubernetes cluster using the Helm chart at `infrastructure
    ```
 
    <Aside type="caution">
-     Don't commit `values.secrets.yaml` — it ends up holding real passwords
-     and client secrets.
+     Don't commit `values.secrets.yaml` — it ends up holding real passwords and
+     client secrets.
    </Aside>
 
 2. Pull in the chart's dependencies:
@@ -51,4 +51,3 @@ Deploy TestCraft to a Kubernetes cluster using the Helm chart at `infrastructure
 - `values.yaml` — chart defaults
 - `values.production.yaml` — production overrides (image repos, ingress, TLS)
 - `values.secrets.yaml` — your credentials
-
