@@ -34,6 +34,7 @@ public static class DeleteWebhookSubscription
                 ) ?? throw new NotFoundException();
 
             context.WebhookSubscriptions.Remove(subscription);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

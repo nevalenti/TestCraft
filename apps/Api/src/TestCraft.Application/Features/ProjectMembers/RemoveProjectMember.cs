@@ -42,6 +42,7 @@ public static class RemoveProjectMember
                 ) ?? throw new NotFoundException();
 
             context.ProjectMembers.Remove(member);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

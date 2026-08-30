@@ -24,6 +24,7 @@ public class PublicShareTokensController(ISender sender) : ControllerBase
     )
     {
         var query = new GetRunByShareToken.Query(token);
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);

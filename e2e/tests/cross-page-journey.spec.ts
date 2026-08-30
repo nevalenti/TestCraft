@@ -61,6 +61,7 @@ test.describe('Cross-page business journey', () => {
     });
 
     await testResultsPage.addResult(caseName, 'Passed');
+
     await expect(testResultsPage.rows.first()).toBeVisible({
       timeout: 10_000,
     });

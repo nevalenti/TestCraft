@@ -69,6 +69,7 @@ public static class CreateLabel
             };
 
             context.Labels.Add(label);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new LabelResponse

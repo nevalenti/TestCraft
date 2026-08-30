@@ -88,6 +88,7 @@ public static class AddProjectMember
                 Email = keycloakUser.Email,
                 DisplayName = keycloakUser.DisplayName,
             };
+
             context.ProjectMembers.Add(member);
 
             try

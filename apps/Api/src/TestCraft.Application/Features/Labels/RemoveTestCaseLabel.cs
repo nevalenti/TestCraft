@@ -41,6 +41,7 @@ public static class RemoveTestCaseLabel
             }
 
             context.TestCaseLabels.Remove(entry);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

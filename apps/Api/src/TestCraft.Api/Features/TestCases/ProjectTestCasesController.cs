@@ -26,6 +26,7 @@ public class ProjectTestCasesController(ISender sender) : ControllerBase
     )
     {
         var scopedQuery = query with { ProjectId = projectId };
+
         var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);

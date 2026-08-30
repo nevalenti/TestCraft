@@ -146,6 +146,7 @@ public static class CreateTestResult
             };
 
             context.TestResults.Add(result);
+
             await context.SaveChangesAsync(cancellationToken);
 
             var summary = await context
@@ -169,6 +170,7 @@ public static class CreateTestResult
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
+
             await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
 
             return summary;

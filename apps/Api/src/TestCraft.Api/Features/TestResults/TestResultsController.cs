@@ -27,6 +27,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         var scopedQuery = query with { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);
@@ -48,6 +49,7 @@ public class TestResultsController(ISender sender) : ControllerBase
             RunId = runId,
             Id = id,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -64,6 +66,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
@@ -89,6 +92,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
@@ -115,6 +119,7 @@ public class TestResultsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, RunId = runId, Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -136,6 +141,7 @@ public class TestResultsController(ISender sender) : ControllerBase
             RunId = runId,
             Id = id,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

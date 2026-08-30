@@ -97,6 +97,7 @@ public static class CreateTestCaseStep
             };
 
             context.TestCaseSteps.Add(step);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new TestCaseStepResponse

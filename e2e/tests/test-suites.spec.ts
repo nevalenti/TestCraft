@@ -84,6 +84,7 @@ test.describe('Test Suites tab', () => {
     await suitesPage.create(name);
     await suitesPage.open(name);
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+$/);
+
     await expect(page.getByRole('heading', { name })).toBeVisible();
   });
 });

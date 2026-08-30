@@ -35,6 +35,7 @@ public partial class ImportJUnitRequestedConsumer(
         }
 
         job.Status = ImportJobStatus.Processing;
+
         await dbContext.SaveChangesAsync(cancellationToken);
 
         try
@@ -80,6 +81,7 @@ public partial class ImportJUnitRequestedConsumer(
 
             job.Status = ImportJobStatus.Failed;
             job.Error = ex.Message;
+
             await dbContext.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
@@ -88,6 +90,7 @@ public partial class ImportJUnitRequestedConsumer(
 
             job.Status = ImportJobStatus.Failed;
             job.Error = "Import failed due to an unexpected error";
+
             await dbContext.SaveChangesAsync(cancellationToken);
         }
     }

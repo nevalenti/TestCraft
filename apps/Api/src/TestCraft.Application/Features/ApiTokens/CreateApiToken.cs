@@ -95,6 +95,7 @@ public static class CreateApiToken
             };
 
             context.ApiTokens.Add(token);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new CreateApiTokenResponse

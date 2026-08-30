@@ -26,6 +26,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         var scopedQuery = query with { ProjectId = projectId };
+
         var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);
@@ -41,6 +42,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         var query = new GetTestSuiteById.Query { ProjectId = projectId, Id = id };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -56,6 +58,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
@@ -72,6 +75,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -87,6 +91,7 @@ public class TestSuitesController(ISender sender) : ControllerBase
     )
     {
         var command = new DeleteTestSuite.Command { ProjectId = projectId, Id = id };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

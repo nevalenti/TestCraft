@@ -26,6 +26,7 @@ public class ShareTokensController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
@@ -41,6 +42,7 @@ public class ShareTokensController(ISender sender) : ControllerBase
     )
     {
         var query = new GetShareTokens.Query { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -62,6 +64,7 @@ public class ShareTokensController(ISender sender) : ControllerBase
             RunId = runId,
             Id = id,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

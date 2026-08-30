@@ -91,6 +91,7 @@ export const useBulkReorderSteps = (
       testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, input),
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey });
+
       const previous =
         queryClient.getQueryData<Paginated<TestCaseStep>>(queryKey);
 

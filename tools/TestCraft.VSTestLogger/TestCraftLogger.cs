@@ -100,11 +100,13 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             .GetAwaiter()
             .GetResult();
         response.EnsureSuccessStatusCode();
+
         var body = response
             .Content.ReadAsStringAsync()
             .GetAwaiter()
             .GetResult();
         using var document = JsonDocument.Parse(body);
+
         return document.RootElement.GetProperty("authority").GetString()!;
     }
 
@@ -123,16 +125,19 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
                 ["password"] = password,
             }
         );
+
         var response = Client
             .PostAsync($"{authority}/protocol/openid-connect/token", form)
             .GetAwaiter()
             .GetResult();
         response.EnsureSuccessStatusCode();
+
         var body = response
             .Content.ReadAsStringAsync()
             .GetAwaiter()
             .GetResult();
         using var document = JsonDocument.Parse(body);
+
         return document.RootElement.GetProperty("access_token").GetString()!;
     }
 
@@ -145,8 +150,10 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
             "Bearer",
             _token
         );
+
         var response = Client.SendAsync(request).GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
+
         var body = response
             .Content.ReadAsStringAsync()
             .GetAwaiter()
@@ -287,9 +294,11 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
                 "Bearer",
                 _token
             );
+
             using var response = await Client
                 .SendAsync(request)
                 .ConfigureAwait(false);
+
             if (!response.IsSuccessStatusCode)
             {
                 var body = await response

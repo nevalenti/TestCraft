@@ -83,6 +83,7 @@ public static class CreateShareToken
             };
 
             context.ShareTokens.Add(shareToken);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new ShareTokenResponse

@@ -38,6 +38,7 @@ public static class RevokeShareToken
                 ) ?? throw new NotFoundException();
 
             context.ShareTokens.Remove(shareToken);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

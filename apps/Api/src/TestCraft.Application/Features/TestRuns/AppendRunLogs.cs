@@ -65,6 +65,7 @@ public static class AppendRunLogs
                 .ToList();
 
             context.RunLogs.AddRange(entries);
+
             await context.SaveChangesAsync(cancellationToken);
 
             await notifier.LogsAppendedAsync(request.RunId, request.Lines, cancellationToken);

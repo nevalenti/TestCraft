@@ -139,6 +139,7 @@ public static class UploadAttachment
             };
 
             context.Attachments.Add(attachment);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new AttachmentResponse

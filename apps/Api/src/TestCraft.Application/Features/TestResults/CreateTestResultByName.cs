@@ -100,7 +100,9 @@ public static class CreateTestResultByName
                     Name = request.SuiteName,
                     Source = request.Source,
                 };
+
                 context.TestSuites.Add(suite);
+
                 await context.SaveChangesAsync(cancellationToken);
             }
 
@@ -119,7 +121,9 @@ public static class CreateTestResultByName
                     SuiteId = suite.Id,
                     Name = request.TestCaseName,
                 };
+
                 context.TestCases.Add(testCase);
+
                 await context.SaveChangesAsync(cancellationToken);
             }
 
@@ -136,6 +140,7 @@ public static class CreateTestResultByName
             };
 
             context.TestResults.Add(result);
+
             await context.SaveChangesAsync(cancellationToken);
 
             var summary = await context
@@ -159,6 +164,7 @@ public static class CreateTestResultByName
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
+
             await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
 
             return summary;

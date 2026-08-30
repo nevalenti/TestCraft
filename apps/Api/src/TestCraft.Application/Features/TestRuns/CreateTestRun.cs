@@ -60,6 +60,7 @@ public static class CreateTestRun
             };
 
             context.TestRuns.Add(run);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return TestRunResponse.FromEntity(run);

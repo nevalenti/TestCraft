@@ -42,6 +42,7 @@ public static class RemoveCaseFromPlan
             }
 
             context.TestPlanCases.Remove(entry);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

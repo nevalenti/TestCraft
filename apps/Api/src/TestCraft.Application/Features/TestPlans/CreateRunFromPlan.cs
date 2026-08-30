@@ -76,6 +76,7 @@ public static class CreateRunFromPlan
             };
 
             context.TestRuns.Add(run);
+
             await context.SaveChangesAsync(cancellationToken);
 
             foreach (var caseId in cases)

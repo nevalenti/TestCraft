@@ -27,6 +27,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     )
     {
         var scopedQuery = query with { ProjectId = projectId, SuiteId = suiteId };
+
         var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);
@@ -48,6 +49,7 @@ public class TestCasesController(ISender sender) : ControllerBase
             SuiteId = suiteId,
             Id = id,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -64,6 +66,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
@@ -90,6 +93,7 @@ public class TestCasesController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId, Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -111,6 +115,7 @@ public class TestCasesController(ISender sender) : ControllerBase
             SuiteId = suiteId,
             Id = id,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

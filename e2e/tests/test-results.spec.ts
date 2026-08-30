@@ -137,11 +137,13 @@ test.describe('Test Results', () => {
 
   test('edits a result status', async ({ testResultsPage }) => {
     await testResultsPage.addResult(testCaseName, 'Passed');
+
     await expect(testResultsPage.rows.first().getByText('Passed')).toBeVisible({
       timeout: 10_000,
     });
 
     await testResultsPage.editResult(0, 'Failed');
+
     await expect(testResultsPage.rows.first().getByText('Failed')).toBeVisible({
       timeout: 10_000,
     });

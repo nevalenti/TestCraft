@@ -106,6 +106,7 @@ public static class CreateTestCase
             };
 
             context.TestCases.Add(testCase);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new TestCaseResponse

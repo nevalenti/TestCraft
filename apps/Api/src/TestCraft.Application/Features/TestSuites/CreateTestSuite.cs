@@ -75,6 +75,7 @@ public static class CreateTestSuite
             };
 
             context.TestSuites.Add(suite);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new TestSuiteResponse
