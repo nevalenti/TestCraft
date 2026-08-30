@@ -83,6 +83,7 @@ export const TestPlanPage = () => {
 
   const handleDragEnd = ({ active, over }: DragEndEvent) => {
     if (!over || active.id === over.id) return;
+
     const oldIndex = sortedCases.findIndex(
       (planCase) => planCase.testCaseId === active.id,
     );
@@ -90,6 +91,7 @@ export const TestPlanPage = () => {
       (planCase) => planCase.testCaseId === over.id,
     );
     const reordered = arrayMove(sortedCases, oldIndex, newIndex);
+
     reorderCases.mutate(
       reordered.map((planCase, index) => ({
         testCaseId: planCase.testCaseId,

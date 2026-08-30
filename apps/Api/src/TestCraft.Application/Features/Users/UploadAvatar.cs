@@ -105,6 +105,7 @@ public static partial class UploadAvatar
             if (profile is null)
             {
                 profile = new UserProfile { UserId = userId, AvatarKey = storageKey };
+
                 context.UserProfiles.Add(profile);
             }
             else

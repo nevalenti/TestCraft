@@ -134,6 +134,7 @@ public static class ImportAllure
             };
 
             context.ImportJobs.Add(job);
+
             await context.SaveChangesAsync(cancellationToken);
 
             var message = new ImportAllureRequested

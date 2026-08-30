@@ -25,6 +25,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var query = new GetTestPlans.Query { ProjectId = projectId };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -40,6 +41,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var query = new GetTestPlanById.Query { ProjectId = projectId, Id = id };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -55,6 +57,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
@@ -71,6 +74,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -86,6 +90,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var command = new DeleteTestPlan.Command { ProjectId = projectId, Id = id };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();
@@ -102,6 +107,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
+
         await sender.Send(scopedCommand, cancellationToken);
 
         return NoContent();
@@ -123,6 +129,7 @@ public class TestPlansController(ISender sender) : ControllerBase
             TestPlanId = id,
             TestCaseId = caseId,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();
@@ -139,6 +146,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
+
         await sender.Send(scopedCommand, cancellationToken);
 
         return NoContent();
@@ -155,6 +163,7 @@ public class TestPlansController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Created($"{ApiPaths.V1Prefix}/projects/{projectId}/runs/{result.Id}", result);

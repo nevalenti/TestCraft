@@ -32,6 +32,7 @@ public static class DeleteLabel
                 ) ?? throw new NotFoundException();
 
             context.Labels.Remove(label);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

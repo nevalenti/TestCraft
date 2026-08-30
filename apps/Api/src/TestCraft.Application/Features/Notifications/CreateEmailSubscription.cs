@@ -76,6 +76,7 @@ public static class CreateEmailSubscription
             };
 
             context.EmailSubscriptions.Add(subscription);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new EmailSubscriptionResponse

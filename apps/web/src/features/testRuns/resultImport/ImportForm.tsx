@@ -112,6 +112,7 @@ export const ImportForm = ({
 
     if (format === 'junit') {
       const xml = await data.files[0].text();
+
       onSubmit({
         type: 'junit',
         xml,
@@ -120,10 +121,12 @@ export const ImportForm = ({
       });
     } else if (format === 'allure') {
       const allureData = await parseAllureFiles(data.files);
+
       if ('fileError' in allureData) {
         setError('files', { message: allureData.fileError });
         return;
       }
+
       onSubmit({
         type: 'allure',
         results: allureData.results,

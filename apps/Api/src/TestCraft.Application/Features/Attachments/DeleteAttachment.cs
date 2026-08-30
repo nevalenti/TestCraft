@@ -45,6 +45,7 @@ public static class DeleteAttachment
             await storage.DeleteAsync(attachment.StorageKey, cancellationToken);
 
             context.Attachments.Remove(attachment);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

@@ -33,6 +33,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
             RunId = runId,
             ResultId = resultId,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -62,6 +63,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
             SizeBytes = file.Length,
             Content = stream,
         };
+
         var result = await sender.Send(command, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
@@ -85,6 +87,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
             ResultId = resultId,
             AttachmentId = id,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -108,6 +111,7 @@ public class AttachmentsController(ISender sender) : ControllerBase
             ResultId = resultId,
             AttachmentId = id,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

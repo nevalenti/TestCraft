@@ -30,6 +30,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     )
     {
         var scopedQuery = query with { ProjectId = projectId, CaseId = caseId };
+
         var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);
@@ -52,6 +53,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
             CaseId = caseId,
             Id = id,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -69,6 +71,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, CaseId = caseId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return CreatedAtAction(
@@ -96,6 +99,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, CaseId = caseId };
+
         await sender.Send(scopedCommand, cancellationToken);
 
         return NoContent();
@@ -114,6 +118,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId, CaseId = caseId, Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -136,6 +141,7 @@ public class TestCaseStepsController(ISender sender) : ControllerBase
             CaseId = caseId,
             Id = id,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

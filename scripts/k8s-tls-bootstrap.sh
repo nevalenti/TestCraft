@@ -13,4 +13,5 @@ trap 'rm -rf "$tmpdir"' EXIT
 
 openssl req -x509 -newkey rsa:2048 -nodes -days 1 \
   -keyout "$tmpdir/tls.key" -out "$tmpdir/tls.crt" -subj "/CN=bootstrap"
+
 kubectl create secret tls testcraft-tls -n testcraft --cert="$tmpdir/tls.crt" --key="$tmpdir/tls.key"

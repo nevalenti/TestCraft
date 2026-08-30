@@ -88,6 +88,7 @@ public static class CreateWebhookSubscription
             };
 
             context.WebhookSubscriptions.Add(subscription);
+
             await context.SaveChangesAsync(cancellationToken);
 
             return new WebhookSubscriptionResponse

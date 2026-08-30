@@ -31,6 +31,7 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
             TestCaseId = caseId,
             LabelId = labelId,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();
@@ -52,6 +53,7 @@ public class TestCaseLabelsController(ISender sender) : ControllerBase
             TestCaseId = caseId,
             LabelId = labelId,
         };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

@@ -83,6 +83,7 @@ test.describe('Test Runs tab', () => {
     await testRunsPage.create(name, 'production');
     await testRunsPage.open(name);
     await page.waitForURL(/\/projects\/[^/]+\/runs\/[^/]+$/);
+
     await expect(page.getByRole('heading', { name })).toBeVisible();
     await expect(
       page.getByRole('button', { name: 'Add Result' }),

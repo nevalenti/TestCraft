@@ -48,6 +48,7 @@ internal static class ImportRunWriter
                 run.TransitionTo(status);
 
             context.TestRuns.Add(run);
+
             await context.SaveChangesAsync(cancellationToken);
 
             await InsertResultsAsync(
@@ -63,6 +64,7 @@ internal static class ImportRunWriter
 
             job.Status = ImportJobStatus.Completed;
             job.TestRunId = run.Id;
+
             await context.SaveChangesAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);
@@ -115,6 +117,7 @@ internal static class ImportRunWriter
             run.TransitionTo(TestRunStatus.Completed);
             job.Status = ImportJobStatus.Completed;
             job.TestRunId = run.Id;
+
             await context.SaveChangesAsync(cancellationToken);
 
             await transaction.CommitAsync(cancellationToken);

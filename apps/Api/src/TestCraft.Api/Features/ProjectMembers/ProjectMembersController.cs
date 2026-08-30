@@ -24,6 +24,7 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     )
     {
         var query = new GetProjectMembers.Query { ProjectId = projectId };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -39,6 +40,7 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { ProjectId = projectId };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
@@ -54,6 +56,7 @@ public class ProjectMembersController(ISender sender) : ControllerBase
     )
     {
         var command = new RemoveProjectMember.Command { ProjectId = projectId, Id = id };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

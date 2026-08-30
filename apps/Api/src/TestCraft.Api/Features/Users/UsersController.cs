@@ -24,6 +24,7 @@ public class UsersController(ISender sender) : ControllerBase
     )
     {
         var query = new GetAvatarUrl.Query();
+
         var result = await sender.Send(query, cancellationToken);
         if (result is null)
             return NoContent();
@@ -49,6 +50,7 @@ public class UsersController(ISender sender) : ControllerBase
             SizeBytes = file.Length,
             Content = stream,
         };
+
         var result = await sender.Send(command, cancellationToken);
 
         return Ok(result);

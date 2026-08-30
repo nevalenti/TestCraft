@@ -24,6 +24,7 @@ public class ProjectsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -38,6 +39,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     )
     {
         var query = new GetProjectById.Query { Id = id };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -51,6 +53,7 @@ public class ProjectsController(ISender sender) : ControllerBase
         CancellationToken cancellationToken
     )
     {
+
         var result = await sender.Send(command, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
@@ -66,6 +69,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     )
     {
         var scopedCommand = command with { Id = id };
+
         var result = await sender.Send(scopedCommand, cancellationToken);
 
         return Ok(result);
@@ -77,6 +81,7 @@ public class ProjectsController(ISender sender) : ControllerBase
     public async Task<IActionResult> Delete(ProjectId id, CancellationToken cancellationToken)
     {
         var command = new DeleteProject.Command { Id = id };
+
         await sender.Send(command, cancellationToken);
 
         return NoContent();

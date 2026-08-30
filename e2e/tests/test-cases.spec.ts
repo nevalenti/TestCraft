@@ -105,6 +105,7 @@ test.describe('Test Cases', () => {
     await testCasesPage.create(name);
     await testCasesPage.open(name);
     await page.waitForURL(/\/projects\/[^/]+\/suites\/[^/]+\/cases\/[^/]+$/);
+
     await expect(page.getByRole('heading', { name })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Add Step' })).toBeVisible();
   });

@@ -11,6 +11,7 @@ repository=$1
 tag=$2
 
 token=$(curl -fsS "https://ghcr.io/token?scope=repository:${repository}:pull" | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
+
 if [ -z "$token" ]; then
   echo "could not obtain a registry token for ${repository}" >&2
   exit 1

@@ -34,6 +34,7 @@ public static class DeleteEmailSubscription
                 ) ?? throw new NotFoundException();
 
             context.EmailSubscriptions.Remove(subscription);
+
             await context.SaveChangesAsync(cancellationToken);
         }
     }

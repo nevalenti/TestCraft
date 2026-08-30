@@ -80,6 +80,7 @@ public static class ImportJUnit
             };
 
             context.ImportJobs.Add(job);
+
             await context.SaveChangesAsync(cancellationToken);
 
             var message = new ImportJUnitRequested

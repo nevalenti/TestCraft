@@ -99,9 +99,11 @@ test.describe('Test Case Steps', () => {
 
   test('edits a step', async ({ testStepsPage }) => {
     await testStepsPage.addStep('Click the submit button', 'Form is submitted');
+
     await expect(testStepsPage.rows.first()).toBeVisible({ timeout: 10_000 });
 
     await testStepsPage.editStep(0, 'Double-click the submit button');
+
     await expect(
       testStepsPage.rows.first().getByText('Double-click the submit button'),
     ).toBeVisible({ timeout: 10_000 });

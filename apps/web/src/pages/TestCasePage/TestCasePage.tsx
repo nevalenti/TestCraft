@@ -130,6 +130,7 @@ export const TestCasePage = () => {
       id: step.id,
       order: index + 1,
     }));
+
     const hasChanges = reordered.some(({ id, order }) => {
       const original = sortedSteps.find((step) => step.id === id);
 

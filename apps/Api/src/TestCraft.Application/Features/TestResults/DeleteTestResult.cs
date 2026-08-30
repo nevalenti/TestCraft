@@ -48,6 +48,7 @@ public static class DeleteTestResult
             await context.SaveChangesAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
+
             await notifier.ResultDeletedAsync(request.RunId, request.Id, cancellationToken);
         }
     }

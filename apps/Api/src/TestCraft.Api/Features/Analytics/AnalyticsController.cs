@@ -25,6 +25,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     )
     {
         var query = new GetRunTrend.Query { ProjectId = projectId, Limit = limit };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -40,6 +41,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     )
     {
         var query = new GetSuiteBreakdown.Query { ProjectId = projectId, RunId = runId };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -55,6 +57,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
     )
     {
         var query = new GetFlakyTests.Query { ProjectId = projectId, MinRuns = minRuns };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
@@ -76,6 +79,7 @@ public class AnalyticsController(ISender sender) : ControllerBase
             RunAId = runAId,
             RunBId = runBId,
         };
+
         var result = await sender.Send(query, cancellationToken);
 
         return Ok(result);
