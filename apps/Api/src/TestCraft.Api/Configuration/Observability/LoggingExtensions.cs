@@ -30,6 +30,8 @@ public static class LoggingExtensions
                     .MinimumLevel.Information()
                     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
                     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+                    .MinimumLevel.Override("Hangfire", LogEventLevel.Warning)
+                    .MinimumLevel.Override("MassTransit", LogEventLevel.Warning)
                     .ReadFrom.Configuration(context.Configuration)
                     .Enrich.FromLogContext()
                     .Enrich.WithSpan()

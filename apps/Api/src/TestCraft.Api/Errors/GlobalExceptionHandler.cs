@@ -3,9 +3,14 @@ using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 
+using Serilog.Context;
+
+using TestCraft.Api.Middleware;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Common.Logging;
 using TestCraft.Domain.Exceptions;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Errors;
 
@@ -21,6 +26,16 @@ public partial class GlobalExceptionHandler(
         CancellationToken cancellationToken
     )
     {
+        using var _ = LogContextExtensions.PushProperties(
+            LogContext.PushProperty("requestId", httpContext.TraceIdentifier),
+            httpContext.Items[PageIdMiddleware.ItemsKey] is string pageId
+                ? LogContext.PushProperty("pageId", pageId)
+                : null,
+            httpContext.User.GetUserIdOrNull() is { } userId
+                ? LogContext.PushProperty("userId", userId)
+                : null
+        );
+
         switch (exception)
         {
             case NotFoundException:

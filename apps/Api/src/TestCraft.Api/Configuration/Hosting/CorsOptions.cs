@@ -4,6 +4,7 @@ namespace TestCraft.Api.Configuration.Hosting;
 
 public sealed class CorsOptions : IStartupOptions
 {
+    [NotSensitive]
     public string[] CorsAllowedOrigins { get; init; } = [];
 
     public static CorsOptions Bind(IConfiguration configuration) =>

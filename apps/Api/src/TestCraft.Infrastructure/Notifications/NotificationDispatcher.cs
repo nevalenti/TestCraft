@@ -13,6 +13,7 @@ using TestCraft.Infrastructure.FeatureToggles;
 
 namespace TestCraft.Infrastructure.Notifications;
 
+#pragma warning disable CA1873
 public partial class NotificationDispatcher(
     IApplicationDbContext context,
     IEmailService email,
@@ -21,11 +22,16 @@ public partial class NotificationDispatcher(
     ILogger<NotificationDispatcher> logger
 ) : INotificationDispatcher
 {
-    private readonly record struct DeliveryAttemptResult(bool Success, string? Error)
+    private readonly record struct DeliveryAttemptResult(
+        bool Success,
+        string? Error,
+        Exception? Exception = null
+    )
     {
         public static readonly DeliveryAttemptResult Ok = new(true, null);
 
-        public static DeliveryAttemptResult Fail(string error) => new(false, error);
+        public static DeliveryAttemptResult Fail(string error, Exception? exception = null) =>
+            new(false, error, exception);
     }
 
     private sealed record EmailPayload(string Subject, string HtmlBody);
@@ -92,7 +98,7 @@ public partial class NotificationDispatcher(
                 LogDeliveryRetrySucceeded(
                     logger,
                     delivery.Channel,
-                    delivery.Target,
+                    RedactTarget(delivery.Channel, delivery.Target),
                     delivery.AttemptCount
                 );
             }
@@ -104,8 +110,9 @@ public partial class NotificationDispatcher(
                     NotificationMetrics.RecordAbandoned(delivery.Channel);
                     LogDeliveryAbandoned(
                         logger,
+                        result.Exception,
                         delivery.Channel,
-                        delivery.Target,
+                        RedactTarget(delivery.Channel, delivery.Target),
                         delivery.AttemptCount
                     );
                 }
@@ -145,7 +152,14 @@ public partial class NotificationDispatcher(
             if (result.Success)
                 continue;
 
-            LogWebhookFailed(logger, webhook.Url, projectId, eventType, result.Error!);
+            LogWebhookFailed(
+                logger,
+                result.Exception,
+                RedactWebhookUrl(webhook.Url),
+                projectId,
+                eventType,
+                result.Error!
+            );
             context.NotificationDeliveries.Add(
                 NotificationDelivery.FromFailedAttempt(
                     projectId,
@@ -185,7 +199,14 @@ public partial class NotificationDispatcher(
             if (result.Success)
                 continue;
 
-            LogEmailFailed(logger, recipient, projectId, eventType, result.Error!);
+            LogEmailFailed(
+                logger,
+                result.Exception,
+                MaskEmail(recipient),
+                projectId,
+                eventType,
+                result.Error!
+            );
             context.NotificationDeliveries.Add(
                 NotificationDelivery.FromFailedAttempt(
                     projectId,
@@ -228,7 +249,7 @@ public partial class NotificationDispatcher(
         }
         catch (Exception ex)
         {
-            return DeliveryAttemptResult.Fail(ex.Message);
+            return DeliveryAttemptResult.Fail(ex.Message, ex);
         }
     }
 
@@ -246,7 +267,7 @@ public partial class NotificationDispatcher(
         }
         catch (Exception ex)
         {
-            return DeliveryAttemptResult.Fail(ex.Message);
+            return DeliveryAttemptResult.Fail(ex.Message, ex);
         }
     }
 
@@ -272,6 +293,20 @@ public partial class NotificationDispatcher(
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 
+    private static string RedactWebhookUrl(string url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var uri)
+            ? $"{uri.Scheme}://{uri.Host}/***"
+            : "***";
+
+    private static string MaskEmail(string email)
+    {
+        var at = email.IndexOf('@');
+        return at <= 1 ? "***" : $"{email[0]}***{email[at..]}";
+    }
+
+    private static string RedactTarget(NotificationChannel channel, string target) =>
+        channel == NotificationChannel.Webhook ? RedactWebhookUrl(target) : MaskEmail(target);
+
     [LoggerMessage(
         Level = LogLevel.Debug,
         Message = "Notification delivery retry is disabled via configuration, skipping this run"
@@ -284,6 +319,7 @@ public partial class NotificationDispatcher(
     )]
     static partial void LogWebhookFailed(
         ILogger logger,
+        Exception? exception,
         string url,
         ProjectId projectId,
         string eventType,
@@ -296,6 +332,7 @@ public partial class NotificationDispatcher(
     )]
     static partial void LogEmailFailed(
         ILogger logger,
+        Exception? exception,
         string recipient,
         ProjectId projectId,
         string eventType,
@@ -319,8 +356,10 @@ public partial class NotificationDispatcher(
     )]
     static partial void LogDeliveryAbandoned(
         ILogger logger,
+        Exception? exception,
         NotificationChannel channel,
         string target,
         int attemptCount
     );
 }
+#pragma warning restore CA1873

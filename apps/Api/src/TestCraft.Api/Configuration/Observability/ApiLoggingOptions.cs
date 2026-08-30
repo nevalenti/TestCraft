@@ -4,12 +4,16 @@ namespace TestCraft.Api.Configuration.Observability;
 
 public sealed class ApiLoggingOptions : IStartupOptions
 {
+    [NotSensitive]
     public string? LokiUrl { get; init; }
 
+    [NotSensitive]
     public string OtelServiceName { get; init; } = "testcraft-api";
 
+    [NotSensitive]
     public string? OtelExporterEndpoint { get; init; }
 
+    [NotSensitive]
     public string? SeqUrl { get; init; }
 
     [Sensitive]

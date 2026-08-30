@@ -1,5 +1,6 @@
 using Serilog.Context;
 
+using TestCraft.Common.Logging;
 using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Middleware;
@@ -15,30 +16,17 @@ public class UserLogContextMiddleware(RequestDelegate next)
             return;
         }
 
-        var properties = new List<IDisposable>();
-
         var userId = user.GetUserIdOrNull();
-        if (userId is not null)
-        {
-            properties.Add(LogContext.PushProperty("userId", userId));
-        }
-
         var username = user.GetUserName();
-        if (username is not null)
-        {
-            properties.Add(LogContext.PushProperty("username", username));
-        }
 
-        try
+        using (
+            LogContextExtensions.PushProperties(
+                userId is not null ? LogContext.PushProperty("userId", userId) : null,
+                username is not null ? LogContext.PushProperty("username", username) : null
+            )
+        )
         {
             await next(context);
-        }
-        finally
-        {
-            for (var i = properties.Count - 1; i >= 0; i--)
-            {
-                properties[i].Dispose();
-            }
         }
     }
 }
