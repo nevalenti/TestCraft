@@ -7,6 +7,8 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
+import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateProject,
@@ -16,6 +18,7 @@ import {
 } from '@/features/projects/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { ProjectCard } from '@/pages/ProjectsPage/ProjectCard';
 import { ProjectForm } from '@/pages/ProjectsPage/ProjectForm';
@@ -37,6 +40,7 @@ export const ProjectsPage = () => {
   const createProject = useCreateProject();
   const updateProject = useUpdateProject();
   const deleteProject = useDeleteProject();
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   useBreadcrumbs([{ label: 'Projects' }]);
 
@@ -54,9 +58,11 @@ export const ProjectsPage = () => {
   const renderProjects = () => {
     if (isPending)
       return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading projects…">
+            <ResourceSkeleton viewMode={viewMode} />
+          </SkeletonStatus>
+        )
       );
     if (projects?.length === 0)
       return (

@@ -14,6 +14,8 @@ import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestSuite,
@@ -23,6 +25,7 @@ import {
 } from '@/features/testSuites/hooks';
 import { SuiteForm } from '@/features/testSuites/SuiteForm';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate } from '@/lib/format';
@@ -46,6 +49,7 @@ export const SuitesTab = () => {
   const createSuite = useCreateTestSuite(projectId);
   const updateSuite = useUpdateTestSuite(projectId);
   const deleteSuite = useDeleteTestSuite(projectId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleCreate = (input: CreateTestSuite) =>
     createSuite.mutate(input, { onSuccess: close });
@@ -75,9 +79,11 @@ export const SuitesTab = () => {
   const renderSuites = () => {
     if (isPending)
       return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading test suites…">
+            <ResourceSkeleton viewMode={viewMode} />
+          </SkeletonStatus>
+        )
       );
 
     if (isError) return <ErrorState error={error} onRetry={refetch} />;

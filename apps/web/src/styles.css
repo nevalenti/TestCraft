@@ -13,9 +13,21 @@
   --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
   --color-border: oklch(0 0 0 / 0.35);
   --color-surface: oklch(1 0 0 / 0.6);
+  --shadow-card:
+    0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
+  --shadow-card-hover:
+    0 2px 4px oklch(0 0 0 / 0.22), 0 12px 28px -6px oklch(0 0 0 / 0.32);
 }
 
 @layer utilities {
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-card-hover {
+    box-shadow: var(--shadow-card-hover);
+  }
+
   .card-bg-info {
     background-color: oklch(from var(--color-info) l c h / 0.08);
     border-color: oklch(from var(--color-info) l c h / 0.28);
@@ -63,8 +75,8 @@
       45deg,
       transparent 0px,
       transparent 8px,
-      oklch(0 0 0 / 0.11) 8px,
-      oklch(0 0 0 / 0.11) 10px
+      oklch(0 0 0 / 0.05) 8px,
+      oklch(0 0 0 / 0.05) 10px
     );
   }
 
@@ -168,8 +180,8 @@
     --color-success: oklch(0.5 0.19 148);
     --color-success-content: oklch(1 0 0);
 
-    --color-warning: oklch(0.64 0.15 112.8);
-    --color-warning-content: oklch(0.18 0.02 112.8);
+    --color-warning: oklch(0.68 0.15 78);
+    --color-warning-content: oklch(0.18 0.02 90);
 
     --color-error: oklch(0.56 0.22 24.4);
     --color-error-content: oklch(1 0 0);
@@ -182,29 +194,6 @@
   }
 
   [data-theme='dracula'] {
-    --color-base-100: oklch(0.169 0.019 251);
-    --color-base-200: oklch(0.133 0.017 251);
-    --color-base-300: oklch(0.215 0.021 251);
-    --color-base-content: oklch(0.878 0.014 251);
-
-    --color-primary: oklch(0.645 0.218 278);
-    --color-primary-content: oklch(1 0 0);
-    --color-secondary: oklch(0.598 0.18 290);
-    --color-secondary-content: oklch(1 0 0);
-    --color-accent: oklch(0.672 0.158 215);
-    --color-accent-content: oklch(0.1 0 0);
-    --color-neutral: oklch(0.278 0.022 251);
-    --color-neutral-content: oklch(0.878 0.014 251);
-
-    --color-info: oklch(0.624 0.19 232);
-    --color-info-content: oklch(0.1 0 0);
-    --color-success: oklch(0.618 0.178 145);
-    --color-success-content: oklch(0.1 0 0);
-    --color-warning: oklch(0.744 0.182 85);
-    --color-warning-content: oklch(0.1 0 0);
-    --color-error: oklch(0.638 0.22 28);
-    --color-error-content: oklch(0.1 0 0);
-
     --color-border: oklch(1 0 0 / 0.32);
   }
 

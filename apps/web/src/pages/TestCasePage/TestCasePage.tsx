@@ -29,6 +29,8 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { Modal } from '@/components/ui/Modal';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import { useTestCase } from '@/features/testCases/hooks';
 import {
@@ -40,12 +42,34 @@ import {
 } from '@/features/testCaseSteps/hooks';
 import { useTestSuite } from '@/features/testSuites/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { LabelSelect } from '@/pages/TestCasePage/LabelSelect';
 import { StepDragPreview } from '@/pages/TestCasePage/StepDragPreview';
 import { StepForm } from '@/pages/TestCasePage/StepForm';
 import { StepRow } from '@/pages/TestCasePage/StepRow';
+
+const StepRowSkeleton = () => (
+  <div className="rounded-lg border border-base-content/20 bg-base-100 shadow-card">
+    <div className="flex items-start gap-3 p-4 pr-24">
+      <Skeleton className="size-8 shrink-0 rounded-md" />
+      <div className="min-w-0 flex-1">
+        <div className="mb-3 grid gap-4 sm:grid-cols-2">
+          <div>
+            <Skeleton className="mb-2 h-3 w-16" />
+            <Skeleton className="h-3.5 w-3/4" />
+          </div>
+          <div>
+            <Skeleton className="mb-2 h-3 w-24" />
+            <Skeleton className="h-3.5 w-3/4" />
+          </div>
+        </div>
+        <Skeleton className="h-3 w-20" />
+      </div>
+    </div>
+  </div>
+);
 
 export const TestCasePage = () => {
   const projectId = useRequiredParam('projectId');
@@ -71,6 +95,7 @@ export const TestCasePage = () => {
   const updateStep = useUpdateTestCaseStep(projectId, suiteId, caseId);
   const bulkReorder = useBulkReorderSteps(projectId, suiteId, caseId);
   const deleteStep = useDeleteTestCaseStep(projectId, suiteId, caseId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -157,9 +182,15 @@ export const TestCasePage = () => {
   const renderSteps = () => {
     if (isPending)
       return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading steps…">
+            <div className="space-y-3">
+              {Array.from({ length: 4 }, (_, i) => (
+                <StepRowSkeleton key={i} />
+              ))}
+            </div>
+          </SkeletonStatus>
+        )
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedSteps.length === 0)

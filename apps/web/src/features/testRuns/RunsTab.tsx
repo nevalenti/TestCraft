@@ -17,7 +17,9 @@ import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
 import { RunStatusBadge } from '@/components/ui/RunStatusBadge';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestRun,
@@ -31,6 +33,7 @@ import {
 import { ImportForm } from '@/features/testRuns/resultImport/ImportForm';
 import { RunForm } from '@/features/testRuns/RunForm';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
@@ -57,6 +60,7 @@ export const RunsTab = () => {
   const deleteRun = useDeleteTestRun(projectId);
   const importJUnit = useImportJUnitXml(projectId);
   const importAllure = useImportAllure(projectId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleCreate = (input: CreateTestRun) =>
     createRun.mutate(input, { onSuccess: close });
@@ -121,9 +125,11 @@ export const RunsTab = () => {
   const renderRuns = () => {
     if (isPending)
       return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading test runs…">
+            <ResourceSkeleton viewMode={viewMode} />
+          </SkeletonStatus>
+        )
       );
 
     if (isError) return <ErrorState error={error} onRetry={refetch} />;

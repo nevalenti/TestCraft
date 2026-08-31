@@ -118,13 +118,13 @@ describe('DashboardPage', () => {
     });
   });
 
-  describe('loading state — shows spinner', () => {
-    it('renders loading spinner for stats when projects are pending', () => {
+  describe('loading state — shows skeleton', () => {
+    it('renders a loading status region when projects are pending', async () => {
       setupMocks({ projectsPending: true });
       render(<DashboardPage />);
-      expect(
-        document.querySelectorAll('.loading-spinner').length,
-      ).toBeGreaterThan(0);
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        'Loading dashboard',
+      );
     });
   });
 

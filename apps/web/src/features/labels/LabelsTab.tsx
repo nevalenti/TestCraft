@@ -5,6 +5,8 @@ import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { Modal } from '@/components/ui/Modal';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { TableSkeleton } from '@/components/ui/TableSkeleton';
 import {
   useCreateLabel,
   useDeleteLabel,
@@ -12,6 +14,7 @@ import {
   useUpdateLabel,
 } from '@/features/labels/hooks';
 import { LabelForm } from '@/features/labels/LabelForm';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 
@@ -38,13 +41,16 @@ export const LabelsTab = () => {
   };
 
   const deleteTarget = modal.type === 'delete' ? modal.item : null;
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const renderLabels = () => {
     if (isPending)
       return (
-        <div className="flex min-h-40 items-center justify-center">
-          <span className="loading loading-md loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading labels…">
+            <TableSkeleton columns={3} rows={4} />
+          </SkeletonStatus>
+        )
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (!labels || labels.length === 0)

@@ -84,8 +84,8 @@ beforeEach(() => {
 });
 
 describe('ProjectsPage', () => {
-  describe('loading state — shows spinner', () => {
-    it('renders loading spinner when isPending', () => {
+  describe('loading state — shows skeleton', () => {
+    it('renders a loading status region when isPending', async () => {
       vi.mocked(useProjects).mockReturnValue({
         data: undefined,
         isPending: true,
@@ -101,9 +101,11 @@ describe('ProjectsPage', () => {
         noopMutation as unknown as ReturnType<typeof useDeleteProject>,
       );
 
-      const { container } = render(<ProjectsPage />);
+      render(<ProjectsPage />);
 
-      expect(container.querySelector('.loading-spinner')).toBeInTheDocument();
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        'Loading projects',
+      );
     });
   });
 

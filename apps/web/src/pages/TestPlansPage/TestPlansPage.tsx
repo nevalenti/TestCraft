@@ -6,6 +6,8 @@ import { useForm } from 'react-hook-form';
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestPlan,
@@ -14,9 +16,24 @@ import {
   useUpdateTestPlan,
 } from '@/features/testPlans/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate } from '@/lib/format';
+
+const PlanRowSkeleton = () => (
+  <li className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-100 px-5 py-4">
+    <div className="min-w-0 flex-1">
+      <Skeleton className="h-4 w-1/3" />
+      <Skeleton className="mt-2 h-3 w-1/2" />
+      <Skeleton className="mt-2 h-3 w-1/4" />
+    </div>
+    <div className="flex items-center gap-1.5">
+      <Skeleton className="size-6 rounded-md" />
+      <Skeleton className="size-6 rounded-md" />
+    </div>
+  </li>
+);
 
 export const TestPlansPage = () => {
   const projectId = useRequiredParam('projectId');
@@ -54,12 +71,7 @@ export const TestPlansPage = () => {
     defaultValues: { name: '', description: '' },
   });
 
-  if (isPending)
-    return (
-      <div className="flex min-h-80 items-center justify-center">
-        <span className="loading loading-lg loading-spinner text-primary" />
-      </div>
-    );
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
@@ -72,6 +84,81 @@ export const TestPlansPage = () => {
     resetEdit({ name: plan.name, description: plan.description ?? '' });
     openEdit(plan);
   };
+
+  let planListContent: React.ReactNode;
+  if (isPending) {
+    planListContent = showSkeleton ? (
+      <SkeletonStatus label="Loading test plans…">
+        <ul className="space-y-3">
+          {Array.from({ length: 5 }, (_, i) => (
+            <PlanRowSkeleton key={i} />
+          ))}
+        </ul>
+      </SkeletonStatus>
+    ) : null;
+  } else if (plans?.length) {
+    planListContent = (
+      <ul className="space-y-3">
+        {plans.map((plan) => (
+          <li
+            key={plan.id}
+            className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-100 px-5 py-4 transition-colors hover:bg-base-200/40"
+          >
+            <div className="min-w-0">
+              <Link
+                to="/projects/$projectId/plans/$planId"
+                params={{ projectId, planId: plan.id }}
+                className="text-sm font-semibold hover:text-primary"
+              >
+                {plan.name}
+              </Link>
+              {plan.description && (
+                <p className="mt-0.5 truncate text-xs text-base-content/75">
+                  {plan.description}
+                </p>
+              )}
+              <p className="mt-1 text-xs text-base-content/65">
+                Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{' '}
+                case{plan.caseCount === 1 ? '' : 's'}
+              </p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button
+                className="btn btn-ghost btn-xs"
+                onClick={() => startEdit(plan)}
+                aria-label="Edit plan"
+              >
+                <PencilIcon className="size-3.5" />
+              </button>
+              <button
+                className="btn text-error btn-ghost btn-xs"
+                onClick={() => deletePlan.mutate(plan.id)}
+                aria-label="Delete plan"
+              >
+                <TrashIcon className="size-3.5" />
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  } else {
+    planListContent = (
+      <EmptyState
+        title="No test plans yet"
+        description="Create a plan to pre-select test cases and run them as a structured suite."
+        action={
+          <button
+            className="btn gap-1.5 btn-sm btn-primary"
+            onClick={startCreate}
+          >
+            <PlusIcon className="size-4" />
+            New Plan
+          </button>
+        }
+      />
+    );
+  }
 
   return (
     <div className="flex min-h-0 w-full flex-col">
@@ -92,65 +179,7 @@ export const TestPlansPage = () => {
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
-        {plans?.length ? (
-          <ul className="space-y-3">
-            {plans.map((plan) => (
-              <li
-                key={plan.id}
-                className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-100 px-5 py-4 transition-colors hover:bg-base-200/40"
-              >
-                <div className="min-w-0">
-                  <Link
-                    to="/projects/$projectId/plans/$planId"
-                    params={{ projectId, planId: plan.id }}
-                    className="text-sm font-semibold hover:text-primary"
-                  >
-                    {plan.name}
-                  </Link>
-                  {plan.description && (
-                    <p className="mt-0.5 truncate text-xs text-base-content/75">
-                      {plan.description}
-                    </p>
-                  )}
-                  <p className="mt-1 text-xs text-base-content/65">
-                    Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{' '}
-                    case{plan.caseCount === 1 ? '' : 's'}
-                  </p>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <button
-                    className="btn btn-ghost btn-xs"
-                    onClick={() => startEdit(plan)}
-                    aria-label="Edit plan"
-                  >
-                    <PencilIcon className="size-3.5" />
-                  </button>
-                  <button
-                    className="btn text-error btn-ghost btn-xs"
-                    onClick={() => deletePlan.mutate(plan.id)}
-                    aria-label="Delete plan"
-                  >
-                    <TrashIcon className="size-3.5" />
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <EmptyState
-            title="No test plans yet"
-            description="Create a plan to pre-select test cases and run them as a structured suite."
-            action={
-              <button
-                className="btn gap-1.5 btn-sm btn-primary"
-                onClick={startCreate}
-              >
-                <PlusIcon className="size-4" />
-                New Plan
-              </button>
-            }
-          />
-        )}
+        {planListContent}
       </section>
 
       <Modal

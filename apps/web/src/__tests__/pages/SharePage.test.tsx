@@ -40,14 +40,16 @@ beforeEach(() => {
 
 describe('SharePage', () => {
   describe('given the run is still loading', () => {
-    it('shows a loading spinner', () => {
+    it('shows a loading status region', async () => {
       vi.mocked(useSharedRun).mockReturnValue({
         data: undefined,
         isPending: true,
         isError: false,
       } as never);
-      const { container } = render(<SharePage />);
-      expect(container.querySelector('.loading-spinner')).toBeInTheDocument();
+      render(<SharePage />);
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        'Loading shared run',
+      );
     });
   });
 

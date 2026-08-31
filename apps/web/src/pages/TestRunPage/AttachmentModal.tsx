@@ -8,13 +8,26 @@ import type { Attachment } from '@testcraft/types';
 import { useRef } from 'react';
 
 import { Modal } from '@/components/ui/Modal';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import {
   useAttachments,
   useDeleteAttachment,
   useDownloadAttachment,
   useUploadAttachment,
 } from '@/features/attachments/hooks';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { formatBytes, formatDateTime } from '@/lib/format';
+
+const AttachmentRowSkeleton = () => (
+  <li className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-3 py-2.5">
+    <Skeleton className="size-4 shrink-0 rounded-sm" />
+    <div className="min-w-0 flex-1">
+      <Skeleton className="h-3.5 w-1/2" />
+      <Skeleton className="mt-1.5 h-3 w-1/3" />
+    </div>
+  </li>
+);
 
 interface AttachmentModalProps {
   isOpen: boolean;
@@ -42,6 +55,7 @@ export const AttachmentModal = ({
   const upload = useUploadAttachment(projectId, runId, resultId);
   const del = useDeleteAttachment(projectId, runId, resultId);
   const download = useDownloadAttachment(projectId, runId, resultId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -56,9 +70,15 @@ export const AttachmentModal = ({
   const renderAttachments = () => {
     if (isPending)
       return (
-        <div className="flex justify-center py-8">
-          <span className="loading loading-md loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading attachments…">
+            <ul className="space-y-2">
+              {Array.from({ length: 2 }, (_, i) => (
+                <AttachmentRowSkeleton key={i} />
+              ))}
+            </ul>
+          </SkeletonStatus>
+        )
       );
     if (attachments?.length === 0)
       return (

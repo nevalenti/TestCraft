@@ -54,7 +54,7 @@ export const AccountPage = () => {
         </header>
 
         <div className="page-content flex max-w-2xl flex-col gap-5">
-          <div className="flex items-center gap-5 rounded-2xl border border-border bg-base-100 p-6 shadow-sm">
+          <div className="flex items-center gap-5 rounded-2xl border border-border bg-base-100 p-6 shadow-card">
             <div className="group relative shrink-0">
               {avatarData?.url ? (
                 <img
