@@ -1,10 +1,22 @@
 import { TestResultStatus, TestRunStatus } from '@testcraft/types';
 
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { StatusBadge } from '@/components/ui/StatusBadge';
 import { useTestRun } from '@/features/testRuns/hooks';
 import { useResultFeed } from '@/features/testRuns/useResultFeed';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { cn } from '@/lib/cn';
 import { formatDate, formatDuration as formatDurationText } from '@/lib/format';
+
+const LogRowSkeleton = () => (
+  <div className="flex items-center gap-3 border-t border-l-4 border-t-border border-l-base-content/10 px-4 py-3 first:border-t-0">
+    <Skeleton className="h-5 w-16 rounded-md" />
+    <Skeleton className="h-3.5 flex-1" />
+    <Skeleton className="h-3 w-10 shrink-0 rounded-md" />
+    <Skeleton className="h-3 w-16 shrink-0" />
+  </div>
+);
 
 const STATUS_BORDER: Record<TestResultStatus, string> = {
   [TestResultStatus.Passed]: 'border-l-success',
@@ -25,11 +37,18 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
   const { items, isLoading } = useResultFeed(projectId, runId);
   const { data: run } = useTestRun(projectId, runId);
   const isActive = run?.status === TestRunStatus.Active;
+  const showSkeleton = useIsLoadingVisible(isLoading);
 
   return isLoading ? (
-    <div className="flex min-h-80 items-center justify-center">
-      <span className="loading loading-lg loading-spinner text-primary" />
-    </div>
+    showSkeleton && (
+      <SkeletonStatus label="Loading log…">
+        <div className="overflow-hidden rounded-xl border border-border bg-base-100">
+          {Array.from({ length: 5 }, (_, i) => (
+            <LogRowSkeleton key={i} />
+          ))}
+        </div>
+      </SkeletonStatus>
+    )
   ) : (
     <div className="space-y-3">
       <div className="flex items-center gap-3">

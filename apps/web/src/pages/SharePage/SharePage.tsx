@@ -1,7 +1,11 @@
 import type { TestResultStatus } from '@testcraft/types';
 
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { TableSkeleton } from '@/components/ui/TableSkeleton';
 import { useSharedRun } from '@/features/shareTokens/hooks';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
 import {
@@ -11,16 +15,43 @@ import {
   passRateClass,
 } from '@/lib/format';
 
+const SharePageSkeleton = () => (
+  <SkeletonStatus label="Loading shared run…">
+    <div className="min-h-screen bg-base-200">
+      <div className="mx-auto max-w-4xl px-4 py-10">
+        <Skeleton className="h-3 w-32" />
+        <Skeleton className="mt-3 h-8 w-72" />
+        <Skeleton className="mt-2 h-4 w-40" />
+        <Skeleton className="mt-1.5 h-3 w-24" />
+
+        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-5">
+          {Array.from({ length: 5 }, (_, i) => (
+            <div
+              key={i}
+              className="rounded-xl border border-border bg-base-100 p-4 text-center"
+            >
+              <Skeleton className="mx-auto h-7 w-10" />
+              <Skeleton className="mx-auto mt-1.5 h-3 w-14" />
+            </div>
+          ))}
+        </div>
+
+        <Skeleton className="mt-3 h-6 w-40" />
+
+        <div className="mt-8">
+          <TableSkeleton columns={6} rows={8} />
+        </div>
+      </div>
+    </div>
+  </SkeletonStatus>
+);
+
 export const SharePage = () => {
   const token = useRequiredParam('token');
   const { data: run, isPending, isError } = useSharedRun(token);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
-  if (isPending)
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <span className="loading loading-lg loading-spinner text-primary" />
-      </div>
-    );
+  if (isPending) return showSkeleton ? <SharePageSkeleton /> : null;
 
   if (isError || !run)
     return (

@@ -1,4 +1,4 @@
-import { format, isValid, parseISO } from 'date-fns';
+import { format, formatDistanceToNowStrict, isValid, parseISO } from 'date-fns';
 
 const toDate = (value: unknown): Date | null => {
   if (value == null || value === '') return null;
@@ -21,6 +21,11 @@ export const toDatetimeLocal = (iso: string): string =>
   format(parseISO(iso), "yyyy-MM-dd'T'HH:mm");
 
 export const todayLocalDate = (): string => format(new Date(), 'yyyy-MM-dd');
+
+export const formatElapsed = (value: unknown): string => {
+  const date = toDate(value);
+  return date ? formatDistanceToNowStrict(date) : '—';
+};
 
 export const formatDuration = (ms?: number | null): string => {
   if (ms == null) return '—';

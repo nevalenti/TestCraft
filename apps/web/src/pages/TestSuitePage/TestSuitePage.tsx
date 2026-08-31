@@ -15,6 +15,8 @@ import { Modal } from '@/components/ui/Modal';
 import { PriorityBadge } from '@/components/ui/PriorityBadge';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
+import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import { useProject } from '@/features/projects/hooks';
 import {
@@ -26,6 +28,7 @@ import {
 import { useTestSuite } from '@/features/testSuites/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate } from '@/lib/format';
@@ -53,6 +56,7 @@ export const TestSuitePage = () => {
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleCreate = (input: CreateTestCase) =>
     createCase.mutate(input, { onSuccess: close });
@@ -72,9 +76,11 @@ export const TestSuitePage = () => {
   const renderTestCases = () => {
     if (isPending)
       return (
-        <div className="flex min-h-80 items-center justify-center">
-          <span className="loading loading-lg loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading test cases…">
+            <ResourceSkeleton viewMode={viewMode} />
+          </SkeletonStatus>
+        )
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (testCases?.length === 0)

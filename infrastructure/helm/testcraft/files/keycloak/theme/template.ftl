@@ -61,7 +61,7 @@
         display: flex;
         flex-direction: column;
         width: 100%;
-        max-width: 105rem;
+        max-width: 90rem;
         height: 100vh;
         margin-left: auto;
         margin-right: auto;

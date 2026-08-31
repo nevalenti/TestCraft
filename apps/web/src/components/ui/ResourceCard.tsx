@@ -43,9 +43,9 @@ export const ResourceCard = ({
       data-testid={testId}
       style={{ '--card-glow': `var(${colorVar})` } as React.CSSProperties}
       className={cn(
-        'group relative overflow-hidden rounded-xl border border-border bg-base-100',
+        'group relative overflow-hidden rounded-xl border border-border bg-base-100 shadow-card',
         'transition-[background-color,box-shadow] duration-200 ease-out',
-        'hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.4),0_8px_20px_-8px_oklch(from_var(--card-glow)_l_c_h/0.35)]',
+        'hover:bg-base-200/50 hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.4),0_8px_20px_-8px_oklch(from_var(--card-glow)_l_c_h/0.35),var(--shadow-card-hover)]',
       )}
     >
       {to && (

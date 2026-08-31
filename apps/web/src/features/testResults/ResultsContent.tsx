@@ -4,7 +4,10 @@ import type { Paginated, TestResult, TestResultStatus } from '@testcraft/types';
 
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { TableSkeleton } from '@/components/ui/TableSkeleton';
 import { ResultsTable } from '@/features/testResults/ResultsTable';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 
 interface ResultsContentProps {
   isPending: boolean;
@@ -37,11 +40,15 @@ export const ResultsContent = ({
   table,
   pageCount,
 }: ResultsContentProps) => {
+  const showSkeleton = useIsLoadingVisible(isPending || isSummaryPending);
+
   if (isPending || isSummaryPending)
     return (
-      <div className="flex min-h-80 items-center justify-center">
-        <span className="loading loading-lg loading-spinner text-primary" />
-      </div>
+      showSkeleton && (
+        <SkeletonStatus label="Loading results…">
+          <TableSkeleton columns={7} rows={8} shadow />
+        </SkeletonStatus>
+      )
     );
 
   if (isError) return <ErrorState error={error} onRetry={onRetry} />;

@@ -20,6 +20,8 @@ import { useForm } from 'react-hook-form';
 
 import { ErrorState } from '@/components/ErrorState';
 import { Modal } from '@/components/ui/Modal';
+import { Skeleton } from '@/components/ui/Skeleton';
+import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import { useProjectTestCases } from '@/features/testCases/hooks';
 import {
@@ -31,8 +33,18 @@ import {
   useTestPlanCases,
 } from '@/features/testPlans/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { SortableItem } from '@/pages/TestPlansPage/SortableItem';
+
+const PlanCaseRowSkeleton = () => (
+  <li className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-4 py-3">
+    <Skeleton className="size-4" />
+    <Skeleton className="h-3 w-4" />
+    <Skeleton className="h-3.5 flex-1" />
+    <Skeleton className="size-5 rounded-md" />
+  </li>
+);
 
 export const TestPlanPage = () => {
   const projectId = useRequiredParam('projectId');
@@ -53,6 +65,7 @@ export const TestPlanPage = () => {
   const removeCase = useRemoveCaseFromPlan(projectId, planId);
   const reorderCases = useReorderPlanCases(projectId, planId);
   const createRun = useCreateRunFromPlan(projectId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const [addSearch, setAddSearch] = useState('');
   const [runModalOpen, setRunModalOpen] = useState(false);
@@ -125,9 +138,15 @@ export const TestPlanPage = () => {
   const renderPlanCases = () => {
     if (isPending) {
       return (
-        <div className="flex justify-center py-8">
-          <span className="loading loading-spinner text-primary" />
-        </div>
+        showSkeleton && (
+          <SkeletonStatus label="Loading plan cases…">
+            <ul className="space-y-2">
+              {Array.from({ length: 3 }, (_, i) => (
+                <PlanCaseRowSkeleton key={i} />
+              ))}
+            </ul>
+          </SkeletonStatus>
+        )
       );
     }
     if (isError) return <ErrorState error={error} onRetry={refetch} />;

@@ -96,11 +96,13 @@ beforeEach(() => {
 });
 
 describe('TestPlansPage', () => {
-  describe('loading state — shows spinner', () => {
-    it('renders a loading spinner when isPending', () => {
+  describe('loading state — shows skeleton', () => {
+    it('renders a loading status region when isPending', async () => {
       setupMocks(undefined, true);
-      const { container } = render(<TestPlansPage />);
-      expect(container.querySelector('.loading-spinner')).toBeInTheDocument();
+      render(<TestPlansPage />);
+      expect(await screen.findByRole('status')).toHaveTextContent(
+        'Loading test plans',
+      );
     });
   });
 

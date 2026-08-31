@@ -15,11 +15,13 @@ export const RunAvatar = ({
   executedByAvatarUrl,
   source,
   size = 'size-6',
+  className,
 }: {
   executedByName?: string | null;
   executedByAvatarUrl?: string | null;
   source?: string | null;
   size?: string;
+  className?: string;
 }) => {
   const title = executedByName ?? source ?? 'Unknown';
 
@@ -29,7 +31,7 @@ export const RunAvatar = ({
         src={executedByAvatarUrl}
         alt={title}
         title={title}
-        className={cn(size, 'shrink-0 rounded-full object-cover')}
+        className={cn(size, 'shrink-0 rounded-full object-cover', className)}
       />
     );
   }
@@ -37,8 +39,9 @@ export const RunAvatar = ({
   return (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[10px] font-bold text-base-content/70 tabular-nums',
+        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[11px] font-bold text-base-content/70 tabular-nums',
         size,
+        className,
       )}
       title={title}
     >
