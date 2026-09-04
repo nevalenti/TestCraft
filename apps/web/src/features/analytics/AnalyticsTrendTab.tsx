@@ -1,6 +1,8 @@
+import { ArrowTrendingUpIcon } from '@heroicons/react/24/outline';
 import { useMemo } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useRunTrend } from '@/features/analytics/hooks';
 import { type TrendEntry } from '@/features/analytics/trendHelpers';
 import { TrendSection } from '@/features/analytics/TrendSection';
@@ -55,9 +57,11 @@ export const AnalyticsTrendTab = () => {
 
   if (groups.length === 0)
     return (
-      <p className="py-10 text-center text-sm text-base-content/65">
-        No run data yet. Complete a test run to see trend data.
-      </p>
+      <EmptyState
+        icon={<ArrowTrendingUpIcon className="size-6" />}
+        title="No run data yet"
+        description="Complete a test run to see trend data."
+      />
     );
 
   return (

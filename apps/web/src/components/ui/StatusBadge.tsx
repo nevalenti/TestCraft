@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { TestResultStatus } from '@testcraft/types';
 
-import { cn } from '@/lib/cn';
+import { StatusPill } from '@/components/ui/StatusPill';
 
 const config: Record<
   TestResultStatus,
@@ -37,15 +37,5 @@ const config: Record<
 export const StatusBadge = ({ status }: { status: TestResultStatus }) => {
   const { label, cls, icon } = config[status];
 
-  return (
-    <span
-      className={cn(
-        'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[11px] font-semibold',
-        cls,
-      )}
-    >
-      {icon}
-      {label}
-    </span>
-  );
+  return <StatusPill label={label} className={cls} icon={icon} />;
 };

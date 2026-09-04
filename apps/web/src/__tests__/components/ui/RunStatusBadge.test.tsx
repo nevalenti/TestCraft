@@ -28,7 +28,7 @@ describe('RunStatusBadge', () => {
       render(<RunStatusBadge status={TestRunStatus.Archived} />);
       const badge = screen.getByText(TestRunStatus.Archived);
       expect(badge).toBeInTheDocument();
-      expect(badge.className).toContain('text-base-content/65');
+      expect(badge.className).toContain('text-base-content/70');
     });
   });
 });

@@ -14,6 +14,7 @@ import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
+import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
@@ -95,17 +96,16 @@ export const RunsTab = () => {
   );
   const summaryMap = useTestRunSummaries(completedRuns);
 
-  const getRunIcon = (run: TestRun, size: 'sm' | 'xs') => {
-    const cls = size === 'sm' ? 'size-4' : 'size-3.5';
+  const getRunIcon = (run: TestRun) => {
     if (run.status === TestRunStatus.Completed) {
       const summary = summaryMap.get(run.id);
       return (summary?.failed ?? 0) > 0 ? (
-        <XCircleIcon className={cn(cls, 'text-error')} />
+        <XCircleIcon className={cn('size-4', 'text-error')} />
       ) : (
-        <CheckCircleIcon className={cn(cls, 'text-success')} />
+        <CheckCircleIcon className={cn('size-4', 'text-success')} />
       );
     }
-    return <PlayCircleIcon className={cls} />;
+    return <PlayCircleIcon className="size-4" />;
   };
 
   const allRuns = runs ?? [];
@@ -155,24 +155,20 @@ export const RunsTab = () => {
               label="test run"
               cardBg="card-bg-warning"
               accentText="text-warning"
-              typeIcon={getRunIcon(run, 'sm')}
+              typeIcon={getRunIcon(run)}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold">
                   {run.name}
                 </span>
-                <p className="truncate text-xs text-base-content/85">
+                <p className="truncate text-xs text-base-content/70">
                   {run.environment}
                 </p>
               </div>
               <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                {run.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-                    {run.source}
-                  </span>
-                )}
+                {run.source && <MetaPill>{run.source}</MetaPill>}
                 <RunStatusBadge status={run.status} />
-                <span className="text-[11px] font-medium text-base-content/65 tabular-nums">
+                <span className="text-xs font-medium text-base-content/55 tabular-nums">
                   {formatDate(run.createdAt)}
                 </span>
               </div>
@@ -193,26 +189,22 @@ export const RunsTab = () => {
             label="test run"
             cardBg="card-bg-warning"
             accentText="text-warning"
-            typeIcon={getRunIcon(run, 'xs')}
+            typeIcon={getRunIcon(run)}
           >
             <div className="flex flex-col gap-1">
               <span className="line-clamp-2 text-base leading-snug font-semibold">
                 {run.name}
               </span>
-              <p className="text-sm font-medium text-base-content/85">
+              <p className="text-sm font-medium text-base-content/70">
                 {run.environment}
               </p>
             </div>
-            <div className="mt-2.5 flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1">
-                {run.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-                    {run.source}
-                  </span>
-                )}
+                {run.source && <MetaPill>{run.source}</MetaPill>}
                 <RunStatusBadge status={run.status} />
               </div>
-              <span className="shrink-0 text-[11px] font-medium text-base-content/65 tabular-nums">
+              <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
                 {formatDate(run.createdAt)}
               </span>
             </div>
