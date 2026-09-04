@@ -3,6 +3,7 @@ import type { CreateLabel, Label, UpdateLabel } from '@testcraft/types';
 
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { Modal } from '@/components/ui/Modal';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
@@ -55,20 +56,16 @@ export const LabelsTab = () => {
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (!labels || labels.length === 0)
       return (
-        <div className="flex min-h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border text-center">
-          <p className="text-sm font-semibold text-base-content/75">
-            No labels yet
-          </p>
-          <p className="text-xs text-base-content/65">
-            Create labels to tag test cases.
-          </p>
-        </div>
+        <EmptyState
+          title="No labels yet"
+          description="Create labels to tag test cases."
+        />
       );
     return (
       <div className="overflow-hidden rounded-xl border border-border">
         <table className="table table-sm">
           <thead>
-            <tr className="text-xs text-base-content/85">
+            <tr className="text-xs text-base-content/55">
               <th>Label</th>
               <th>Color</th>
               <th />
@@ -81,7 +78,7 @@ export const LabelsTab = () => {
                   <LabelBadge label={label} />
                 </td>
                 <td>
-                  <span className="flex items-center gap-1.5 text-xs text-base-content/75">
+                  <span className="flex items-center gap-1.5 text-xs text-base-content/70">
                     <span
                       className="inline-block size-3 rounded-full"
                       style={{ backgroundColor: label.color }}
@@ -118,7 +115,7 @@ export const LabelsTab = () => {
   return (
     <div>
       <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-base-content/85">
+        <p className="text-sm text-base-content/70">
           Labels let you tag test cases for filtering and reporting.
         </p>
         <button className="btn btn-sm btn-primary" onClick={openCreate}>

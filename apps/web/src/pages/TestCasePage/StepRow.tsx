@@ -6,6 +6,7 @@ import type { TestCaseStep } from '@testcraft/types';
 import { ResourceActions } from '@/components/ui/ResourceActions';
 import { cn } from '@/lib/cn';
 import { formatDate } from '@/lib/format';
+import { StepFields } from '@/pages/TestCasePage/StepFields';
 
 interface StepRowProps {
   step: TestCaseStep;
@@ -43,6 +44,7 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
         )}
       >
         <div className={cn(isDragging && 'invisible')}>
+          {/* pr-24 reserves space for the edit/delete buttons and drag handle pinned to the right edge */}
           <div className="flex items-start gap-3 p-4 pr-24">
             <div className="flex shrink-0 items-center pt-0.5">
               <span className="flex size-8 items-center justify-center rounded-md bg-base-content/10 text-sm font-bold text-base-content tabular-nums">
@@ -50,25 +52,13 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
               </span>
             </div>
             <div className="min-w-0 flex-1">
-              <div className="mb-3 grid gap-4 sm:grid-cols-2">
-                <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/75 uppercase">
-                    Action
-                  </p>
-                  <p className="text-sm leading-relaxed text-base-content/90">
-                    {step.action}
-                  </p>
-                </div>
-                <div>
-                  <p className="mb-1.5 text-[11px] font-semibold tracking-[0.08em] text-base-content/75 uppercase">
-                    Expected Result
-                  </p>
-                  <p className="text-sm leading-relaxed text-base-content/90">
-                    {step.expectedResult}
-                  </p>
-                </div>
+              <div className="mb-3">
+                <StepFields
+                  action={step.action}
+                  expectedResult={step.expectedResult}
+                />
               </div>
-              <p className="text-[11px] text-base-content/65 tabular-nums">
+              <p className="text-xs text-base-content/55 tabular-nums">
                 {formatDate(step.createdAt)}
               </p>
             </div>

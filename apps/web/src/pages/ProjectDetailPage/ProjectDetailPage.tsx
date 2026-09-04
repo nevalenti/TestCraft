@@ -18,6 +18,12 @@ const NAV_BASE =
   'flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90';
 const NAV_ACTIVE = '!border-primary !text-base-content';
 
+const TabCountBadge = ({ count }: { count: number }) => (
+  <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-xs font-semibold text-base-content/70 tabular-nums">
+    {count}
+  </span>
+);
+
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam('projectId');
   const { data: project, isPending } = useProject(projectId);
@@ -72,11 +78,7 @@ export const ProjectDetailPage = () => {
         >
           <PlayCircleIcon className="size-3.5 shrink-0" aria-hidden="true" />
           Test Runs
-          {!!project?.runCount && (
-            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/85 tabular-nums">
-              {project.runCount}
-            </span>
-          )}
+          {!!project?.runCount && <TabCountBadge count={project.runCount} />}
         </Link>
         <Link
           to="/projects/$projectId/suites"
@@ -91,9 +93,7 @@ export const ProjectDetailPage = () => {
           />
           Test Suites
           {!!project?.suiteCount && (
-            <span className="rounded-full bg-base-content/8 px-1.5 py-0.5 text-[10px] font-semibold text-base-content/85 tabular-nums">
-              {project.suiteCount}
-            </span>
+            <TabCountBadge count={project.suiteCount} />
           )}
         </Link>
         <Link

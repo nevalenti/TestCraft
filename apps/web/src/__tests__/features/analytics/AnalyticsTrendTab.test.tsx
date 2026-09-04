@@ -62,10 +62,9 @@ describe('AnalyticsTrendTab', () => {
   describe('given no trend data — shows the empty-state copy', () => {
     it('prompts to complete a run', async () => {
       renderWithClient();
+      expect(await screen.findByText('No run data yet')).toBeInTheDocument();
       expect(
-        await screen.findByText(
-          'No run data yet. Complete a test run to see trend data.',
-        ),
+        screen.getByText('Complete a test run to see trend data.'),
       ).toBeInTheDocument();
     });
   });

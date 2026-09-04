@@ -11,6 +11,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { ListToolbar } from '@/components/ui/ListToolbar';
+import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
 import { PriorityBadge } from '@/components/ui/PriorityBadge';
 import { ResourceCard } from '@/components/ui/ResourceCard';
@@ -110,7 +111,7 @@ export const TestSuitePage = () => {
                 <span className="truncate text-sm font-semibold">
                   {testCase.name}
                 </span>
-                <p className="truncate text-xs text-base-content/85">
+                <p className="truncate text-xs text-base-content/70">
                   {testCase.description ?? (
                     <span className="text-base-content/55 italic">
                       No description
@@ -125,20 +126,20 @@ export const TestSuitePage = () => {
                       <LabelBadge key={label.id} label={label} />
                     ))}
                     {testCase.labels!.length > 2 && (
-                      <span className="text-[11px] font-medium text-base-content/65">
+                      <span className="text-xs font-medium text-base-content/55">
                         +{testCase.labels!.length - 2}
                       </span>
                     )}
                   </div>
                 )}
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/75">
+                  <span className="text-xs text-base-content/70">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? '' : 's'}
                   </span>
                 )}
                 <PriorityBadge priority={testCase.priority} />
-                <span className="text-[11px] text-base-content/65 tabular-nums">
+                <span className="text-xs text-base-content/55 tabular-nums">
                   {formatDate(testCase.createdAt)}
                 </span>
               </div>
@@ -165,7 +166,7 @@ export const TestSuitePage = () => {
               <span className="line-clamp-2 text-base leading-snug font-semibold">
                 {testCase.name}
               </span>
-              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/85">
+              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                 {testCase.description ?? (
                   <span className="text-base-content/55 italic">
                     No description
@@ -174,28 +175,28 @@ export const TestSuitePage = () => {
               </p>
             </div>
             {(testCase.labels ?? []).length > 0 && (
-              <div className="mt-2 flex flex-wrap items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1">
                 {testCase.labels!.slice(0, 3).map((label) => (
                   <LabelBadge key={label.id} label={label} />
                 ))}
                 {testCase.labels!.length > 3 && (
-                  <span className="text-[11px] font-medium text-base-content/65">
+                  <span className="text-xs font-medium text-base-content/55">
                     +{testCase.labels!.length - 3}
                   </span>
                 )}
               </div>
             )}
-            <div className="mt-2 flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5">
                 <PriorityBadge priority={testCase.priority} />
                 {testCase.stepCount > 0 && (
-                  <span className="text-[11px] text-base-content/75">
+                  <span className="text-xs text-base-content/70">
                     {testCase.stepCount} step
                     {testCase.stepCount === 1 ? '' : 's'}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] text-base-content/65 tabular-nums">
+              <span className="text-xs text-base-content/55 tabular-nums">
                 {formatDate(testCase.createdAt)}
               </span>
             </div>
@@ -211,11 +212,7 @@ export const TestSuitePage = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="page-title">{suite?.name}</h1>
-            {suite?.source && (
-              <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-                {suite.source}
-              </span>
-            )}
+            {suite?.source && <MetaPill>{suite.source}</MetaPill>}
           </div>
           <p className="mt-0.5 text-sm text-base-content/70">
             {suite?.description ?? 'Test cases in this suite'}

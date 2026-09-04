@@ -11,6 +11,7 @@ import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
+import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
@@ -115,7 +116,7 @@ export const SuitesTab = () => {
                 <span className="truncate text-sm font-semibold">
                   {suite.name}
                 </span>
-                <p className="truncate text-xs text-base-content/85">
+                <p className="truncate text-xs text-base-content/70">
                   {suite.description ?? (
                     <span className="text-base-content/55 italic">
                       No description
@@ -124,12 +125,8 @@ export const SuitesTab = () => {
                 </p>
               </div>
               <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                {suite.source && (
-                  <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-                    {suite.source}
-                  </span>
-                )}
-                <span className="text-[11px] font-medium text-base-content/65 tabular-nums">
+                {suite.source && <MetaPill>{suite.source}</MetaPill>}
+                <span className="text-xs font-medium text-base-content/55 tabular-nums">
                   {formatDate(suite.createdAt)}
                 </span>
               </div>
@@ -156,7 +153,7 @@ export const SuitesTab = () => {
               <span className="line-clamp-2 text-base leading-snug font-semibold">
                 {suite.name}
               </span>
-              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/85">
+              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
                 {suite.description ?? (
                   <span className="text-base-content/55 italic">
                     No description
@@ -164,15 +161,13 @@ export const SuitesTab = () => {
                 )}
               </p>
             </div>
-            <div className="mt-2.5 flex items-center justify-between gap-2">
+            <div className="flex items-center justify-between gap-2">
               {suite.source ? (
-                <span className="rounded-full bg-base-200 px-2 py-0.5 text-[11px] font-medium text-base-content/75">
-                  {suite.source}
-                </span>
+                <MetaPill>{suite.source}</MetaPill>
               ) : (
                 <span />
               )}
-              <span className="shrink-0 text-[11px] font-medium text-base-content/65 tabular-nums">
+              <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
                 {formatDate(suite.createdAt)}
               </span>
             </div>

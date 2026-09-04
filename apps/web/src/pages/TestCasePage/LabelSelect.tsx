@@ -49,7 +49,7 @@ export const LabelSelect = ({
       {hasLabels ? (
         <button
           type="button"
-          className="btn text-base-content/55 btn-ghost btn-xs hover:text-base-content/85"
+          className="btn text-base-content/55 btn-ghost btn-xs hover:text-base-content"
           onClick={() => setOpen((prevOpen) => !prevOpen)}
           aria-label="Manage labels"
         >
@@ -58,7 +58,7 @@ export const LabelSelect = ({
       ) : (
         <button
           type="button"
-          className="flex items-center gap-1.5 rounded-md border border-dashed border-base-content/20 px-2 py-1 text-[11px] font-medium text-base-content/65 transition-colors hover:border-base-content/40 hover:text-base-content/85"
+          className="btn gap-1 text-base-content/55 btn-ghost btn-xs hover:text-base-content"
           onClick={() => setOpen((prevOpen) => !prevOpen)}
           aria-label="Add labels"
         >
@@ -76,17 +76,17 @@ export const LabelSelect = ({
           />
           <div className="absolute top-full left-0 z-20 mt-1.5 w-56 overflow-hidden rounded-xl border border-border bg-base-100 shadow-xl">
             <div className="border-b border-border px-3 py-2">
-              <p className="text-[11px] font-semibold tracking-wide text-base-content/65 uppercase">
+              <p className="text-xs font-semibold tracking-wide text-base-content/55 uppercase">
                 Labels
               </p>
             </div>
             {!allLabels || allLabels.length === 0 ? (
               <div className="px-3 py-4 text-center">
                 <TagIcon className="mx-auto mb-1.5 size-5 text-base-content/35" />
-                <p className="text-xs font-medium text-base-content/65">
+                <p className="text-xs font-medium text-base-content/70">
                   No labels yet
                 </p>
-                <p className="mt-0.5 text-[11px] text-base-content/55">
+                <p className="mt-0.5 text-xs text-base-content/55">
                   Create labels in the Labels tab
                 </p>
               </div>
