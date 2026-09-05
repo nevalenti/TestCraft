@@ -21,6 +21,9 @@ _A self-hosted alternative to TestRail._
 <p>
   <img src="https://img.shields.io/badge/.NET-10-512BD4?logo=dotnet&logoColor=white&style=flat-square" alt=".NET 10">
   <img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black&style=flat-square" alt="React 19">
+</p>
+
+<p>
   <img src="https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square" alt="MIT">
 </p>
 

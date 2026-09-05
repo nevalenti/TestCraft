@@ -18,11 +18,11 @@ public static class UpdateWebhookSubscription
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project the subscription belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The subscription to update.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public WebhookSubscriptionId Id { get; init; }
 
         /// <summary>The URL to POST event payloads to.</summary>

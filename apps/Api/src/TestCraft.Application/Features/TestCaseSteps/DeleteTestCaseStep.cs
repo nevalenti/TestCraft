@@ -14,7 +14,7 @@ public static class DeleteTestCaseStep
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case the step belongs to.</summary>

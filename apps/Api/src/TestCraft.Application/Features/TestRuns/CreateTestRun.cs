@@ -4,6 +4,7 @@ using MediatR;
 
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestRuns;
@@ -14,7 +15,7 @@ public static class CreateTestRun
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the run in.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run's display name.</summary>
@@ -31,8 +32,8 @@ public static class CreateTestRun
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
-            RuleFor(command => command.Environment).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Environment).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Source)
                 .NotEmpty()
                 .MaximumLength(100)

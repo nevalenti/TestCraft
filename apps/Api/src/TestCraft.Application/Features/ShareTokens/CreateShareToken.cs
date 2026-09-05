@@ -36,11 +36,11 @@ public static class CreateShareToken
     public sealed record Command : IRequest<ShareTokenResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to share.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestRunId RunId { get; init; }
 
         /// <summary>When the share link should expire, if it should.</summary>

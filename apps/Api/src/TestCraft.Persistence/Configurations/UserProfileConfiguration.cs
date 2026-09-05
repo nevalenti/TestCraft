@@ -20,13 +20,6 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
             .Property(userProfile => userProfile.AvatarKey)
             .HasColumnName("avatar_key")
             .HasMaxLength(500);
-        builder
-            .Property(userProfile => userProfile.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(userProfile => userProfile.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
+        builder.ConfigureAuditTimestamps();
     }
 }

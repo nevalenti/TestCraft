@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Common.Pagination;
@@ -10,11 +7,8 @@ using TestCraft.Application.Features.TestCases;
 
 namespace TestCraft.Api.Features.TestCases;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/cases")]
-public class ProjectTestCasesController(ISender sender) : ControllerBase
+public class ProjectTestCasesController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test cases across all suites in a project, optionally filtered by name.</summary>
     [HttpGet]

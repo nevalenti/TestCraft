@@ -14,7 +14,7 @@ public static class RemoveProjectMember
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project to remove the member from.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The membership to remove.</summary>

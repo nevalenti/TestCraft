@@ -15,7 +15,7 @@ public static class DeleteTestRun
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to delete.</summary>

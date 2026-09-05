@@ -14,7 +14,7 @@ public static class RevokeShareToken
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the share token belongs to.</summary>

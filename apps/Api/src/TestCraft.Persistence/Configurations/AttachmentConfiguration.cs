@@ -11,11 +11,7 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
     {
         builder.ToTable("attachments");
 
-        builder.HasKey(attachment => attachment.Id);
-        builder
-            .Property(attachment => attachment.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(attachment => attachment.Id);
         builder.Property(attachment => attachment.TestResultId).HasColumnName("test_result_id");
         builder
             .Property(attachment => attachment.FileName)

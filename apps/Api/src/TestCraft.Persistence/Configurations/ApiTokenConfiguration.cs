@@ -11,11 +11,7 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
     {
         builder.ToTable("api_tokens");
 
-        builder.HasKey(apiToken => apiToken.Id);
-        builder
-            .Property(apiToken => apiToken.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(apiToken => apiToken.Id);
         builder
             .Property(apiToken => apiToken.Name)
             .HasColumnName("name")

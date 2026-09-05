@@ -52,7 +52,7 @@ public static class CreateApiToken
     public sealed record Command : IRequest<CreateApiTokenResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the token for.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The token's display name.</summary>

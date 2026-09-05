@@ -19,11 +19,11 @@ public static class ReorderPlanCases
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan whose test cases are being reordered.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The new order for the given test cases.</summary>

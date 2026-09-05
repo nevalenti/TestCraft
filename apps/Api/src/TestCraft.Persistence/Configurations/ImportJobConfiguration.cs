@@ -11,11 +11,7 @@ public class ImportJobConfiguration : IEntityTypeConfiguration<ImportJob>
     {
         builder.ToTable("import_jobs");
 
-        builder.HasKey(importJob => importJob.Id);
-        builder
-            .Property(importJob => importJob.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(importJob => importJob.Id);
         builder.Property(importJob => importJob.ProjectId).HasColumnName("project_id");
         builder
             .Property(importJob => importJob.Status)
@@ -25,14 +21,7 @@ public class ImportJobConfiguration : IEntityTypeConfiguration<ImportJob>
         builder.Property(importJob => importJob.TestRunId).HasColumnName("test_run_id");
         builder.Property(importJob => importJob.Error).HasColumnName("error").HasMaxLength(5000);
         builder.Property(importJob => importJob.CreatedById).HasColumnName("created_by_id");
-        builder
-            .Property(importJob => importJob.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(importJob => importJob.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
+        builder.ConfigureAuditTimestamps();
 
         builder.HasIndex(importJob => importJob.ProjectId);
 

@@ -42,11 +42,11 @@ public static class CreateTestCaseStep
     public sealed record Command : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case to add the step to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestCaseId CaseId { get; init; }
 
         /// <summary>The step's position within the test case.</summary>

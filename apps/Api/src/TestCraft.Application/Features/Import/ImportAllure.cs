@@ -6,36 +6,12 @@ using MediatR;
 
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Application.Features.Import.Contracts;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Import;
-
-/// <summary>The status of a report import job, processed asynchronously.</summary>
-public record ImportJobResponse
-{
-    /// <summary>The import job's identifier.</summary>
-    public required ImportJobId Id { get; init; }
-
-    /// <summary>The project the import job belongs to.</summary>
-    public required ProjectId ProjectId { get; init; }
-
-    /// <summary>The job's current processing status.</summary>
-    public required ImportJobStatus Status { get; init; }
-
-    /// <summary>The run created from this import, once processing succeeds.</summary>
-    public TestRunId? TestRunId { get; init; }
-
-    /// <summary>The failure message, if the job failed.</summary>
-    public string? Error { get; init; }
-
-    /// <summary>When the import job was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-
-    /// <summary>When the import job was last updated.</summary>
-    public required DateTimeOffset UpdatedAt { get; init; }
-}
 
 public static class ImportAllure
 {
@@ -45,7 +21,7 @@ public static class ImportAllure
         public const string DefaultRunName = "Allure Import";
 
         /// <summary>The project to import the run into.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The Allure test results to import.</summary>
@@ -83,10 +59,10 @@ public static class ImportAllure
             RuleFor(command => command.Environment)
                 .NotEmpty()
                 .WithMessage("Environment is required")
-                .MaximumLength(255);
+                .MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Name)
                 .NotEmpty()
-                .MaximumLength(255)
+                .MaximumLength(FieldLengths.Name)
                 .When(command => command.Name is not null);
             RuleFor(command => command.Source)
                 .NotEmpty()

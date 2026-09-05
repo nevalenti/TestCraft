@@ -4,6 +4,7 @@ using MediatR;
 
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestSuites;
@@ -39,7 +40,7 @@ public static class CreateTestSuite
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the suite in.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite's display name.</summary>
@@ -53,7 +54,7 @@ public static class CreateTestSuite
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Description).MaximumLength(2000);
         }
     }

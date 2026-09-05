@@ -38,7 +38,7 @@ public static class CreateEmailSubscription
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
         /// <summary>The project to subscribe to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The email address to notify.</summary>

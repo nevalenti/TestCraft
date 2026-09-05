@@ -11,11 +11,7 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
     {
         builder.ToTable("run_logs");
 
-        builder.HasKey(runLog => runLog.Id);
-        builder
-            .Property(runLog => runLog.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(runLog => runLog.Id);
         builder.Property(runLog => runLog.RunId).HasColumnName("run_id");
         builder.Property(runLog => runLog.Message).HasColumnName("message").IsRequired();
         builder

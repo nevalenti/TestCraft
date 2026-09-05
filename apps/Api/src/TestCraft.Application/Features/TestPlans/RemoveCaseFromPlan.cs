@@ -13,11 +13,11 @@ public static class RemoveCaseFromPlan
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to remove the test case from.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The test case to remove.</summary>

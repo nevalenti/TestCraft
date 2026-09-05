@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Common.Pagination;
@@ -10,11 +7,8 @@ using TestCraft.Application.Features.TestResults;
 
 namespace TestCraft.Api.Features.TestResults;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/results")]
-public class TestResultsController(ISender sender) : ControllerBase
+public class TestResultsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists results for a test run.</summary>
     [HttpGet]

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestPlans;
@@ -76,7 +77,7 @@ public static class CreateTestPlan
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the plan in.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan's display name.</summary>
@@ -90,7 +91,7 @@ public static class CreateTestPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
         }
     }
 

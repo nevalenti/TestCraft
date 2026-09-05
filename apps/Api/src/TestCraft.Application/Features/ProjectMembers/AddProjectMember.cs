@@ -33,7 +33,7 @@ public static class AddProjectMember
     public sealed record Command : IRequest<ProjectMemberResponse>, IProjectScopedRequest
     {
         /// <summary>The project to add the member to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The email address of the user to add.</summary>

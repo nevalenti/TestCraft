@@ -14,7 +14,7 @@ public static class DeleteTestSuite
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to delete.</summary>

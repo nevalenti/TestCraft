@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.TestPlans;
@@ -10,11 +7,8 @@ using TestCraft.Application.Features.TestRuns;
 
 namespace TestCraft.Api.Features.TestPlans;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/plans")]
-public class TestPlansController(ISender sender) : ControllerBase
+public class TestPlansController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test plans for a project.</summary>
     [HttpGet]

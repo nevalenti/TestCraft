@@ -63,11 +63,11 @@ public static class CreateTestResult
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestRunId RunId { get; init; }
 
         /// <summary>The test case that was executed.</summary>

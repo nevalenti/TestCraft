@@ -11,11 +11,7 @@ public class NotificationDeliveryConfiguration : IEntityTypeConfiguration<Notifi
     {
         builder.ToTable("notification_deliveries");
 
-        builder.HasKey(delivery => delivery.Id);
-        builder
-            .Property(delivery => delivery.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(delivery => delivery.Id);
         builder.Property(delivery => delivery.ProjectId).HasColumnName("project_id");
         builder
             .Property(delivery => delivery.Channel)

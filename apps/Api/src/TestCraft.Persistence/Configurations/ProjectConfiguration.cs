@@ -11,11 +11,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     {
         builder.ToTable("projects");
 
-        builder.HasKey(project => project.Id);
-        builder
-            .Property(project => project.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(project => project.Id);
         builder
             .Property(project => project.Name)
             .HasColumnName("name")
@@ -23,24 +19,11 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .IsRequired();
         builder.Property(project => project.Description).HasColumnName("description");
         builder.Property(project => project.UserId).HasColumnName("user_id");
-        builder
-            .Property(project => project.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(project => project.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(project => project.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        builder.Property(project => project.DeletedAt).HasColumnName("deleted_at");
+        builder.ConfigureAuditTimestamps();
+        builder.ConfigureSoftDelete();
 
         builder.HasIndex(project => project.UserId);
         builder.HasIndex(project => new { project.UserId, project.Name }).IsUnique();
-
-        builder.HasQueryFilter(project => !project.IsDeleted);
 
         builder
             .HasMany(project => project.TestSuites)

@@ -14,7 +14,7 @@ public static class RevokeApiToken
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the token belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The token to revoke.</summary>

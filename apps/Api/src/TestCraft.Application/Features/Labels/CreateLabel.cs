@@ -30,7 +30,7 @@ public static class CreateLabel
     public sealed record Command : IRequest<LabelResponse>, IProjectScopedRequest
     {
         /// <summary>The project to create the label in.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The label's display name.</summary>

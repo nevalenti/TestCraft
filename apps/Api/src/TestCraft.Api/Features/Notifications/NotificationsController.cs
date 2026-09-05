@@ -1,19 +1,13 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.Notifications;
 
 namespace TestCraft.Api.Features.Notifications;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/notifications")]
-public class NotificationsController(ISender sender) : ControllerBase
+public class NotificationsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists webhook subscriptions for a project.</summary>
     [HttpGet("webhooks")]

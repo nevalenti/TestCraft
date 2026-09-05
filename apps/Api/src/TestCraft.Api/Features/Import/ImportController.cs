@@ -1,20 +1,14 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.Import;
 
 namespace TestCraft.Api.Features.Import;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [RequestSizeLimit(5_000_000)]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/import")]
-public class ImportController(ISender sender) : ControllerBase
+public class ImportController(ISender sender) : ApiControllerBase
 {
     /// <summary>Gets the status of an import job.</summary>
     [HttpGet("{id:guid}")]

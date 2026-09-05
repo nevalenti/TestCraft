@@ -10,9 +10,5 @@ const RUN_STATUS_STYLES: Record<TestRunStatus, string> = {
 };
 
 export const RunStatusBadge = ({ status }: { status: TestRunStatus }) => (
-  <StatusPill
-    label={status}
-    className={RUN_STATUS_STYLES[status]}
-    uppercase
-  />
+  <StatusPill label={status} className={RUN_STATUS_STYLES[status]} uppercase />
 );

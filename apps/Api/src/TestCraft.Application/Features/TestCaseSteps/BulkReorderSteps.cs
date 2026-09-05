@@ -27,11 +27,11 @@ public static class BulkReorderSteps
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the test case belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case whose steps are being reordered.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestCaseId CaseId { get; init; }
 
         /// <summary>The new order for every step. Must cover all existing steps.</summary>

@@ -1,19 +1,13 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.ApiTokens;
 
 namespace TestCraft.Api.Features.ApiTokens;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/tokens")]
-public class ApiTokensController(ISender sender) : ControllerBase
+public class ApiTokensController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists API tokens for a project.</summary>
     [HttpGet]

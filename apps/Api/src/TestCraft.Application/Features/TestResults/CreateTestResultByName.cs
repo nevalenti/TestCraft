@@ -22,11 +22,11 @@ public static class CreateTestResultByName
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestRunId RunId { get; init; }
 
         /// <summary>The suite name, created if it doesn't already exist.</summary>

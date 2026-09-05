@@ -114,10 +114,10 @@ public static class GetRunByShareToken
                 .GroupBy(result => result.Status)
                 .ToDictionary(group => group.Key, group => group.Count());
 
-            var passed = counts.GetValueOrDefault(TestResultStatus.Passed.ToString(), 0);
-            var failed = counts.GetValueOrDefault(TestResultStatus.Failed.ToString(), 0);
-            var blocked = counts.GetValueOrDefault(TestResultStatus.Blocked.ToString(), 0);
-            var skipped = counts.GetValueOrDefault(TestResultStatus.Skipped.ToString(), 0);
+            var passed = counts.GetValueOrDefault(nameof(TestResultStatus.Passed), 0);
+            var failed = counts.GetValueOrDefault(nameof(TestResultStatus.Failed), 0);
+            var blocked = counts.GetValueOrDefault(nameof(TestResultStatus.Blocked), 0);
+            var skipped = counts.GetValueOrDefault(nameof(TestResultStatus.Skipped), 0);
             var total = passed + failed + blocked + skipped;
             var passRate = total > 0 ? Math.Round(passed * 100.0 / total, 1) : 0;
 
