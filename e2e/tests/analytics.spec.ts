@@ -54,8 +54,9 @@ test.describe('Analytics', () => {
     page,
   }) => {
     await expect(analyticsPage.trendTab).toBeVisible();
+    await expect(page.getByText('No run data yet')).toBeVisible();
     await expect(
-      page.getByText('No run data yet. Complete a test run to see trend data.'),
+      page.getByText('Complete a test run to see trend data.'),
     ).toBeVisible();
   });
 
