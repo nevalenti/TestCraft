@@ -6,6 +6,7 @@ using MediatR;
 
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Application.Features.Import.Contracts;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
@@ -18,7 +19,7 @@ public static class ImportJUnit
     public sealed record Command : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
         /// <summary>The project to import the run into.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The raw JUnit XML report content.</summary>
@@ -48,10 +49,10 @@ public static class ImportJUnit
             RuleFor(command => command.Environment)
                 .NotEmpty()
                 .WithMessage("Environment is required")
-                .MaximumLength(255);
+                .MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Name)
                 .NotEmpty()
-                .MaximumLength(255)
+                .MaximumLength(FieldLengths.Name)
                 .When(command => command.Name is not null);
             RuleFor(command => command.Source)
                 .NotEmpty()

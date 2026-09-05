@@ -14,7 +14,7 @@ public static class DeleteAttachment
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the attachment belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the attachment belongs to.</summary>

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.Users;
@@ -49,7 +50,7 @@ public static partial class UploadAvatar
 
         public Validator()
         {
-            RuleFor(command => command.FileName).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.ContentType)
                 .NotEmpty()
                 .Must(contentType => AllowedContentTypes.Contains(contentType))

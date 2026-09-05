@@ -11,11 +11,7 @@ public class TestPlanConfiguration : IEntityTypeConfiguration<TestPlan>
     {
         builder.ToTable("test_plans");
 
-        builder.HasKey(testPlan => testPlan.Id);
-        builder
-            .Property(testPlan => testPlan.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(testPlan => testPlan.Id);
         builder
             .Property(testPlan => testPlan.Name)
             .HasColumnName("name")
@@ -23,22 +19,9 @@ public class TestPlanConfiguration : IEntityTypeConfiguration<TestPlan>
             .IsRequired();
         builder.Property(testPlan => testPlan.Description).HasColumnName("description");
         builder.Property(testPlan => testPlan.ProjectId).HasColumnName("project_id");
-        builder
-            .Property(testPlan => testPlan.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testPlan => testPlan.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testPlan => testPlan.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        builder.Property(testPlan => testPlan.DeletedAt).HasColumnName("deleted_at");
+        builder.ConfigureAuditTimestamps();
+        builder.ConfigureSoftDelete();
 
         builder.HasIndex(testPlan => testPlan.ProjectId);
-
-        builder.HasQueryFilter(testPlan => !testPlan.IsDeleted);
     }
 }

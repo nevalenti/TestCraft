@@ -11,11 +11,7 @@ public class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<Webhook
     {
         builder.ToTable("webhook_subscriptions");
 
-        builder.HasKey(webhookSubscription => webhookSubscription.Id);
-        builder
-            .Property(webhookSubscription => webhookSubscription.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(webhookSubscription => webhookSubscription.Id);
         builder
             .Property(webhookSubscription => webhookSubscription.ProjectId)
             .HasColumnName("project_id");

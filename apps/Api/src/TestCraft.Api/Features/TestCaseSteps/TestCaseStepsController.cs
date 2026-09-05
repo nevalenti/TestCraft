@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Common.Pagination;
@@ -10,13 +7,10 @@ using TestCraft.Application.Features.TestCaseSteps;
 
 namespace TestCraft.Api.Features.TestCaseSteps;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route(
     "api/v{version:apiVersion}/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps"
 )]
-public class TestCaseStepsController(ISender sender) : ControllerBase
+public class TestCaseStepsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists the steps for a test case.</summary>
     [HttpGet]

@@ -1,19 +1,13 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.Users;
 
 namespace TestCraft.Api.Features.Users;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/account")]
-public class UsersController(ISender sender) : ControllerBase
+public class UsersController(ISender sender) : ApiControllerBase
 {
     /// <summary>Returns a presigned URL for the current user's avatar.</summary>
     [HttpGet("avatar")]

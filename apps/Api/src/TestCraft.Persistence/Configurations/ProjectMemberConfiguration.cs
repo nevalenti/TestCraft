@@ -11,11 +11,7 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
     {
         builder.ToTable("project_members");
 
-        builder.HasKey(projectMember => projectMember.Id);
-        builder
-            .Property(projectMember => projectMember.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(projectMember => projectMember.Id);
         builder.Property(projectMember => projectMember.ProjectId).HasColumnName("project_id");
         builder.Property(projectMember => projectMember.UserId).HasColumnName("user_id");
         builder

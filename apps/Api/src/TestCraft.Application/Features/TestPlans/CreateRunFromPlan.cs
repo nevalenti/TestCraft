@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
@@ -19,11 +20,11 @@ public static class CreateRunFromPlan
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to create the run from.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
         /// <summary>The name to give the created run.</summary>
@@ -37,7 +38,7 @@ public static class CreateRunFromPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Environment).NotEmpty().MaximumLength(100);
         }
     }

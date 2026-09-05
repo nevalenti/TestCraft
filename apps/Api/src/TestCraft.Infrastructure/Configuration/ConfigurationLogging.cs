@@ -31,7 +31,7 @@ public static partial class ConfigurationLogging
 
         public void LogInfrastructureFallbacks(InfrastructureOptions options)
         {
-            if (string.IsNullOrEmpty(options.RedisUrl))
+            if (!options.IsRedisConfigured)
             {
                 LogDegradedProvider(
                     logger,
@@ -40,7 +40,7 @@ public static partial class ConfigurationLogging
                 );
             }
 
-            if (string.IsNullOrEmpty(options.RabbitMqUrl))
+            if (!options.IsRabbitMqConfigured)
             {
                 LogDegradedProvider(
                     logger,
@@ -49,10 +49,7 @@ public static partial class ConfigurationLogging
                 );
             }
 
-            if (
-                string.IsNullOrEmpty(options.MinioAccessKey)
-                || string.IsNullOrEmpty(options.MinioSecretKey)
-            )
+            if (!options.IsMinioConfigured)
             {
                 LogDegradedProvider(
                     logger,
@@ -61,7 +58,7 @@ public static partial class ConfigurationLogging
                 );
             }
 
-            if (string.IsNullOrEmpty(options.SmtpHost))
+            if (!options.IsSmtpConfigured)
             {
                 LogDegradedProvider(
                     logger,

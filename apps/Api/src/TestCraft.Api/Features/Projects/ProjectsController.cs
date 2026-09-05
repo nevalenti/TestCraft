@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Common.Pagination;
@@ -10,11 +7,8 @@ using TestCraft.Application.Features.Projects;
 
 namespace TestCraft.Api.Features.Projects;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects")]
-public class ProjectsController(ISender sender) : ControllerBase
+public class ProjectsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists projects owned by the current user.</summary>
     [HttpGet]

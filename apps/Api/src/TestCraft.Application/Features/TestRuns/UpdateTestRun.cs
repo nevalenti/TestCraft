@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestRuns;
@@ -17,11 +18,11 @@ public static class UpdateTestRun
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to update.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestRunId Id { get; init; }
 
         /// <summary>The run's new display name.</summary>
@@ -38,8 +39,8 @@ public static class UpdateTestRun
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
-            RuleFor(command => command.Environment).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Environment).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Status).IsInEnum();
         }
     }

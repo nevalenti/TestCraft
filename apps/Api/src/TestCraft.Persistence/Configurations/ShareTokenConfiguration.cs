@@ -11,8 +11,7 @@ public class ShareTokenConfiguration : IEntityTypeConfiguration<ShareToken>
     {
         builder.ToTable("share_tokens");
 
-        builder.HasKey(st => st.Id);
-        builder.Property(st => st.Id).HasColumnName("id").HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(st => st.Id);
         builder.Property(st => st.TestRunId).HasColumnName("test_run_id");
         builder.Property(st => st.Token).HasColumnName("token").HasMaxLength(100).IsRequired();
         builder.Property(st => st.ExpiresAt).HasColumnName("expires_at");

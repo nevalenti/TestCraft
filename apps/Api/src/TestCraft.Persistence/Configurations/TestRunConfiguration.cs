@@ -11,11 +11,7 @@ public class TestRunConfiguration : IEntityTypeConfiguration<TestRun>
     {
         builder.ToTable("test_runs");
 
-        builder.HasKey(testRun => testRun.Id);
-        builder
-            .Property(testRun => testRun.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(testRun => testRun.Id);
         builder.Property(testRun => testRun.Name).HasColumnName("name").IsRequired();
         builder.Property(testRun => testRun.Environment).HasColumnName("environment").IsRequired();
         builder
@@ -30,23 +26,10 @@ public class TestRunConfiguration : IEntityTypeConfiguration<TestRun>
             .HasColumnName("executed_by_name")
             .HasMaxLength(255);
         builder.Property(testRun => testRun.ProjectId).HasColumnName("project_id");
-        builder
-            .Property(testRun => testRun.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testRun => testRun.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testRun => testRun.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        builder.Property(testRun => testRun.DeletedAt).HasColumnName("deleted_at");
+        builder.ConfigureAuditTimestamps();
+        builder.ConfigureSoftDelete();
 
         builder.HasIndex(testRun => testRun.ProjectId);
-
-        builder.HasQueryFilter(testRun => !testRun.IsDeleted);
 
         builder
             .HasMany(testRun => testRun.TestResults)

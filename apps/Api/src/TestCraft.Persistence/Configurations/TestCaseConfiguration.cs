@@ -11,11 +11,7 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
     {
         builder.ToTable("test_cases");
 
-        builder.HasKey(testCase => testCase.Id);
-        builder
-            .Property(testCase => testCase.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(testCase => testCase.Id);
         builder.Property(testCase => testCase.Name).HasColumnName("name").IsRequired();
         builder.Property(testCase => testCase.Description).HasColumnName("description");
         builder
@@ -24,24 +20,11 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
             .HasConversion<string>()
             .HasMaxLength(20);
         builder.Property(testCase => testCase.SuiteId).HasColumnName("suite_id");
-        builder
-            .Property(testCase => testCase.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testCase => testCase.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testCase => testCase.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        builder.Property(testCase => testCase.DeletedAt).HasColumnName("deleted_at");
+        builder.ConfigureAuditTimestamps();
+        builder.ConfigureSoftDelete();
 
         builder.HasIndex(testCase => testCase.SuiteId);
         builder.HasIndex(testCase => testCase.Priority);
-
-        builder.HasQueryFilter(testCase => !testCase.IsDeleted);
 
         builder
             .HasMany(testCase => testCase.Steps)

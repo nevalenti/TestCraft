@@ -1,8 +1,5 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Common.Pagination;
@@ -10,11 +7,8 @@ using TestCraft.Application.Features.TestSuites;
 
 namespace TestCraft.Api.Features.TestSuites;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/suites")]
-public class TestSuitesController(ISender sender) : ControllerBase
+public class TestSuitesController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test suites for a project, optionally filtered by name.</summary>
     [HttpGet]

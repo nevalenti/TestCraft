@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Exceptions;
 
@@ -55,7 +56,7 @@ public static class CreateProject
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
         }
     }
 

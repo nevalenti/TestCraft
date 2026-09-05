@@ -1,19 +1,13 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.ProjectMembers;
 
 namespace TestCraft.Api.Features.ProjectMembers;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/members")]
-public class ProjectMembersController(ISender sender) : ControllerBase
+public class ProjectMembersController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists members of a project.</summary>
     [HttpGet]

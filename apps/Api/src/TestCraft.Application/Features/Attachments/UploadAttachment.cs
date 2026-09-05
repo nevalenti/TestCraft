@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.Attachments;
@@ -46,7 +47,7 @@ public static class UploadAttachment
     public sealed record Command : IRequest<AttachmentResponse>, IProjectScopedRequest
     {
         /// <summary>The project the test result belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the test result belongs to.</summary>
@@ -81,10 +82,10 @@ public static class UploadAttachment
 
         public Validator()
         {
-            RuleFor(command => command.FileName).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.ContentType)
                 .NotEmpty()
-                .MaximumLength(255)
+                .MaximumLength(FieldLengths.Name)
                 .Must(contentType => !DisallowedContentTypes.Contains(contentType))
                 .WithMessage("This content type is not allowed for attachments");
             RuleFor(command => command.SizeBytes)

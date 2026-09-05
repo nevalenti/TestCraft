@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.Projects;
@@ -17,7 +18,7 @@ public static class UpdateProject
     public sealed record Command : IRequest<ProjectResponse>, IProjectScopedRequest
     {
         /// <summary>The project to update.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId Id { get; init; }
 
         /// <summary>The project's new display name.</summary>
@@ -33,7 +34,7 @@ public static class UpdateProject
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
         }
     }
 

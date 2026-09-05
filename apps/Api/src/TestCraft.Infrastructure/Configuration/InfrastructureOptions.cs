@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics.CodeAnalysis;
 
 using Microsoft.Extensions.Configuration;
 
@@ -66,6 +67,18 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     [Required]
     [Sensitive]
     public string KeycloakAdminClientSecret { get; init; } = string.Empty;
+
+    [MemberNotNullWhen(true, nameof(RedisUrl))]
+    internal bool IsRedisConfigured => !string.IsNullOrEmpty(RedisUrl);
+
+    [MemberNotNullWhen(true, nameof(RabbitMqUrl))]
+    internal bool IsRabbitMqConfigured => !string.IsNullOrEmpty(RabbitMqUrl);
+
+    internal bool IsMinioConfigured =>
+        !string.IsNullOrEmpty(MinioAccessKey) && !string.IsNullOrEmpty(MinioSecretKey);
+
+    [MemberNotNullWhen(true, nameof(SmtpHost))]
+    internal bool IsSmtpConfigured => !string.IsNullOrEmpty(SmtpHost);
 
     public static InfrastructureOptions Bind(IConfiguration configuration)
     {

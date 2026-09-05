@@ -1,19 +1,13 @@
-using Asp.Versioning;
-
 using MediatR;
 
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Api.Features.Labels;
 
-[Authorize]
-[ApiController]
-[ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/labels")]
-public class LabelsController(ISender sender) : ControllerBase
+public class LabelsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists labels for a project.</summary>
     [HttpGet]

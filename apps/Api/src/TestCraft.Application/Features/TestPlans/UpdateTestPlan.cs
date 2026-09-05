@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 
 namespace TestCraft.Application.Features.TestPlans;
 
@@ -16,11 +17,11 @@ public static class UpdateTestPlan
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The plan to update.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestPlanId Id { get; init; }
 
         /// <summary>The plan's new display name.</summary>
@@ -34,7 +35,7 @@ public static class UpdateTestPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
         }
     }
 

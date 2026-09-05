@@ -11,32 +11,15 @@ public class TestSuiteConfiguration : IEntityTypeConfiguration<TestSuite>
     {
         builder.ToTable("test_suites");
 
-        builder.HasKey(testSuite => testSuite.Id);
-        builder
-            .Property(testSuite => testSuite.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(testSuite => testSuite.Id);
         builder.Property(testSuite => testSuite.Name).HasColumnName("name").IsRequired();
         builder.Property(testSuite => testSuite.Description).HasColumnName("description");
         builder.Property(testSuite => testSuite.Source).HasColumnName("source");
         builder.Property(testSuite => testSuite.ProjectId).HasColumnName("project_id");
-        builder
-            .Property(testSuite => testSuite.CreatedAt)
-            .HasColumnName("created_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testSuite => testSuite.UpdatedAt)
-            .HasColumnName("updated_at")
-            .HasDefaultValueSql("now()");
-        builder
-            .Property(testSuite => testSuite.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        builder.Property(testSuite => testSuite.DeletedAt).HasColumnName("deleted_at");
+        builder.ConfigureAuditTimestamps();
+        builder.ConfigureSoftDelete();
 
         builder.HasIndex(testSuite => testSuite.ProjectId);
-
-        builder.HasQueryFilter(testSuite => !testSuite.IsDeleted);
 
         builder
             .HasMany(testSuite => testSuite.TestCases)

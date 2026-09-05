@@ -11,11 +11,7 @@ public class EmailSubscriptionConfiguration : IEntityTypeConfiguration<EmailSubs
     {
         builder.ToTable("email_subscriptions");
 
-        builder.HasKey(emailSubscription => emailSubscription.Id);
-        builder
-            .Property(emailSubscription => emailSubscription.Id)
-            .HasColumnName("id")
-            .HasDefaultValueSql("gen_random_uuid()");
+        builder.ConfigureGeneratedId(emailSubscription => emailSubscription.Id);
         builder
             .Property(emailSubscription => emailSubscription.ProjectId)
             .HasColumnName("project_id");

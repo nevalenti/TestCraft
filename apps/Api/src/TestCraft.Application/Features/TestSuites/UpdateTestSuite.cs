@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 
 namespace TestCraft.Application.Features.TestSuites;
 
@@ -16,11 +17,11 @@ public static class UpdateTestSuite
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to update.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public TestSuiteId Id { get; init; }
 
         /// <summary>The suite's new display name.</summary>
@@ -34,7 +35,7 @@ public static class UpdateTestSuite
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(255);
+            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Description).MaximumLength(2000);
         }
     }

@@ -14,7 +14,7 @@ public static class DeleteLabel
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the label belongs to.</summary>
-        [System.Text.Json.Serialization.JsonIgnore]
+        [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The label to delete.</summary>
