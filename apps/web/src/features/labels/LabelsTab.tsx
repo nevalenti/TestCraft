@@ -1,10 +1,12 @@
 import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
 import type { CreateLabel, Label, UpdateLabel } from '@testcraft/types';
+import { useState } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
+import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { TableSkeleton } from '@/components/ui/TableSkeleton';
@@ -21,6 +23,7 @@ import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 export const LabelsTab = () => {
   const projectId = useRequiredParam('projectId');
+  const [search, setSearch] = useState('');
   const {
     data: labels,
     isPending,
@@ -43,6 +46,9 @@ export const LabelsTab = () => {
 
   const deleteTarget = modal.type === 'delete' ? modal.item : null;
   const showSkeleton = useIsLoadingVisible(isPending);
+  const visibleLabels = labels?.filter((label) =>
+    label.name.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const renderLabels = () => {
     if (isPending)
@@ -54,7 +60,7 @@ export const LabelsTab = () => {
         )
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
-    if (!labels || labels.length === 0)
+    if (!visibleLabels || visibleLabels.length === 0)
       return (
         <EmptyState
           title="No labels yet"
@@ -72,7 +78,7 @@ export const LabelsTab = () => {
             </tr>
           </thead>
           <tbody>
-            {labels.map((label) => (
+            {visibleLabels.map((label) => (
               <tr key={label.id} className="group hover:bg-base-300">
                 <td>
                   <LabelBadge label={label} />
@@ -114,15 +120,16 @@ export const LabelsTab = () => {
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-base-content/70">
-          Labels let you tag test cases for filtering and reporting.
-        </p>
+      <ListToolbar
+        search={search}
+        onSearch={setSearch}
+        placeholder="Search labels…"
+      >
         <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" />
           New Label
         </button>
-      </div>
+      </ListToolbar>
 
       {renderLabels()}
 

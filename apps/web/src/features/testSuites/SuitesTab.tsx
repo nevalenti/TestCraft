@@ -162,11 +162,7 @@ export const SuitesTab = () => {
               </p>
             </div>
             <div className="flex items-center justify-between gap-2">
-              {suite.source ? (
-                <MetaPill>{suite.source}</MetaPill>
-              ) : (
-                <span />
-              )}
+              {suite.source ? <MetaPill>{suite.source}</MetaPill> : <span />}
               <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
                 {formatDate(suite.createdAt)}
               </span>
