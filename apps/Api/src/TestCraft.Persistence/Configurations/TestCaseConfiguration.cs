@@ -12,18 +12,25 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
         builder.ToTable("test_cases");
 
         builder.ConfigureGeneratedId(testCase => testCase.Id);
+
         builder.Property(testCase => testCase.Name).HasColumnName("name").IsRequired();
+
         builder.Property(testCase => testCase.Description).HasColumnName("description");
+
         builder
             .Property(testCase => testCase.Priority)
             .HasColumnName("priority")
             .HasConversion<string>()
             .HasMaxLength(20);
+
         builder.Property(testCase => testCase.SuiteId).HasColumnName("suite_id");
+
         builder.ConfigureAuditTimestamps();
+
         builder.ConfigureSoftDelete();
 
         builder.HasIndex(testCase => testCase.SuiteId);
+
         builder.HasIndex(testCase => testCase.Priority);
 
         builder

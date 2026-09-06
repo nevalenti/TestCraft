@@ -48,7 +48,7 @@ public partial class SystemController(
                 Memory: new MemoryUsageResponse(
                     Rss: process.WorkingSet64,
                     HeapUsed: GC.GetTotalMemory(forceFullCollection: false),
-                    HeapTotal: GC.GetTotalMemory(forceFullCollection: false)
+                    HeapTotal: GC.GetGCMemoryInfo().TotalCommittedBytes
                 ),
                 Db: dbUp ? "up" : "down",
                 Version: GetType().Assembly.GetName().Version?.ToString() ?? "unknown",

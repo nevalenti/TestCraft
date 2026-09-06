@@ -6,7 +6,7 @@ namespace TestCraft.Infrastructure.Auth;
 
 public static class AuthExtensions
 {
-    public static void AddAuth(this IServiceCollection services)
+    public static IServiceCollection AddAuth(this IServiceCollection services)
     {
         services.AddSingleton<IApiTokenHasher, ApiTokenHasher>();
 
@@ -16,5 +16,7 @@ public static class AuthExtensions
 
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUser, CurrentUser>();
+
+        return services;
     }
 }

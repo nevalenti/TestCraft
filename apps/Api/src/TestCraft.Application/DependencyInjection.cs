@@ -3,8 +3,6 @@ using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 using TestCraft.Application.Common.Behaviours;
-using TestCraft.Application.Features.Notifications;
-using TestCraft.Application.Features.ShareTokens;
 
 namespace TestCraft.Application;
 
@@ -21,10 +19,6 @@ public static class DependencyInjection
                 .AddOpenBehavior(typeof(ValidationBehaviour<,>))
                 .AddOpenBehavior(typeof(PerformanceBehaviour<,>));
         });
-
-        services.AddScoped<ExpiredShareTokenCleanupJob>();
-        services.AddScoped<NotificationDeliveryRetryJob>();
-        services.AddScoped<NotificationDeliveryCleanupJob>();
 
         return services;
     }

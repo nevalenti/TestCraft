@@ -11,9 +11,11 @@ namespace TestCraft.Api.Configuration.Hangfire;
 
 public static class HangfireExtensions
 {
-    public static WebApplicationBuilder AddHangfireJobs(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddHangfireJobs(
+        this WebApplicationBuilder builder,
+        InfrastructureOptions infrastructureOptions
+    )
     {
-        var infrastructureOptions = InfrastructureOptions.Bind(builder.Configuration);
         var connectionString = ConnectionStringHelpers.ToNpgsqlConnectionString(
             infrastructureOptions.DatabaseUrl
         );
@@ -27,6 +29,10 @@ public static class HangfireExtensions
         );
 
         builder.Services.AddHangfireServer();
+
+        builder.Services.AddScoped<ExpiredShareTokenCleanupJob>();
+        builder.Services.AddScoped<NotificationDeliveryRetryJob>();
+        builder.Services.AddScoped<NotificationDeliveryCleanupJob>();
 
         GlobalJobFilters.Filters.Add(new HangfireMetricsFilter());
 

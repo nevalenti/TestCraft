@@ -11,9 +11,7 @@ namespace TestCraft.VSTestLogger;
 
 /// <summary>
 /// Streams live per-test progress from `dotnet test` to TestCraft's run log
-/// feed. Registered via `--logger:testcraft`; a no-op unless the
-/// TESTCRAFT_* environment variables are set, so it's safe to enable
-/// unconditionally in CI.
+/// feed.
 /// </summary>
 [FriendlyName("testcraft")]
 [ExtensionUri("logger://TestCraft/VSTestLogger/v1")]
@@ -52,6 +50,27 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     {
         var apiUrl = Environment.GetEnvironmentVariable("TESTCRAFT_API_URL");
         var runId = Environment.GetEnvironmentVariable("TESTCRAFT_RUN_ID");
+        var token = Environment.GetEnvironmentVariable("TESTCRAFT_TOKEN");
+        var projectId = Environment.GetEnvironmentVariable(
+            "TESTCRAFT_PROJECT_ID"
+        );
+
+        if (string.IsNullOrEmpty(apiUrl) || string.IsNullOrEmpty(runId))
+            return;
+
+        if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(projectId))
+        {
+            _token = token;
+            _projectId = projectId;
+            _apiUrl = apiUrl;
+            _runId = runId;
+
+            events.TestRunMessage += OnTestRunMessage;
+            events.TestResult += OnTestResult;
+            events.TestRunComplete += OnTestRunComplete;
+            return;
+        }
+
         var username = Environment.GetEnvironmentVariable("TESTCRAFT_USERNAME");
         var password = Environment.GetEnvironmentVariable("TESTCRAFT_PASSWORD");
         var projectName = Environment.GetEnvironmentVariable(
@@ -59,9 +78,7 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
         );
 
         if (
-            string.IsNullOrEmpty(apiUrl)
-            || string.IsNullOrEmpty(runId)
-            || string.IsNullOrEmpty(username)
+            string.IsNullOrEmpty(username)
             || string.IsNullOrEmpty(password)
             || string.IsNullOrEmpty(projectName)
         )

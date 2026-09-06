@@ -168,9 +168,9 @@ const handleImport = async (
 const run = async (): Promise<void> => {
   const command = core.getInput('command') || 'import';
   const apiUrl = core.getInput('api-url');
+  const token = core.getInput('token') || undefined;
   const username = core.getInput('username');
   const password = core.getInput('password');
-  const projectName = core.getInput('project-name', { required: true });
   const runName = core.getInput('run-name', { required: true });
   const keycloakAuthority = core.getInput('keycloak-authority') || undefined;
   const source = core.getInput('source') || undefined;
@@ -181,17 +181,26 @@ const run = async (): Promise<void> => {
     return;
   }
 
-  if (!username || !password) {
-    throw new Error('username and password are required when api-url is set');
+  let ctx: ApiContext;
+  if (token) {
+    core.setSecret(token);
+    const projectId = core.getInput('project-id', { required: true });
+    ctx = { apiUrl, projectId, token };
+  } else {
+    if (!username || !password) {
+      throw new Error(
+        'username and password are required when token is not set',
+      );
+    }
+    const projectName = core.getInput('project-name', { required: true });
+    ctx = await buildContext(
+      apiUrl,
+      username,
+      password,
+      projectName,
+      keycloakAuthority,
+    );
   }
-
-  const ctx = await buildContext(
-    apiUrl,
-    username,
-    password,
-    projectName,
-    keycloakAuthority,
-  );
 
   if (command === 'start') {
     await handleStart(ctx, runName, source);

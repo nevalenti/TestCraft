@@ -20,6 +20,7 @@ public class NotificationDelivery : AuditableEntity
 
     public NotificationDeliveryId Id { get; set; }
     public ProjectId ProjectId { get; set; }
+    public Project? Project { get; set; }
     public NotificationChannel Channel { get; set; }
     public required string EventType { get; set; }
     public required string Target { get; set; }

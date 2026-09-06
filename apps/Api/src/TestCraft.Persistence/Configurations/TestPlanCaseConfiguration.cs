@@ -12,8 +12,11 @@ public class TestPlanCaseConfiguration : IEntityTypeConfiguration<TestPlanCase>
         builder.ToTable("test_plan_cases");
 
         builder.HasKey(tpc => new { tpc.TestPlanId, tpc.TestCaseId });
+
         builder.Property(tpc => tpc.TestPlanId).HasColumnName("test_plan_id");
+
         builder.Property(tpc => tpc.TestCaseId).HasColumnName("test_case_id");
+
         builder.Property(tpc => tpc.Order).HasColumnName("order");
 
         builder

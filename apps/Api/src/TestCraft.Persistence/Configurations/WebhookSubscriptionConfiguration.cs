@@ -12,26 +12,32 @@ public class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<Webhook
         builder.ToTable("webhook_subscriptions");
 
         builder.ConfigureGeneratedId(webhookSubscription => webhookSubscription.Id);
+
         builder
             .Property(webhookSubscription => webhookSubscription.ProjectId)
             .HasColumnName("project_id");
+
         builder
             .Property(webhookSubscription => webhookSubscription.Url)
             .HasColumnName("url")
             .HasMaxLength(2000)
             .IsRequired();
+
         builder
             .Property(webhookSubscription => webhookSubscription.Secret)
             .HasColumnName("secret")
             .HasMaxLength(200);
+
         builder
             .Property(webhookSubscription => webhookSubscription.Events)
             .HasColumnName("events")
             .IsRequired();
+
         builder
             .Property(webhookSubscription => webhookSubscription.IsActive)
             .HasColumnName("is_active")
             .HasDefaultValue(true);
+
         builder
             .Property(webhookSubscription => webhookSubscription.CreatedAt)
             .HasColumnName("created_at")

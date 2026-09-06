@@ -12,8 +12,11 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
         builder.ToTable("run_logs");
 
         builder.ConfigureGeneratedId(runLog => runLog.Id);
+
         builder.Property(runLog => runLog.RunId).HasColumnName("run_id");
+
         builder.Property(runLog => runLog.Message).HasColumnName("message").IsRequired();
+
         builder
             .Property(runLog => runLog.CreatedAt)
             .HasColumnName("created_at")

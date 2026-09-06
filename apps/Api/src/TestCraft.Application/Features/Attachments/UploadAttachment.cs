@@ -85,7 +85,7 @@ public static class UploadAttachment
             RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);
             RuleFor(command => command.ContentType)
                 .NotEmpty()
-                .MaximumLength(FieldLengths.Name)
+                .MaximumLength(FieldLengths.ContentType)
                 .Must(contentType => !DisallowedContentTypes.Contains(contentType))
                 .WithMessage("This content type is not allowed for attachments");
             RuleFor(command => command.SizeBytes)

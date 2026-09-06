@@ -73,11 +73,9 @@ jobs:
         uses: ./.github/actions/testcraft
         with:
           command: start
-          username: ${{ secrets.TESTCRAFT_USERNAME }}
-          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
-          project-name: TestCraft
+          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
           source: web
 
@@ -86,10 +84,8 @@ jobs:
         env:
           TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
           TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
-          TESTCRAFT_KEYCLOAK_AUTHORITY: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
-          TESTCRAFT_USERNAME: ${{ secrets.TESTCRAFT_USERNAME }}
-          TESTCRAFT_PASSWORD: ${{ secrets.TESTCRAFT_PASSWORD }}
-          TESTCRAFT_PROJECT_NAME: TestCraft
+          TESTCRAFT_TOKEN: ${{ secrets.TESTCRAFT_TOKEN }}
+          TESTCRAFT_PROJECT_ID: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           TESTCRAFT_SOURCE: web
 
       - name: Import results to TestCraft
@@ -97,11 +93,9 @@ jobs:
         continue-on-error: true
         uses: ./.github/actions/testcraft
         with:
-          username: ${{ secrets.TESTCRAFT_USERNAME }}
-          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
-          project-name: TestCraft
+          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           junit-xml: apps/web/test-results/junit.xml
           run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
           source: web

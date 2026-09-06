@@ -18,11 +18,10 @@ public static class HealthCheckExtensions
     private const string ReadyTag = "ready";
 
     public static WebApplicationBuilder AddObservabilityHealthChecks(
-        this WebApplicationBuilder builder
+        this WebApplicationBuilder builder,
+        InfrastructureOptions options
     )
     {
-        var options = InfrastructureOptions.Bind(builder.Configuration);
-
         var healthChecks = builder
             .Services.AddHealthChecks()
             .AddNpgSql(

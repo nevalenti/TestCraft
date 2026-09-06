@@ -27,6 +27,11 @@ public static class WebhookUrlGuard
 
     public static bool IsPublicAddress(IPAddress address)
     {
+        if (address.IsIPv4MappedToIPv6)
+        {
+            address = address.MapToIPv4();
+        }
+
         if (
             IPAddress.IsLoopback(address)
             || address.IsIPv6LinkLocal
@@ -52,6 +57,8 @@ public static class WebhookUrlGuard
             };
         }
 
-        return true;
+        var bytes = address.GetAddressBytes();
+
+        return (bytes[0] & 0xFE) != 0xFC;
     }
 }

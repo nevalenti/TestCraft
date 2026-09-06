@@ -36,6 +36,9 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     public bool MinioUseSsl { get; init; }
 
     [NotSensitive]
+    public bool MinioPublicUseSsl { get; init; }
+
+    [NotSensitive]
     public string? SmtpHost { get; init; }
 
     [NotSensitive]
@@ -82,7 +85,7 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
 
     public static InfrastructureOptions Bind(IConfiguration configuration)
     {
-        var authority = configuration["KEYCLOAK_AUTHORITY"] ?? string.Empty;
+        var authority = (configuration["KEYCLOAK_AUTHORITY"] ?? string.Empty).TrimEnd('/');
         const string realmMarker = "/realms/";
         var realmIndex = authority.IndexOf(realmMarker, StringComparison.Ordinal);
 
@@ -97,6 +100,12 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
             MinioSecretKey = configuration["MINIO_SECRET_KEY"] ?? string.Empty,
             MinioBucket = configuration["MINIO_BUCKET"] ?? "testcraft",
             MinioUseSsl = bool.TryParse(configuration["MINIO_USE_SSL"], out var ssl) && ssl,
+            MinioPublicUseSsl = bool.TryParse(
+                configuration["MINIO_PUBLIC_USE_SSL"],
+                out var publicSsl
+            )
+                ? publicSsl
+                : ssl,
             SmtpHost = configuration["SMTP_HOST"],
             SmtpPort = int.TryParse(configuration["SMTP_PORT"], out var port) ? port : 587,
             SmtpUser = configuration["SMTP_USER"],

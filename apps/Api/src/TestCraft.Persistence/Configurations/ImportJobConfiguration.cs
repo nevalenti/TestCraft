@@ -12,15 +12,21 @@ public class ImportJobConfiguration : IEntityTypeConfiguration<ImportJob>
         builder.ToTable("import_jobs");
 
         builder.ConfigureGeneratedId(importJob => importJob.Id);
+
         builder.Property(importJob => importJob.ProjectId).HasColumnName("project_id");
+
         builder
             .Property(importJob => importJob.Status)
             .HasColumnName("status")
             .HasConversion<string>()
             .HasMaxLength(20);
+
         builder.Property(importJob => importJob.TestRunId).HasColumnName("test_run_id");
+
         builder.Property(importJob => importJob.Error).HasColumnName("error").HasMaxLength(5000);
+
         builder.Property(importJob => importJob.CreatedById).HasColumnName("created_by_id");
+
         builder.ConfigureAuditTimestamps();
 
         builder.HasIndex(importJob => importJob.ProjectId);

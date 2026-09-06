@@ -8,6 +8,8 @@ namespace TestCraft.Infrastructure.Auth;
 internal interface IKeycloakAdminTokenProvider
 {
     Task<string> GetAccessTokenAsync(CancellationToken cancellationToken);
+
+    void Invalidate();
 }
 
 internal sealed class KeycloakAdminTokenProvider(
@@ -20,6 +22,8 @@ internal sealed class KeycloakAdminTokenProvider(
     private DateTimeOffset _expiresAt = DateTimeOffset.MinValue;
 
     public void Dispose() => _lock.Dispose();
+
+    public void Invalidate() => _expiresAt = DateTimeOffset.MinValue;
 
     public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
     {

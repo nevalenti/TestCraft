@@ -12,7 +12,9 @@ public class TestCaseLabelConfiguration : IEntityTypeConfiguration<TestCaseLabel
         builder.ToTable("test_case_labels");
 
         builder.HasKey(tcl => new { tcl.TestCaseId, tcl.LabelId });
+
         builder.Property(tcl => tcl.TestCaseId).HasColumnName("test_case_id");
+
         builder.Property(tcl => tcl.LabelId).HasColumnName("label_id");
 
         builder
