@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -18,17 +19,14 @@ internal sealed class KeycloakUserDirectory(
         CancellationToken cancellationToken = default
     )
     {
-        var token = await tokenProvider.GetAccessTokenAsync(cancellationToken);
+        var response = await SendAuthorizedAsync(email, cancellationToken);
 
-        var client = httpClientFactory.CreateClient("keycloak-admin");
-        var request = new HttpRequestMessage(
-            HttpMethod.Get,
-            $"{options.KeycloakBaseUrl}/admin/realms/{options.KeycloakRealm}/users"
-                + $"?email={Uri.EscapeDataString(email)}&exact=true"
-        );
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+        {
+            tokenProvider.Invalidate();
+            response = await SendAuthorizedAsync(email, cancellationToken);
+        }
 
-        var response = await client.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var users = await response.Content.ReadFromJsonAsync<List<KeycloakUserDto>>(
@@ -46,6 +44,24 @@ internal sealed class KeycloakUserDirectory(
             match.Email,
             displayName
         );
+    }
+
+    private async Task<HttpResponseMessage> SendAuthorizedAsync(
+        string email,
+        CancellationToken cancellationToken
+    )
+    {
+        var token = await tokenProvider.GetAccessTokenAsync(cancellationToken);
+
+        var client = httpClientFactory.CreateClient("keycloak-admin");
+        var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"{options.KeycloakBaseUrl}/admin/realms/{options.KeycloakRealm}/users"
+                + $"?email={Uri.EscapeDataString(email)}&exact=true"
+        );
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        return await client.SendAsync(request, cancellationToken);
     }
 
     private sealed record KeycloakUserDto(

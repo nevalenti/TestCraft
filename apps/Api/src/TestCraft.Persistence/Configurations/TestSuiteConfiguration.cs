@@ -12,11 +12,17 @@ public class TestSuiteConfiguration : IEntityTypeConfiguration<TestSuite>
         builder.ToTable("test_suites");
 
         builder.ConfigureGeneratedId(testSuite => testSuite.Id);
+
         builder.Property(testSuite => testSuite.Name).HasColumnName("name").IsRequired();
+
         builder.Property(testSuite => testSuite.Description).HasColumnName("description");
+
         builder.Property(testSuite => testSuite.Source).HasColumnName("source");
+
         builder.Property(testSuite => testSuite.ProjectId).HasColumnName("project_id");
+
         builder.ConfigureAuditTimestamps();
+
         builder.ConfigureSoftDelete();
 
         builder.HasIndex(testSuite => testSuite.ProjectId);

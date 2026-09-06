@@ -41,7 +41,10 @@ public static class GetTestCases
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestCases.Where(testCase => testCase.SuiteId == request.SuiteId);
+            var query = context.TestCases.Where(testCase =>
+                testCase.SuiteId == request.SuiteId
+                && testCase.Suite!.ProjectId == request.ProjectId
+            );
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {

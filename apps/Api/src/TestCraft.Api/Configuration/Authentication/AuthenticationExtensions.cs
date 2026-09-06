@@ -1,21 +1,52 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 using TestCraft.Api.Errors;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Configuration.Authentication;
 
 public static class AuthenticationExtensions
 {
+    private const string CombinedAuthenticationScheme = "Combined";
+
     public static WebApplicationBuilder AddKeycloakAuthentication(
         this WebApplicationBuilder builder,
         KeycloakAuthOptions keycloakOptions
     )
     {
         builder
-            .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CombinedAuthenticationScheme;
+                options.DefaultChallengeScheme = CombinedAuthenticationScheme;
+            })
+            .AddPolicyScheme(
+                CombinedAuthenticationScheme,
+                CombinedAuthenticationScheme,
+                options =>
+                {
+                    options.ForwardDefaultSelector = context =>
+                    {
+                        const string prefix = "Bearer ";
+                        var header = context.Request.Headers.Authorization.ToString();
+                        if (
+                            header.StartsWith(prefix, StringComparison.Ordinal)
+                            && !header[prefix.Length..].Contains('.')
+                        )
+                            return ApiTokenAuthenticationDefaults.AuthenticationScheme;
+
+                        return JwtBearerDefaults.AuthenticationScheme;
+                    };
+                }
+            )
+            .AddScheme<AuthenticationSchemeOptions, ApiTokenAuthenticationHandler>(
+                ApiTokenAuthenticationDefaults.AuthenticationScheme,
+                _ => { }
+            )
             .AddJwtBearer(options =>
             {
                 options.Authority = keycloakOptions.KeycloakAuthority;

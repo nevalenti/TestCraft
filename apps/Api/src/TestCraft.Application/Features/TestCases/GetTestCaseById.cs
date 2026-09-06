@@ -33,7 +33,9 @@ public static class GetTestCaseById
         ) =>
             await context
                 .TestCases.Where(testCase =>
-                    testCase.Id == request.Id && testCase.SuiteId == request.SuiteId
+                    testCase.Id == request.Id
+                    && testCase.SuiteId == request.SuiteId
+                    && testCase.Suite!.ProjectId == request.ProjectId
                 )
                 .Select(testCase => new TestCaseResponse
                 {

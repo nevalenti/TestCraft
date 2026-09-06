@@ -12,22 +12,27 @@ public class EmailSubscriptionConfiguration : IEntityTypeConfiguration<EmailSubs
         builder.ToTable("email_subscriptions");
 
         builder.ConfigureGeneratedId(emailSubscription => emailSubscription.Id);
+
         builder
             .Property(emailSubscription => emailSubscription.ProjectId)
             .HasColumnName("project_id");
+
         builder
             .Property(emailSubscription => emailSubscription.Email)
             .HasColumnName("email")
             .HasMaxLength(254)
             .IsRequired();
+
         builder
             .Property(emailSubscription => emailSubscription.Events)
             .HasColumnName("events")
             .IsRequired();
+
         builder
             .Property(emailSubscription => emailSubscription.IsActive)
             .HasColumnName("is_active")
             .HasDefaultValue(true);
+
         builder
             .Property(emailSubscription => emailSubscription.CreatedAt)
             .HasColumnName("created_at")

@@ -12,14 +12,17 @@ public class UserProfileConfiguration : IEntityTypeConfiguration<UserProfile>
         builder.ToTable("user_profiles");
 
         builder.HasKey(userProfile => userProfile.UserId);
+
         builder
             .Property(userProfile => userProfile.UserId)
             .HasColumnName("user_id")
             .ValueGeneratedNever();
+
         builder
             .Property(userProfile => userProfile.AvatarKey)
             .HasColumnName("avatar_key")
             .HasMaxLength(500);
+
         builder.ConfigureAuditTimestamps();
     }
 }

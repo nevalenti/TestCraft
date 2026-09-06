@@ -5,4 +5,7 @@ public static class FieldLengths
 {
     /// <summary>Max length for a name, environment, file name, or similar short identifying field.</summary>
     public const int Name = 255;
+
+    /// <summary>Max length for a MIME content type string.</summary>
+    public const int ContentType = 100;
 }

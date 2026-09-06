@@ -15,4 +15,5 @@ public class Project : SoftDeletableEntity
     public ICollection<WebhookSubscription> WebhookSubscriptions { get; set; } = [];
     public ICollection<EmailSubscription> EmailSubscriptions { get; set; } = [];
     public ICollection<ProjectMember> Members { get; set; } = [];
+    public ICollection<NotificationDelivery> NotificationDeliveries { get; set; } = [];
 }

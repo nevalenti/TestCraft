@@ -15,9 +15,8 @@ public static class CachingExtensions
         if (options.IsRedisConfigured)
         {
             services.AddStackExchangeRedisCache(cacheOptions =>
-                cacheOptions.Configuration = RedisConnectionStringHelpers.ToRedisConfiguration(
-                    options.RedisUrl
-                )
+                cacheOptions.ConfigurationOptions =
+                    RedisConnectionStringHelpers.ToRedisConfigurationOptions(options.RedisUrl)
             );
             services.AddSingleton<ICacheService, DistributedCacheService>();
         }

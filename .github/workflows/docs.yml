@@ -59,11 +59,9 @@ jobs:
         uses: ./.github/actions/testcraft
         with:
           command: start
-          username: ${{ secrets.TESTCRAFT_USERNAME }}
-          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
-          project-name: TestCraft
+          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
           source: docs
 
@@ -78,11 +76,9 @@ jobs:
         continue-on-error: true
         uses: ./.github/actions/testcraft
         with:
-          username: ${{ secrets.TESTCRAFT_USERNAME }}
-          password: ${{ secrets.TESTCRAFT_PASSWORD }}
+          token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          keycloak-authority: ${{ secrets.TESTCRAFT_KEYCLOAK_AUTHORITY }}
-          project-name: TestCraft
+          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           junit-xml: apps/docs/test-results/*.junit.xml
           run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
           source: docs

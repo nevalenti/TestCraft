@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using TestCraft.Infrastructure.Auth;
@@ -16,11 +15,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(
         this IServiceCollection services,
-        IConfiguration configuration
+        InfrastructureOptions options
     )
     {
-        var options = InfrastructureOptions.Bind(configuration);
-
         services.AddStartupOptions(options);
 
         services.AddPersistence(

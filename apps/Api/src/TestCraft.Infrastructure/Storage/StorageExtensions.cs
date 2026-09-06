@@ -28,7 +28,7 @@ public static class StorageExtensions
                 : new MinioClient()
                     .WithEndpoint(options.MinioPublicEndpoint)
                     .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
-                    .WithSSL(options.MinioUseSsl)
+                    .WithSSL(options.MinioPublicUseSsl)
                     .Build();
             services.AddKeyedSingleton<IMinioClient>(
                 MinioStorageServiceKeys.PresigningClient,

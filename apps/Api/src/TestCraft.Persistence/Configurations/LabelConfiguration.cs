@@ -12,9 +12,13 @@ public class LabelConfiguration : IEntityTypeConfiguration<Label>
         builder.ToTable("labels");
 
         builder.ConfigureGeneratedId(label => label.Id);
+
         builder.Property(label => label.Name).HasColumnName("name").HasMaxLength(50).IsRequired();
+
         builder.Property(label => label.Color).HasColumnName("color").HasMaxLength(7).IsRequired();
+
         builder.Property(label => label.ProjectId).HasColumnName("project_id");
+
         builder
             .Property(label => label.CreatedAt)
             .HasColumnName("created_at")

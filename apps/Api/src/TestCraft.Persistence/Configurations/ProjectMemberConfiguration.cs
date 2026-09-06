@@ -12,17 +12,22 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
         builder.ToTable("project_members");
 
         builder.ConfigureGeneratedId(projectMember => projectMember.Id);
+
         builder.Property(projectMember => projectMember.ProjectId).HasColumnName("project_id");
+
         builder.Property(projectMember => projectMember.UserId).HasColumnName("user_id");
+
         builder
             .Property(projectMember => projectMember.Email)
             .HasColumnName("email")
             .HasMaxLength(254)
             .IsRequired();
+
         builder
             .Property(projectMember => projectMember.DisplayName)
             .HasColumnName("display_name")
             .HasMaxLength(255);
+
         builder
             .Property(projectMember => projectMember.CreatedAt)
             .HasColumnName("created_at")

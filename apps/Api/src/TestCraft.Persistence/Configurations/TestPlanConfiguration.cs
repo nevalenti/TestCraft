@@ -12,14 +12,19 @@ public class TestPlanConfiguration : IEntityTypeConfiguration<TestPlan>
         builder.ToTable("test_plans");
 
         builder.ConfigureGeneratedId(testPlan => testPlan.Id);
+
         builder
             .Property(testPlan => testPlan.Name)
             .HasColumnName("name")
             .HasMaxLength(255)
             .IsRequired();
+
         builder.Property(testPlan => testPlan.Description).HasColumnName("description");
+
         builder.Property(testPlan => testPlan.ProjectId).HasColumnName("project_id");
+
         builder.ConfigureAuditTimestamps();
+
         builder.ConfigureSoftDelete();
 
         builder.HasIndex(testPlan => testPlan.ProjectId);

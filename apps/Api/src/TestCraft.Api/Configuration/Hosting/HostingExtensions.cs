@@ -23,14 +23,13 @@ public static class HostingExtensions
 {
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Host.UseDefaultServiceProvider(
-            (context, options) =>
-            {
-                options.ValidateOnBuild = true;
-                options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
-            }
-        );
+        builder.Host.UseDefaultServiceProvider(options =>
+        {
+            options.ValidateOnBuild = true;
+            options.ValidateScopes = true;
+        });
 
+        var infrastructureOptions = InfrastructureOptions.Bind(builder.Configuration);
         var keycloakAuthOptions = KeycloakAuthOptions.Bind(builder.Configuration);
         var corsOptions = CorsOptions.Bind(builder.Configuration);
         var loggingOptions = ApiLoggingOptions.Bind(builder.Configuration);
@@ -47,7 +46,7 @@ public static class HostingExtensions
         builder.Services.AddStartupOptions(swaggerBasicAuthOptions);
         builder.Services.AddStartupOptions(hangfireBasicAuthOptions);
 
-        builder.Services.AddInfrastructure(builder.Configuration);
+        builder.Services.AddInfrastructure(infrastructureOptions);
         builder.Services.AddApplication();
 
         builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
@@ -71,7 +70,7 @@ public static class HostingExtensions
         builder
             .AddSerilogLogging(loggingOptions)
             .AddOpenTelemetryTracing(loggingOptions)
-            .AddObservabilityHealthChecks()
+            .AddObservabilityHealthChecks(infrastructureOptions)
             .AddKeycloakAuthentication(keycloakAuthOptions)
             .AddApiControllers()
             .AddApiVersioningSupport()
@@ -79,7 +78,7 @@ public static class HostingExtensions
             .AddCorsPolicy(corsOptions)
             .AddApiRateLimiting()
             .AddSwaggerDocs()
-            .AddHangfireJobs()
+            .AddHangfireJobs(infrastructureOptions)
             .AddOutputCaching();
     }
 

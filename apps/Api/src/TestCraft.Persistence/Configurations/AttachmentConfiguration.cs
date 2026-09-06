@@ -12,24 +12,31 @@ public class AttachmentConfiguration : IEntityTypeConfiguration<Attachment>
         builder.ToTable("attachments");
 
         builder.ConfigureGeneratedId(attachment => attachment.Id);
+
         builder.Property(attachment => attachment.TestResultId).HasColumnName("test_result_id");
+
         builder
             .Property(attachment => attachment.FileName)
             .HasColumnName("file_name")
             .HasMaxLength(255)
             .IsRequired();
+
         builder
             .Property(attachment => attachment.ContentType)
             .HasColumnName("content_type")
             .HasMaxLength(100)
             .IsRequired();
+
         builder.Property(attachment => attachment.SizeBytes).HasColumnName("size_bytes");
+
         builder
             .Property(attachment => attachment.StorageKey)
             .HasColumnName("storage_key")
             .HasMaxLength(500)
             .IsRequired();
+
         builder.Property(attachment => attachment.CreatedById).HasColumnName("created_by_id");
+
         builder
             .Property(attachment => attachment.CreatedAt)
             .HasColumnName("created_at")

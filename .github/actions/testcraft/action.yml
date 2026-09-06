@@ -6,18 +6,24 @@ inputs:
     description: "'start' creates an Active run before tests; 'import' (default) imports results after tests"
     required: false
     default: import
+  token:
+    description: TestCraft API token — when set, authenticates with this instead of username/password and requires project-id instead of project-name
+    required: false
   username:
-    description: TestCraft service account username
+    description: TestCraft service account username — required when token is not set
     required: false
   password:
-    description: TestCraft service account password
+    description: TestCraft service account password — required when token is not set
     required: false
   api-url:
     description: TestCraft API base URL — when empty the step is a no-op
     required: false
+  project-id:
+    description: TestCraft project ID to import results into — required when token is set
+    required: false
   project-name:
-    description: TestCraft project name to import results into
-    required: true
+    description: TestCraft project name to import results into — required when token is not set
+    required: false
   junit-xml:
     description: Path to the JUnit XML report file, or a single-directory glob (e.g. "dir/*.junit.xml") to merge multiple reports — required when command is import
     required: false

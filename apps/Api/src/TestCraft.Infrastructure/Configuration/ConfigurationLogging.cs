@@ -21,7 +21,8 @@ public static partial class ConfigurationLogging
                     var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
                 )
                 {
-                    var isSensitive = property.GetCustomAttribute<SensitiveAttribute>() is not null;
+                    var isSensitive =
+                        property.GetCustomAttribute<NotSensitiveAttribute>() is null;
                     var value = Format(property.GetValue(configuration), isSensitive);
 
                     LogConfigurationValue(logger, type.Name, property.Name, value);
