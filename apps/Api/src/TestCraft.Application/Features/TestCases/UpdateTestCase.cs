@@ -5,10 +5,10 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
-using TestCraft.Application.Features.Labels;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestCases;
@@ -73,26 +73,7 @@ public static class UpdateTestCase
 
             return await context
                 .TestCases.Where(updatedTestCase => updatedTestCase.Id == testCase.Id)
-                .Select(updatedTestCase => new TestCaseResponse
-                {
-                    Id = updatedTestCase.Id,
-                    SuiteId = updatedTestCase.SuiteId,
-                    Name = updatedTestCase.Name,
-                    Description = updatedTestCase.Description,
-                    Priority = updatedTestCase.Priority,
-                    StepCount = updatedTestCase.Steps.Count(step => !step.IsDeleted),
-                    CreatedAt = updatedTestCase.CreatedAt,
-                    UpdatedAt = updatedTestCase.UpdatedAt,
-                    Labels = updatedTestCase
-                        .TestCaseLabels.Select(tcl => new LabelResponse
-                        {
-                            Id = tcl.Label!.Id,
-                            Name = tcl.Label.Name,
-                            Color = tcl.Label.Color,
-                            ProjectId = tcl.Label.ProjectId,
-                        })
-                        .ToList(),
-                })
+                .ToTestCaseResponse()
                 .FirstAsync(cancellationToken);
         }
     }

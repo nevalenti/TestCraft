@@ -22,4 +22,10 @@ public class TestCase : SoftDeletableEntity
         Description = description;
         Priority = priority;
     }
+
+    public void Delete()
+    {
+        IsDeleted = true;
+        DeletedAt = DateTimeOffset.UtcNow;
+    }
 }

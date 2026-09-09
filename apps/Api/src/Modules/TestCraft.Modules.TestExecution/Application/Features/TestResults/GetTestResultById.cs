@@ -3,11 +3,11 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Modules.TestExecution.Application;
 using TestCraft.Application.Common.Security;
 
-namespace TestCraft.Application.Features.TestResults;
+namespace TestCraft.Modules.TestExecution.Application.Features.TestResults;
 
 public static class GetTestResultById
 {
@@ -24,7 +24,7 @@ public static class GetTestResultById
         public required TestResultId Id { get; init; }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(ITestExecutionDbContext context)
         : IRequestHandler<Query, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
@@ -37,7 +37,22 @@ public static class GetTestResultById
                     && result.TestRunId == request.RunId
                     && result.TestRun!.ProjectId == request.ProjectId
                 )
-                .ToTestResultResponse()
+                .Select(result => new TestResultResponse
+                {
+                    Id = result.Id,
+                    TestRunId = result.TestRunId,
+                    TestCaseId = result.TestCaseId,
+                    SuiteId = result.SuiteId,
+                    TestCaseName = result.TestCaseName,
+                    Status = result.Status,
+                    Notes = result.Notes,
+                    DurationMs = result.DurationMs,
+                    DefectType = result.DefectType,
+                    ExecutedAt = result.ExecutedAt,
+                    ExecutedById = result.ExecutedById,
+                    CreatedAt = result.CreatedAt,
+                    UpdatedAt = result.UpdatedAt,
+                })
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

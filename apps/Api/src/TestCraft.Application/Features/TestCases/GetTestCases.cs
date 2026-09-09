@@ -2,10 +2,10 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Security;
-using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Application.Features.TestCases;
 
@@ -68,26 +68,7 @@ public static class GetTestCases
                 .OrderBy(testCase => testCase.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .Select(testCase => new TestCaseResponse
-                {
-                    Id = testCase.Id,
-                    SuiteId = testCase.SuiteId,
-                    Name = testCase.Name,
-                    Description = testCase.Description,
-                    Priority = testCase.Priority,
-                    StepCount = testCase.Steps.Count(step => !step.IsDeleted),
-                    CreatedAt = testCase.CreatedAt,
-                    UpdatedAt = testCase.UpdatedAt,
-                    Labels = testCase
-                        .TestCaseLabels.Select(tcl => new LabelResponse
-                        {
-                            Id = tcl.Label!.Id,
-                            Name = tcl.Label.Name,
-                            Color = tcl.Label.Color,
-                            ProjectId = tcl.Label.ProjectId,
-                        })
-                        .ToList(),
-                })
+                .ToTestCaseResponse()
                 .ToListAsync(cancellationToken);
 
             return new Paginated<TestCaseResponse>

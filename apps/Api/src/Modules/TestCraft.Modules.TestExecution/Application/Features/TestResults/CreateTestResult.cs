@@ -6,14 +6,15 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Contracts.Catalog;
+using TestCraft.Modules.TestExecution.Application;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
-using TestCraft.Domain.Entities;
-using TestCraft.Domain.Enums;
+using TestCraft.Modules.TestExecution.Domain.Entities;
+using TestCraft.Modules.TestExecution.Domain.Enums;
 
-namespace TestCraft.Application.Features.TestResults;
+namespace TestCraft.Modules.TestExecution.Application.Features.TestResults;
 
 /// <summary>The outcome of executing one test case within a run.</summary>
 public record TestResultResponse
@@ -64,11 +65,11 @@ public static class CreateTestResult
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public TestRunId RunId { get; init; }
 
         /// <summary>The test case that was executed.</summary>
@@ -101,10 +102,11 @@ public static class CreateTestResult
     }
 
     public sealed class Handler(
-        IApplicationDbContext context,
+        ITestExecutionDbContext context,
         ICacheService cache,
         ICurrentUser currentUser,
-        ITestRunNotifier notifier
+        ITestRunNotifier notifier,
+        ICatalogTestCases catalogTestCases
     ) : IRequestHandler<Command, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
@@ -122,22 +124,17 @@ public static class CreateTestResult
 
             run.EnsureCanAddResult();
 
-            var caseExists = await context.TestCases.AnyAsync(
-                testCase =>
-                    testCase.Id == request.TestCaseId
-                    && testCase.Suite!.ProjectId == request.ProjectId,
-                cancellationToken
-            );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
+            var testCase =
+                await catalogTestCases.GetAsync(request.TestCaseId, request.ProjectId, cancellationToken)
+                ?? throw new NotFoundException();
 
             var result = new TestResult
             {
                 Id = TestResultId.New(),
                 TestRunId = request.RunId,
                 TestCaseId = request.TestCaseId,
+                SuiteId = testCase.SuiteId,
+                TestCaseName = testCase.Name,
                 Status = request.Status,
                 Notes = request.Notes,
                 DurationMs = request.DurationMs,
@@ -152,7 +149,22 @@ public static class CreateTestResult
 
             var summary = await context
                 .TestResults.Where(createdResult => createdResult.Id == result.Id)
-                .ToTestResultResponse()
+                .Select(createdResult => new TestResultResponse
+                {
+                    Id = createdResult.Id,
+                    TestRunId = createdResult.TestRunId,
+                    TestCaseId = createdResult.TestCaseId,
+                    SuiteId = createdResult.SuiteId,
+                    TestCaseName = createdResult.TestCaseName,
+                    Status = createdResult.Status,
+                    Notes = createdResult.Notes,
+                    DurationMs = createdResult.DurationMs,
+                    DefectType = createdResult.DefectType,
+                    ExecutedAt = createdResult.ExecutedAt,
+                    ExecutedById = createdResult.ExecutedById,
+                    CreatedAt = createdResult.CreatedAt,
+                    UpdatedAt = createdResult.UpdatedAt,
+                })
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);

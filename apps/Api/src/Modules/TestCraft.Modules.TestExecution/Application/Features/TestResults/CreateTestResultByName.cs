@@ -6,73 +6,36 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Contracts.Catalog;
+using TestCraft.Modules.TestExecution.Application;
 using TestCraft.Application.Common.Security;
-using TestCraft.Application.Common.Validation;
-using TestCraft.Domain.Entities;
-using TestCraft.Domain.Enums;
+using TestCraft.Modules.TestExecution.Domain.Entities;
+using TestCraft.Modules.TestExecution.Domain.Enums;
 
-namespace TestCraft.Application.Features.TestResults;
+namespace TestCraft.Modules.TestExecution.Application.Features.TestResults;
 
-/// <summary>The outcome of executing one test case within a run.</summary>
-public record TestResultResponse
+public static class CreateTestResultByName
 {
-    /// <summary>The result's identifier.</summary>
-    public required TestResultId Id { get; init; }
-
-    /// <summary>The run this result belongs to.</summary>
-    public required TestRunId TestRunId { get; init; }
-
-    /// <summary>The test case that was executed.</summary>
-    public required TestCaseId TestCaseId { get; init; }
-
-    /// <summary>The suite the test case belongs to.</summary>
-    public required TestSuiteId SuiteId { get; init; }
-
-    /// <summary>The test case's name, denormalized for display.</summary>
-    public required string TestCaseName { get; init; }
-
-    /// <summary>The result status.</summary>
-    public required TestResultStatus Status { get; init; }
-
-    /// <summary>Free-form notes, e.g. a failure message.</summary>
-    public string? Notes { get; init; }
-
-    /// <summary>How long the test took to execute, in milliseconds.</summary>
-    public long? DurationMs { get; init; }
-
-    /// <summary>The category of defect, when the result failed.</summary>
-    public DefectType? DefectType { get; init; }
-
-    /// <summary>When the test was executed.</summary>
-    public required DateTimeOffset ExecutedAt { get; init; }
-
-    /// <summary>The user who recorded the result, if any.</summary>
-    public UserId? ExecutedById { get; init; }
-
-    /// <summary>When the result was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-
-    /// <summary>When the result was last updated.</summary>
-    public required DateTimeOffset UpdatedAt { get; init; }
-}
-
-public static class CreateTestResult
-{
-    /// <summary>Records a test result for a known test case.</summary>
+    /// <summary>
+    /// Records a test result by suite/case name, creating the suite and test case if they
+    /// don't already exist. Used by CI reporters importing results without known ids.
+    /// </summary>
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to record the result against.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public TestRunId RunId { get; init; }
 
-        /// <summary>The test case that was executed.</summary>
-        public required TestCaseId TestCaseId { get; init; }
+        /// <summary>The suite name, created if it doesn't already exist.</summary>
+        public required string SuiteName { get; init; }
+
+        /// <summary>The test case name, created if it doesn't already exist.</summary>
+        public required string TestCaseName { get; init; }
 
         /// <summary>The result status.</summary>
         public required TestResultStatus Status { get; init; }
@@ -83,8 +46,8 @@ public static class CreateTestResult
         /// <summary>How long the test took to execute, in milliseconds.</summary>
         public long? DurationMs { get; init; }
 
-        /// <summary>The category of defect, when the result failed.</summary>
-        public DefectType? DefectType { get; init; }
+        /// <summary>Identifies the CI system or tool the result came from.</summary>
+        public string? Source { get; init; }
 
         /// <summary>When the test was executed.</summary>
         public required DateTimeOffset ExecutedAt { get; init; }
@@ -94,17 +57,19 @@ public static class CreateTestResult
     {
         public Validator()
         {
-            RuleFor(command => command.TestCaseId).NotEmptyId();
+            RuleFor(command => command.SuiteName).NotEmpty().MaximumLength(500);
+            RuleFor(command => command.TestCaseName).NotEmpty().MaximumLength(500);
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Notes).MaximumLength(5000);
         }
     }
 
     public sealed class Handler(
-        IApplicationDbContext context,
+        ITestExecutionDbContext context,
         ICacheService cache,
         ICurrentUser currentUser,
-        ITestRunNotifier notifier
+        ITestRunNotifier notifier,
+        ICatalogTestCases catalogTestCases
     ) : IRequestHandler<Command, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
@@ -122,26 +87,24 @@ public static class CreateTestResult
 
             run.EnsureCanAddResult();
 
-            var caseExists = await context.TestCases.AnyAsync(
-                testCase =>
-                    testCase.Id == request.TestCaseId
-                    && testCase.Suite!.ProjectId == request.ProjectId,
+            var testCase = await catalogTestCases.FindOrCreateAsync(
+                request.ProjectId,
+                request.SuiteName,
+                request.TestCaseName,
+                request.Source,
                 cancellationToken
             );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
 
             var result = new TestResult
             {
                 Id = TestResultId.New(),
                 TestRunId = request.RunId,
-                TestCaseId = request.TestCaseId,
+                TestCaseId = testCase.Id,
+                SuiteId = testCase.SuiteId,
+                TestCaseName = testCase.Name,
                 Status = request.Status,
                 Notes = request.Notes,
                 DurationMs = request.DurationMs,
-                DefectType = request.DefectType,
                 ExecutedAt = request.ExecutedAt,
                 ExecutedById = currentUser.UserId,
             };
@@ -152,7 +115,22 @@ public static class CreateTestResult
 
             var summary = await context
                 .TestResults.Where(createdResult => createdResult.Id == result.Id)
-                .ToTestResultResponse()
+                .Select(createdResult => new TestResultResponse
+                {
+                    Id = createdResult.Id,
+                    TestRunId = createdResult.TestRunId,
+                    TestCaseId = createdResult.TestCaseId,
+                    SuiteId = createdResult.SuiteId,
+                    TestCaseName = createdResult.TestCaseName,
+                    Status = createdResult.Status,
+                    Notes = createdResult.Notes,
+                    DurationMs = createdResult.DurationMs,
+                    DefectType = createdResult.DefectType,
+                    ExecutedAt = createdResult.ExecutedAt,
+                    ExecutedById = createdResult.ExecutedById,
+                    CreatedAt = createdResult.CreatedAt,
+                    UpdatedAt = createdResult.UpdatedAt,
+                })
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);

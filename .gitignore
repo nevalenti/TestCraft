@@ -42,4 +42,6 @@ playwright-report/
 terraform.tfvars
 test-results/
 TestResults/
+!apps/Api/src/Modules/TestCraft.Modules.TestExecution/Application/Features/TestResults/
+!apps/Api/src/Modules/TestCraft.Modules.TestExecution/Application/Features/TestResults/**
 *.received.txt

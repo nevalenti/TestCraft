@@ -40,12 +40,17 @@ jobs:
 
       - name: Normalize tag
         id: normalize
+        env:
+          VERSION: ${{ inputs.version }}
         run: |
-          version="${{ inputs.version }}"
+          version="$VERSION"
           if [[ "$version" =~ ^[0-9a-f]{40}$ ]]; then
             version="sha-$version"
           fi
           echo "tag=$version" >> "$GITHUB_OUTPUT"
 
       - name: Deploy
-        run: just deploy-app ${{ inputs.app }} ${{ steps.normalize.outputs.tag }}
+        env:
+          APP: ${{ inputs.app }}
+          TAG: ${{ steps.normalize.outputs.tag }}
+        run: just deploy-app "$APP" "$TAG"

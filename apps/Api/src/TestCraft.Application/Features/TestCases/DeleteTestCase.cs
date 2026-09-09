@@ -37,8 +37,7 @@ public static class DeleteTestCase
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            testCase.IsDeleted = true;
-            testCase.DeletedAt = DateTimeOffset.UtcNow;
+            testCase.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
         }

@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
@@ -145,22 +146,7 @@ public static class CreateTestResultByName
 
             var summary = await context
                 .TestResults.Where(createdResult => createdResult.Id == result.Id)
-                .Select(createdResult => new TestResultResponse
-                {
-                    Id = createdResult.Id,
-                    TestRunId = createdResult.TestRunId,
-                    TestCaseId = createdResult.TestCaseId,
-                    SuiteId = createdResult.TestCase!.SuiteId,
-                    TestCaseName = createdResult.TestCase.Name,
-                    Status = createdResult.Status,
-                    Notes = createdResult.Notes,
-                    DurationMs = createdResult.DurationMs,
-                    DefectType = createdResult.DefectType,
-                    ExecutedAt = createdResult.ExecutedAt,
-                    ExecutedById = createdResult.ExecutedById,
-                    CreatedAt = createdResult.CreatedAt,
-                    UpdatedAt = createdResult.UpdatedAt,
-                })
+                .ToTestResultResponse()
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
