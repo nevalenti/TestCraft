@@ -6,12 +6,12 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Modules.TestExecution.Application;
 using TestCraft.Application.Common.Security;
-using TestCraft.Domain.Enums;
+using TestCraft.Modules.TestExecution.Domain.Enums;
 
-namespace TestCraft.Application.Features.TestResults;
+namespace TestCraft.Modules.TestExecution.Application.Features.TestResults;
 
 public static class UpdateTestResult
 {
@@ -19,15 +19,15 @@ public static class UpdateTestResult
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the result belongs to.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public TestRunId RunId { get; init; }
 
         /// <summary>The result to update.</summary>
-        [JsonIgnore]
+        [System.Text.Json.Serialization.JsonIgnore]
         public TestResultId Id { get; init; }
 
         /// <summary>The result's new status.</summary>
@@ -50,7 +50,7 @@ public static class UpdateTestResult
     }
 
     public sealed class Handler(
-        IApplicationDbContext context,
+        ITestExecutionDbContext context,
         ICacheService cache,
         ITestRunNotifier notifier
     ) : IRequestHandler<Command, TestResultResponse>
@@ -85,7 +85,22 @@ public static class UpdateTestResult
 
             var summary = await context
                 .TestResults.Where(updatedResult => updatedResult.Id == result.Id)
-                .ToTestResultResponse()
+                .Select(updatedResult => new TestResultResponse
+                {
+                    Id = updatedResult.Id,
+                    TestRunId = updatedResult.TestRunId,
+                    TestCaseId = updatedResult.TestCaseId,
+                    SuiteId = updatedResult.SuiteId,
+                    TestCaseName = updatedResult.TestCaseName,
+                    Status = updatedResult.Status,
+                    Notes = updatedResult.Notes,
+                    DurationMs = updatedResult.DurationMs,
+                    DefectType = updatedResult.DefectType,
+                    ExecutedAt = updatedResult.ExecutedAt,
+                    ExecutedById = updatedResult.ExecutedById,
+                    CreatedAt = updatedResult.CreatedAt,
+                    UpdatedAt = updatedResult.UpdatedAt,
+                })
                 .FirstAsync(cancellationToken);
 
             await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);

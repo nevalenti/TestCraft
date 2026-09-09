@@ -2,13 +2,13 @@ using MediatR;
 
 using Microsoft.EntityFrameworkCore;
 
-using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Modules.TestExecution.Application;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Security;
-using TestCraft.Domain.Enums;
+using TestCraft.Modules.TestExecution.Domain.Enums;
 
-namespace TestCraft.Application.Features.TestResults;
+namespace TestCraft.Modules.TestExecution.Application.Features.TestResults;
 
 public static class GetTestResults
 {
@@ -16,10 +16,10 @@ public static class GetTestResults
     public sealed record Query : IRequest<Paginated<TestResultResponse>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
-        public ProjectId ProjectId { get; init; }
+        public required ProjectId ProjectId { get; init; }
 
         /// <summary>The run to list results for.</summary>
-        public TestRunId RunId { get; init; }
+        public required TestRunId RunId { get; init; }
 
         /// <summary>Filters results to this status.</summary>
         public TestResultStatus? Status { get; init; }
@@ -34,7 +34,7 @@ public static class GetTestResults
         public int? PageSize { get; init; }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(ITestExecutionDbContext context)
         : IRequestHandler<Query, Paginated<TestResultResponse>>
     {
         public async Task<Paginated<TestResultResponse>> Handle(
@@ -54,7 +54,7 @@ public static class GetTestResults
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
                 query = query.Where(result =>
-                    EF.Functions.ILike(result.TestCase!.Name, $"%{request.Search}%")
+                    EF.Functions.ILike(result.TestCaseName, $"%{request.Search}%")
                 );
             }
 
@@ -66,7 +66,22 @@ public static class GetTestResults
                 .OrderBy(result => result.CreatedAt)
                 .Skip(pagination.Skip)
                 .Take(pagination.Take)
-                .ToTestResultResponse()
+                .Select(result => new TestResultResponse
+                {
+                    Id = result.Id,
+                    TestRunId = result.TestRunId,
+                    TestCaseId = result.TestCaseId,
+                    SuiteId = result.SuiteId,
+                    TestCaseName = result.TestCaseName,
+                    Status = result.Status,
+                    Notes = result.Notes,
+                    DurationMs = result.DurationMs,
+                    DefectType = result.DefectType,
+                    ExecutedAt = result.ExecutedAt,
+                    ExecutedById = result.ExecutedById,
+                    CreatedAt = result.CreatedAt,
+                    UpdatedAt = result.UpdatedAt,
+                })
                 .ToListAsync(cancellationToken);
 
             return new Paginated<TestResultResponse>

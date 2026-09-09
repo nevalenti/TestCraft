@@ -3,9 +3,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
-using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Application.Features.TestCases;
 
@@ -37,26 +37,7 @@ public static class GetTestCaseById
                     && testCase.SuiteId == request.SuiteId
                     && testCase.Suite!.ProjectId == request.ProjectId
                 )
-                .Select(testCase => new TestCaseResponse
-                {
-                    Id = testCase.Id,
-                    SuiteId = testCase.SuiteId,
-                    Name = testCase.Name,
-                    Description = testCase.Description,
-                    Priority = testCase.Priority,
-                    StepCount = testCase.Steps.Count(step => !step.IsDeleted),
-                    CreatedAt = testCase.CreatedAt,
-                    UpdatedAt = testCase.UpdatedAt,
-                    Labels = testCase
-                        .TestCaseLabels.Select(tcl => new LabelResponse
-                        {
-                            Id = tcl.Label!.Id,
-                            Name = tcl.Label.Name,
-                            Color = tcl.Label.Color,
-                            ProjectId = tcl.Label.ProjectId,
-                        })
-                        .ToList(),
-                })
+                .ToTestCaseResponse()
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

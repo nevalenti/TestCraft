@@ -39,3 +39,5 @@ RUN curl -fsSL https://nodejs.org/dist/v24.16.0/node-v24.16.0-linux-x64.tar.xz -
 RUN jenkins-plugin-cli --plugins ${PLUGINS}
 
 COPY jcasc.yaml /usr/share/jenkins/ref/jcasc.yaml
+
+USER jenkins

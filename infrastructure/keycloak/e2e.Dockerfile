@@ -8,5 +8,7 @@ RUN mkdir -p /opt/keycloak/data/import && \
 
 ENV KC_HEALTH_ENABLED=true
 
+USER 1000:0
+
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
 CMD ["start-dev", "--import-realm"]
