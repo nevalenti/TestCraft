@@ -110,7 +110,7 @@ export const AccountPage = () => {
           <div className="grid grid-cols-2 gap-3">
             {fields.map(({ label, value }) => (
               <div key={label} className="rounded-xl bg-base-200 px-4 py-3.5">
-                <p className="text-[10px] font-semibold tracking-widest text-base-content/60 uppercase">
+                <p className="text-xs font-semibold tracking-widest text-base-content/60 uppercase">
                   {label}
                 </p>
                 <p className="mt-1 truncate text-sm font-medium text-base-content">

@@ -1,21 +1,20 @@
 import {
+  ArrowLeftIcon,
   ChartBarIcon,
   Cog6ToothIcon,
   PlayCircleIcon,
   RectangleStackIcon,
   TagIcon,
 } from '@heroicons/react/24/solid';
-import { Link, Outlet } from '@tanstack/react-router';
-import { useState } from 'react';
+import { Link, Outlet, useLocation } from '@tanstack/react-router';
 
 import { ErrorState } from '@/components/ErrorState';
 import { useProject } from '@/features/projects/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { ProjectSettingsModal } from '@/pages/ProjectDetailPage/ProjectSettingsModal';
 
 const NAV_BASE =
-  'flex items-center gap-1.5 border-b-2 border-transparent pb-3 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90';
+  'flex items-center gap-1.5 border-b-2 border-transparent pb-2 pt-0.5 text-sm font-medium whitespace-nowrap text-base-content/75 transition-colors hover:text-base-content/90';
 const NAV_ACTIVE = '!border-primary !text-base-content';
 
 const TabCountBadge = ({ count }: { count: number }) => (
@@ -27,7 +26,10 @@ const TabCountBadge = ({ count }: { count: number }) => (
 export const ProjectDetailPage = () => {
   const projectId = useRequiredParam('projectId');
   const { data: project, isPending } = useProject(projectId);
-  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { pathname } = useLocation();
+  const isSettingsSection = pathname.includes(
+    `/projects/${projectId}/settings`,
+  );
 
   useBreadcrumbs([
     { label: 'Projects', href: '/projects' },
@@ -54,81 +56,101 @@ export const ProjectDetailPage = () => {
                 'Manage test suites and runs for this project'}
             </p>
           </div>
-          <button
-            className="btn btn-square shrink-0 btn-ghost btn-sm"
-            onClick={() => setSettingsOpen(true)}
-            aria-label="Project settings"
-          >
-            <Cog6ToothIcon className="size-4" />
-          </button>
+          {isSettingsSection ? (
+            <Link
+              to="/projects/$projectId"
+              params={{ projectId }}
+              className="btn btn-square shrink-0 border-none bg-base-200 text-base-content btn-sm hover:bg-base-300"
+              aria-label="Back to project"
+            >
+              <ArrowLeftIcon className="size-4" />
+            </Link>
+          ) : (
+            <Link
+              to="/projects/$projectId/settings"
+              params={{ projectId }}
+              className="btn btn-square shrink-0 border-none bg-base-200 text-base-content btn-sm hover:bg-base-300"
+              aria-label="Project settings"
+            >
+              <Cog6ToothIcon className="size-4" />
+            </Link>
+          )}
         </div>
       </header>
 
-      <div
-        className="flex items-end gap-5 overflow-x-auto px-4 pt-3 sm:px-6 lg:px-8"
-        role="tablist"
-        aria-label="Project sections"
-      >
-        <Link
-          to="/projects/$projectId/runs"
-          params={{ projectId }}
-          role="tab"
-          className={NAV_BASE}
-          activeProps={{ className: NAV_ACTIVE }}
-        >
-          <PlayCircleIcon className="size-3.5 shrink-0" aria-hidden="true" />
-          Test Runs
-          {!!project?.runCount && <TabCountBadge count={project.runCount} />}
-        </Link>
-        <Link
-          to="/projects/$projectId/suites"
-          params={{ projectId }}
-          role="tab"
-          className={NAV_BASE}
-          activeProps={{ className: NAV_ACTIVE }}
-        >
-          <RectangleStackIcon
-            className="size-3.5 shrink-0"
-            aria-hidden="true"
-          />
-          Test Suites
-          {!!project?.suiteCount && (
-            <TabCountBadge count={project.suiteCount} />
-          )}
-        </Link>
-        <Link
-          to="/projects/$projectId/analytics"
-          params={{ projectId }}
-          role="tab"
-          className={NAV_BASE}
-          activeOptions={{ exact: false }}
-          activeProps={{ className: NAV_ACTIVE }}
-        >
-          <ChartBarIcon className="size-3.5 shrink-0" aria-hidden="true" />
-          Analytics
-        </Link>
-        <Link
-          to="/projects/$projectId/labels"
-          params={{ projectId }}
-          role="tab"
-          className={NAV_BASE}
-          activeProps={{ className: NAV_ACTIVE }}
-        >
-          <TagIcon className="size-3.5 shrink-0" aria-hidden="true" />
-          Labels
-        </Link>
-      </div>
-
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
-        <Outlet />
+        {isSettingsSection ? (
+          <Outlet />
+        ) : (
+          <div className="pt-1">
+            <div
+              className="-mb-px flex items-end gap-5 overflow-x-auto border-b border-border"
+              role="tablist"
+              aria-label="Project sections"
+            >
+              <Link
+                to="/projects/$projectId/runs"
+                params={{ projectId }}
+                role="tab"
+                className={NAV_BASE}
+                activeProps={{ className: NAV_ACTIVE }}
+              >
+                <PlayCircleIcon
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                Test Runs
+                {!!project?.runCount && (
+                  <TabCountBadge count={project.runCount} />
+                )}
+              </Link>
+              <Link
+                to="/projects/$projectId/suites"
+                params={{ projectId }}
+                role="tab"
+                className={NAV_BASE}
+                activeProps={{ className: NAV_ACTIVE }}
+              >
+                <RectangleStackIcon
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                Test Suites
+                {!!project?.suiteCount && (
+                  <TabCountBadge count={project.suiteCount} />
+                )}
+              </Link>
+              <Link
+                to="/projects/$projectId/analytics"
+                params={{ projectId }}
+                role="tab"
+                className={NAV_BASE}
+                activeOptions={{ exact: false }}
+                activeProps={{ className: NAV_ACTIVE }}
+              >
+                <ChartBarIcon
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                Analytics
+              </Link>
+              <Link
+                to="/projects/$projectId/labels"
+                params={{ projectId }}
+                role="tab"
+                className={NAV_BASE}
+                activeProps={{ className: NAV_ACTIVE }}
+              >
+                <TagIcon className="size-3.5 shrink-0" aria-hidden="true" />
+                Labels
+              </Link>
+            </div>
+            <div className="pt-6">
+              <Outlet />
+            </div>
+          </div>
+        )}
       </section>
-
-      <ProjectSettingsModal
-        isOpen={settingsOpen}
-        onClose={() => setSettingsOpen(false)}
-        projectId={projectId}
-        isOwner={project?.isOwner ?? false}
-      />
     </div>
   );
 };

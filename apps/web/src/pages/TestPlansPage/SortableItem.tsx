@@ -28,7 +28,7 @@ export const SortableItem = ({ item, onRemove }: SortableItemProps) => {
     <li
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-4 py-3"
+      className="flex items-center gap-3 rounded-xl border border-border bg-base-100 px-4 py-2.5"
     >
       <button
         className="cursor-grab touch-none text-base-content/55 hover:text-base-content/85"

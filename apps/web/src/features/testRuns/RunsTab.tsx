@@ -96,16 +96,16 @@ export const RunsTab = () => {
   );
   const summaryMap = useTestRunSummaries(completedRuns);
 
-  const getRunIcon = (run: TestRun) => {
+  const getRunIcon = (run: TestRun, size: 'size-3.5' | 'size-4') => {
     if (run.status === TestRunStatus.Completed) {
       const summary = summaryMap.get(run.id);
       return (summary?.failed ?? 0) > 0 ? (
-        <XCircleIcon className={cn('size-4', 'text-error')} />
+        <XCircleIcon className={cn(size, 'text-error')} />
       ) : (
-        <CheckCircleIcon className={cn('size-4', 'text-success')} />
+        <CheckCircleIcon className={cn(size, 'text-success')} />
       );
     }
-    return <PlayCircleIcon className="size-4" />;
+    return <PlayCircleIcon className={size} />;
   };
 
   const allRuns = runs ?? [];
@@ -155,7 +155,7 @@ export const RunsTab = () => {
               label="test run"
               cardBg="card-bg-warning"
               accentText="text-warning"
-              typeIcon={getRunIcon(run)}
+              typeIcon={getRunIcon(run, 'size-4')}
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate text-sm font-semibold">
@@ -189,7 +189,7 @@ export const RunsTab = () => {
             label="test run"
             cardBg="card-bg-warning"
             accentText="text-warning"
-            typeIcon={getRunIcon(run)}
+            typeIcon={getRunIcon(run, 'size-3.5')}
           >
             <div className="flex flex-col gap-1">
               <span className="line-clamp-2 text-base leading-snug font-semibold">

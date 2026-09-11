@@ -1,6 +1,6 @@
 import { createRouter } from '@tanstack/react-router';
 
-import { accountRoute, settingsRoute } from '@/routes/account';
+import { accountRoute } from '@/routes/account';
 import { analyticsRouteTree } from '@/routes/analytics';
 import { indexRoute } from '@/routes/dashboard';
 import {
@@ -11,6 +11,7 @@ import {
   projectsRoute,
   projectSuitesRoute,
 } from '@/routes/projects';
+import { projectSettingsRouteTree } from '@/routes/projectSettings';
 import { appLayoutRoute, rootRoute } from '@/routes/root';
 import { shareRoute } from '@/routes/share';
 import { testPlanRoute, testPlansRoute } from '@/routes/testPlans';
@@ -23,6 +24,7 @@ const projectDetailRouteTree = projectDetailRoute.addChildren([
   projectRunsRoute,
   analyticsRouteTree,
   projectLabelsRoute,
+  projectSettingsRouteTree,
 ]);
 
 const routeTree = rootRoute.addChildren([
@@ -36,7 +38,6 @@ const routeTree = rootRoute.addChildren([
     testPlansRoute,
     testPlanRoute,
     accountRoute,
-    settingsRoute,
   ]),
   shareRoute,
 ]);

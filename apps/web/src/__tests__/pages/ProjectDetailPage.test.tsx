@@ -1,3 +1,4 @@
+import { useLocation } from '@tanstack/react-router';
 import { render, screen } from '@testing-library/react';
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -13,10 +14,21 @@ beforeAll(() => {
 });
 
 vi.mock('@tanstack/react-router', () => ({
-  Link: ({ children, to }: { children?: React.ReactNode; to: string }) => (
-    <a href={to}>{children}</a>
+  Link: ({
+    children,
+    to,
+    'aria-label': ariaLabel,
+  }: {
+    children?: React.ReactNode;
+    to: string;
+    'aria-label'?: string;
+  }) => (
+    <a href={to} aria-label={ariaLabel}>
+      {children}
+    </a>
   ),
   Outlet: () => null,
+  useLocation: vi.fn().mockReturnValue({ pathname: '/projects/proj-1/runs' }),
 }));
 
 vi.mock('@/hooks/useRequiredParam', () => ({
@@ -120,6 +132,58 @@ describe('ProjectDetailPage', () => {
       expect(
         screen.getByRole('link', { name: /test runs/i }),
       ).toBeInTheDocument();
+    });
+
+    it('links the settings button to the project settings page', () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      render(<ProjectDetailPage />);
+      expect(
+        screen.getByRole('link', { name: 'Project settings' }),
+      ).toHaveAttribute('href', '/projects/$projectId/settings');
+    });
+  });
+
+  describe('on the settings section — hides the content tabs', () => {
+    it('does not render the Test Runs/Test Suites/Analytics/Labels tabs', () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      vi.mocked(useLocation).mockReturnValue({
+        pathname: '/projects/proj-1/settings/tokens',
+      } as unknown as ReturnType<typeof useLocation>);
+
+      render(<ProjectDetailPage />);
+
+      expect(screen.queryByRole('tablist')).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: /test runs/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('replaces the settings button with a link back to the project', () => {
+      vi.mocked(useProject).mockReturnValue({
+        data: makeProject(),
+        isPending: false,
+        isError: false,
+      } as unknown as ReturnType<typeof useProject>);
+      vi.mocked(useLocation).mockReturnValue({
+        pathname: '/projects/proj-1/settings/tokens',
+      } as unknown as ReturnType<typeof useLocation>);
+
+      render(<ProjectDetailPage />);
+
+      expect(
+        screen.queryByRole('link', { name: 'Project settings' }),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('link', { name: 'Back to project' }),
+      ).toHaveAttribute('href', '/projects/$projectId');
     });
   });
 });

@@ -40,7 +40,7 @@ export const StatCard = ({
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-[11px] font-bold tracking-widest text-base-content/55 uppercase">
+          <p className="text-xs font-bold tracking-widest text-base-content/55 uppercase">
             {label}
           </p>
           {to && (

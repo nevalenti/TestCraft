@@ -1,5 +1,8 @@
 import { useForm } from 'react-hook-form';
 
+import { FormActions } from '@/components/ui/FormActions';
+import { FormField } from '@/components/ui/FormField';
+import { FormInput } from '@/components/ui/FormInput';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 
 const PRESET_COLORS = [
@@ -41,23 +44,16 @@ export const LabelForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="space-y-1.5">
-        <label htmlFor="label-name" className="text-sm font-medium">
-          Name
-        </label>
-        <input
+      <FormField label="Name" htmlFor="label-name">
+        <FormInput
           id="label-name"
           {...register('name', { required: true })}
-          className="input-bordered input w-full"
           placeholder="e.g. smoke, regression, flaky"
           autoFocus
         />
-      </div>
+      </FormField>
 
-      <div className="space-y-2">
-        <label htmlFor="label-color-custom" className="text-sm font-medium">
-          Color
-        </label>
+      <FormField label="Color" htmlFor="label-color-custom">
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map((presetColor) => (
             <button
@@ -93,24 +89,13 @@ export const LabelForm = ({
             }}
           />
         </div>
-      </div>
+      </FormField>
 
-      <div className="flex justify-end gap-2 pt-2">
-        <button type="button" className="btn btn-sm" onClick={onCancel}>
-          Cancel
-        </button>
-        <button
-          type="submit"
-          className="btn btn-sm btn-primary"
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <span className="loading loading-xs loading-spinner" />
-          ) : (
-            submitLabel
-          )}
-        </button>
-      </div>
+      <FormActions
+        onCancel={onCancel}
+        isLoading={isLoading}
+        label={submitLabel}
+      />
     </form>
   );
 };

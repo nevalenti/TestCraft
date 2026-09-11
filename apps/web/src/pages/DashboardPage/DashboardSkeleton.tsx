@@ -44,12 +44,14 @@ const RunListSkeleton = () => (
 
 export const DashboardSkeleton = () => (
   <div aria-hidden="true">
-    <header className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2 px-4 pt-8 pb-6 sm:px-6 lg:px-8">
-      <div>
-        <SkeletonBlock className="h-8 w-64 sm:h-9" />
-        <SkeletonBlock className="mt-1.5 h-5 w-72" />
+    <header className="page-header">
+      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
+        <div>
+          <SkeletonBlock className="h-8 w-64 sm:h-9" />
+          <SkeletonBlock className="mt-1.5 h-5 w-72" />
+        </div>
+        <SkeletonBlock className="h-5 w-32" />
       </div>
-      <SkeletonBlock className="h-5 w-32" />
     </header>
 
     <section className="page-content flex flex-col gap-8">

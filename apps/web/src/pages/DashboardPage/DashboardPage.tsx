@@ -5,7 +5,6 @@ import {
   ClockIcon,
   FolderIcon,
 } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
 import { TestRunStatus } from '@testcraft/types';
 import { compareDesc, format } from 'date-fns';
 import { useMemo } from 'react';
@@ -122,7 +121,7 @@ export const DashboardPage = () => {
       )}
       {isContentReady && (
         <>
-          <header className="px-4 pt-8 pb-6 sm:px-6 lg:px-8">
+          <header className="page-header">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
               <div>
                 <h1 className="font-display text-2xl font-extrabold tracking-tight text-base-content sm:text-3xl">
@@ -136,7 +135,7 @@ export const DashboardPage = () => {
                 <p className="text-xs font-medium text-base-content/60">
                   {format(new Date(), 'EEEE, MMMM d')}
                 </p>
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-success">
+                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-success">
                   <span className="size-1.5 rounded-full bg-success motion-safe:animate-pulse" />
                   Live
                 </span>
@@ -190,7 +189,7 @@ export const DashboardPage = () => {
                     Active Runs
                   </h2>
                   {activeRunsAll.length > 0 && (
-                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-warning/20 bg-warning/10 px-1.5 py-0.5 font-mono text-[11px] font-bold text-warning tabular-nums">
+                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-warning/20 bg-warning/10 px-1.5 py-0.5 font-mono text-xs font-bold text-warning tabular-nums">
                       {activeRunsAll.length}
                     </span>
                   )}
@@ -202,14 +201,6 @@ export const DashboardPage = () => {
                     iconClassName="border-warning/20 bg-warning/10 text-warning"
                     title="No active runs"
                     description="Start a test run from any project to track results here."
-                    action={
-                      <Link
-                        to="/projects"
-                        className="btn gap-1.5 btn-sm btn-primary"
-                      >
-                        Browse projects
-                      </Link>
-                    }
                   />
                 ) : (
                   <>
@@ -242,7 +233,7 @@ export const DashboardPage = () => {
                     Recently Completed
                   </h2>
                   {recentlyCompletedRunsAll.length > 0 && (
-                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-success/20 bg-success/10 px-1.5 py-0.5 font-mono text-[11px] font-bold text-success tabular-nums">
+                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-success/20 bg-success/10 px-1.5 py-0.5 font-mono text-xs font-bold text-success tabular-nums">
                       {recentlyCompletedRunsAll.length}
                     </span>
                   )}
@@ -254,14 +245,6 @@ export const DashboardPage = () => {
                     iconClassName="border-success/20 bg-success/10 text-success"
                     title="No completed runs"
                     description="Completed test runs will appear here."
-                    action={
-                      <Link
-                        to="/projects"
-                        className="btn gap-1.5 btn-sm btn-primary"
-                      >
-                        Browse projects
-                      </Link>
-                    }
                   />
                 ) : (
                   <>

@@ -191,7 +191,7 @@ export const TestRunPage = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header flex items-center justify-between gap-4">
+      <header className="page-header flex flex-wrap items-center justify-between gap-4">
         <div>
           <h1 className="page-title">{run?.name}</h1>
           <p className="mt-0.5 text-sm text-base-content/70">
