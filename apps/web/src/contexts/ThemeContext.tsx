@@ -24,7 +24,7 @@ export const useTheme = (): ThemeContextValue => {
 };
 
 const THEME_KEY = 'app-theme';
-const LIGHT = 'testcraft-light';
+const LIGHT = 'emerald';
 const DARK = 'dracula';
 
 const resolveTheme = (): string => {

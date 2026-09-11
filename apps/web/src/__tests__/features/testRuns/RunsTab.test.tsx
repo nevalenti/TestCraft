@@ -60,6 +60,7 @@ vi.mock('@/features/testRuns/resultImport/importsApi', () => ({
   importsApi: {
     junit: vi.fn(),
     allure: vi.fn(),
+    getJob: vi.fn(),
   },
 }));
 
@@ -254,7 +255,11 @@ describe('RunsTab', () => {
   describe('given Import is clicked — submits a JUnit import', () => {
     it('imports the uploaded xml file', async () => {
       mockRuns([]);
-      vi.mocked(importsApi.junit).mockResolvedValue(makeRun() as never);
+      vi.mocked(importsApi.junit).mockResolvedValue({
+        id: 'job1',
+        status: 'Completed',
+        testRunId: 'r1',
+      } as never);
       renderWithClient();
       await screen.findByText('No test runs yet');
 

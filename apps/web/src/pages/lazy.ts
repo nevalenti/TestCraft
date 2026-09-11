@@ -90,7 +90,22 @@ export const LazyAccountPage = lazyPage(
   'AccountPage',
 );
 
-export const LazySettingsPage = lazyPage(
-  () => import('./SettingsPage/SettingsPage'),
-  'SettingsPage',
+export const LazyProjectSettingsLayout = lazyPage(
+  () => import('@/features/projectSettings/ProjectSettingsLayout'),
+  'ProjectSettingsLayout',
+);
+
+export const LazyProjectSettingsTokensTab = lazyPage(
+  () => import('@/features/projectSettings/ApiTokensTab'),
+  'ApiTokensTab',
+);
+
+export const LazyProjectSettingsNotificationsTab = lazyPage(
+  () => import('@/features/projectSettings/NotificationsTab'),
+  'NotificationsTab',
+);
+
+export const LazyProjectSettingsMembersTab = lazyPage(
+  () => import('@/features/projectSettings/MembersTab'),
+  'MembersTab',
 );

@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import { useEffect, useRef } from 'react';
 
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { AccountMenu } from '@/layout/AccountMenu';
@@ -7,12 +8,22 @@ import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
 
 export const BreadcrumbBar = () => {
   const breadcrumbs = useBreadcrumbsStore((store) => store.items);
+  const navRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const nav = navRef.current;
+    if (nav) nav.scrollLeft = nav.scrollWidth;
+  }, [breadcrumbs]);
 
   const content = () => {
     if (breadcrumbs === null || breadcrumbs.length === 0) return null;
 
     return (
-      <nav aria-label="Breadcrumb">
+      <nav
+        ref={navRef}
+        aria-label="Breadcrumb"
+        className="min-w-0 overflow-x-auto"
+      >
         <ol className="flex items-center gap-1">
           {breadcrumbs.map((item, index) => {
             const isLast = index === breadcrumbs.length - 1;
@@ -20,7 +31,7 @@ export const BreadcrumbBar = () => {
             return (
               <li
                 key={item.href ?? item.label}
-                className="flex items-center gap-1"
+                className="flex shrink-0 items-center gap-1"
               >
                 {index > 0 && (
                   <span
@@ -34,7 +45,7 @@ export const BreadcrumbBar = () => {
                   <Link
                     to={item.href}
                     title={item.label}
-                    className="flex max-w-48 items-center truncate text-xs font-medium text-base-content/75 transition-colors hover:text-base-content/90"
+                    className="flex max-w-28 items-center truncate text-xs font-medium text-base-content/75 transition-colors hover:text-base-content/90 sm:max-w-48"
                   >
                     {item.label}
                   </Link>
@@ -43,7 +54,7 @@ export const BreadcrumbBar = () => {
                     aria-current={isLast ? 'page' : undefined}
                     title={item.label}
                     className={cn(
-                      'max-w-64 truncate text-xs font-semibold',
+                      'max-w-40 truncate text-xs font-semibold sm:max-w-64',
                       isLast ? 'text-base-content/90' : 'text-base-content/85',
                     )}
                   >

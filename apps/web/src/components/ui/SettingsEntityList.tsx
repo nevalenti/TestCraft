@@ -29,7 +29,7 @@ export const SettingsEntityList = <T,>({
       {items.map((item) => (
         <li
           key={getKey(item)}
-          className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
+          className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-200/40 px-4 py-2.5"
         >
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">

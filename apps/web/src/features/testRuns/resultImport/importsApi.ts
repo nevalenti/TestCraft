@@ -1,4 +1,4 @@
-import type { AllureResultItem, TestRun } from '@testcraft/types';
+import type { AllureResultItem, ImportJobResponse } from '@testcraft/types';
 
 import client from '@/api/client';
 
@@ -9,7 +9,7 @@ export const importsApi = {
     projectId: string,
     input: { xml: string; environment: string; name?: string },
   ) => {
-    const { data } = await client.post<TestRun>(
+    const { data } = await client.post<ImportJobResponse>(
       `${BASE(projectId)}/junit`,
       input,
     );
@@ -19,9 +19,15 @@ export const importsApi = {
     projectId: string,
     input: { results: AllureResultItem[]; environment: string; name?: string },
   ) => {
-    const { data } = await client.post<TestRun>(
+    const { data } = await client.post<ImportJobResponse>(
       `${BASE(projectId)}/allure`,
       input,
+    );
+    return data;
+  },
+  getJob: async (projectId: string, jobId: string) => {
+    const { data } = await client.get<ImportJobResponse>(
+      `${BASE(projectId)}/${jobId}`,
     );
     return data;
   },

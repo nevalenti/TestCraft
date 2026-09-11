@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('@/api/client', () => ({
-  default: { post: vi.fn() },
+  default: { post: vi.fn(), get: vi.fn() },
 }));
 
 import client from '@/api/client';
@@ -31,5 +31,15 @@ describe('importsApi', () => {
       'projects/p1/import/allure',
       input,
     );
+  });
+
+  it('getJob fetches the import job by id', async () => {
+    vi.mocked(client.get).mockResolvedValue({
+      data: { id: 'job1', status: 'Completed' },
+    });
+
+    await importsApi.getJob('p1', 'job1');
+
+    expect(client.get).toHaveBeenCalledWith('projects/p1/import/job1');
   });
 });

@@ -80,7 +80,7 @@ export const RunMiniBadges = ({
     {passed > 0 && (
       <span
         className={cn(
-          'flex items-center gap-1 rounded-md border border-success/20 bg-success/10 px-2 py-0.5 font-mono text-xs text-success tabular-nums',
+          'flex items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-0.5 font-mono text-xs text-success tabular-nums',
           emphasize && 'font-semibold',
         )}
       >
@@ -91,7 +91,7 @@ export const RunMiniBadges = ({
     {failed > 0 && (
       <span
         className={cn(
-          'flex items-center gap-1 rounded-md border border-error/20 bg-error/10 px-2 py-0.5 font-mono text-xs text-error tabular-nums',
+          'flex items-center gap-1 rounded-full border border-error/20 bg-error/10 px-2 py-0.5 font-mono text-xs text-error tabular-nums',
           emphasize && 'font-semibold',
         )}
       >

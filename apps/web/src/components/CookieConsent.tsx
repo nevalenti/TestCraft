@@ -12,10 +12,10 @@ export const CookieConsent = () => {
       role="dialog"
       aria-label="Cookie consent"
       aria-live="polite"
-      className="fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 sm:pb-12 md:pb-20"
+      className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center px-4 sm:pb-12 md:pb-20"
     >
-      <div className="w-full max-w-2xl rounded-lg border border-border bg-base-200 shadow-2xl">
-        <div className="flex items-center gap-6 p-5">
+      <div className="pointer-events-auto w-full max-w-2xl rounded-lg border border-border bg-base-200 shadow-2xl">
+        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:gap-6">
           <div className="flex min-w-0 flex-1 gap-3">
             <ShieldCheckIcon
               className="mt-0.5 size-5 shrink-0 text-primary"
@@ -29,7 +29,7 @@ export const CookieConsent = () => {
               </p>
             </div>
           </div>
-          <div className="flex shrink-0 items-center gap-2">
+          <div className="flex shrink-0 items-center justify-end gap-2">
             <button onClick={decline} className="btn btn-ghost btn-sm">
               Decline
             </button>

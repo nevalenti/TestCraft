@@ -40,7 +40,7 @@ export const ToastStack = () => {
     <div
       className={cn(
         'toast toast-center toast-bottom z-[999]',
-        isCookieBannerShowing ? 'mb-28 sm:mb-36 md:mb-44' : 'mb-2',
+        isCookieBannerShowing ? 'mb-36 md:mb-44' : 'mb-2',
       )}
     >
       {notifications.slice(-MAX_VISIBLE).map((notification) => {

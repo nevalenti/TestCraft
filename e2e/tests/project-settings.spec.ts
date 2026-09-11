@@ -48,16 +48,12 @@ test.describe('Project Settings', () => {
   });
 
   test('renders the API Tokens tab by default', async ({
+    page,
     projectSettingsPage,
   }) => {
-    await expect(
-      projectSettingsPage.dialog.getByRole('heading', {
-        name: 'Project Settings',
-      }),
-    ).toBeVisible();
-    await expect(
-      projectSettingsPage.dialog.getByLabel('Token name'),
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/settings\/tokens$/);
+    await expect(projectSettingsPage.tokensTab).toBeVisible();
+    await expect(page.getByLabel('Token name')).toBeVisible();
   });
 
   test('creates and revokes an API token', async ({ projectSettingsPage }) => {

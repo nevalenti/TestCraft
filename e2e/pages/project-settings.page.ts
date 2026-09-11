@@ -6,33 +6,33 @@ export class ProjectSettingsPage {
   constructor(private page: Page) {}
 
   get trigger() {
-    return this.page.getByRole('button', { name: 'Project settings' });
+    return this.page.getByRole('link', { name: 'Project settings' });
   }
 
-  get dialog() {
-    return this.page.locator('dialog[open]');
+  get tokensTab() {
+    return this.page.getByRole('tab', { name: 'API Tokens' });
   }
 
   async open() {
     await this.trigger.click();
-    await expect(this.dialog).toBeVisible();
+    await expect(this.tokensTab).toBeVisible();
   }
 
   async goToTab(tab: Tab) {
-    await this.dialog.getByRole('button', { name: tab, exact: true }).click();
+    await this.page.getByRole('tab', { name: tab, exact: true }).click();
   }
 
   async createToken(name: string) {
-    await this.dialog.getByLabel('Token name').fill(name);
-    await this.dialog.getByRole('button', { name: 'Create' }).click();
+    await this.page.getByLabel('Token name').fill(name);
+    await this.page.getByRole('button', { name: 'Create' }).click();
     await expect(
-      this.dialog.getByText("Copy your token — it won't be shown again"),
+      this.page.getByText("Copy your token — it won't be shown again"),
     ).toBeVisible();
     await expect(this.getTokenRow(name)).toBeVisible({ timeout: 10_000 });
   }
 
   getTokenRow(name: string) {
-    return this.dialog.locator('li').filter({ hasText: name });
+    return this.page.locator('li').filter({ hasText: name });
   }
 
   async revokeToken(name: string) {
@@ -43,13 +43,13 @@ export class ProjectSettingsPage {
   }
 
   async addWebhook(url: string) {
-    await this.dialog.getByLabel('Webhook URL').fill(url);
-    await this.dialog.getByRole('button', { name: 'Add Webhook' }).click();
+    await this.page.getByLabel('Webhook URL').fill(url);
+    await this.page.getByRole('button', { name: 'Add Webhook' }).click();
     await expect(this.getWebhookRow(url)).toBeVisible({ timeout: 10_000 });
   }
 
   getWebhookRow(url: string) {
-    return this.dialog.locator('li').filter({ hasText: url });
+    return this.page.locator('li').filter({ hasText: url });
   }
 
   async deleteWebhook(url: string) {
@@ -60,13 +60,13 @@ export class ProjectSettingsPage {
   }
 
   async addEmail(email: string) {
-    await this.dialog.getByPlaceholder('alerts@example.com').fill(email);
-    await this.dialog.getByRole('button', { name: 'Add Email' }).click();
+    await this.page.getByPlaceholder('alerts@example.com').fill(email);
+    await this.page.getByRole('button', { name: 'Add Email' }).click();
     await expect(this.getEmailRow(email)).toBeVisible({ timeout: 10_000 });
   }
 
   getEmailRow(email: string) {
-    return this.dialog.locator('li').filter({ hasText: email });
+    return this.page.locator('li').filter({ hasText: email });
   }
 
   async deleteEmail(email: string) {
@@ -77,13 +77,13 @@ export class ProjectSettingsPage {
   }
 
   async addMember(email: string) {
-    await this.dialog.getByLabel('Add member by email').fill(email);
-    await this.dialog.getByRole('button', { name: 'Add', exact: true }).click();
+    await this.page.getByLabel('Add member by email').fill(email);
+    await this.page.getByRole('button', { name: 'Add', exact: true }).click();
     await expect(this.getMemberRow(email)).toBeVisible({ timeout: 10_000 });
   }
 
   getMemberRow(email: string) {
-    return this.dialog.locator('li').filter({ hasText: email });
+    return this.page.locator('li').filter({ hasText: email });
   }
 
   async removeMember(email: string) {

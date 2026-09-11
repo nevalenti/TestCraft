@@ -39,7 +39,7 @@ export const RunAvatar = ({
   return (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-[11px] font-bold text-base-content/70 tabular-nums',
+        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-xs font-bold text-base-content/70 tabular-nums',
         size,
         className,
       )}

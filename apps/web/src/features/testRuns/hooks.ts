@@ -5,7 +5,12 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
+import type {
+  CreateTestRun,
+  ImportJobResponse,
+  TestRun,
+  UpdateTestRun,
+} from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
 import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
@@ -94,14 +99,37 @@ export const useUpdateTestRun = (projectId: string) => {
   });
 };
 
+const IMPORT_POLL_INTERVAL_MS = 1500;
+const IMPORT_POLL_MAX_ATTEMPTS = 20;
+
+const pollImportJob = async (
+  projectId: string,
+  job: ImportJobResponse,
+): Promise<ImportJobResponse> => {
+  let current = job;
+  for (let attempt = 0; attempt < IMPORT_POLL_MAX_ATTEMPTS; attempt++) {
+    if (current.status === 'Completed') return current;
+    if (current.status === 'Failed')
+      throw new Error(current.error ?? 'Test run import failed');
+    await new Promise((resolve) =>
+      setTimeout(resolve, IMPORT_POLL_INTERVAL_MS),
+    );
+    current = await importsApi.getJob(projectId, current.id);
+  }
+  throw new Error('Test run import timed out');
+};
+
 const useImportMutation = <T>(
   projectId: string,
-  mutationFn: (input: T) => Promise<TestRun>,
+  mutationFn: (input: T) => Promise<ImportJobResponse>,
 ) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn,
+    mutationFn: async (input: T) => {
+      const job = await mutationFn(input);
+      return pollImportJob(projectId, job);
+    },
     onSuccess: () => {
       notify('Test run imported');
       queryClient.invalidateQueries({
@@ -110,6 +138,9 @@ const useImportMutation = <T>(
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
       });
+    },
+    onError: (error: Error) => {
+      notify(error.message || 'Test run import failed', 'error');
     },
   });
 };

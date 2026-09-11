@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
+import { act, renderHook, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -29,6 +29,7 @@ vi.mock('@/features/testRuns/resultImport/importsApi', () => ({
   importsApi: {
     junit: vi.fn(),
     allure: vi.fn(),
+    getJob: vi.fn(),
   },
 }));
 
@@ -292,7 +293,11 @@ describe('useDeleteTestRun', () => {
 describe('useImportJUnitXml', () => {
   describe('on mutate — calls importsApi.junit and notifies', () => {
     it('calls importsApi.junit with projectId and input', async () => {
-      vi.mocked(importsApi.junit).mockResolvedValue({ id: 'r1' } as any);
+      vi.mocked(importsApi.junit).mockResolvedValue({
+        id: 'job1',
+        status: 'Completed',
+        testRunId: 'r1',
+      } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(() => useImportJUnitXml('proj-1'), {
         wrapper,
@@ -306,13 +311,67 @@ describe('useImportJUnitXml', () => {
         environment: 'ci',
       });
     });
+
+    it('polls the job until it completes before invalidating and notifying', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true });
+      vi.mocked(importsApi.junit).mockResolvedValue({
+        id: 'job1',
+        status: 'Pending',
+      } as any);
+      vi.mocked(importsApi.getJob)
+        .mockResolvedValueOnce({ id: 'job1', status: 'Processing' } as any)
+        .mockResolvedValueOnce({
+          id: 'job1',
+          status: 'Completed',
+          testRunId: 'r1',
+        } as any);
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(() => useImportJUnitXml('proj-1'), {
+        wrapper,
+      });
+
+      result.current.mutate({ xml: '<xml/>', environment: 'ci' });
+
+      try {
+        await act(async () => {
+          await vi.advanceTimersByTimeAsync(3000);
+        });
+        await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      } finally {
+        vi.useRealTimers();
+      }
+
+      expect(importsApi.getJob).toHaveBeenCalledWith('proj-1', 'job1');
+      expect(notify).toHaveBeenCalledWith('Test run imported');
+    });
+
+    it('notifies the error and does not invalidate when the job fails', async () => {
+      vi.mocked(importsApi.junit).mockResolvedValue({
+        id: 'job1',
+        status: 'Failed',
+        error: 'Malformed report',
+      } as any);
+      const { wrapper } = makeWrapper();
+      const { result } = renderHook(() => useImportJUnitXml('proj-1'), {
+        wrapper,
+      });
+
+      result.current.mutate({ xml: '<xml/>', environment: 'ci' });
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(notify).toHaveBeenCalledWith('Malformed report', 'error');
+    });
   });
 });
 
 describe('useImportAllure', () => {
   describe('on mutate — calls importsApi.allure and notifies', () => {
     it('calls importsApi.allure with projectId and input', async () => {
-      vi.mocked(importsApi.allure).mockResolvedValue({ id: 'r1' } as any);
+      vi.mocked(importsApi.allure).mockResolvedValue({
+        id: 'job2',
+        status: 'Completed',
+        testRunId: 'r1',
+      } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(() => useImportAllure('proj-1'), {
         wrapper,
@@ -328,7 +387,11 @@ describe('useImportAllure', () => {
     });
 
     it("notifies 'Test run imported' on success", async () => {
-      vi.mocked(importsApi.allure).mockResolvedValue({ id: 'r1' } as any);
+      vi.mocked(importsApi.allure).mockResolvedValue({
+        id: 'job2',
+        status: 'Completed',
+        testRunId: 'r1',
+      } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(() => useImportAllure('proj-1'), {
         wrapper,

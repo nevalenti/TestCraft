@@ -3,7 +3,7 @@ import { Link } from '@tanstack/react-router';
 import type { Project, TestRun, TestRunSummary } from '@testcraft/types';
 
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
-import { formatElapsed } from '@/lib/format';
+import { formatCiRunName, formatElapsed } from '@/lib/format';
 import {
   RunAvatarBubble,
   RunMiniBadges,
@@ -48,9 +48,7 @@ export const ActiveRunListItem = ({
     );
   } else {
     summaryContent = (
-      <span className="text-[11px] text-base-content/55">
-        Waiting for results…
-      </span>
+      <span className="text-xs text-base-content/55">Waiting for results…</span>
     );
   }
 
@@ -66,7 +64,7 @@ export const ActiveRunListItem = ({
       <Link
         to="/projects/$projectId/runs/$runId"
         params={{ projectId: run.projectId, runId: run.id }}
-        className="flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
+        className="flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-200/60 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
       >
         <RunAvatarBubble
           badgeClass={
@@ -90,7 +88,7 @@ export const ActiveRunListItem = ({
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold" title={run.name}>
-                {run.name}
+                {formatCiRunName(run.name)}
               </p>
               <p
                 className="mt-0.5 truncate text-xs text-base-content/70"
@@ -112,7 +110,7 @@ export const ActiveRunListItem = ({
               </p>
             </div>
 
-            <span className="inline-flex shrink-0 animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-[11px] font-semibold tracking-wide text-warning uppercase">
+            <span className="inline-flex shrink-0 animate-pulse items-center rounded-full border border-warning/22 bg-warning/10 px-2 py-0.5 text-xs font-semibold tracking-wide text-warning uppercase">
               Live
             </span>
           </div>

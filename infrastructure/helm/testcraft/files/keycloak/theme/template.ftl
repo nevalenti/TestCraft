@@ -15,34 +15,16 @@
       :root {
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
-        --color-border: oklch(1 0 0 / 0.32);
+        --color-border: oklch(1 0 0 / 0.14);
       }
 
-      [data-theme="testcraft-light"] {
-        --color-base-100: oklch(0.99 0.006 277.5);
-        --color-base-200: oklch(0.944 0.014 277.5);
-        --color-base-300: oklch(0.885 0.02 277.5);
-        --color-base-content: oklch(0.24 0.032 277.5);
-        --color-primary: oklch(0.58 0.2 346.8);
-        --color-primary-content: oklch(1 0 0);
-        --color-secondary: oklch(0.55 0.17 301.9);
-        --color-secondary-content: oklch(1 0 0);
-        --color-accent: oklch(0.63 0.16 66.6);
-        --color-accent-content: oklch(0.18 0.02 66.6);
-        --color-neutral: oklch(0.35 0.032 277.8);
-        --color-neutral-content: oklch(0.97 0.006 277.8);
-        --color-info: oklch(0.56 0.13 212.8);
-        --color-info-content: oklch(1 0 0);
-        --color-success: oklch(0.5 0.19 148);
-        --color-success-content: oklch(1 0 0);
-        --color-warning: oklch(0.64 0.15 112.8);
-        --color-warning-content: oklch(0.18 0.02 112.8);
-        --color-error: oklch(0.56 0.22 24.4);
-        --color-error-content: oklch(1 0 0);
-        --color-border: oklch(0 0 0 / 0.35);
-        --radius-selector: 1rem;
-        --radius-field: 0.5rem;
-        --radius-box: 1rem;
+      [data-theme="emerald"] {
+        --color-border: oklch(0 0 0 / 0.24) !important;
+        --color-primary: oklch(55% 0.2 346.8) !important;
+        --color-primary-content: oklch(98% 0 0) !important;
+        --color-base-content: oklch(0.22 0.02 262.988) !important;
+        --color-base-200: oklch(93% 0.008 262.988) !important;
+        --color-base-300: oklch(86% 0.012 262.988) !important;
       }
 
       html, body {
@@ -82,14 +64,14 @@
       }
 
       #icon-moon { display: none; }
-      [data-theme="testcraft-light"] #icon-moon { display: block; }
-      [data-theme="testcraft-light"] #icon-sun { display: none; }
+      [data-theme="emerald"] #icon-moon { display: block; }
+      [data-theme="emerald"] #icon-sun { display: none; }
 
-      [data-theme="testcraft-light"] .header-stripes {
+      [data-theme="emerald"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
-          oklch(0 0 0 / 0.06) 8px, oklch(0 0 0 / 0.06) 10px
+          oklch(0 0 0 / 0.08) 8px, oklch(0 0 0 / 0.08) 10px
         );
       }
 
@@ -123,7 +105,7 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'testcraft-light';
+      const LIGHT = 'emerald';
       const DARK = 'dracula';
 
       function getCookie(name) {

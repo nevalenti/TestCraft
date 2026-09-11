@@ -169,7 +169,7 @@ export const TestCasePage = () => {
 
   useBreadcrumbs([
     { label: 'Projects', href: '/projects' },
-    { label: project?.name ?? '…', href: `/projects/${projectId}` },
+    { label: project?.name ?? '…', href: `/projects/${projectId}/suites` },
     {
       label: suite?.name ?? '…',
       href: `/projects/${projectId}/suites/${suiteId}`,

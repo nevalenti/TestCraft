@@ -25,7 +25,7 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
             {table.getHeaderGroups().map((headerGroup) => (
               <tr
                 key={headerGroup.id}
-                className="border-b border-border text-[11px] font-semibold tracking-wider text-base-content/70 uppercase"
+                className="border-b border-border text-xs font-semibold tracking-wider text-base-content/70 uppercase"
               >
                 {headerGroup.headers.map((header) => (
                   <th

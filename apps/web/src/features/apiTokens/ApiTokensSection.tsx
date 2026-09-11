@@ -41,7 +41,7 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
   return (
     <div className="space-y-5">
       {newToken && (
-        <div className="rounded-lg border border-warning/30 bg-warning/5 p-4">
+        <div className="card-bg-warning rounded-xl border p-4">
           <p className="mb-1 text-sm font-semibold text-warning">
             Copy your token — it won{"'"}t be shown again
           </p>

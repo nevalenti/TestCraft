@@ -8,7 +8,7 @@ import type { Project, TestRun, TestRunSummary } from '@testcraft/types';
 
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { cn } from '@/lib/cn';
-import { formatDateTime } from '@/lib/format';
+import { formatCiRunName, formatDateTime } from '@/lib/format';
 import {
   RunAvatarBubble,
   RunMiniBadges,
@@ -100,7 +100,7 @@ const getSummaryContent = (
   }
 
   return (
-    <span className="text-[11px] text-base-content/55">No results logged</span>
+    <span className="text-xs text-base-content/55">No results logged</span>
   );
 };
 
@@ -140,10 +140,8 @@ export const CompletedRunListItem = ({
         to="/projects/$projectId/runs/$runId"
         params={{ projectId: run.projectId, runId: run.id }}
         className={cn(
-          'flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-300',
-          hasFailed
-            ? 'hover:shadow-[inset_3px_0_0_var(--color-error)]'
-            : 'hover:shadow-[inset_3px_0_0_var(--color-success)]',
+          'flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-200/60',
+          hasFailed && 'hover:shadow-[inset_3px_0_0_var(--color-error)]',
         )}
       >
         <RunAvatarBubble
@@ -158,7 +156,7 @@ export const CompletedRunListItem = ({
           <div className="flex items-center gap-3">
             <div className="min-w-0 flex-1">
               <p className="truncate text-sm font-semibold" title={run.name}>
-                {run.name}
+                {formatCiRunName(run.name)}
               </p>
               <p
                 className="mt-0.5 truncate text-xs text-base-content/70"
