@@ -64,7 +64,7 @@ export const ActiveRunListItem = ({
       <Link
         to="/projects/$projectId/runs/$runId"
         params={{ projectId: run.projectId, runId: run.id }}
-        className="flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-200/60 hover:shadow-[inset_3px_0_0_var(--color-warning)]"
+        className="flex items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-base-200/60"
       >
         <RunAvatarBubble
           badgeClass={

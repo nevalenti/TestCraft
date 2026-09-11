@@ -1,4 +1,4 @@
-import { ClipboardDocumentListIcon, PlusIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestCase,
   TestCase,
@@ -9,13 +9,9 @@ import { useState } from 'react';
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
-import { LabelBadge } from '@/components/ui/LabelBadge';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
-import { PriorityBadge } from '@/components/ui/PriorityBadge';
-import { ResourceCard } from '@/components/ui/ResourceCard';
-import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
@@ -32,8 +28,9 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { formatDate } from '@/lib/format';
+import { TestCaseCard } from '@/pages/TestSuitePage/TestCaseCard';
 import { TestCaseForm } from '@/pages/TestSuitePage/TestCaseForm';
+import { TestCaseListItem } from '@/pages/TestSuitePage/TestCaseListItem';
 import { useViewModeStore } from '@/stores/viewMode';
 
 export const TestSuitePage = () => {
@@ -96,54 +93,14 @@ export const TestSuitePage = () => {
       return (
         <div className="flex flex-col gap-2">
           {testCases?.map((testCase) => (
-            <ResourceListItem
+            <TestCaseListItem
               key={testCase.id}
-              testId="case-card"
+              testCase={testCase}
+              projectId={projectId}
+              suiteId={suiteId}
               onEdit={() => openEdit(testCase)}
               onDelete={() => openDelete(testCase)}
-              to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
-              label="test case"
-              cardBg="card-bg-info"
-              accentText="text-info"
-              typeIcon={<ClipboardDocumentListIcon className="size-4" />}
-            >
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate text-sm font-semibold">
-                  {testCase.name}
-                </span>
-                <p className="truncate text-xs text-base-content/70">
-                  {testCase.description ?? (
-                    <span className="text-base-content/55 italic">
-                      No description
-                    </span>
-                  )}
-                </p>
-              </div>
-              <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                {(testCase.labels ?? []).length > 0 && (
-                  <div className="flex items-center gap-1">
-                    {testCase.labels!.slice(0, 2).map((label) => (
-                      <LabelBadge key={label.id} label={label} />
-                    ))}
-                    {testCase.labels!.length > 2 && (
-                      <span className="text-xs font-medium text-base-content/55">
-                        +{testCase.labels!.length - 2}
-                      </span>
-                    )}
-                  </div>
-                )}
-                {testCase.stepCount > 0 && (
-                  <span className="text-xs text-base-content/70">
-                    {testCase.stepCount} step
-                    {testCase.stepCount === 1 ? '' : 's'}
-                  </span>
-                )}
-                <PriorityBadge priority={testCase.priority} />
-                <span className="text-xs text-base-content/55 tabular-nums">
-                  {formatDate(testCase.createdAt)}
-                </span>
-              </div>
-            </ResourceListItem>
+            />
           ))}
         </div>
       );
@@ -151,56 +108,14 @@ export const TestSuitePage = () => {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {testCases?.map((testCase) => (
-          <ResourceCard
+          <TestCaseCard
             key={testCase.id}
-            testId="case-card"
+            testCase={testCase}
+            projectId={projectId}
+            suiteId={suiteId}
             onEdit={() => openEdit(testCase)}
             onDelete={() => openDelete(testCase)}
-            to={`/projects/${projectId}/suites/${suiteId}/cases/${testCase.id}`}
-            label="test case"
-            cardBg="card-bg-info"
-            accentText="text-info"
-            typeIcon={<ClipboardDocumentListIcon className="size-3.5" />}
-          >
-            <div className="flex flex-col gap-1">
-              <span className="line-clamp-2 text-base leading-snug font-semibold">
-                {testCase.name}
-              </span>
-              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-                {testCase.description ?? (
-                  <span className="text-base-content/55 italic">
-                    No description
-                  </span>
-                )}
-              </p>
-            </div>
-            {(testCase.labels ?? []).length > 0 && (
-              <div className="flex flex-wrap items-center gap-1">
-                {testCase.labels!.slice(0, 3).map((label) => (
-                  <LabelBadge key={label.id} label={label} />
-                ))}
-                {testCase.labels!.length > 3 && (
-                  <span className="text-xs font-medium text-base-content/55">
-                    +{testCase.labels!.length - 3}
-                  </span>
-                )}
-              </div>
-            )}
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5">
-                <PriorityBadge priority={testCase.priority} />
-                {testCase.stepCount > 0 && (
-                  <span className="text-xs text-base-content/70">
-                    {testCase.stepCount} step
-                    {testCase.stepCount === 1 ? '' : 's'}
-                  </span>
-                )}
-              </div>
-              <span className="text-xs text-base-content/55 tabular-nums">
-                {formatDate(testCase.createdAt)}
-              </span>
-            </div>
-          </ResourceCard>
+          />
         ))}
       </div>
     );

@@ -1,27 +1,8 @@
-import type { DragEndEvent } from '@dnd-kit/core';
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { MagnifyingGlassIcon, PlayIcon } from '@heroicons/react/24/solid';
+import { PlayIcon } from '@heroicons/react/24/solid';
 import { useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
 
-import { ErrorState } from '@/components/ErrorState';
 import { Modal } from '@/components/ui/Modal';
-import { Skeleton } from '@/components/ui/Skeleton';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import { useProjectTestCases } from '@/features/testCases/hooks';
 import {
@@ -35,16 +16,9 @@ import {
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { SortableItem } from '@/pages/TestPlansPage/SortableItem';
-
-const PlanCaseRowSkeleton = () => (
-  <li className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-4 py-3">
-    <Skeleton className="size-4" />
-    <Skeleton className="h-3 w-4" />
-    <Skeleton className="h-3.5 flex-1" />
-    <Skeleton className="size-5 rounded-md" />
-  </li>
-);
+import { AddCasesPanel } from '@/pages/TestPlansPage/AddCasesPanel';
+import { PlanCasesPanel } from '@/pages/TestPlansPage/PlanCasesPanel';
+import { RunFromPlanForm } from '@/pages/TestPlansPage/RunFromPlanForm';
 
 export const TestPlanPage = () => {
   const projectId = useRequiredParam('projectId');
@@ -67,13 +41,7 @@ export const TestPlanPage = () => {
   const createRun = useCreateRunFromPlan(projectId);
   const showSkeleton = useIsLoadingVisible(isPending);
 
-  const [addSearch, setAddSearch] = useState('');
   const [runModalOpen, setRunModalOpen] = useState(false);
-
-  const { register, handleSubmit, reset } = useForm<{
-    name: string;
-    environment: string;
-  }>({ defaultValues: { name: '', environment: '' } });
 
   useBreadcrumbs([
     { label: 'Projects', href: '/projects' },
@@ -82,41 +50,12 @@ export const TestPlanPage = () => {
     { label: plan?.name ?? '…' },
   ]);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
   const sortedCases = [...(cases ?? [])].toSorted(
     (caseA, caseB) => caseA.order - caseB.order,
   );
-  const caseIds = sortedCases.map((planCase) => planCase.testCaseId);
-
-  const handleDragEnd = ({ active, over }: DragEndEvent) => {
-    if (!over || active.id === over.id) return;
-
-    const oldIndex = sortedCases.findIndex(
-      (planCase) => planCase.testCaseId === active.id,
-    );
-    const newIndex = sortedCases.findIndex(
-      (planCase) => planCase.testCaseId === over.id,
-    );
-    const reordered = arrayMove(sortedCases, oldIndex, newIndex);
-
-    reorderCases.mutate(
-      reordered.map((planCase, index) => ({
-        testCaseId: planCase.testCaseId,
-        order: index + 1,
-      })),
-    );
-  };
-
+  const caseIds = new Set(sortedCases.map((planCase) => planCase.testCaseId));
   const availableToAdd = (allCases ?? []).filter(
-    (testCase) =>
-      !caseIds.includes(testCase.id) &&
-      testCase.name.toLowerCase().includes(addSearch.toLowerCase()),
+    (testCase) => !caseIds.has(testCase.id),
   );
 
   const handleRunFromPlan = (data: { name: string; environment: string }) => {
@@ -124,7 +63,6 @@ export const TestPlanPage = () => {
       { planId, name: data.name, environment: data.environment },
       {
         onSuccess: (run) => {
-          reset();
           setRunModalOpen(false);
           navigate({
             to: '/projects/$projectId/runs/$runId',
@@ -132,49 +70,6 @@ export const TestPlanPage = () => {
           });
         },
       },
-    );
-  };
-
-  const renderPlanCases = () => {
-    if (isPending) {
-      return (
-        showSkeleton && (
-          <SkeletonStatus label="Loading plan cases…">
-            <ul className="space-y-2">
-              {Array.from({ length: 3 }, (_, i) => (
-                <PlanCaseRowSkeleton key={i} />
-              ))}
-            </ul>
-          </SkeletonStatus>
-        )
-      );
-    }
-    if (isError) return <ErrorState error={error} onRetry={refetch} />;
-    if (sortedCases.length === 0) {
-      return (
-        <p className="text-sm text-base-content/65">
-          Add test cases from the right panel.
-        </p>
-      );
-    }
-    return (
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext items={caseIds} strategy={verticalListSortingStrategy}>
-          <ul className="space-y-2">
-            {sortedCases.map((item) => (
-              <SortableItem
-                key={item.testCaseId}
-                item={item}
-                onRemove={(id) => removeCase.mutate(id)}
-              />
-            ))}
-          </ul>
-        </SortableContext>
-      </DndContext>
     );
   };
 
@@ -205,44 +100,26 @@ export const TestPlanPage = () => {
             <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
               Plan Cases ({sortedCases.length})
             </p>
-            {renderPlanCases()}
+            <PlanCasesPanel
+              sortedCases={sortedCases}
+              isPending={isPending}
+              showSkeleton={showSkeleton}
+              isError={isError}
+              error={error}
+              onRetry={refetch}
+              onReorder={(reordered) => reorderCases.mutate(reordered)}
+              onRemove={(id) => removeCase.mutate(id)}
+            />
           </div>
 
           <div>
             <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
               Add Cases
             </p>
-            <div className="relative mb-3">
-              <MagnifyingGlassIcon className="absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-base-content/65" />
-              <input
-                className="input-bordered input input-sm w-full pl-8"
-                placeholder="Search test cases…"
-                value={addSearch}
-                onChange={(event) => setAddSearch(event.target.value)}
-              />
-            </div>
-            {availableToAdd.length === 0 ? (
-              <p className="text-sm text-base-content/65">
-                {addSearch ? 'No matches.' : 'All test cases are in the plan.'}
-              </p>
-            ) : (
-              <ul className="max-h-96 space-y-2 overflow-y-auto">
-                {availableToAdd.map((testCase) => (
-                  <li
-                    key={testCase.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border border-border bg-base-100 px-4 py-2.5"
-                  >
-                    <span className="text-sm font-medium">{testCase.name}</span>
-                    <button
-                      className="btn text-primary btn-ghost btn-xs"
-                      onClick={() => addCase.mutate(testCase.id)}
-                    >
-                      Add
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <AddCasesPanel
+              availableCases={availableToAdd}
+              onAdd={(id) => addCase.mutate(id)}
+            />
           </div>
         </div>
       </section>
@@ -252,47 +129,12 @@ export const TestPlanPage = () => {
         onClose={() => setRunModalOpen(false)}
         title="Run Test Plan"
       >
-        <form onSubmit={handleSubmit(handleRunFromPlan)} className="space-y-4">
-          <div>
-            <label htmlFor="run-name" className="label-text label text-xs">
-              Run Name
-            </label>
-            <input
-              id="run-name"
-              className="input-bordered input input-sm w-full"
-              autoFocus
-              placeholder={`${plan?.name ?? 'Plan'} – Run 1`}
-              {...register('name', { required: true })}
-            />
-          </div>
-          <div>
-            <label htmlFor="run-env" className="label-text label text-xs">
-              Environment (optional)
-            </label>
-            <input
-              id="run-env"
-              className="input-bordered input input-sm w-full"
-              placeholder="e.g. staging"
-              {...register('environment')}
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={() => setRunModalOpen(false)}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-sm btn-primary"
-              disabled={createRun.isPending}
-            >
-              Start Run
-            </button>
-          </div>
-        </form>
+        <RunFromPlanForm
+          planName={plan?.name ?? 'Plan'}
+          onSubmit={handleRunFromPlan}
+          onCancel={() => setRunModalOpen(false)}
+          isLoading={createRun.isPending}
+        />
       </Modal>
     </div>
   );

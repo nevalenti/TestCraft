@@ -1,35 +1,16 @@
-import {
-  closestCenter,
-  DndContext,
-  type DragEndEvent,
-  type DragOverEvent,
-  DragOverlay,
-  type DragStartEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestCaseStep,
   TestCaseStep,
   UpdateTestCaseStep,
 } from '@testcraft/types';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { LabelBadge } from '@/components/ui/LabelBadge';
 import { Modal } from '@/components/ui/Modal';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import { useTestCase } from '@/features/testCases/hooks';
@@ -46,30 +27,9 @@ import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { LabelSelect } from '@/pages/TestCasePage/LabelSelect';
-import { StepDragPreview } from '@/pages/TestCasePage/StepDragPreview';
 import { StepForm } from '@/pages/TestCasePage/StepForm';
-import { StepRow } from '@/pages/TestCasePage/StepRow';
-
-const StepRowSkeleton = () => (
-  <div className="rounded-lg border border-base-content/20 bg-base-100 shadow-card">
-    <div className="flex items-start gap-3 p-4 pr-24">
-      <Skeleton className="size-8 shrink-0 rounded-md" />
-      <div className="min-w-0 flex-1">
-        <div className="mb-3 grid gap-4 sm:grid-cols-2">
-          <div>
-            <Skeleton className="mb-2 h-3 w-16" />
-            <Skeleton className="h-3.5 w-3/4" />
-          </div>
-          <div>
-            <Skeleton className="mb-2 h-3 w-24" />
-            <Skeleton className="h-3.5 w-3/4" />
-          </div>
-        </div>
-        <Skeleton className="h-3 w-20" />
-      </div>
-    </div>
-  </div>
-);
+import { StepRowSkeleton } from '@/pages/TestCasePage/StepRowSkeleton';
+import { StepsList } from '@/pages/TestCasePage/StepsList';
 
 export const TestCasePage = () => {
   const projectId = useRequiredParam('projectId');
@@ -77,9 +37,6 @@ export const TestCasePage = () => {
   const caseId = useRequiredParam('caseId');
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestCaseStep>();
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [localSteps, setLocalSteps] = useState<TestCaseStep[]>([]);
-  const localStepsRef = useRef<TestCaseStep[]>([]);
 
   const { data: project } = useProject(projectId);
   const { data: suite } = useTestSuite(projectId, suiteId);
@@ -97,13 +54,6 @@ export const TestCasePage = () => {
   const deleteStep = useDeleteTestCaseStep(projectId, suiteId, caseId);
   const showSkeleton = useIsLoadingVisible(isPending);
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    }),
-  );
-
   const { sortedSteps, nextOrder } = useMemo(() => {
     const sorted = [...(steps ?? [])].toSorted(
       (itemA, itemB) => itemA.order - itemB.order,
@@ -115,57 +65,14 @@ export const TestCasePage = () => {
     };
   }, [steps]);
 
-  const displaySteps =
-    activeId || bulkReorder.isPending ? localSteps : sortedSteps;
-  const activeStep = activeId
-    ? localSteps.find((step) => step.id === activeId)
-    : null;
-
   const handleCreate = (input: CreateTestCaseStep) =>
     createStep.mutate(input, { onSuccess: close });
   const handleUpdate = (id: string) => (input: UpdateTestCaseStep) =>
     updateStep.mutate({ id, ...input }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deleteStep.mutate(id, { onSuccess: close });
-
-  const handleDragStart = ({ active }: DragStartEvent) => {
-    localStepsRef.current = sortedSteps;
-    setActiveId(active.id as string);
-    setLocalSteps(sortedSteps);
-  };
-
-  const handleDragOver = ({ active, over }: DragOverEvent) => {
-    if (!over || active.id === over.id) return;
-
-    const previousSteps = localStepsRef.current;
-    const oldIndex = previousSteps.findIndex((step) => step.id === active.id);
-    const newIndex = previousSteps.findIndex((step) => step.id === over.id);
-
-    localStepsRef.current = arrayMove(previousSteps, oldIndex, newIndex);
-  };
-
-  const handleDragEnd = ({ over }: DragEndEvent) => {
-    const finalSteps = localStepsRef.current;
-
-    setLocalSteps(finalSteps);
-    setActiveId(null);
-    if (!over) return;
-
-    const reordered = finalSteps.map((step, index) => ({
-      id: step.id,
-      order: index + 1,
-    }));
-
-    const hasChanges = reordered.some(({ id, order }) => {
-      const original = sortedSteps.find((step) => step.id === id);
-
-      return original?.order !== order;
-    });
-
-    if (hasChanges) {
-      bulkReorder.mutate({ steps: reordered });
-    }
-  };
+  const handleReorder = (steps: { id: string; order: number }[]) =>
+    bulkReorder.mutate({ steps });
 
   useBreadcrumbs([
     { label: 'Projects', href: '/projects' },
@@ -202,32 +109,13 @@ export const TestCasePage = () => {
       );
 
     return (
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragOver={handleDragOver}
-        onDragEnd={handleDragEnd}
-      >
-        <SortableContext
-          items={displaySteps.map((step) => step.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          <div className="space-y-3">
-            {displaySteps.map((step) => (
-              <StepRow
-                key={step.id}
-                step={step}
-                onEdit={() => openEdit(step)}
-                onDelete={() => openDelete(step)}
-              />
-            ))}
-          </div>
-        </SortableContext>
-        <DragOverlay dropAnimation={null}>
-          {activeStep && <StepDragPreview step={activeStep} />}
-        </DragOverlay>
-      </DndContext>
+      <StepsList
+        sortedSteps={sortedSteps}
+        isReordering={bulkReorder.isPending}
+        onReorder={handleReorder}
+        onEdit={openEdit}
+        onDelete={openDelete}
+      />
     );
   };
 

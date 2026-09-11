@@ -139,10 +139,7 @@ export const CompletedRunListItem = ({
       <Link
         to="/projects/$projectId/runs/$runId"
         params={{ projectId: run.projectId, runId: run.id }}
-        className={cn(
-          'flex items-center gap-3 px-4 py-2 transition-[background-color,box-shadow] duration-150 hover:bg-base-200/60',
-          hasFailed && 'hover:shadow-[inset_3px_0_0_var(--color-error)]',
-        )}
+        className="flex items-center gap-3 px-4 py-2 transition-colors duration-150 hover:bg-base-200/60"
       >
         <RunAvatarBubble
           badgeClass={avatarBadge.className}

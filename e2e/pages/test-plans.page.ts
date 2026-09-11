@@ -27,7 +27,7 @@ export class TestPlansPage {
     await expect(
       this.page.getByRole('heading', { name: 'New Test Plan' }),
     ).toBeVisible();
-    await this.page.locator('#create-plan-name').fill(name);
+    await this.dialog.locator('#plan-name').fill(name);
     await this.dialog.getByRole('button', { name: 'Create' }).click();
     await expect(this.getPlanRow(name)).toBeVisible({ timeout: 10_000 });
   }
@@ -44,7 +44,7 @@ export class TestPlansPage {
     await expect(
       this.page.getByRole('heading', { name: 'Edit Test Plan' }),
     ).toBeVisible();
-    await this.page.locator('#edit-plan-name').fill(newName);
+    await this.dialog.locator('#plan-name').fill(newName);
     await this.dialog.getByRole('button', { name: 'Save' }).click();
     await expect(this.dialog).not.toBeVisible();
     await expect(this.getPlanRow(newName)).toBeVisible({ timeout: 10_000 });
