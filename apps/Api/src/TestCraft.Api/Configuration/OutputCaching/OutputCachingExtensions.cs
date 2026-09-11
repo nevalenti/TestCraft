@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.OutputCaching;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.OutputCaching;
 
 public static class OutputCachingExtensions
 {

@@ -1,4 +1,4 @@
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Cors;
 
 public static class CorsExtensions
 {

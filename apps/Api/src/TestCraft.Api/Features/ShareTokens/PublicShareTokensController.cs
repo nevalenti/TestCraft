@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
 
-using TestCraft.Api.Configuration.Hosting;
+using TestCraft.Api.Configuration.OutputCaching;
 using TestCraft.Application.Features.ShareTokens;
 
 namespace TestCraft.Api.Features.ShareTokens;

@@ -42,6 +42,12 @@ playwright-report/
 terraform.tfvars
 test-results/
 TestResults/
-!apps/Api/src/Modules/TestCraft.Modules.TestExecution/Application/Features/TestResults/
-!apps/Api/src/Modules/TestCraft.Modules.TestExecution/Application/Features/TestResults/**
+!apps/Api/src/TestCraft.Api/Features/TestResults/
+!apps/Api/src/TestCraft.Api/Features/TestResults/**
+!apps/Api/src/TestCraft.Application/Features/TestResults/
+!apps/Api/src/TestCraft.Application/Features/TestResults/**
+!apps/Api/tests/TestCraft.Api.IntegrationTests/TestResults/
+!apps/Api/tests/TestCraft.Api.IntegrationTests/TestResults/**
+!apps/Api/tests/TestCraft.Application.UnitTests/TestResults/
+!apps/Api/tests/TestCraft.Application.UnitTests/TestResults/**
 *.received.txt
