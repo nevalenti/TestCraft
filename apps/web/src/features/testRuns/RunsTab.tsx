@@ -1,10 +1,4 @@
-import {
-  ArrowUpTrayIcon,
-  CheckCircleIcon,
-  PlayCircleIcon,
-  PlusIcon,
-  XCircleIcon,
-} from '@heroicons/react/24/solid';
+import { ArrowUpTrayIcon, PlusIcon } from '@heroicons/react/24/solid';
 import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
 import { TestRunStatus } from '@testcraft/types';
 import { useState } from 'react';
@@ -14,12 +8,8 @@ import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
-import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
-import { ResourceCard } from '@/components/ui/ResourceCard';
-import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
-import { RunStatusBadge } from '@/components/ui/RunStatusBadge';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
@@ -32,13 +22,14 @@ import {
   useUpdateTestRun,
 } from '@/features/testRuns/hooks';
 import { ImportForm } from '@/features/testRuns/resultImport/ImportForm';
+import { RunCard } from '@/features/testRuns/RunCard';
 import { RunForm } from '@/features/testRuns/RunForm';
+import { RunListItem } from '@/features/testRuns/RunListItem';
+import { useRunSources } from '@/features/testRuns/useRunSources';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { cn } from '@/lib/cn';
-import { formatDate } from '@/lib/format';
 import { useViewModeStore } from '@/stores/viewMode';
 
 export const RunsTab = () => {
@@ -95,32 +86,10 @@ export const RunsTab = () => {
     (run) => run.status === TestRunStatus.Completed,
   );
   const summaryMap = useTestRunSummaries(completedRuns);
-
-  const getRunIcon = (run: TestRun, size: 'size-3.5' | 'size-4') => {
-    if (run.status === TestRunStatus.Completed) {
-      const summary = summaryMap.get(run.id);
-      return (summary?.failed ?? 0) > 0 ? (
-        <XCircleIcon className={cn(size, 'text-error')} />
-      ) : (
-        <CheckCircleIcon className={cn(size, 'text-success')} />
-      );
-    }
-    return <PlayCircleIcon className={size} />;
-  };
-
-  const allRuns = runs ?? [];
-  const sources = [
-    ...new Set(allRuns.map((run) => run.source).filter(Boolean) as string[]),
-  ].toSorted((sourceA, sourceB) => sourceA.localeCompare(sourceB));
-  const sourceCounts = Object.fromEntries(
-    sources.map((src) => [
-      src,
-      allRuns.filter((run) => run.source === src).length,
-    ]),
+  const { sources, sourceCounts, visibleRuns } = useRunSources(
+    runs,
+    sourceFilter,
   );
-  const visibleRuns = sourceFilter
-    ? allRuns.filter((run) => run.source === sourceFilter)
-    : runs;
 
   const renderRuns = () => {
     if (isPending)
@@ -146,33 +115,14 @@ export const RunsTab = () => {
       return (
         <div className="flex flex-col gap-2">
           {visibleRuns?.map((run) => (
-            <ResourceListItem
+            <RunListItem
               key={run.id}
-              testId="run-card"
+              run={run}
+              summary={summaryMap.get(run.id)}
+              projectId={projectId}
               onEdit={() => openEdit(run)}
               onDelete={() => openDelete(run)}
-              to={`/projects/${projectId}/runs/${run.id}`}
-              label="test run"
-              cardBg="card-bg-warning"
-              accentText="text-warning"
-              typeIcon={getRunIcon(run, 'size-4')}
-            >
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate text-sm font-semibold">
-                  {run.name}
-                </span>
-                <p className="truncate text-xs text-base-content/70">
-                  {run.environment}
-                </p>
-              </div>
-              <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                {run.source && <MetaPill>{run.source}</MetaPill>}
-                <RunStatusBadge status={run.status} />
-                <span className="text-xs font-medium text-base-content/55 tabular-nums">
-                  {formatDate(run.createdAt)}
-                </span>
-              </div>
-            </ResourceListItem>
+            />
           ))}
         </div>
       );
@@ -180,35 +130,14 @@ export const RunsTab = () => {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {visibleRuns?.map((run) => (
-          <ResourceCard
+          <RunCard
             key={run.id}
-            testId="run-card"
+            run={run}
+            summary={summaryMap.get(run.id)}
+            projectId={projectId}
             onEdit={() => openEdit(run)}
             onDelete={() => openDelete(run)}
-            to={`/projects/${projectId}/runs/${run.id}`}
-            label="test run"
-            cardBg="card-bg-warning"
-            accentText="text-warning"
-            typeIcon={getRunIcon(run, 'size-3.5')}
-          >
-            <div className="flex flex-col gap-1">
-              <span className="line-clamp-2 text-base leading-snug font-semibold">
-                {run.name}
-              </span>
-              <p className="text-sm font-medium text-base-content/70">
-                {run.environment}
-              </p>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1">
-                {run.source && <MetaPill>{run.source}</MetaPill>}
-                <RunStatusBadge status={run.status} />
-              </div>
-              <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
-                {formatDate(run.createdAt)}
-              </span>
-            </div>
-          </ResourceCard>
+          />
         ))}
       </div>
     );

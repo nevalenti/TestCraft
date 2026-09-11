@@ -1,12 +1,9 @@
-import { PencilIcon, PlusIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import type { TestPlan } from '@testcraft/types';
-import { useForm } from 'react-hook-form';
 
 import { ErrorState } from '@/components/ErrorState';
 import { EmptyState } from '@/components/ui/EmptyState';
 import { Modal } from '@/components/ui/Modal';
-import { Skeleton } from '@/components/ui/Skeleton';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { useProject } from '@/features/projects/hooks';
 import {
@@ -19,21 +16,9 @@ import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { formatDate } from '@/lib/format';
-
-const PlanRowSkeleton = () => (
-  <li className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-100 px-4 py-2.5">
-    <div className="min-w-0 flex-1">
-      <Skeleton className="h-4 w-1/3" />
-      <Skeleton className="mt-2 h-3 w-1/2" />
-      <Skeleton className="mt-2 h-3 w-1/4" />
-    </div>
-    <div className="flex items-center gap-1.5">
-      <Skeleton className="size-6 rounded-md" />
-      <Skeleton className="size-6 rounded-md" />
-    </div>
-  </li>
-);
+import { PlanListItem } from '@/pages/TestPlansPage/PlanListItem';
+import { PlanRowSkeleton } from '@/pages/TestPlansPage/PlanRowSkeleton';
+import { TestPlanForm } from '@/pages/TestPlansPage/TestPlanForm';
 
 export const TestPlansPage = () => {
   const projectId = useRequiredParam('projectId');
@@ -49,6 +34,7 @@ export const TestPlansPage = () => {
   const updatePlan = useUpdateTestPlan(projectId);
   const deletePlan = useDeleteTestPlan(projectId);
   const { modal, close, openCreate, openEdit } = useModal<TestPlan>();
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   useBreadcrumbs([
     { label: 'Projects', href: '/projects' },
@@ -56,34 +42,7 @@ export const TestPlansPage = () => {
     { label: 'Test Plans' },
   ]);
 
-  const {
-    register: registerCreate,
-    handleSubmit: handleCreate,
-    reset: resetCreate,
-  } = useForm<{ name: string; description: string }>({
-    defaultValues: { name: '', description: '' },
-  });
-  const {
-    register: registerEdit,
-    handleSubmit: handleEdit,
-    reset: resetEdit,
-  } = useForm<{ name: string; description: string }>({
-    defaultValues: { name: '', description: '' },
-  });
-
-  const showSkeleton = useIsLoadingVisible(isPending);
-
   if (isError) return <ErrorState error={error} onRetry={refetch} />;
-
-  const startCreate = () => {
-    resetCreate({ name: '', description: '' });
-    openCreate();
-  };
-
-  const startEdit = (plan: TestPlan) => {
-    resetEdit({ name: plan.name, description: plan.description ?? '' });
-    openEdit(plan);
-  };
 
   let planListContent: React.ReactNode;
   if (isPending) {
@@ -100,45 +59,13 @@ export const TestPlansPage = () => {
     planListContent = (
       <ul className="space-y-2">
         {plans.map((plan) => (
-          <li
+          <PlanListItem
             key={plan.id}
-            className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-100 px-4 py-2.5 transition-colors hover:bg-base-200/40"
-          >
-            <div className="min-w-0">
-              <Link
-                to="/projects/$projectId/plans/$planId"
-                params={{ projectId, planId: plan.id }}
-                className="text-sm font-semibold hover:text-primary"
-              >
-                {plan.name}
-              </Link>
-              {plan.description && (
-                <p className="mt-0.5 truncate text-xs text-base-content/75">
-                  {plan.description}
-                </p>
-              )}
-              <p className="mt-1 text-xs text-base-content/65">
-                Created {formatDate(plan.createdAt)} · {plan.caseCount ?? 0}{' '}
-                case{plan.caseCount === 1 ? '' : 's'}
-              </p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <button
-                className="btn btn-ghost btn-xs"
-                onClick={() => startEdit(plan)}
-                aria-label="Edit plan"
-              >
-                <PencilIcon className="size-3.5" />
-              </button>
-              <button
-                className="btn text-error btn-ghost btn-xs"
-                onClick={() => deletePlan.mutate(plan.id)}
-                aria-label="Delete plan"
-              >
-                <TrashIcon className="size-3.5" />
-              </button>
-            </div>
-          </li>
+            plan={plan}
+            projectId={projectId}
+            onEdit={() => openEdit(plan)}
+            onDelete={() => deletePlan.mutate(plan.id)}
+          />
         ))}
       </ul>
     );
@@ -150,7 +77,7 @@ export const TestPlansPage = () => {
         action={
           <button
             className="btn gap-1.5 btn-sm btn-primary"
-            onClick={startCreate}
+            onClick={openCreate}
           >
             <PlusIcon className="size-4" />
             New Plan
@@ -169,10 +96,7 @@ export const TestPlansPage = () => {
             Pre-select test cases for structured test runs
           </p>
         </div>
-        <button
-          className="btn gap-1.5 btn-sm btn-primary"
-          onClick={startCreate}
-        >
+        <button className="btn gap-1.5 btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" />
           New Plan
         </button>
@@ -187,57 +111,14 @@ export const TestPlansPage = () => {
         onClose={close}
         title="New Test Plan"
       >
-        <form
-          onSubmit={handleCreate((data) =>
-            createPlan.mutate(data, { onSuccess: close }),
-          )}
-          className="space-y-4"
-        >
-          <div>
-            <label
-              htmlFor="create-plan-name"
-              className="label-text label text-xs"
-            >
-              Name
-            </label>
-            <input
-              id="create-plan-name"
-              className="input-bordered input input-sm w-full"
-              autoFocus
-              {...registerCreate('name', { required: true })}
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="create-plan-desc"
-              className="label-text label text-xs"
-            >
-              Description (optional)
-            </label>
-            <textarea
-              id="create-plan-desc"
-              className="textarea-bordered textarea w-full textarea-sm"
-              rows={2}
-              {...registerCreate('description')}
-            />
-          </div>
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={close}
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="btn btn-sm btn-primary"
-              disabled={createPlan.isPending}
-            >
-              Create
-            </button>
-          </div>
-        </form>
+        {modal.type === 'create' && (
+          <TestPlanForm
+            submitLabel="Create"
+            onSubmit={(data) => createPlan.mutate(data, { onSuccess: close })}
+            onCancel={close}
+            isLoading={createPlan.isPending}
+          />
+        )}
       </Modal>
 
       <Modal
@@ -246,60 +127,22 @@ export const TestPlansPage = () => {
         title="Edit Test Plan"
       >
         {modal.type === 'edit' && (
-          <form
-            onSubmit={handleEdit((data) =>
+          <TestPlanForm
+            key={modal.item.id}
+            submitLabel="Save"
+            defaultValues={{
+              name: modal.item.name,
+              description: modal.item.description ?? '',
+            }}
+            onSubmit={(data) =>
               updatePlan.mutate(
                 { id: modal.item.id, ...data },
                 { onSuccess: close },
-              ),
-            )}
-            className="space-y-4"
-          >
-            <div>
-              <label
-                htmlFor="edit-plan-name"
-                className="label-text label text-xs"
-              >
-                Name
-              </label>
-              <input
-                id="edit-plan-name"
-                className="input-bordered input input-sm w-full"
-                autoFocus
-                {...registerEdit('name', { required: true })}
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-plan-desc"
-                className="label-text label text-xs"
-              >
-                Description (optional)
-              </label>
-              <textarea
-                id="edit-plan-desc"
-                className="textarea-bordered textarea w-full textarea-sm"
-                rows={2}
-                {...registerEdit('description')}
-              />
-            </div>
-            <div className="flex justify-end gap-2">
-              <button
-                type="button"
-                className="btn btn-ghost btn-sm"
-                onClick={close}
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="btn btn-sm btn-primary"
-                disabled={updatePlan.isPending}
-              >
-                Save
-              </button>
-            </div>
-          </form>
+              )
+            }
+            onCancel={close}
+            isLoading={updatePlan.isPending}
+          />
         )}
       </Modal>
     </div>

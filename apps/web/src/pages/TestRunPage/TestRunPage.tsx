@@ -1,9 +1,4 @@
-import {
-  CommandLineIcon,
-  QueueListIcon,
-  ShareIcon,
-  SignalIcon,
-} from '@heroicons/react/24/solid';
+import { ShareIcon } from '@heroicons/react/24/solid';
 import {
   getCoreRowModel,
   getSortedRowModel,
@@ -20,11 +15,8 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
-import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { Modal } from '@/components/ui/Modal';
 import { useProject } from '@/features/projects/hooks';
 import { createColumns } from '@/features/testResults/columns';
-import { CreateResultForm } from '@/features/testResults/CreateResultForm';
 import {
   useCreateTestResult,
   useDeleteTestResult,
@@ -32,7 +24,6 @@ import {
   useUpdateTestResult,
 } from '@/features/testResults/hooks';
 import { ResultsContent } from '@/features/testResults/ResultsContent';
-import { UpdateResultForm } from '@/features/testResults/UpdateResultForm';
 import { useTestRun, useTestRunSummary } from '@/features/testRuns/hooks';
 import { useTestRunRealtime } from '@/features/testRuns/useTestRunRealtime';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
@@ -44,7 +35,9 @@ import { RESULTS_PAGE_SIZE } from '@/lib/constants';
 import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';
 import { LiveLogFeed } from '@/pages/TestRunPage/LiveLogFeed';
 import { LogPanel } from '@/pages/TestRunPage/LogPanel';
+import { ResultModals } from '@/pages/TestRunPage/ResultModals';
 import { RunSummaryBar } from '@/pages/TestRunPage/RunSummaryBar';
+import { type RunView, RunViewTabs } from '@/pages/TestRunPage/RunViewTabs';
 import { ShareModal } from '@/pages/TestRunPage/ShareModal';
 
 export const TestRunPage = () => {
@@ -53,7 +46,7 @@ export const TestRunPage = () => {
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestResult>();
   const [shareOpen, setShareOpen] = useState(false);
-  const [view, setView] = useState<'table' | 'live' | 'logs'>('table');
+  const [view, setView] = useState<RunView>('table');
   const [attachmentResult, setAttachmentResult] = useState<TestResult | null>(
     null,
   );
@@ -139,8 +132,6 @@ export const TestRunPage = () => {
     getSortedRowModel: getSortedRowModel(),
   });
 
-  const deleteItem = modal.type === 'delete' ? modal.item : null;
-
   let viewContent: React.ReactNode;
   if (view === 'live') {
     viewContent = <LiveLogFeed projectId={projectId} runId={runId} />;
@@ -199,41 +190,7 @@ export const TestRunPage = () => {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="join">
-            <button
-              className={cn(
-                'btn join-item gap-1.5 btn-sm',
-                view === 'table' ? 'btn-neutral' : 'btn-ghost',
-              )}
-              onClick={() => setView('table')}
-              aria-label="Table view"
-            >
-              <QueueListIcon className="size-4" />
-              Table
-            </button>
-            <button
-              className={cn(
-                'btn join-item gap-1.5 btn-sm',
-                view === 'live' ? 'btn-neutral' : 'btn-ghost',
-              )}
-              onClick={() => setView('live')}
-              aria-label="Live log view"
-            >
-              <SignalIcon className="size-4" />
-              Live
-            </button>
-            <button
-              className={cn(
-                'btn join-item gap-1.5 btn-sm',
-                view === 'logs' ? 'btn-neutral' : 'btn-ghost',
-              )}
-              onClick={() => setView('logs')}
-              aria-label="Pipeline logs"
-            >
-              <CommandLineIcon className="size-4" />
-              Logs
-            </button>
-          </div>
+          <RunViewTabs view={view} onChange={setView} />
           <button
             className="btn btn-square btn-ghost btn-sm"
             onClick={() => setShareOpen(true)}
@@ -253,44 +210,16 @@ export const TestRunPage = () => {
         {viewContent}
       </section>
 
-      <Modal
-        isOpen={modal.type === 'create'}
-        onClose={close}
-        title="Add Test Result"
-      >
-        {modal.type === 'create' && (
-          <CreateResultForm
-            projectId={projectId}
-            onSubmit={handleCreate}
-            onCancel={close}
-            isLoading={createResult.isPending}
-          />
-        )}
-      </Modal>
-      <Modal isOpen={modal.type === 'edit'} onClose={close} title="Edit Result">
-        {modal.type === 'edit' && (
-          <UpdateResultForm
-            key={modal.item.id}
-            defaultValues={{
-              status: modal.item.status,
-              notes: modal.item.notes ?? '',
-              defectType: modal.item.defectType,
-            }}
-            onSubmit={handleUpdate(modal.item.id)}
-            onCancel={close}
-            isLoading={updateResult.isPending}
-          />
-        )}
-      </Modal>
-      <ConfirmDialog
-        isOpen={modal.type === 'delete'}
-        onClose={close}
-        onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
-        title="Delete Result"
-        description={
-          deleteItem ? `Delete result for "${deleteItem.testCaseName}"?` : ''
-        }
-        isLoading={deleteResult.isPending}
+      <ResultModals
+        modal={modal}
+        close={close}
+        projectId={projectId}
+        onCreate={handleCreate}
+        onUpdate={handleUpdate}
+        onDelete={handleDelete}
+        isCreating={createResult.isPending}
+        isUpdating={updateResult.isPending}
+        isDeleting={deleteResult.isPending}
       />
       <ShareModal
         isOpen={shareOpen}
