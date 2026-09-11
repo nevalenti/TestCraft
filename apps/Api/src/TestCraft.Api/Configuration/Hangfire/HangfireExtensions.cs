@@ -4,6 +4,7 @@ using Hangfire.PostgreSql;
 using TestCraft.Api.Middleware;
 using TestCraft.Application.Features.Notifications;
 using TestCraft.Application.Features.ShareTokens;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
 
@@ -33,6 +34,7 @@ public static class HangfireExtensions
         builder.Services.AddScoped<ExpiredShareTokenCleanupJob>();
         builder.Services.AddScoped<NotificationDeliveryRetryJob>();
         builder.Services.AddScoped<NotificationDeliveryCleanupJob>();
+        builder.Services.AddScoped<StaleTestRunCleanupJob>();
 
         GlobalJobFilters.Filters.Add(new HangfireMetricsFilter());
 
@@ -82,6 +84,12 @@ public static class HangfireExtensions
             "cleanup-notification-deliveries",
             job => job.RunAsync(CancellationToken.None),
             Cron.Daily
+        );
+
+        RecurringJob.AddOrUpdate<StaleTestRunCleanupJob>(
+            "settle-stale-test-runs",
+            job => job.RunAsync(CancellationToken.None),
+            Cron.Hourly
         );
 
         return app;

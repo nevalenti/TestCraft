@@ -4,9 +4,13 @@ using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Prometheus;
 
 using TestCraft.Api.Configuration.Authentication;
+using TestCraft.Api.Configuration.Controllers;
+using TestCraft.Api.Configuration.Cors;
 using TestCraft.Api.Configuration.Database;
 using TestCraft.Api.Configuration.Hangfire;
 using TestCraft.Api.Configuration.Observability;
+using TestCraft.Api.Configuration.OutputCaching;
+using TestCraft.Api.Configuration.RateLimiting;
 using TestCraft.Api.Configuration.Swagger;
 using TestCraft.Api.Errors;
 using TestCraft.Api.Hubs;
@@ -17,7 +21,7 @@ using TestCraft.Common.Http;
 using TestCraft.Infrastructure;
 using TestCraft.Infrastructure.Configuration;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration;
 
 public static class HostingExtensions
 {

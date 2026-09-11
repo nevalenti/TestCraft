@@ -1,6 +1,6 @@
 using Asp.Versioning;
 
-namespace TestCraft.Api.Configuration.Swagger;
+namespace TestCraft.Api.Configuration.Controllers;
 
 public static class ApiVersioningExtensions
 {

@@ -1,6 +1,6 @@
 using TestCraft.Infrastructure.Configuration;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Cors;
 
 public sealed class CorsOptions : IStartupOptions
 {

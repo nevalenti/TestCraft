@@ -3,7 +3,7 @@ using System.Threading.RateLimiting;
 using TestCraft.Api.Errors;
 using TestCraft.Infrastructure.Auth;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.RateLimiting;
 
 public static class RateLimitingExtensions
 {

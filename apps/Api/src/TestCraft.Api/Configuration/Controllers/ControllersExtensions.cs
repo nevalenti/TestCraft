@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 using TestCraft.Api.Errors;
 
-namespace TestCraft.Api.Configuration.Hosting;
+namespace TestCraft.Api.Configuration.Controllers;
 
 public static class ControllersExtensions
 {
