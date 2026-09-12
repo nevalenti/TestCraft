@@ -103,7 +103,7 @@ describe('useCreateProject', () => {
       result.current.mutate({ name: 'New' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Project created');
+      expect(notify).toHaveBeenCalledWith('Project "New" created');
     });
   });
 
@@ -170,7 +170,7 @@ describe('useUpdateProject', () => {
       result.current.mutate({ id: 'p1', name: 'Updated' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Project updated');
+      expect(notify).toHaveBeenCalledWith('Project "Updated" updated');
     });
   });
 

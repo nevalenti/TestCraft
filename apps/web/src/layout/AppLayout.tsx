@@ -9,7 +9,7 @@ import { Header } from '@/layout/Header';
 import { Sidebar } from '@/layout/Sidebar';
 
 export const AppLayout = () => (
-  <div className="h-screen bg-base-200 sm:p-4">
+  <div className="h-screen bg-base-300 sm:p-4">
     <div className="mx-auto flex size-full max-w-360 flex-col overflow-hidden bg-base-100 sm:rounded-xl sm:border sm:border-border sm:shadow-card">
       <div className="flex min-h-0 flex-1">
         <Sidebar />

@@ -155,7 +155,7 @@ describe('useCreateTestCaseStep', () => {
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Step added');
+      expect(notify).toHaveBeenCalledWith('Step "Click login" added');
     });
   });
 });

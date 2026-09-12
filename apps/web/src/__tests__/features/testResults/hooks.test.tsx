@@ -138,9 +138,11 @@ describe('useCreateTestResult', () => {
       );
     });
 
-    it("notifies 'Result saved' on success", async () => {
+    it("notifies with the test case name and status on success", async () => {
       vi.mocked(testResultsApi.create).mockResolvedValue({
         id: 'res-1',
+        testCaseName: 'Login test',
+        status: 'Passed',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
@@ -155,7 +157,9 @@ describe('useCreateTestResult', () => {
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Result saved');
+      expect(notify).toHaveBeenCalledWith(
+        'Result saved for "Login test": Passed',
+      );
     });
   });
 });
@@ -187,9 +191,11 @@ describe('useUpdateTestResult', () => {
       );
     });
 
-    it("notifies 'Result updated' on success", async () => {
+    it('notifies with the test case name and new status on success', async () => {
       vi.mocked(testResultsApi.update).mockResolvedValue({
         id: 'res-1',
+        testCaseName: 'Login test',
+        status: 'Blocked',
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
@@ -200,7 +206,9 @@ describe('useUpdateTestResult', () => {
       result.current.mutate({ id: 'res-1', status: 'Blocked' as any });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Result updated');
+      expect(notify).toHaveBeenCalledWith(
+        'Result for "Login test" updated to Blocked',
+      );
     });
   });
 });

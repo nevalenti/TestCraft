@@ -69,8 +69,8 @@ export const useCreateTestRun = (projectId: string) => {
 
   return useMutation({
     mutationFn: (input: CreateTestRun) => testRunsApi.create(projectId, input),
-    onSuccess: () => {
-      notify('Test run created');
+    onSuccess: (_, input) => {
+      notify(`Test run "${input.name}" created`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -87,8 +87,8 @@ export const useUpdateTestRun = (projectId: string) => {
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateTestRun & { id: string }) =>
       testRunsApi.update(projectId, id, input),
-    onSuccess: (_, { id }) => {
-      notify('Test run updated');
+    onSuccess: (_, { id, name }) => {
+      notify(`Test run "${name}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -121,6 +121,7 @@ const pollImportJob = async (
 
 const useImportMutation = <T>(
   projectId: string,
+  format: string,
   mutationFn: (input: T) => Promise<ImportJobResponse>,
 ) => {
   const queryClient = useQueryClient();
@@ -131,7 +132,7 @@ const useImportMutation = <T>(
       return pollImportJob(projectId, job);
     },
     onSuccess: () => {
-      notify('Test run imported');
+      notify(`${format} results imported`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
@@ -140,7 +141,7 @@ const useImportMutation = <T>(
       });
     },
     onError: (error: Error) => {
-      notify(error.message || 'Test run import failed', 'error');
+      notify(error.message || `${format} import failed`, 'error');
     },
   });
 };
@@ -148,6 +149,7 @@ const useImportMutation = <T>(
 export const useImportAllure = (projectId: string) =>
   useImportMutation(
     projectId,
+    'Allure',
     (input: Parameters<typeof importsApi.allure>[1]) =>
       importsApi.allure(projectId, input),
   );
@@ -155,6 +157,7 @@ export const useImportAllure = (projectId: string) =>
 export const useImportJUnitXml = (projectId: string) =>
   useImportMutation(
     projectId,
+    'JUnit',
     (input: Parameters<typeof importsApi.junit>[1]) =>
       importsApi.junit(projectId, input),
   );

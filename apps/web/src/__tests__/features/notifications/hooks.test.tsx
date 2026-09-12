@@ -111,7 +111,9 @@ describe('useCreateWebhook', () => {
       } as any);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Webhook added');
+      expect(notify).toHaveBeenCalledWith(
+        'Webhook "https://example.com/hook" added',
+      );
     });
   });
 });
@@ -191,7 +193,9 @@ describe('useCreateEmail', () => {
       } as any);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Email subscription added');
+      expect(notify).toHaveBeenCalledWith(
+        'Email subscription added for user@example.com',
+      );
     });
   });
 });

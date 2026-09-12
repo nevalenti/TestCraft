@@ -5,7 +5,7 @@
 @plugin "daisyui" {
   themes:
     dracula --default,
-    emerald;
+    valentine;
 }
 
 @theme {
@@ -49,23 +49,23 @@
     border-color: oklch(from var(--color-primary) l c h / 0.28);
   }
 
-  [data-theme='emerald'] .card-bg-info {
+  [data-theme='valentine'] .card-bg-info {
     background-color: oklch(from var(--color-info) l c h / 0.14);
     border-color: oklch(from var(--color-info) l c h / 0.5);
   }
-  [data-theme='emerald'] .card-bg-warning {
+  [data-theme='valentine'] .card-bg-warning {
     background-color: oklch(from var(--color-warning) l c h / 0.09);
     border-color: oklch(from var(--color-warning) l c h / 0.38);
   }
-  [data-theme='emerald'] .card-bg-success {
+  [data-theme='valentine'] .card-bg-success {
     background-color: oklch(from var(--color-success) l c h / 0.09);
     border-color: oklch(from var(--color-success) l c h / 0.38);
   }
-  [data-theme='emerald'] .card-bg-error {
+  [data-theme='valentine'] .card-bg-error {
     background-color: oklch(from var(--color-error) l c h / 0.09);
     border-color: oklch(from var(--color-error) l c h / 0.38);
   }
-  [data-theme='emerald'] .card-bg-primary {
+  [data-theme='valentine'] .card-bg-primary {
     background-color: oklch(from var(--color-primary) l c h / 0.09);
     border-color: oklch(from var(--color-primary) l c h / 0.38);
   }
@@ -160,16 +160,15 @@
     --color-border: oklch(1 0 0 / 0.14);
   }
 
-  [data-theme='emerald'] {
+  [data-theme='valentine'] {
     --color-primary: oklch(55% 0.2 346.8) !important;
     --color-primary-content: oklch(98% 0 0) !important;
     --color-base-content: oklch(0.22 0.02 262.988) !important;
-    --color-border: oklch(0 0 0 / 0.24) !important;
-    --color-base-200: oklch(93% 0.008 262.988) !important;
-    --color-base-300: oklch(86% 0.012 262.988) !important;
+    --color-border: oklch(0 0 0 / 0.26) !important;
+    --radius-field: 0.5rem;
   }
 
-  [data-theme='emerald'] .header-stripes {
+  [data-theme='valentine'] .header-stripes {
     background-image: repeating-linear-gradient(
       45deg,
       transparent 0px,

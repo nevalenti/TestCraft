@@ -91,7 +91,7 @@ describe('useCreateLabel', () => {
       result.current.mutate({ name: 'Bug', color: '#FF0000' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Label created');
+      expect(notify).toHaveBeenCalledWith('Label "Bug" created');
     });
   });
 
@@ -149,7 +149,7 @@ describe('useUpdateLabel', () => {
       result.current.mutate({ id: 'lbl-1', name: 'X', color: '#000' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Label updated');
+      expect(notify).toHaveBeenCalledWith('Label "X" updated');
     });
   });
 });

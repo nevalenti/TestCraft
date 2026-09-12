@@ -106,7 +106,7 @@ describe('useUploadAttachment', () => {
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Attachment uploaded');
+      expect(notify).toHaveBeenCalledWith('Attachment "log.txt" uploaded');
     });
   });
 });

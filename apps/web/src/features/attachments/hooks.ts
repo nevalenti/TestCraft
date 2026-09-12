@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { Attachment } from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
 import { attachmentQueries, attachmentsApi } from '@/features/attachments/api';
@@ -20,8 +21,8 @@ export const useUploadAttachment = (
   return useMutation({
     mutationFn: (file: File) =>
       attachmentsApi.upload(projectId, runId, resultId, file),
-    onSuccess: () => {
-      notify('Attachment uploaded');
+    onSuccess: (_, file) => {
+      notify(`Attachment "${file.name}" uploaded`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.attachments.all(projectId, runId, resultId),
       });
@@ -39,8 +40,15 @@ export const useDeleteAttachment = (
   return useMutation({
     mutationFn: (id: string) =>
       attachmentsApi.delete(projectId, runId, resultId, id),
-    onSuccess: () => {
-      notify('Attachment deleted');
+    onSuccess: (_, id) => {
+      const fileName = queryClient
+        .getQueryData<
+          Attachment[]
+        >(queryKeys.attachments.all(projectId, runId, resultId))
+        ?.find((attachment) => attachment.id === id)?.fileName;
+      notify(
+        fileName ? `Attachment "${fileName}" deleted` : 'Attachment deleted',
+      );
       queryClient.invalidateQueries({
         queryKey: queryKeys.attachments.all(projectId, runId, resultId),
       });
