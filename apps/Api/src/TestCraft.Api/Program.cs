@@ -1,5 +1,4 @@
 using DotNetEnv;
-
 using TestCraft.Api.Configuration;
 using TestCraft.Api.Configuration.Database;
 using TestCraft.Infrastructure.Configuration;
@@ -12,10 +11,16 @@ builder.ConfigureServices();
 
 var app = builder.Build();
 
-app.Logger.LogStartupConfiguration(app.Services);
-app.Logger.LogInfrastructureFallbacks(app.Services.GetRequiredService<InfrastructureOptions>());
+var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+loggerFactory
+    .CreateLogger(typeof(StartupConfigurationLogging))
+    .LogStartupConfiguration(app.Services);
+loggerFactory
+    .CreateLogger(typeof(InfrastructureFallbackLogging))
+    .LogInfrastructureFallbacks(app.Services.GetRequiredService<InfrastructureOptions>());
 
 await app.MigrateDatabaseAsync();
+await app.SeedDevelopmentDataAsync();
 
 app.ConfigurePipeline();
 

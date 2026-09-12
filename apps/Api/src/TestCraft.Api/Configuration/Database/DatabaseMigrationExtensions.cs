@@ -14,7 +14,10 @@ public static class DatabaseMigrationExtensions
 
         using var scope = app.Services.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var migrationLogger = scope
+            .ServiceProvider.GetRequiredService<ILoggerFactory>()
+            .CreateLogger(typeof(AppDbContextMigrator));
 
-        await AppDbContextMigrator.MigrateWithRetryAsync(dbContext, app.Logger);
+        await AppDbContextMigrator.MigrateWithRetryAsync(dbContext, migrationLogger);
     }
 }
