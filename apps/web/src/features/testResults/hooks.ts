@@ -26,8 +26,8 @@ export const useCreateTestResult = (projectId: string, runId: string) => {
   return useMutation({
     mutationFn: (input: CreateTestResult) =>
       testResultsApi.create(projectId, runId, input),
-    onSuccess: () => {
-      notify('Result saved');
+    onSuccess: (data) => {
+      notify(`Result saved for "${data.testCaseName}": ${data.status}`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
       });
@@ -44,8 +44,8 @@ export const useUpdateTestResult = (projectId: string, runId: string) => {
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateTestResult & { id: string }) =>
       testResultsApi.update(projectId, runId, id, input),
-    onSuccess: (_, { id }) => {
-      notify('Result updated');
+    onSuccess: (data, { id }) => {
+      notify(`Result for "${data.testCaseName}" updated to ${data.status}`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testResults.all(projectId, runId),
       });

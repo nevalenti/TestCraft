@@ -101,7 +101,7 @@ describe('useCreateTestSuite', () => {
       result.current.mutate({ name: 'Auth' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Suite created');
+      expect(notify).toHaveBeenCalledWith('Suite "Auth" created');
     });
   });
 
@@ -170,7 +170,7 @@ describe('useUpdateTestSuite', () => {
       result.current.mutate({ id: 's1', name: 'Auth Suite' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Suite updated');
+      expect(notify).toHaveBeenCalledWith('Suite "Auth Suite" updated');
     });
   });
 

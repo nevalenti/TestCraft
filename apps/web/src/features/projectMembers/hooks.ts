@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { AddProjectMember } from '@testcraft/types';
+import type { AddProjectMember, ProjectMember } from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
 import {
@@ -17,8 +17,8 @@ export const useAddProjectMember = (projectId: string) => {
   return useMutation({
     mutationFn: (input: AddProjectMember) =>
       projectMembersApi.add(projectId, input),
-    onSuccess: () => {
-      notify('Member added');
+    onSuccess: (_, input) => {
+      notify(`${input.email} added to project`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectMembers.all(projectId),
       });
@@ -31,8 +31,11 @@ export const useRemoveProjectMember = (projectId: string) => {
 
   return useMutation({
     mutationFn: (id: string) => projectMembersApi.remove(projectId, id),
-    onSuccess: () => {
-      notify('Member removed');
+    onSuccess: (_, id) => {
+      const email = queryClient
+        .getQueryData<ProjectMember[]>(queryKeys.projectMembers.all(projectId))
+        ?.find((member) => member.id === id)?.email;
+      notify(email ? `${email} removed from project` : 'Member removed');
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectMembers.all(projectId),
       });

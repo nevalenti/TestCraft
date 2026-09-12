@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateTestCase, UpdateTestCase } from '@testcraft/types';
+import type {
+  CreateTestCase,
+  Paginated,
+  TestCase,
+  UpdateTestCase,
+} from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
 import { testCaseQueries, testCasesApi } from '@/features/testCases/api';
@@ -30,8 +35,8 @@ export const useCreateTestCase = (projectId: string, suiteId: string) => {
   return useMutation({
     mutationFn: (input: CreateTestCase) =>
       testCasesApi.create(projectId, suiteId, input),
-    onSuccess: () => {
-      notify('Test case created');
+    onSuccess: (_, input) => {
+      notify(`Test case "${input.name}" created`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.all(projectId, suiteId),
       });
@@ -45,8 +50,8 @@ export const useUpdateTestCase = (projectId: string, suiteId: string) => {
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateTestCase & { id: string }) =>
       testCasesApi.update(projectId, suiteId, id, input),
-    onSuccess: (_, { id }) => {
-      notify('Test case updated');
+    onSuccess: (_, { id, name }) => {
+      notify(`Test case "${name}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.all(projectId, suiteId),
       });
@@ -63,7 +68,12 @@ export const useDeleteTestCase = (projectId: string, suiteId: string) => {
   return useMutation({
     mutationFn: (id: string) => testCasesApi.delete(projectId, suiteId, id),
     onSuccess: (_, id) => {
-      notify('Test case deleted');
+      const name = queryClient
+        .getQueryData<
+          Paginated<TestCase>
+        >(queryKeys.testCases.all(projectId, suiteId))
+        ?.items.find((testCase) => testCase.id === id)?.name;
+      notify(name ? `Test case "${name}" deleted` : 'Test case deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.all(projectId, suiteId),
       });

@@ -17,6 +17,14 @@ setup('authenticate via Keycloak', async ({ page }) => {
   await page.waitForURL(process.env.E2E_BASE_URL!);
   await expect(page.locator('main')).toBeVisible({ timeout: 15_000 });
 
+  await page.context().addCookies([
+    {
+      name: 'cookies-consent',
+      value: 'true',
+      url: process.env.E2E_BASE_URL!,
+    },
+  ]);
+
   await mkdir(path.dirname(AUTH_FILE), { recursive: true });
   await page.context().storageState({ path: AUTH_FILE });
 });

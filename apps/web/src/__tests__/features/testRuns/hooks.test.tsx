@@ -128,7 +128,7 @@ describe('useCreateTestRun', () => {
       result.current.mutate({ name: 'Smoke', environment: 'staging' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test run created');
+      expect(notify).toHaveBeenCalledWith('Test run "Smoke" created');
     });
   });
 
@@ -223,7 +223,7 @@ describe('useUpdateTestRun', () => {
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test run updated');
+      expect(notify).toHaveBeenCalledWith('Test run "Updated" updated');
     });
   });
 });
@@ -342,7 +342,7 @@ describe('useImportJUnitXml', () => {
       }
 
       expect(importsApi.getJob).toHaveBeenCalledWith('proj-1', 'job1');
-      expect(notify).toHaveBeenCalledWith('Test run imported');
+      expect(notify).toHaveBeenCalledWith('JUnit results imported');
     });
 
     it('notifies the error and does not invalidate when the job fails', async () => {
@@ -400,7 +400,7 @@ describe('useImportAllure', () => {
       result.current.mutate({ results: [], environment: 'ci' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test run imported');
+      expect(notify).toHaveBeenCalledWith('Allure results imported');
     });
   });
 });

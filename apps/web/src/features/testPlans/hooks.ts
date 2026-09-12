@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateTestPlan, UpdateTestPlan } from '@testcraft/types';
+import type {
+  CreateTestPlan,
+  TestPlan,
+  UpdateTestPlan,
+} from '@testcraft/types';
 
 import { queryKeys } from '@/api/queryKeys';
 import { testPlanQueries, testPlansApi } from '@/features/testPlans/api';
@@ -20,8 +24,8 @@ export const useCreateTestPlan = (projectId: string) => {
   return useMutation({
     mutationFn: (input: CreateTestPlan) =>
       testPlansApi.create(projectId, input),
-    onSuccess: () => {
-      notify('Test plan created');
+    onSuccess: (_, input) => {
+      notify(`Test plan "${input.name}" created`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
       });
@@ -35,8 +39,8 @@ export const useUpdateTestPlan = (projectId: string) => {
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateTestPlan & { id: string }) =>
       testPlansApi.update(projectId, id, input),
-    onSuccess: (_, { id }) => {
-      notify('Test plan updated');
+    onSuccess: (_, { id, name }) => {
+      notify(`Test plan "${name}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
       });
@@ -53,7 +57,10 @@ export const useDeleteTestPlan = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testPlansApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      notify('Test plan deleted');
+      const name = queryClient
+        .getQueryData<TestPlan[]>(queryKeys.testPlans.all(projectId))
+        ?.find((plan) => plan.id === id)?.name;
+      notify(name ? `Test plan "${name}" deleted` : 'Test plan deleted');
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
       });
@@ -125,8 +132,8 @@ export const useCreateRunFromPlan = (projectId: string) => {
       name: string;
       environment: string;
     }) => testPlansApi.createRun(projectId, planId, { name, environment }),
-    onSuccess: () => {
-      notify('Test run created from plan');
+    onSuccess: (_, { name }) => {
+      notify(`Test run "${name}" created from plan`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });

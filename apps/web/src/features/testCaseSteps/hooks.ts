@@ -13,6 +13,7 @@ import {
   testCaseStepQueries,
   testCaseStepsApi,
 } from '@/features/testCaseSteps/api';
+import { truncate } from '@/lib/format';
 import { notify } from '@/lib/notify';
 
 export const useTestCaseSteps = (
@@ -42,8 +43,8 @@ export const useCreateTestCaseStep = (
   return useMutation({
     mutationFn: (input: CreateTestCaseStep) =>
       testCaseStepsApi.create(projectId, suiteId, caseId, input),
-    onSuccess: () => {
-      notify('Step added');
+    onSuccess: (_, input) => {
+      notify(`Step "${truncate(input.action, 40)}" added`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });
@@ -61,8 +62,8 @@ export const useUpdateTestCaseStep = (
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateTestCaseStep & { id: string }) =>
       testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
-    onSuccess: (_, { id }) => {
-      notify('Step updated');
+    onSuccess: (_, { id, action }) => {
+      notify(`Step "${truncate(action, 40)}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });
@@ -134,7 +135,14 @@ export const useDeleteTestCaseStep = (
     mutationFn: (id: string) =>
       testCaseStepsApi.delete(projectId, suiteId, caseId, id),
     onSuccess: (_, id) => {
-      notify('Step deleted');
+      const action = queryClient
+        .getQueryData<
+          Paginated<TestCaseStep>
+        >(queryKeys.testCaseSteps.all(projectId, suiteId, caseId))
+        ?.items.find((step) => step.id === id)?.action;
+      notify(
+        action ? `Step "${truncate(action, 40)}" deleted` : 'Step deleted',
+      );
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       });

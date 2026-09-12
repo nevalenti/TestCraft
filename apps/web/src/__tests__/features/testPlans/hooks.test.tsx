@@ -123,7 +123,7 @@ describe('useCreateTestPlan', () => {
       result.current.mutate({ name: 'Sprint 1' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test plan created');
+      expect(notify).toHaveBeenCalledWith('Test plan "Sprint 1" created');
     });
   });
 });
@@ -286,7 +286,9 @@ describe('useCreateRunFromPlan', () => {
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test run created from plan');
+      expect(notify).toHaveBeenCalledWith(
+        'Test run "Sprint 1 Run" created from plan',
+      );
     });
   });
 });

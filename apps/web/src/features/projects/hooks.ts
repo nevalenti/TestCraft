@@ -24,8 +24,8 @@ export const useCreateProject = () => {
 
   return useMutation({
     mutationFn: (input: CreateProject) => projectsApi.create(input),
-    onSuccess: () => {
-      notify('Project created');
+    onSuccess: (_, input) => {
+      notify(`Project "${input.name}" created`);
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
     },
   });
@@ -37,8 +37,8 @@ export const useUpdateProject = () => {
   return useMutation({
     mutationFn: ({ id, ...input }: UpdateProject & { id: string }) =>
       projectsApi.update(id, input),
-    onSuccess: (_, { id }) => {
-      notify('Project updated');
+    onSuccess: (_, { id, name }) => {
+      notify(`Project "${name}" updated`);
       queryClient.invalidateQueries({ queryKey: queryKeys.projects.all });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(id),

@@ -60,14 +60,13 @@ describe('useAddProjectMember', () => {
     const { result } = renderHook(() => useAddProjectMember('p1'), {
       wrapper,
     });
-    result.current.mutate({ userId: 'u1', role: 'Editor' } as any);
+    result.current.mutate({ email: 'user@example.com' });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     expect(projectMembersApi.add).toHaveBeenCalledWith('p1', {
-      userId: 'u1',
-      role: 'Editor',
+      email: 'user@example.com',
     });
-    expect(notify).toHaveBeenCalledWith('Member added');
+    expect(notify).toHaveBeenCalledWith('user@example.com added to project');
     expect(
       queryClient.getQueryState(queryKeys.projectMembers.all('p1'))
         ?.isInvalidated,

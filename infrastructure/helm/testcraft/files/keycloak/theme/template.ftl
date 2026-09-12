@@ -20,13 +20,12 @@
           0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
       }
 
-      [data-theme="emerald"] {
-        --color-border: oklch(0 0 0 / 0.24) !important;
+      [data-theme="valentine"] {
+        --color-border: oklch(0 0 0 / 0.26) !important;
         --color-primary: oklch(55% 0.2 346.8) !important;
         --color-primary-content: oklch(98% 0 0) !important;
         --color-base-content: oklch(0.22 0.02 262.988) !important;
-        --color-base-200: oklch(93% 0.008 262.988) !important;
-        --color-base-300: oklch(86% 0.012 262.988) !important;
+        --radius-field: 0.5rem;
       }
 
       html, body {
@@ -37,7 +36,7 @@
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        background-color: var(--color-base-200);
+        background-color: var(--color-base-300);
         overflow: hidden;
       }
 
@@ -74,10 +73,10 @@
       }
 
       #icon-moon { display: none; }
-      [data-theme="emerald"] #icon-moon { display: block; }
-      [data-theme="emerald"] #icon-sun { display: none; }
+      [data-theme="valentine"] #icon-moon { display: block; }
+      [data-theme="valentine"] #icon-sun { display: none; }
 
-      [data-theme="emerald"] .header-stripes {
+      [data-theme="valentine"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
@@ -119,7 +118,7 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'emerald';
+      const LIGHT = 'valentine';
       const DARK = 'dracula';
 
       function getCookie(name) {

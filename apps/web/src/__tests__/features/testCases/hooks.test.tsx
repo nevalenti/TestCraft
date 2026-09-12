@@ -125,7 +125,7 @@ describe('useCreateTestCase', () => {
       result.current.mutate({ name: 'Login test' });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test case created');
+      expect(notify).toHaveBeenCalledWith('Test case "Login test" created');
     });
   });
 

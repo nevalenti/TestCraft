@@ -27,16 +27,16 @@ test.describe('Projects page', () => {
     await projectsPage.delete(name);
   });
 
-  test('filters projects by search', async ({ projectsPage, page }) => {
+  test('filters projects by search', async ({ projectsPage }) => {
     const name = `E2E SearchTarget ${Date.now()}`;
 
     await projectsPage.create(name);
 
     await projectsPage.search(name.slice(0, 12));
-    await expect(page.getByText(name)).toBeVisible();
+    await expect(projectsPage.getCard(name)).toBeVisible();
 
     await projectsPage.search('zzz-no-match-zzz');
-    await expect(page.getByText(name)).not.toBeVisible();
+    await expect(projectsPage.getCard(name)).toHaveCount(0);
 
     await projectsPage.clearSearch();
     await projectsPage.delete(name);
