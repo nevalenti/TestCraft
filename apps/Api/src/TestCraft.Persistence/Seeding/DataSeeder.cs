@@ -1,6 +1,8 @@
 using Bogus;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 

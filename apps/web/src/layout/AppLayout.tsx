@@ -9,20 +9,22 @@ import { Header } from '@/layout/Header';
 import { Sidebar } from '@/layout/Sidebar';
 
 export const AppLayout = () => (
-  <div className="mx-auto flex h-screen w-full max-w-360 flex-col overflow-hidden bg-base-100 sm:border-x sm:border-border">
-    <div className="flex min-h-0 flex-1">
-      <Sidebar />
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-        <Header />
-        <BreadcrumbBar />
-        <main className="flex min-h-0 flex-1">
-          <ErrorBoundary>
-            <Outlet />
-          </ErrorBoundary>
-        </main>
+  <div className="h-screen bg-base-200 sm:p-4">
+    <div className="mx-auto flex size-full max-w-360 flex-col overflow-hidden bg-base-100 sm:rounded-xl sm:border sm:border-border sm:shadow-card">
+      <div className="flex min-h-0 flex-1">
+        <Sidebar />
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <Header />
+          <BreadcrumbBar />
+          <main className="flex min-h-0 flex-1">
+            <ErrorBoundary>
+              <Outlet />
+            </ErrorBoundary>
+          </main>
+        </div>
       </div>
+      <Footer />
     </div>
-    <Footer />
     <ToastStack />
     <CookieConsent />
   </div>
