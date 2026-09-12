@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
 using TestCraft.Persistence.Seeding;

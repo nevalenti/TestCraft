@@ -16,6 +16,8 @@
         --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
         --font-display: 'Raleway', ui-sans-serif, system-ui, sans-serif;
         --color-border: oklch(1 0 0 / 0.14);
+        --shadow-card:
+          0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
       }
 
       [data-theme="emerald"] {
@@ -35,8 +37,14 @@
       html {
         font-family: var(--font-sans);
         -webkit-font-smoothing: antialiased;
-        background-color: var(--color-base-100);
+        background-color: var(--color-base-200);
         overflow: hidden;
+      }
+
+      @media (min-width: 640px) {
+        body {
+          padding: 1rem;
+        }
       }
 
       .kc-shell {
@@ -52,8 +60,10 @@
 
       @media (min-width: 640px) {
         .kc-shell {
-          border-left: 1px solid var(--color-border);
-          border-right: 1px solid var(--color-border);
+          height: calc(100vh - 2rem);
+          border: 1px solid var(--color-border);
+          border-radius: 0.75rem;
+          box-shadow: var(--shadow-card);
         }
       }
 
@@ -89,6 +99,10 @@
       }
 
       .card-enter { animation: modal-enter 0.15s ease-out; }
+
+      .shadow-card {
+        box-shadow: var(--shadow-card);
+      }
 
       :focus-visible {
         outline: 2px solid var(--color-primary);
