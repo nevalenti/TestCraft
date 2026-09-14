@@ -1,6 +1,6 @@
 {
   "name": "testcraft-ci-reporter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reports test results (JUnit/Allure) into TestCraft",
   "type": "module",
   "main": "./src/core/index.ts",
