@@ -36,35 +36,43 @@ export const RunAvatarBubble = ({
   </span>
 );
 
-export const RunProgressBar = ({
-  trackClass,
-  fillClass,
-  widthPercent,
+export const RunResultsBar = ({
+  passed,
+  failed,
 }: {
-  trackClass: string;
-  fillClass: string;
-  widthPercent: number;
-}) => (
-  <div
-    className={cn(
-      'h-1.5 min-w-0 flex-1 overflow-hidden rounded-full transition-all',
-      trackClass,
-    )}
-  >
-    <div
-      className={cn('h-full rounded-full transition-all', fillClass)}
-      style={{ width: `${widthPercent}%` }}
-    />
+  passed: number;
+  failed: number;
+}) => {
+  const total = passed + failed;
+  const passedPercent = total > 0 ? (passed / total) * 100 : 0;
+  const failedPercent = total > 0 ? 100 - passedPercent : 0;
+
+  return (
+    <div className="flex h-1.5 w-full min-w-16 overflow-hidden rounded-full bg-base-content/10">
+      {passed > 0 && (
+        <div
+          className="h-full bg-success"
+          style={{ width: `${passedPercent}%` }}
+        />
+      )}
+      {failed > 0 && (
+        <div
+          className="h-full bg-error"
+          style={{ width: `${failedPercent}%` }}
+        />
+      )}
+    </div>
+  );
+};
+
+export const ProgressBarSkeleton = () => (
+  <div className="h-1.5 w-full min-w-16 overflow-hidden rounded-full bg-base-content/10">
+    <div className="h-full w-2/5 rounded-full bg-base-content/15 motion-safe:animate-pulse" />
   </div>
 );
 
-export const RunSummarySkeleton = () => (
-  <div className="flex min-w-0 flex-1 items-center gap-2.5">
-    <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-base-content/10">
-      <div className="h-full w-2/5 rounded-full bg-base-content/15 motion-safe:animate-pulse" />
-    </div>
-    <div className="h-5 w-14 shrink-0 rounded-md bg-base-content/10 motion-safe:animate-pulse" />
-  </div>
+export const ResultsBadgesSkeleton = () => (
+  <div className="h-5 w-14 shrink-0 rounded-md bg-base-content/10 motion-safe:animate-pulse" />
 );
 
 export const RunMiniBadges = ({

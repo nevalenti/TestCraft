@@ -1,5 +1,4 @@
 import { Skeleton as SkeletonBlock } from '@/components/ui/Skeleton';
-import { RunSummarySkeleton } from '@/pages/DashboardPage/RunListItemParts';
 
 const StatCardSkeleton = () => (
   <div className="flex flex-1 items-center gap-3.5 p-4">
@@ -12,30 +11,29 @@ const StatCardSkeleton = () => (
   </div>
 );
 
-const RunRowSkeleton = () => (
-  <div className="flex items-center gap-3 px-4 py-2">
-    <SkeletonBlock className="size-8 shrink-0 rounded-full" />
-    <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-      <div className="flex items-center gap-3">
-        <div className="min-w-0 flex-1">
-          <SkeletonBlock className="h-5 w-2/5" />
-          <SkeletonBlock className="mt-0.5 h-4 w-3/5" />
-        </div>
-        <SkeletonBlock className="h-4 w-10 shrink-0 rounded-full" />
-      </div>
-      <RunSummarySkeleton />
-    </div>
+const TabsSkeleton = () => (
+  <div className="inline-flex w-fit gap-1 rounded-2xl border border-border bg-base-100 p-1">
+    <SkeletonBlock className="h-9 w-28 rounded-xl" />
+    <SkeletonBlock className="h-9 w-44 rounded-xl" />
   </div>
 );
 
-const RunListSkeleton = () => (
+const RunRowSkeleton = () => (
+  <div className="flex items-center gap-3 px-4 py-2.5">
+    <SkeletonBlock className="size-8 shrink-0 rounded-full" />
+    <SkeletonBlock className="h-4 w-40 shrink-0" />
+    <SkeletonBlock className="hidden h-4 w-24 shrink-0 sm:block" />
+    <SkeletonBlock className="hidden h-4 w-16 shrink-0 sm:block" />
+    <SkeletonBlock className="h-1.5 min-w-16 flex-1 rounded-full" />
+    <SkeletonBlock className="h-4 w-14 shrink-0" />
+  </div>
+);
+
+const RunsTableSkeleton = () => (
   <div className="flex flex-col gap-3">
-    <div className="flex items-center gap-2.5">
-      <SkeletonBlock className="size-6 shrink-0 rounded-lg" />
-      <SkeletonBlock className="h-5 w-28" />
-    </div>
+    <TabsSkeleton />
     <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card [&>div+div]:border-t [&>div+div]:border-base-content/8">
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3].map((i) => (
         <RunRowSkeleton key={i} />
       ))}
     </div>
@@ -61,10 +59,7 @@ export const DashboardSkeleton = () => (
         <StatCardSkeleton />
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <RunListSkeleton />
-        <RunListSkeleton />
-      </div>
+      <RunsTableSkeleton />
     </section>
   </div>
 );
