@@ -26,9 +26,9 @@ test.describe('Dashboard', () => {
     await expect(page.getByRole('heading', { name: 'Projects' })).toBeVisible();
   });
 
-  test('shows active runs section heading', async ({ page }) => {
+  test('shows the Test Runs tab', async ({ page }) => {
     await expect(
-      page.getByRole('heading', { name: 'Active Runs' }),
+      page.getByRole('button', { name: 'Test Runs' }),
     ).toBeVisible();
   });
 

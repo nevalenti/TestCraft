@@ -98,12 +98,20 @@ const setupMocks = ({
 };
 
 describe('DashboardPage', () => {
-  describe('renders section headers', () => {
-    it('shows the Active Runs section heading', () => {
+  describe('renders the runs tabs', () => {
+    it('shows the Test Runs tab', () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole('heading', { name: 'Active Runs' }),
+        screen.getByRole('button', { name: /Test Runs/ }),
+      ).toBeInTheDocument();
+    });
+
+    it('shows the Recently Completed tab', () => {
+      setupMocks();
+      render(<DashboardPage />);
+      expect(
+        screen.getByRole('button', { name: /Recently Completed/ }),
       ).toBeInTheDocument();
     });
   });

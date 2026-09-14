@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { TestRunStatus } from '@testcraft/types';
 import { compareDesc, format } from 'date-fns';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import keycloak from '@/auth/keycloak';
 import { ErrorState } from '@/components/ErrorState';
@@ -19,9 +19,10 @@ import {
 } from '@/features/testRuns/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
-import { ActiveRunListItem } from '@/pages/DashboardPage/ActiveRunListItem';
-import { CompletedRunListItem } from '@/pages/DashboardPage/CompletedRunListItem';
+import { ActiveRunTableRow } from '@/pages/DashboardPage/ActiveRunTableRow';
+import { CompletedRunTableRow } from '@/pages/DashboardPage/CompletedRunTableRow';
 import { DashboardSkeleton } from '@/pages/DashboardPage/DashboardSkeleton';
+import { type RunsTab, RunsTabs } from '@/pages/DashboardPage/RunsTabs';
 import { StatCard } from '@/pages/DashboardPage/StatCard';
 
 const getGreeting = () => {
@@ -77,6 +78,8 @@ export const DashboardPage = () => {
   const completedRunSummaries = useTestRunSummaries(recentlyCompletedRuns);
   const activeRunSummaries = useTestRunSummaries(activeRuns);
 
+  const [tab, setTab] = useState<RunsTab>('active');
+
   useBreadcrumbs([{ label: 'Dashboard', href: '/' }]);
 
   const isLoading = projectsPending || runsPending;
@@ -110,6 +113,92 @@ export const DashboardPage = () => {
   const displayName =
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
   const firstName = displayName?.split(' ', 1)[0];
+
+  const activeRunsPanel =
+    activeRuns.length === 0 ? (
+      <EmptyState
+        icon={<ClockIcon className="size-5" />}
+        iconClassName="border-warning/20 bg-warning/10 text-warning"
+        title="No active runs"
+        description="Start a test run from any project to track results here."
+      />
+    ) : (
+      <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
+        <div className="overflow-x-auto">
+          <table className="table table-sm">
+            <thead>
+              <tr className="border-b border-border text-xs font-semibold tracking-wider text-base-content/70 uppercase">
+                <th>Run</th>
+                <th>Project</th>
+                <th>Environment</th>
+                <th>Progress</th>
+                <th>Results</th>
+                <th>Started</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activeRuns.map((run) => (
+                <ActiveRunTableRow
+                  key={run.id}
+                  run={run}
+                  project={projectMap.get(run.projectId)}
+                  summary={activeRunSummaries.get(run.id)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {activeRunsAll.length > activeRuns.length && (
+          <p className="border-t border-border px-4 py-2 text-center text-xs text-base-content/55">
+            Showing {activeRuns.length} of {activeRunsAll.length}
+          </p>
+        )}
+      </div>
+    );
+
+  const completedRunsPanel =
+    recentlyCompletedRuns.length === 0 ? (
+      <EmptyState
+        icon={<CheckCircleIcon className="size-5" />}
+        iconClassName="border-success/20 bg-success/10 text-success"
+        title="No completed runs"
+        description="Completed test runs will appear here."
+      />
+    ) : (
+      <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
+        <div className="overflow-x-auto">
+          <table className="table table-sm">
+            <thead>
+              <tr className="border-b border-border text-xs font-semibold tracking-wider text-base-content/70 uppercase">
+                <th>Run</th>
+                <th>Project</th>
+                <th>Environment</th>
+                <th>Progress</th>
+                <th>Results</th>
+                <th>Pass Rate</th>
+                <th>Completed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentlyCompletedRuns.map((run) => (
+                <CompletedRunTableRow
+                  key={run.id}
+                  run={run}
+                  project={projectMap.get(run.projectId)}
+                  summary={completedRunSummaries.get(run.id)}
+                />
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {recentlyCompletedRunsAll.length > recentlyCompletedRuns.length && (
+          <p className="border-t border-border px-4 py-2 text-center text-xs text-base-content/55">
+            Showing {recentlyCompletedRuns.length} of{' '}
+            {recentlyCompletedRunsAll.length}
+          </p>
+        )}
+      </div>
+    );
 
   return (
     <div className="flex min-h-0 w-full flex-col overflow-y-auto">
@@ -179,95 +268,15 @@ export const DashboardPage = () => {
               />
             </div>
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-warning/12 text-warning">
-                    <BoltIcon className="size-3.5" />
-                  </span>
-                  <h2 className="text-sm font-bold text-base-content">
-                    Active Runs
-                  </h2>
-                  {activeRunsAll.length > 0 && (
-                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-warning/20 bg-warning/10 px-1.5 py-0.5 font-mono text-xs font-bold text-warning tabular-nums">
-                      {activeRunsAll.length}
-                    </span>
-                  )}
-                </div>
+            <div className="flex flex-col gap-3">
+              <RunsTabs
+                tab={tab}
+                onChange={setTab}
+                activeCount={activeRunsAll.length}
+                completedCount={recentlyCompletedRunsAll.length}
+              />
 
-                {activeRuns.length === 0 ? (
-                  <EmptyState
-                    icon={<ClockIcon className="size-5" />}
-                    iconClassName="border-warning/20 bg-warning/10 text-warning"
-                    title="No active runs"
-                    description="Start a test run from any project to track results here."
-                  />
-                ) : (
-                  <>
-                    <ul className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card [&>li+li]:border-t [&>li+li]:border-base-content/8">
-                      {activeRuns.map((run, index) => (
-                        <ActiveRunListItem
-                          key={run.id}
-                          run={run}
-                          project={projectMap.get(run.projectId)}
-                          summary={activeRunSummaries.get(run.id)}
-                          shineDelay={index < 5 ? index * 0.5 : undefined}
-                        />
-                      ))}
-                    </ul>
-                    {activeRunsAll.length > activeRuns.length && (
-                      <p className="text-center text-xs text-base-content/55">
-                        Showing {activeRuns.length} of {activeRunsAll.length}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-success/12 text-success">
-                    <CheckCircleIcon className="size-3.5" />
-                  </span>
-                  <h2 className="text-sm font-bold text-base-content">
-                    Recently Completed
-                  </h2>
-                  {recentlyCompletedRunsAll.length > 0 && (
-                    <span className="inline-flex min-w-[1.375rem] items-center justify-center rounded-full border border-success/20 bg-success/10 px-1.5 py-0.5 font-mono text-xs font-bold text-success tabular-nums">
-                      {recentlyCompletedRunsAll.length}
-                    </span>
-                  )}
-                </div>
-
-                {recentlyCompletedRuns.length === 0 ? (
-                  <EmptyState
-                    icon={<CheckCircleIcon className="size-5" />}
-                    iconClassName="border-success/20 bg-success/10 text-success"
-                    title="No completed runs"
-                    description="Completed test runs will appear here."
-                  />
-                ) : (
-                  <>
-                    <ul className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card [&>li+li]:border-t [&>li+li]:border-base-content/8">
-                      {recentlyCompletedRuns.map((run) => (
-                        <CompletedRunListItem
-                          key={run.id}
-                          run={run}
-                          project={projectMap.get(run.projectId)}
-                          summary={completedRunSummaries.get(run.id)}
-                        />
-                      ))}
-                    </ul>
-                    {recentlyCompletedRunsAll.length >
-                      recentlyCompletedRuns.length && (
-                      <p className="text-center text-xs text-base-content/55">
-                        Showing {recentlyCompletedRuns.length} of{' '}
-                        {recentlyCompletedRunsAll.length}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
+              {tab === 'active' ? activeRunsPanel : completedRunsPanel}
             </div>
           </section>
         </>
