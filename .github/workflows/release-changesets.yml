@@ -1,4 +1,4 @@
-name: changesets
+name: release-changesets
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     paths:
       - 'packages/ci-reporter/**'
       - '.changeset/**'
-      - '.github/workflows/changesets.yml'
+      - '.github/workflows/release-changesets.yml'
 
 concurrency:
   group: changesets-${{ github.ref }}

@@ -1,4 +1,4 @@
-name: checkov
+name: security-checkov
 
 on:
   push:
@@ -7,13 +7,13 @@ on:
       - 'infrastructure/helm/**'
       - '**/Dockerfile*'
       - '.checkov.baseline'
-      - '.github/workflows/checkov.yml'
+      - '.github/workflows/security-checkov.yml'
   pull_request:
     paths:
       - 'infrastructure/helm/**'
       - '**/Dockerfile*'
       - '.checkov.baseline'
-      - '.github/workflows/checkov.yml'
+      - '.github/workflows/security-checkov.yml'
   workflow_dispatch:
 
 concurrency:

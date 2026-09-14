@@ -1,11 +1,11 @@
-name: infra
+name: infra-deploy
 
 on:
   push:
     branches: [main]
     paths:
       - 'infrastructure/helm/**'
-      - '.github/workflows/infra.yml'
+      - '.github/workflows/infra-deploy.yml'
   workflow_dispatch:
 
 concurrency:

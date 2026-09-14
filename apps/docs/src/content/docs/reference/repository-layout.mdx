@@ -10,44 +10,50 @@ import { FileTree } from '@astrojs/starlight/components';
 <FileTree>
 
 - apps/
-  - Api/src/
-    - TestCraft.Domain/
-    - TestCraft.Application/
-    - TestCraft.Infrastructure/
-    - TestCraft.Api/
-  - Gateway/src/
-  - docs/
-  - web/
-    - src/api/
-    - src/hooks/
-    - src/stores/
-    - src/pages/
-    - src/routes/
-    - src/layout/
-    - src/components/
-    - src/auth/
-    - src/contexts/
-    - src/lib/
-    - src/types/
-    - src/\_\_tests\_\_/
-- packages/
-  - types/
-  - ci-reporter/
-- e2e/
-- Common/src/
+  - Api/src/ ASP.NET Core backend (Clean Architecture layers)
+    - TestCraft.Domain/ Entities, value objects, domain events
+    - TestCraft.Application/ CQRS handlers via MediatR
+    - TestCraft.Infrastructure/ External integrations: auth, email, messaging, storage
+    - TestCraft.Persistence/ EF Core DbContext, configurations, migrations
+    - TestCraft.Api/ HTTP entry point, endpoints, SignalR hubs
+    - TestCraft.Migrator/ Standalone database migration runner
+  - Api/tests/
+    - TestCraft.Domain.UnitTests/
+    - TestCraft.Application.UnitTests/
+    - TestCraft.Api.IntegrationTests/
+    - TestCraft.Architecture.Tests/ Enforces layering rules between projects
+  - Gateway/src/ YARP reverse proxy
+  - docs/ Astro + Starlight documentation site
+  - web/ React frontend
+    - src/routes/ TanStack Router route definitions
+    - src/pages/ Page-level components
+    - src/features/ Feature-based UI modules
+    - src/components/ Shared, reusable UI components
+    - src/layout/ App shell and layout components
+    - src/stores/ Zustand state stores
+    - src/api/ API client functions
+    - src/hooks/ Shared React hooks
+    - src/auth/ Keycloak auth integration
+    - src/contexts/ React context providers
+    - src/lib/ Utilities and shared helpers
+    - src/types/ Frontend-only type definitions
+    - src/\_\_tests\_\_/ Vitest unit tests
+- packages/ Shared workspace packages
+  - types/ Shared TS types (API/frontend contracts)
+  - ci-reporter/ CLI for reporting CI runs to TestCraft
+- e2e/ Playwright end-to-end tests
+- Common/src/ Shared .NET library used by Api and Gateway
 - tools/
-  - TestCraft.VSTestLogger/
-- scripts/
+  - TestCraft.VSTestLogger/ Custom VSTest logger for the TestCraft reporter
+- scripts/ Deployment and bootstrap shell scripts
 - infrastructure/
-  - helm/
-  - keycloak/
-  - prometheus/
+  - helm/ Production Helm chart
+  - keycloak/ Local/e2e Keycloak realm config
+  - postgres/ Local dev database init scripts
+  - prometheus/ Local dev Prometheus/Alertmanager config
 - .github/
-  - actions/testcraft/
-  - workflows/
-- jenkins/
-- .gitlab-ci.yml
-- .gitlab/ci/
-- Justfile
+  - actions/testcraft/ Custom composite GitHub Action
+  - workflows/ CI/CD pipelines
+- Justfile Local dev and deployment task runner
 
 </FileTree>
