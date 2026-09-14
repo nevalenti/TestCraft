@@ -1,4 +1,4 @@
-name: deploy version
+name: infra-deploy-version
 
 on:
   workflow_dispatch:

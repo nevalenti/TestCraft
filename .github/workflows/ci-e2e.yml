@@ -1,4 +1,4 @@
-name: e2e
+name: ci-e2e
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
       - 'packages/**'
       - 'pnpm-lock.yaml'
       - 'infrastructure/keycloak/e2e.env'
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/ci-e2e.yml'
   pull_request:
     branches: [main]
     paths:
@@ -22,7 +22,7 @@ on:
       - 'packages/**'
       - 'pnpm-lock.yaml'
       - 'infrastructure/keycloak/e2e.env'
-      - '.github/workflows/e2e.yml'
+      - '.github/workflows/ci-e2e.yml'
   workflow_dispatch:
 
 concurrency:

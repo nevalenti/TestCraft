@@ -1,22 +1,22 @@
-name: gateway
+name: ci-api
 
 on:
   push:
     branches: [main]
     paths:
-      - 'apps/Gateway/**'
+      - 'apps/Api/**'
       - 'Common/**'
-      - '.github/workflows/gateway.yml'
+      - '.github/workflows/ci-api.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'apps/Gateway/**'
+      - 'apps/Api/**'
       - 'Common/**'
-      - '.github/workflows/gateway.yml'
+      - '.github/workflows/ci-api.yml'
   workflow_dispatch:
 
 concurrency:
-  group: gateway-${{ github.ref }}
+  group: api-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
@@ -27,13 +27,16 @@ defaults:
     shell: sh
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-gateway
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-api
+  MIGRATOR_IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-migrator
 
 jobs:
   build-test:
     name: build & test
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      MSBUILDTERMINALLOGGER: 'off'
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -43,7 +46,8 @@ jobs:
         run: |
           wget -qO /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
           chmod +x /tmp/hadolint
-          /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Gateway/Dockerfile
+          /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Dockerfile
+          /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Migrator.Dockerfile
 
       - name: Setup .NET
         uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
@@ -54,7 +58,7 @@ jobs:
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.nuget/packages
-          key: ${{ runner.os }}-nuget-${{ hashFiles('Directory.Packages.props', 'apps/Gateway/**/*.csproj') }}
+          key: ${{ runner.os }}-nuget-${{ hashFiles('Directory.Packages.props', 'apps/Api/**/*.csproj') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
 
@@ -64,13 +68,19 @@ jobs:
       - name: Restore tools
         run: dotnet tool restore
 
+      - name: Audit dependencies
+        run: |
+          dotnet list TestCraft.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.log
+          if grep -q "has the following vulnerable packages" vulnerable-packages.log; then
+            echo "::error::Vulnerable NuGet packages detected"
+            exit 1
+          fi
+
       - name: Format check
-        run: dotnet format style --verify-no-changes --no-restore TestCraft.slnx --include apps/Gateway
+        run: dotnet format style --verify-no-changes --no-restore TestCraft.slnx
 
       - name: Build
-        run: |
-          dotnet build apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj --no-restore --configuration Release
-          dotnet build apps/Gateway/tests/TestCraft.Gateway.Tests/TestCraft.Gateway.Tests.csproj --no-restore --configuration Release
+        run: dotnet build TestCraft.slnx --no-restore --configuration Release
 
       - name: Start TestCraft run
         id: testcraft-start
@@ -82,17 +92,17 @@ jobs:
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          run-name: '#${{ github.run_id }} gateway (${{ github.ref_name }})'
-          source: gateway
+          run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
+          source: api
 
       - name: Test
-        run: dotnet test apps/Gateway/tests/TestCraft.Gateway.Tests/TestCraft.Gateway.Tests.csproj --no-build --configuration Release --collect:"XPlat Code Coverage" --settings apps/Gateway/coverlet.runsettings
+        run: dotnet test TestCraft.slnx --no-build --configuration Release --collect:"XPlat Code Coverage" --settings apps/Api/coverlet.runsettings
         env:
           TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
           TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
           TESTCRAFT_TOKEN: ${{ secrets.TESTCRAFT_TOKEN }}
           TESTCRAFT_PROJECT_ID: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          TESTCRAFT_SOURCE: gateway
+          TESTCRAFT_SOURCE: api
 
       - name: Import results to TestCraft
         if: always()
@@ -102,15 +112,15 @@ jobs:
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          junit-xml: apps/Gateway/test-results/*.junit.xml
-          run-name: '#${{ github.run_id }} gateway (${{ github.ref_name }})'
-          source: gateway
+          junit-xml: apps/Api/test-results/*.junit.xml
+          run-name: '#${{ github.run_id }} api (${{ github.ref_name }})'
+          source: api
 
   docker:
     name: docker build & push
     needs: build-test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     permissions:
       contents: read
       packages: write
@@ -149,17 +159,17 @@ jobs:
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
-          file: apps/Gateway/Dockerfile
+          file: apps/Api/Dockerfile
           load: true
-          tags: gateway-scan:${{ github.sha }}
+          tags: api-scan:${{ github.sha }}
           build-args: |
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
-          cache-from: type=gha,scope=gateway
+          cache-from: type=gha,scope=api
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: gateway-scan:${{ github.sha }}
+          image-ref: api-scan:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
           severity: CRITICAL,HIGH
@@ -177,15 +187,69 @@ jobs:
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
-          file: apps/Gateway/Dockerfile
+          file: apps/Api/Dockerfile
           platforms: linux/amd64
           push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
-          cache-from: type=gha,scope=gateway
-          cache-to: type=gha,mode=max,scope=gateway
+          cache-from: type=gha,scope=api
+          cache-to: type=gha,mode=max,scope=api
+          provenance: false
+
+      - name: Extract migrator metadata
+        id: migrator-meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ env.MIGRATOR_IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=sha,format=long
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build migrator image for scanning
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: apps/Api/Migrator.Dockerfile
+          load: true
+          tags: migrator-scan:${{ github.sha }}
+          build-args: |
+            APK_CACHE_BUST=${{ steps.date.outputs.date }}
+          cache-from: type=gha,scope=migrator
+
+      - name: Scan migrator image with Trivy
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: migrator-scan:${{ github.sha }}
+          format: sarif
+          output: trivy-results-migrator.sarif
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: '1'
+
+      - name: Upload migrator scan results to Security tab
+        if: always()
+        continue-on-error: true
+        uses: github/codeql-action/upload-sarif@a2983b8bed1923f44751c5c43237f479442827b3 # v3
+        with:
+          sarif_file: trivy-results-migrator.sarif
+
+      - name: Build and push migrator
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: .
+          file: apps/Api/Migrator.Dockerfile
+          platforms: linux/amd64
+          push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
+          tags: ${{ steps.migrator-meta.outputs.tags }}
+          labels: ${{ steps.migrator-meta.outputs.labels }}
+          build-args: |
+            APK_CACHE_BUST=${{ steps.date.outputs.date }}
+          cache-from: type=gha,scope=migrator
+          cache-to: type=gha,mode=max,scope=migrator
           provenance: false
 
   deploy:
@@ -209,5 +273,5 @@ jobs:
           test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
-      - name: Deploy gateway
-        run: just deploy-app gateway sha-${{ github.sha }}
+      - name: Deploy api
+        run: just deploy-app api sha-${{ github.sha }}

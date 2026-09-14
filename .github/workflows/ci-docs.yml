@@ -1,24 +1,22 @@
-name: web
+name: ci-docs
 
 on:
   push:
     branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
+      - 'apps/docs/**'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/web.yml'
+      - '.github/workflows/ci-docs.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
+      - 'apps/docs/**'
       - 'pnpm-lock.yaml'
-      - '.github/workflows/web.yml'
+      - '.github/workflows/ci-docs.yml'
   workflow_dispatch:
 
 concurrency:
-  group: web-${{ github.ref }}
+  group: docs-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
@@ -29,13 +27,13 @@ defaults:
     shell: sh
 
 env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-web
+  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-docs
 
 jobs:
   build-test:
     name: build & test
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -54,18 +52,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Audit dependencies
-        run: pnpm audit --audit-level=high
-
-      - name: Lint
-        run: pnpm --filter testcraft-web run lint
-
-      - name: Typecheck
-        run: pnpm --filter testcraft-web run typecheck
-
-      - name: Build
-        run: pnpm turbo build --filter testcraft-web
-
       - name: Start TestCraft run
         id: testcraft-start
         if: always()
@@ -76,17 +62,14 @@ jobs:
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
-          source: web
+          run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
+          source: docs
 
-      - name: Test
-        run: pnpm --filter testcraft-web run test:coverage
-        env:
-          TESTCRAFT_RUN_ID: ${{ steps.testcraft-start.outputs.run-id }}
-          TESTCRAFT_API_URL: ${{ secrets.TESTCRAFT_API_URL }}
-          TESTCRAFT_TOKEN: ${{ secrets.TESTCRAFT_TOKEN }}
-          TESTCRAFT_PROJECT_ID: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          TESTCRAFT_SOURCE: web
+      - name: Typecheck
+        run: pnpm --filter testcraft-docs run typecheck
+
+      - name: Build
+        run: pnpm turbo build --filter testcraft-docs
 
       - name: Import results to TestCraft
         if: always()
@@ -96,26 +79,9 @@ jobs:
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          junit-xml: apps/web/test-results/junit.xml
-          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
-          source: web
-
-      - name: Upload test report
-        if: always()
-        continue-on-error: true
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: web-test-results
-          path: apps/web/test-results
-          retention-days: 7
-
-      - name: Upload build artifact
-        continue-on-error: true
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: web-dist
-          path: apps/web/dist
-          retention-days: 7
+          junit-xml: apps/docs/test-results/*.junit.xml
+          run-name: '#${{ github.run_id }} docs (${{ github.ref_name }})'
+          source: docs
 
   docker:
     name: docker build & push
@@ -160,22 +126,17 @@ jobs:
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
-          file: apps/web/Dockerfile
+          file: apps/docs/Dockerfile
           load: true
-          tags: web-scan:${{ github.sha }}
+          tags: docs-scan:${{ github.sha }}
           build-args: |
-            VITE_API_URL=https://testcraft.pro
-            VITE_KEYCLOAK_URL=https://auth.testcraft.pro
-            VITE_KEYCLOAK_REALM=testcraft
-            VITE_KEYCLOAK_CLIENT_ID=testcraft-web
-            VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
-          cache-from: type=gha,scope=web
+          cache-from: type=gha,scope=docs
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          image-ref: web-scan:${{ github.sha }}
+          image-ref: docs-scan:${{ github.sha }}
           format: sarif
           output: trivy-results.sarif
           severity: CRITICAL,HIGH
@@ -193,20 +154,15 @@ jobs:
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
-          file: apps/web/Dockerfile
+          file: apps/docs/Dockerfile
           platforms: linux/amd64
           push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           build-args: |
-            VITE_API_URL=https://testcraft.pro
-            VITE_KEYCLOAK_URL=https://auth.testcraft.pro
-            VITE_KEYCLOAK_REALM=testcraft
-            VITE_KEYCLOAK_CLIENT_ID=testcraft-web
-            VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
+          cache-from: type=gha,scope=docs
+          cache-to: type=gha,mode=max,scope=docs
           provenance: false
 
   deploy:
@@ -230,5 +186,5 @@ jobs:
           test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
           cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
 
-      - name: Deploy web
-        run: just deploy-app web sha-${{ github.sha }}
+      - name: Deploy docs
+        run: just deploy-app docs sha-${{ github.sha }}

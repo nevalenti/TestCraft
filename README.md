@@ -11,11 +11,11 @@ _A self-hosted alternative to TestRail._
 </p>
 
 <p>
-  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/gateway.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/gateway.yml?label=Gateway&style=flat-square" alt="Gateway"></a>
-  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/web.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/web.yml?label=Web&style=flat-square" alt="Web"></a>
-  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/api.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/api.yml?label=API&style=flat-square" alt="API"></a>
-  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/e2e.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/e2e.yml?label=E2E&style=flat-square" alt="E2E"></a>
-  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/docs.yml?label=Docs&style=flat-square" alt="Docs"></a>
+  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/ci-gateway.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/ci-gateway.yml?label=Gateway&style=flat-square" alt="Gateway"></a>
+  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/ci-web.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/ci-web.yml?label=Web&style=flat-square" alt="Web"></a>
+  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/ci-api.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/ci-api.yml?label=API&style=flat-square" alt="API"></a>
+  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/ci-e2e.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/ci-e2e.yml?label=E2E&style=flat-square" alt="E2E"></a>
+  <a href="https://github.com/nevalenti/TestCraft/actions/workflows/ci-docs.yml"><img src="https://img.shields.io/github/actions/workflow/status/nevalenti/TestCraft/ci-docs.yml?label=Docs&style=flat-square" alt="Docs"></a>
 </p>
 
 <p>

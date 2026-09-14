@@ -15,8 +15,6 @@ infrastructure/image-versions.env
 infrastructure/keycloak/realm.json
 infrastructure/nginx/tls/
 .eslintcache
-.gitlab-ci-local-variables.yml
-.gitlab-ci-local/
 .idea/
 .nuget/
 .pnpm-store/
