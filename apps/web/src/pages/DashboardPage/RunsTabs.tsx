@@ -21,10 +21,10 @@ export const RunsTabs = ({
       onClick={() => onChange('active')}
       aria-pressed={tab === 'active'}
       className={cn(
-        'inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
+        'inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
         tab === 'active'
-          ? 'bg-warning/14 text-warning'
-          : 'text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
+          ? 'card-bg-warning text-warning'
+          : 'border-transparent text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
       )}
     >
       <BoltIcon className="size-4" />
@@ -32,7 +32,9 @@ export const RunsTabs = ({
       <span
         className={cn(
           'inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 font-mono text-xs font-bold tabular-nums',
-          tab === 'active' ? 'bg-warning/22' : 'bg-base-content/9',
+          tab === 'active'
+            ? 'bg-warning text-warning-content'
+            : 'bg-base-content/9',
         )}
       >
         {activeCount}
@@ -43,10 +45,10 @@ export const RunsTabs = ({
       onClick={() => onChange('completed')}
       aria-pressed={tab === 'completed'}
       className={cn(
-        'inline-flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
+        'inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
         tab === 'completed'
-          ? 'bg-success/14 text-success'
-          : 'text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
+          ? 'card-bg-success text-success'
+          : 'border-transparent text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
       )}
     >
       <CheckCircleIcon className="size-4" />
@@ -54,7 +56,9 @@ export const RunsTabs = ({
       <span
         className={cn(
           'inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 font-mono text-xs font-bold tabular-nums',
-          tab === 'completed' ? 'bg-success/22' : 'bg-base-content/9',
+          tab === 'completed'
+            ? 'bg-success text-success-content'
+            : 'bg-base-content/9',
         )}
       >
         {completedCount}

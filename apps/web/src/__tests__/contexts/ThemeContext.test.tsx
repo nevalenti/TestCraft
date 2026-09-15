@@ -19,7 +19,7 @@ const TestConsumer = () => {
 
   return (
     <>
-      <span data-testid="state">{isDark ? 'dracula' : 'valentine'}</span>
+      <span data-testid="state">{isDark ? 'dracula' : 'corporate'}</span>
       <button onClick={toggleTheme}>toggle</button>
     </>
   );
@@ -57,7 +57,7 @@ describe('ThemeProvider', () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole('button', { name: 'toggle' }));
-      expect(screen.getByTestId('state')).toHaveTextContent('valentine');
+      expect(screen.getByTestId('state')).toHaveTextContent('corporate');
     });
 
     it('updates the data-theme attribute to the light value', async () => {
@@ -67,7 +67,7 @@ describe('ThemeProvider', () => {
         </ThemeProvider>,
       );
       await userEvent.click(screen.getByRole('button', { name: 'toggle' }));
-      expect(document.documentElement.dataset.theme).toBe('valentine');
+      expect(document.documentElement.dataset.theme).toBe('corporate');
     });
   });
 

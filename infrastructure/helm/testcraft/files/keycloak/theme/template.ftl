@@ -20,12 +20,38 @@
           0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
       }
 
-      [data-theme="valentine"] {
-        --color-border: oklch(0 0 0 / 0.26) !important;
-        --color-primary: oklch(55% 0.2 346.8) !important;
+      [data-theme="corporate"] {
+        --color-border: oklch(0 0 0 / 0.35) !important;
+        --color-base-200: oklch(88% 0.003 75) !important;
+        --color-base-300: oklch(80% 0.004 75) !important;
+        --color-primary: oklch(57% 0.183 346.812) !important;
         --color-primary-content: oklch(98% 0 0) !important;
-        --color-base-content: oklch(0.22 0.02 262.988) !important;
-        --radius-field: 0.5rem;
+        --color-info: oklch(53% 0.093 212.846) !important;
+        --color-info-content: oklch(98% 0 0) !important;
+        --color-error: oklch(57% 0.206 24.43) !important;
+        --color-error-content: oklch(98% 0 0) !important;
+      }
+
+      /* Same low-alpha-on-white legibility fix as the main app's styles.css:
+         these opacity tiers were tuned for dracula's near-black surface, where
+         they still read clearly; on corporate's white surface they wash out. */
+      [data-theme="corporate"] .text-base-content\/40 {
+        color: oklch(from var(--color-base-content) l c h / 0.62) !important;
+      }
+      [data-theme="corporate"] .text-base-content\/45 {
+        color: oklch(from var(--color-base-content) l c h / 0.65) !important;
+      }
+      [data-theme="corporate"] .text-base-content\/50 {
+        color: oklch(from var(--color-base-content) l c h / 0.68) !important;
+      }
+      [data-theme="corporate"] .text-base-content\/55 {
+        color: oklch(from var(--color-base-content) l c h / 0.72) !important;
+      }
+      [data-theme="corporate"] .text-base-content\/65 {
+        color: oklch(from var(--color-base-content) l c h / 0.78) !important;
+      }
+      [data-theme="corporate"] .text-base-content\/80 {
+        color: oklch(from var(--color-base-content) l c h / 0.88) !important;
       }
 
       html, body {
@@ -73,14 +99,14 @@
       }
 
       #icon-moon { display: none; }
-      [data-theme="valentine"] #icon-moon { display: block; }
-      [data-theme="valentine"] #icon-sun { display: none; }
+      [data-theme="corporate"] #icon-moon { display: block; }
+      [data-theme="corporate"] #icon-sun { display: none; }
 
-      [data-theme="valentine"] .header-stripes {
+      [data-theme="corporate"] .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
-          oklch(0 0 0 / 0.08) 8px, oklch(0 0 0 / 0.08) 10px
+          oklch(0 0 0 / 0.05) 8px, oklch(0 0 0 / 0.05) 10px
         );
       }
 
@@ -118,7 +144,7 @@
     </style>
     <script>
       const THEME_KEY = 'app-theme';
-      const LIGHT = 'valentine';
+      const LIGHT = 'corporate';
       const DARK = 'dracula';
 
       function getCookie(name) {
