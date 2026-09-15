@@ -24,7 +24,7 @@ export const useTheme = (): ThemeContextValue => {
 };
 
 const THEME_KEY = 'app-theme';
-const LIGHT = 'valentine';
+const LIGHT = 'corporate';
 const DARK = 'dracula';
 
 const resolveTheme = (): string => {

@@ -27,9 +27,7 @@ test.describe('Dashboard', () => {
   });
 
   test('shows the Test Runs tab', async ({ page }) => {
-    await expect(
-      page.getByRole('button', { name: 'Test Runs' }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Test Runs' })).toBeVisible();
   });
 
   test('Projects stat card increments by exactly one after creating a project', async ({
