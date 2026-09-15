@@ -25,10 +25,6 @@ vi.mock('@/layout/AccountMenu', () => ({
   AccountMenu: () => <div data-testid="account-menu" />,
 }));
 
-vi.mock('@/components/ThemeToggle', () => ({
-  ThemeToggle: () => <div data-testid="theme-toggle" />,
-}));
-
 import { Header } from '@/layout/Header';
 
 describe('Header', () => {

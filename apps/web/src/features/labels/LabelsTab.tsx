@@ -9,6 +9,7 @@ import { LabelBadge } from '@/components/ui/LabelBadge';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { TablePager } from '@/components/ui/TablePager';
 import { TableSkeleton } from '@/components/ui/TableSkeleton';
 import {
   useCreateLabel,
@@ -19,6 +20,7 @@ import {
 import { LabelForm } from '@/features/labels/LabelForm';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
+import { usePagination } from '@/hooks/usePagination';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 
 export const LabelsTab = () => {
@@ -49,6 +51,17 @@ export const LabelsTab = () => {
   const visibleLabels = labels?.filter((label) =>
     label.name.toLowerCase().includes(search.toLowerCase()),
   );
+  const {
+    page: safePage,
+    setPage,
+    pageCount,
+    pageItems: pageLabels,
+  } = usePagination(visibleLabels ?? []);
+
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setPage(0);
+  };
 
   const renderLabels = () => {
     if (isPending)
@@ -78,7 +91,7 @@ export const LabelsTab = () => {
             </tr>
           </thead>
           <tbody>
-            {visibleLabels.map((label) => (
+            {pageLabels.map((label) => (
               <tr key={label.id} className="group hover:bg-base-300">
                 <td>
                   <LabelBadge label={label} />
@@ -114,6 +127,11 @@ export const LabelsTab = () => {
             ))}
           </tbody>
         </table>
+        <TablePager
+          page={safePage}
+          pageCount={pageCount}
+          onPageChange={setPage}
+        />
       </div>
     );
   };
@@ -122,7 +140,7 @@ export const LabelsTab = () => {
     <div>
       <ListToolbar
         search={search}
-        onSearch={setSearch}
+        onSearch={handleSearch}
         placeholder="Search labels…"
       >
         <button className="btn btn-sm btn-primary" onClick={openCreate}>

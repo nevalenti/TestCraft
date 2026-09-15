@@ -8,7 +8,7 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { Modal } from '@/components/ui/Modal';
 import { CreateResultForm } from '@/features/testResults/CreateResultForm';
 import { UpdateResultForm } from '@/features/testResults/UpdateResultForm';
-import type { ModalState } from '@/types';
+import type { ModalState } from '@/hooks/useModal';
 
 export const ResultModals = ({
   modal,

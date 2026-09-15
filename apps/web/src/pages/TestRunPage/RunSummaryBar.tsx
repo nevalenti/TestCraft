@@ -3,8 +3,8 @@ import { TestResultStatus, type TestRunSummary } from '@testcraft/types';
 
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { statusOptions } from '@/features/testResults/constants';
 import { cn } from '@/lib/cn';
-import { statusOptions } from '@/lib/constants';
 import { passRateClass } from '@/lib/format';
 
 type SummaryCountKey = 'passed' | 'failed' | 'blocked' | 'skipped';

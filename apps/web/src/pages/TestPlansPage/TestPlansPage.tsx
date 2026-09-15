@@ -12,13 +12,13 @@ import {
   useTestPlans,
   useUpdateTestPlan,
 } from '@/features/testPlans/hooks';
+import { PlanListItem } from '@/features/testPlans/PlanListItem';
+import { PlanRowSkeleton } from '@/features/testPlans/PlanRowSkeleton';
+import { TestPlanForm } from '@/features/testPlans/TestPlanForm';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { PlanListItem } from '@/pages/TestPlansPage/PlanListItem';
-import { PlanRowSkeleton } from '@/pages/TestPlansPage/PlanRowSkeleton';
-import { TestPlanForm } from '@/pages/TestPlansPage/TestPlanForm';
 
 export const TestPlansPage = () => {
   const projectId = useRequiredParam('projectId');

@@ -3,14 +3,11 @@ import type { CreateTestRun, TestRun, UpdateTestRun } from '@testcraft/types';
 import { TestRunStatus } from '@testcraft/types';
 import { useState } from 'react';
 
-import { ErrorState } from '@/components/ErrorState';
 import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
-import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { ResourceView } from '@/components/ui/ResourceView';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestRun,
@@ -91,57 +88,27 @@ export const RunsTab = () => {
     sourceFilter,
   );
 
-  const renderRuns = () => {
-    if (isPending)
-      return (
-        showSkeleton && (
-          <SkeletonStatus label="Loading test runs…">
-            <ResourceSkeleton viewMode={viewMode} />
-          </SkeletonStatus>
-        )
-      );
+  const renderListItem = (run: TestRun) => (
+    <RunListItem
+      key={run.id}
+      run={run}
+      summary={summaryMap.get(run.id)}
+      projectId={projectId}
+      onEdit={() => openEdit(run)}
+      onDelete={() => openDelete(run)}
+    />
+  );
 
-    if (isError) return <ErrorState error={error} onRetry={refetch} />;
-
-    if (runs?.length === 0)
-      return (
-        <EmptyState
-          title="No test runs yet"
-          description="Start a test run to record and track results."
-        />
-      );
-
-    if (viewMode === 'list')
-      return (
-        <div className="flex flex-col gap-2">
-          {visibleRuns?.map((run) => (
-            <RunListItem
-              key={run.id}
-              run={run}
-              summary={summaryMap.get(run.id)}
-              projectId={projectId}
-              onEdit={() => openEdit(run)}
-              onDelete={() => openDelete(run)}
-            />
-          ))}
-        </div>
-      );
-
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleRuns?.map((run) => (
-          <RunCard
-            key={run.id}
-            run={run}
-            summary={summaryMap.get(run.id)}
-            projectId={projectId}
-            onEdit={() => openEdit(run)}
-            onDelete={() => openDelete(run)}
-          />
-        ))}
-      </div>
-    );
-  };
+  const renderCard = (run: TestRun) => (
+    <RunCard
+      key={run.id}
+      run={run}
+      summary={summaryMap.get(run.id)}
+      projectId={projectId}
+      onEdit={() => openEdit(run)}
+      onDelete={() => openDelete(run)}
+    />
+  );
 
   return (
     <>
@@ -171,7 +138,21 @@ export const RunsTab = () => {
         onChange={setSourceFilter}
       />
 
-      {renderRuns()}
+      <ResourceView
+        isPending={isPending}
+        showSkeleton={showSkeleton}
+        skeletonLabel="Loading test runs…"
+        isError={isError}
+        error={error}
+        onRetry={refetch}
+        items={runs}
+        displayItems={visibleRuns}
+        viewMode={viewMode}
+        emptyTitle="No test runs yet"
+        emptyDescription="Start a test run to record and track results."
+        renderListItem={renderListItem}
+        renderCard={renderCard}
+      />
 
       <Modal
         isOpen={modal.type === 'create'}

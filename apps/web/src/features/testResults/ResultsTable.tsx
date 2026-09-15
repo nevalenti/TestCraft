@@ -1,13 +1,8 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
 import { flexRender, type Table } from '@tanstack/react-table';
 import type { TestResult } from '@testcraft/types';
 
-const getSortIcon = (sorted: false | 'asc' | 'desc'): string => {
-  if (sorted === 'asc') return '▲';
-  if (sorted === 'desc') return '▼';
-
-  return '⬍';
-};
+import { TablePager } from '@/components/ui/TablePager';
+import { getSortIcon } from '@/lib/sort';
 
 interface ResultsTableProps {
   table: Table<TestResult>;
@@ -18,8 +13,8 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
   const { pageIndex } = table.getState().pagination;
 
   return (
-    <>
-      <div className="overflow-x-auto rounded-xl border border-border shadow-card">
+    <div className="overflow-hidden rounded-xl border border-border shadow-card">
+      <div className="overflow-x-auto">
         <table className="table table-sm">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -70,36 +65,11 @@ export const ResultsTable = ({ table, pageCount }: ResultsTableProps) => {
           </tbody>
         </table>
       </div>
-
-      {pageCount > 1 && (
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <span className="px-1 text-sm text-base-content/75">
-            Page{' '}
-            <span className="font-semibold text-base-content">
-              {pageIndex + 1}
-            </span>{' '}
-            of {pageCount}
-          </span>
-          <div className="flex gap-1.5">
-            <button
-              className="btn btn-square btn-ghost btn-sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-              aria-label="Previous page"
-            >
-              <ChevronLeftIcon className="size-4" />
-            </button>
-            <button
-              className="btn btn-square btn-ghost btn-sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-              aria-label="Next page"
-            >
-              <ChevronRightIcon className="size-4" />
-            </button>
-          </div>
-        </div>
-      )}
-    </>
+      <TablePager
+        page={pageIndex}
+        pageCount={pageCount}
+        onPageChange={table.setPageIndex}
+      />
+    </div>
   );
 };

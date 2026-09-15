@@ -6,14 +6,11 @@ import type {
 } from '@testcraft/types';
 import { useState } from 'react';
 
-import { ErrorState } from '@/components/ErrorState';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
-import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { ResourceView } from '@/components/ui/ResourceView';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import { useProject } from '@/features/projects/hooks';
 import {
@@ -22,15 +19,15 @@ import {
   useTestCases,
   useUpdateTestCase,
 } from '@/features/testCases/hooks';
+import { TestCaseCard } from '@/features/testCases/TestCaseCard';
+import { TestCaseForm } from '@/features/testCases/TestCaseForm';
+import { TestCaseListItem } from '@/features/testCases/TestCaseListItem';
 import { useTestSuite } from '@/features/testSuites/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { TestCaseCard } from '@/pages/TestSuitePage/TestCaseCard';
-import { TestCaseForm } from '@/pages/TestSuitePage/TestCaseForm';
-import { TestCaseListItem } from '@/pages/TestSuitePage/TestCaseListItem';
 import { useViewModeStore } from '@/stores/viewMode';
 
 export const TestSuitePage = () => {
@@ -71,55 +68,27 @@ export const TestSuitePage = () => {
 
   const deleteItem = modal.type === 'delete' ? modal.item : null;
 
-  const renderTestCases = () => {
-    if (isPending)
-      return (
-        showSkeleton && (
-          <SkeletonStatus label="Loading test cases…">
-            <ResourceSkeleton viewMode={viewMode} />
-          </SkeletonStatus>
-        )
-      );
-    if (isError) return <ErrorState error={error} onRetry={refetch} />;
-    if (testCases?.length === 0)
-      return (
-        <EmptyState
-          title="No test cases yet"
-          description="Add test cases to document expected behaviour."
-        />
-      );
+  const renderListItem = (testCase: TestCase) => (
+    <TestCaseListItem
+      key={testCase.id}
+      testCase={testCase}
+      projectId={projectId}
+      suiteId={suiteId}
+      onEdit={() => openEdit(testCase)}
+      onDelete={() => openDelete(testCase)}
+    />
+  );
 
-    if (viewMode === 'list')
-      return (
-        <div className="flex flex-col gap-2">
-          {testCases?.map((testCase) => (
-            <TestCaseListItem
-              key={testCase.id}
-              testCase={testCase}
-              projectId={projectId}
-              suiteId={suiteId}
-              onEdit={() => openEdit(testCase)}
-              onDelete={() => openDelete(testCase)}
-            />
-          ))}
-        </div>
-      );
-
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {testCases?.map((testCase) => (
-          <TestCaseCard
-            key={testCase.id}
-            testCase={testCase}
-            projectId={projectId}
-            suiteId={suiteId}
-            onEdit={() => openEdit(testCase)}
-            onDelete={() => openDelete(testCase)}
-          />
-        ))}
-      </div>
-    );
-  };
+  const renderCard = (testCase: TestCase) => (
+    <TestCaseCard
+      key={testCase.id}
+      testCase={testCase}
+      projectId={projectId}
+      suiteId={suiteId}
+      onEdit={() => openEdit(testCase)}
+      onDelete={() => openDelete(testCase)}
+    />
+  );
 
   return (
     <div className="flex min-h-0 w-full flex-col">
@@ -147,7 +116,22 @@ export const TestSuitePage = () => {
             New Test Case
           </button>
         </ListToolbar>
-        <div className="min-h-80">{renderTestCases()}</div>
+        <div className="min-h-80">
+          <ResourceView
+            isPending={isPending}
+            showSkeleton={showSkeleton}
+            skeletonLabel="Loading test cases…"
+            isError={isError}
+            error={error}
+            onRetry={refetch}
+            items={testCases}
+            viewMode={viewMode}
+            emptyTitle="No test cases yet"
+            emptyDescription="Add test cases to document expected behaviour."
+            renderListItem={renderListItem}
+            renderCard={renderCard}
+          />
+        </div>
       </section>
 
       <Modal

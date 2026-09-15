@@ -9,7 +9,8 @@ import type {
 
 import client from '@/api/client';
 import { queryKeys } from '@/api/queryKeys';
-import { RESULTS_PAGE_SIZE } from '@/lib/constants';
+
+export const RESULTS_PAGE_SIZE = 15;
 
 const BASE = (projectId: string, runId: string) =>
   `projects/${projectId}/runs/${runId}/results`;

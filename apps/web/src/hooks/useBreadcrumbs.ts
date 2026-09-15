@@ -1,7 +1,6 @@
 import { useLayoutEffect } from 'react';
 
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
-import { type BreadcrumbItem } from '@/types';
+import { type BreadcrumbItem, useBreadcrumbsStore } from '@/stores/breadcrumbs';
 
 export const useBreadcrumbs = (items: BreadcrumbItem[]) => {
   const set = useBreadcrumbsStore((store) => store.set);

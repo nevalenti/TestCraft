@@ -2,9 +2,12 @@ import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useMemo } from 'react';
 
 import { EmptyState } from '@/components/ui/EmptyState';
+import { TablePager } from '@/components/ui/TablePager';
 import { useFlakyTests } from '@/features/analytics/hooks';
+import { usePagination } from '@/hooks/usePagination';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
+import { TABLE_PAGE_SIZE } from '@/lib/constants';
 
 export const AnalyticsFlakyTab = () => {
   const projectId = useRequiredParam('projectId');
@@ -17,6 +20,13 @@ export const AnalyticsFlakyTab = () => {
       ),
     [flakyTests],
   );
+
+  const {
+    page: safePage,
+    setPage,
+    pageCount,
+    pageItems: pageTests,
+  } = usePagination(sortedTests);
 
   const severity = useMemo(
     () => ({
@@ -70,72 +80,80 @@ export const AnalyticsFlakyTab = () => {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-border">
-        <table className="table table-sm">
-          <thead>
-            <tr className="border-b border-border text-xs text-base-content/75">
-              <th className="w-8 text-center font-medium">#</th>
-              <th className="font-medium">Test Case</th>
-              <th className="text-right font-medium">Runs</th>
-              <th className="text-right font-medium">Passed</th>
-              <th className="text-right font-medium">Failed</th>
-              <th className="text-right font-medium">Flake Rate</th>
-            </tr>
-          </thead>
-          <tbody>
-            {sortedTests.map((stat, index) => {
-              const pct = Math.round(stat.flakRate);
-              let barColor = 'bg-info';
-              if (pct >= 60) barColor = 'bg-error';
-              else if (pct >= 30) barColor = 'bg-warning';
-              let rankColor = 'text-info/60';
-              if (pct >= 60) rankColor = 'text-error/60';
-              else if (pct >= 30) rankColor = 'text-warning/60';
-              return (
-                <tr key={stat.testCaseId} className="hover:bg-base-300/70">
-                  <td
-                    className={cn(
-                      'text-center text-xs font-bold tabular-nums',
-                      rankColor,
-                    )}
-                  >
-                    {index + 1}
-                  </td>
-                  <td className="max-w-xs">
-                    <p className="truncate text-sm font-medium">
-                      {stat.testCaseName}
-                    </p>
-                  </td>
-                  <td className="text-right text-sm text-base-content/85 tabular-nums">
-                    {stat.totalRuns}
-                  </td>
-                  <td className="text-right text-sm font-medium text-success tabular-nums">
-                    {stat.passCount}
-                  </td>
-                  <td className="text-right text-sm font-medium text-error tabular-nums">
-                    {stat.failCount}
-                  </td>
-                  <td className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <div className="h-1.5 w-16 overflow-hidden rounded-full bg-base-300">
-                        <div
-                          className={cn(
-                            'h-full rounded-full transition-all',
-                            barColor,
-                          )}
-                          style={{ width: `${pct}%` }}
-                        />
+      <div className="overflow-hidden rounded-xl border border-border">
+        <div className="overflow-x-auto">
+          <table className="table table-sm">
+            <thead>
+              <tr className="border-b border-border text-xs text-base-content/75">
+                <th className="w-8 text-center font-medium">#</th>
+                <th className="font-medium">Test Case</th>
+                <th className="text-right font-medium">Runs</th>
+                <th className="text-right font-medium">Passed</th>
+                <th className="text-right font-medium">Failed</th>
+                <th className="text-right font-medium">Flake Rate</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pageTests.map((stat, pageIndex) => {
+                const index = safePage * TABLE_PAGE_SIZE + pageIndex;
+                const pct = Math.round(stat.flakRate);
+                let barColor = 'bg-info';
+                if (pct >= 60) barColor = 'bg-error';
+                else if (pct >= 30) barColor = 'bg-warning';
+                let rankColor = 'text-info/60';
+                if (pct >= 60) rankColor = 'text-error/60';
+                else if (pct >= 30) rankColor = 'text-warning/60';
+                return (
+                  <tr key={stat.testCaseId} className="hover:bg-base-300/70">
+                    <td
+                      className={cn(
+                        'text-center text-xs font-bold tabular-nums',
+                        rankColor,
+                      )}
+                    >
+                      {index + 1}
+                    </td>
+                    <td className="max-w-xs">
+                      <p className="truncate text-sm font-medium">
+                        {stat.testCaseName}
+                      </p>
+                    </td>
+                    <td className="text-right text-sm text-base-content/85 tabular-nums">
+                      {stat.totalRuns}
+                    </td>
+                    <td className="text-right text-sm font-medium text-success tabular-nums">
+                      {stat.passCount}
+                    </td>
+                    <td className="text-right text-sm font-medium text-error tabular-nums">
+                      {stat.failCount}
+                    </td>
+                    <td className="text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-base-300">
+                          <div
+                            className={cn(
+                              'h-full rounded-full transition-all',
+                              barColor,
+                            )}
+                            style={{ width: `${pct}%` }}
+                          />
+                        </div>
+                        <span className="w-8 text-right text-sm font-semibold tabular-nums">
+                          {pct}%
+                        </span>
                       </div>
-                      <span className="w-8 text-right text-sm font-semibold tabular-nums">
-                        {pct}%
-                      </span>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        <TablePager
+          page={safePage}
+          pageCount={pageCount}
+          onPageChange={setPage}
+        />
       </div>
     </div>
   );

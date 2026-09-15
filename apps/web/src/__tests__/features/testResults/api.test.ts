@@ -5,8 +5,7 @@ vi.mock('@/api/client', () => ({
 }));
 
 import client from '@/api/client';
-import { testResultsApi } from '@/features/testResults/api';
-import { RESULTS_PAGE_SIZE } from '@/lib/constants';
+import { RESULTS_PAGE_SIZE, testResultsApi } from '@/features/testResults/api';
 
 beforeEach(() => {
   vi.clearAllMocks();

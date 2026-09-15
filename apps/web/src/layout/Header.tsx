@@ -12,7 +12,6 @@ import {
 import { Link } from '@tanstack/react-router';
 import { useRef } from 'react';
 
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { AccountMenu } from '@/layout/AccountMenu';
 import { LogoMark } from '@/layout/LogoMark';
 import { NavItem } from '@/layout/NavItem';
@@ -51,7 +50,6 @@ export const Header = () => {
 
         <div className="flex shrink-0 items-center gap-1">
           <AccountMenu />
-          <ThemeToggle />
         </div>
       </nav>
 

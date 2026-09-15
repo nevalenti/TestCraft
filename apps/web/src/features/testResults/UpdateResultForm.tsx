@@ -10,7 +10,7 @@ import { z } from 'zod';
 import { FormActions } from '@/components/ui/FormActions';
 import { FormField } from '@/components/ui/FormField';
 import { FormTextarea } from '@/components/ui/FormTextarea';
-import { statusOptions } from '@/lib/constants';
+import { statusOptions } from '@/features/testResults/constants';
 
 const defectTypeOptions = [
   { value: DefectType.ProductBug, label: 'Product Bug' },

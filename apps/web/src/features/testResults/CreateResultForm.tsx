@@ -12,8 +12,8 @@ import { FormField } from '@/components/ui/FormField';
 import { FormInput } from '@/components/ui/FormInput';
 import { FormTextarea } from '@/components/ui/FormTextarea';
 import { useProjectTestCases } from '@/features/testCases/hooks';
+import { statusOptions } from '@/features/testResults/constants';
 import { cn } from '@/lib/cn';
-import { statusOptions } from '@/lib/constants';
 import { toDatetimeLocal } from '@/lib/format';
 
 const defectTypeOptions = [

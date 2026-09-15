@@ -138,7 +138,7 @@ describe('useCreateTestResult', () => {
       );
     });
 
-    it("notifies with the test case name and status on success", async () => {
+    it('notifies with the test case name and status on success', async () => {
       vi.mocked(testResultsApi.create).mockResolvedValue({
         id: 'res-1',
         testCaseName: 'Login test',

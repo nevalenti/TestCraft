@@ -6,17 +6,14 @@ import type {
 } from '@testcraft/types';
 import { useState } from 'react';
 
-import { ErrorState } from '@/components/ErrorState';
 import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
-import { EmptyState } from '@/components/ui/EmptyState';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceCard } from '@/components/ui/ResourceCard';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
-import { ResourceSkeleton } from '@/components/ui/ResourceSkeleton';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { ResourceView } from '@/components/ui/ResourceView';
 import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestSuite,
@@ -77,101 +74,65 @@ export const SuitesTab = () => {
     ? allSuites.filter((suite) => suite.source === sourceFilter)
     : suites;
 
-  const renderSuites = () => {
-    if (isPending)
-      return (
-        showSkeleton && (
-          <SkeletonStatus label="Loading test suites…">
-            <ResourceSkeleton viewMode={viewMode} />
-          </SkeletonStatus>
-        )
-      );
-
-    if (isError) return <ErrorState error={error} onRetry={refetch} />;
-
-    if (suites?.length === 0)
-      return (
-        <EmptyState
-          title="No test suites yet"
-          description="Group related test cases into suites."
-        />
-      );
-
-    if (viewMode === 'list')
-      return (
-        <div className="flex flex-col gap-2">
-          {visibleSuites?.map((suite) => (
-            <ResourceListItem
-              key={suite.id}
-              testId="suite-card"
-              onEdit={() => openEdit(suite)}
-              onDelete={() => openDelete(suite)}
-              to={`/projects/${projectId}/suites/${suite.id}`}
-              label="test suite"
-              cardBg="card-bg-success"
-              accentText="text-success"
-              typeIcon={<RectangleStackIcon className="size-4" />}
-            >
-              <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate text-sm font-semibold">
-                  {suite.name}
-                </span>
-                <p className="truncate text-xs text-base-content/70">
-                  {suite.description ?? (
-                    <span className="text-base-content/55 italic">
-                      No description
-                    </span>
-                  )}
-                </p>
-              </div>
-              <div className="hidden shrink-0 items-center gap-2 sm:flex">
-                {suite.source && <MetaPill>{suite.source}</MetaPill>}
-                <span className="text-xs font-medium text-base-content/55 tabular-nums">
-                  {formatDate(suite.createdAt)}
-                </span>
-              </div>
-            </ResourceListItem>
-          ))}
-        </div>
-      );
-
-    return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {visibleSuites?.map((suite) => (
-          <ResourceCard
-            key={suite.id}
-            testId="suite-card"
-            onEdit={() => openEdit(suite)}
-            onDelete={() => openDelete(suite)}
-            to={`/projects/${projectId}/suites/${suite.id}`}
-            label="test suite"
-            cardBg="card-bg-success"
-            accentText="text-success"
-            typeIcon={<RectangleStackIcon className="size-3.5" />}
-          >
-            <div className="flex flex-col gap-1">
-              <span className="line-clamp-2 text-base leading-snug font-semibold">
-                {suite.name}
-              </span>
-              <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-                {suite.description ?? (
-                  <span className="text-base-content/55 italic">
-                    No description
-                  </span>
-                )}
-              </p>
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              {suite.source ? <MetaPill>{suite.source}</MetaPill> : <span />}
-              <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
-                {formatDate(suite.createdAt)}
-              </span>
-            </div>
-          </ResourceCard>
-        ))}
+  const renderListItem = (suite: TestSuite) => (
+    <ResourceListItem
+      key={suite.id}
+      testId="suite-card"
+      onEdit={() => openEdit(suite)}
+      onDelete={() => openDelete(suite)}
+      to={`/projects/${projectId}/suites/${suite.id}`}
+      label="test suite"
+      cardBg="card-bg-success"
+      accentText="text-success"
+      typeIcon={<RectangleStackIcon className="size-4" />}
+    >
+      <div className="flex min-w-0 flex-col gap-0.5">
+        <span className="truncate text-sm font-semibold">{suite.name}</span>
+        <p className="truncate text-xs text-base-content/70">
+          {suite.description ?? (
+            <span className="text-base-content/55 italic">No description</span>
+          )}
+        </p>
       </div>
-    );
-  };
+      <div className="hidden shrink-0 items-center gap-2 sm:flex">
+        {suite.source && <MetaPill>{suite.source}</MetaPill>}
+        <span className="text-xs font-medium text-base-content/55 tabular-nums">
+          {formatDate(suite.createdAt)}
+        </span>
+      </div>
+    </ResourceListItem>
+  );
+
+  const renderCard = (suite: TestSuite) => (
+    <ResourceCard
+      key={suite.id}
+      testId="suite-card"
+      onEdit={() => openEdit(suite)}
+      onDelete={() => openDelete(suite)}
+      to={`/projects/${projectId}/suites/${suite.id}`}
+      label="test suite"
+      cardBg="card-bg-success"
+      accentText="text-success"
+      typeIcon={<RectangleStackIcon className="size-3.5" />}
+    >
+      <div className="flex flex-col gap-1">
+        <span className="line-clamp-2 text-base leading-snug font-semibold">
+          {suite.name}
+        </span>
+        <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
+          {suite.description ?? (
+            <span className="text-base-content/55 italic">No description</span>
+          )}
+        </p>
+      </div>
+      <div className="flex items-center justify-between gap-2">
+        {suite.source ? <MetaPill>{suite.source}</MetaPill> : <span />}
+        <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
+          {formatDate(suite.createdAt)}
+        </span>
+      </div>
+    </ResourceCard>
+  );
 
   return (
     <>
@@ -194,7 +155,21 @@ export const SuitesTab = () => {
         onChange={setSourceFilter}
       />
 
-      {renderSuites()}
+      <ResourceView
+        isPending={isPending}
+        showSkeleton={showSkeleton}
+        skeletonLabel="Loading test suites…"
+        isError={isError}
+        error={error}
+        onRetry={refetch}
+        items={suites}
+        displayItems={visibleSuites}
+        viewMode={viewMode}
+        emptyTitle="No test suites yet"
+        emptyDescription="Group related test cases into suites."
+        renderListItem={renderListItem}
+        renderCard={renderCard}
+      />
 
       <Modal
         isOpen={modal.type === 'create'}

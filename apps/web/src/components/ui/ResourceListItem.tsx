@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router';
 
+import { accentToColorVar } from '@/components/ui/accentColor';
 import { ResourceActions } from '@/components/ui/ResourceActions';
 import { cn } from '@/lib/cn';
 
@@ -14,16 +15,6 @@ interface ResourceListItemProps {
   testId?: string;
   children: React.ReactNode;
 }
-
-const accentToColorVar: Record<string, string> = {
-  'text-primary': '--color-primary',
-  'text-secondary': '--color-secondary',
-  'text-accent': '--color-accent',
-  'text-warning': '--color-warning',
-  'text-success': '--color-success',
-  'text-error': '--color-error',
-  'text-info': '--color-info',
-};
 
 export const ResourceListItem = ({
   to,
