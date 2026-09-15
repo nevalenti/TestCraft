@@ -2,8 +2,8 @@ import { renderHook } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import type { BreadcrumbItem } from '@/stores/breadcrumbs';
 import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
-import type { BreadcrumbItem } from '@/types';
 
 afterEach(() => {
   useBreadcrumbsStore.getState().set(null);

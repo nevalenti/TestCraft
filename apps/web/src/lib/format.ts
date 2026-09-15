@@ -51,20 +51,6 @@ export const getInitials = (name: string): string =>
 export const truncate = (text: string, maxLength: number): string =>
   text.length > maxLength ? text.slice(0, maxLength) + '…' : text;
 
-const CI_RUN_NAME_PATTERN = /^#\d+\s+(\S+)\s+\(([^)]+)\)$/;
-const PR_MERGE_REF_PATTERN = /^(\d+)\/merge$/;
-
-export const formatCiRunName = (name: string): string => {
-  const match = CI_RUN_NAME_PATTERN.exec(name);
-  if (!match) return name;
-
-  const [, workflow, ref] = match;
-  const prMatch = PR_MERGE_REF_PATTERN.exec(ref);
-  const refLabel = prMatch ? `PR #${prMatch[1]}` : ref;
-
-  return `${workflow} · ${refLabel}`;
-};
-
 export const formatBytes = (bytes: number): string => {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

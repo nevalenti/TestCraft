@@ -22,10 +22,6 @@ vi.mock('@/layout/AccountMenu', () => ({
   AccountMenu: () => <div data-testid="account-menu" />,
 }));
 
-vi.mock('@/components/ThemeToggle', () => ({
-  ThemeToggle: () => <div data-testid="theme-toggle" />,
-}));
-
 import { BreadcrumbBar } from '@/layout/BreadcrumbBar';
 import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
 
@@ -90,10 +86,9 @@ describe('BreadcrumbBar', () => {
     });
   });
 
-  it('always renders the account menu and theme toggle', () => {
+  it('always renders the account menu', () => {
     render(<BreadcrumbBar />);
 
     expect(screen.getByTestId('account-menu')).toBeInTheDocument();
-    expect(screen.getByTestId('theme-toggle')).toBeInTheDocument();
   });
 });

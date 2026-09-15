@@ -1,6 +1,11 @@
 import { useCallback, useState } from 'react';
 
-import type { ModalState } from '@/types';
+export type ModalState<T> =
+  | { type: 'closed' }
+  | { type: 'create' }
+  | { type: 'import' }
+  | { type: 'edit'; item: T }
+  | { type: 'delete'; item: T };
 
 export const useModal = <T>() => {
   const [modal, setModal] = useState<ModalState<T>>({ type: 'closed' });

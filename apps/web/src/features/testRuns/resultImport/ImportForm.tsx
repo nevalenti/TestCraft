@@ -7,7 +7,10 @@ import { z } from 'zod';
 import { FormActions } from '@/components/ui/FormActions';
 import { FormField } from '@/components/ui/FormField';
 import { FileDropZone } from '@/features/testRuns/resultImport/FileDropZone';
-import { detectFormat } from '@/features/testRuns/resultImport/importFormat';
+import {
+  detectFormat,
+  parseAllureFiles,
+} from '@/features/testRuns/resultImport/importFormat';
 import { cn } from '@/lib/cn';
 
 type ImportData =
@@ -68,25 +71,6 @@ const schema = z.object({
 });
 
 type FormValues = z.infer<typeof schema>;
-
-const parseAllureFiles = async (
-  files: File[],
-): Promise<{ results: AllureResultItem[] } | { fileError: string }> => {
-  const texts = await Promise.all(files.map((file) => file.text()));
-  const results: AllureResultItem[] = [];
-
-  for (const [i, text] of texts.entries()) {
-    try {
-      const parsed = JSON.parse(text) as AllureResultItem | AllureResultItem[];
-      if (Array.isArray(parsed)) results.push(...parsed);
-      else results.push(parsed);
-    } catch {
-      return { fileError: `"${files[i].name}" is not valid JSON` };
-    }
-  }
-
-  return { results };
-};
 
 export const ImportForm = ({
   onSubmit,

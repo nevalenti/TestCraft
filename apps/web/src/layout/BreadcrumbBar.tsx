@@ -1,7 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef } from 'react';
 
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { AccountMenu } from '@/layout/AccountMenu';
 import { cn } from '@/lib/cn';
 import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
@@ -74,7 +73,6 @@ export const BreadcrumbBar = () => {
       {content()}
       <div className="ml-auto hidden items-center gap-2 lg:flex">
         <AccountMenu />
-        <ThemeToggle />
       </div>
     </div>
   );

@@ -15,7 +15,10 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 
 import { ErrorState } from '@/components/ErrorState';
+import { AttachmentModal } from '@/features/attachments/AttachmentModal';
 import { useProject } from '@/features/projects/hooks';
+import { ShareModal } from '@/features/shareTokens/ShareModal';
+import { RESULTS_PAGE_SIZE } from '@/features/testResults/api';
 import { createColumns } from '@/features/testResults/columns';
 import {
   useCreateTestResult,
@@ -31,14 +34,11 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
-import { RESULTS_PAGE_SIZE } from '@/lib/constants';
-import { AttachmentModal } from '@/pages/TestRunPage/AttachmentModal';
 import { LiveLogFeed } from '@/pages/TestRunPage/LiveLogFeed';
 import { LogPanel } from '@/pages/TestRunPage/LogPanel';
 import { ResultModals } from '@/pages/TestRunPage/ResultModals';
 import { RunSummaryBar } from '@/pages/TestRunPage/RunSummaryBar';
 import { type RunView, RunViewTabs } from '@/pages/TestRunPage/RunViewTabs';
-import { ShareModal } from '@/pages/TestRunPage/ShareModal';
 
 export const TestRunPage = () => {
   const projectId = useRequiredParam('projectId');

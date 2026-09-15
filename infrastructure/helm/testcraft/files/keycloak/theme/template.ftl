@@ -1,6 +1,6 @@
 <#macro registrationLayout displayMessage=false displayRequiredFields=false pageTitle="TestCraft">
   <!DOCTYPE html>
-  <html lang="en">
+  <html lang="en" data-theme="dracula">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -18,40 +18,6 @@
         --color-border: oklch(1 0 0 / 0.14);
         --shadow-card:
           0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
-      }
-
-      [data-theme="corporate"] {
-        --color-border: oklch(0 0 0 / 0.35) !important;
-        --color-base-200: oklch(88% 0.003 75) !important;
-        --color-base-300: oklch(80% 0.004 75) !important;
-        --color-primary: oklch(57% 0.183 346.812) !important;
-        --color-primary-content: oklch(98% 0 0) !important;
-        --color-info: oklch(53% 0.093 212.846) !important;
-        --color-info-content: oklch(98% 0 0) !important;
-        --color-error: oklch(57% 0.206 24.43) !important;
-        --color-error-content: oklch(98% 0 0) !important;
-      }
-
-      /* Same low-alpha-on-white legibility fix as the main app's styles.css:
-         these opacity tiers were tuned for dracula's near-black surface, where
-         they still read clearly; on corporate's white surface they wash out. */
-      [data-theme="corporate"] .text-base-content\/40 {
-        color: oklch(from var(--color-base-content) l c h / 0.62) !important;
-      }
-      [data-theme="corporate"] .text-base-content\/45 {
-        color: oklch(from var(--color-base-content) l c h / 0.65) !important;
-      }
-      [data-theme="corporate"] .text-base-content\/50 {
-        color: oklch(from var(--color-base-content) l c h / 0.68) !important;
-      }
-      [data-theme="corporate"] .text-base-content\/55 {
-        color: oklch(from var(--color-base-content) l c h / 0.72) !important;
-      }
-      [data-theme="corporate"] .text-base-content\/65 {
-        color: oklch(from var(--color-base-content) l c h / 0.78) !important;
-      }
-      [data-theme="corporate"] .text-base-content\/80 {
-        color: oklch(from var(--color-base-content) l c h / 0.88) !important;
       }
 
       html, body {
@@ -98,19 +64,7 @@
         overflow-y: auto;
       }
 
-      #icon-moon { display: none; }
-      [data-theme="corporate"] #icon-moon { display: block; }
-      [data-theme="corporate"] #icon-sun { display: none; }
-
-      [data-theme="corporate"] .header-stripes {
-        background-image: repeating-linear-gradient(
-          45deg,
-          transparent 0px, transparent 8px,
-          oklch(0 0 0 / 0.05) 8px, oklch(0 0 0 / 0.05) 10px
-        );
-      }
-
-      [data-theme="dracula"] .header-stripes {
+      .header-stripes {
         background-image: repeating-linear-gradient(
           45deg,
           transparent 0px, transparent 8px,
@@ -142,39 +96,6 @@
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: var(--color-base-300); border-radius: 999px; }
     </style>
-    <script>
-      const THEME_KEY = 'app-theme';
-      const LIGHT = 'corporate';
-      const DARK = 'dracula';
-
-      function getCookie(name) {
-        const eq = name + '=';
-        for (let c of document.cookie.split(';')) {
-          c = c.trim();
-          if (c.indexOf(eq) === 0) return c.substring(eq.length);
-        }
-        return null;
-      }
-
-      function setCookie(name, value) {
-        const expires = new Date(Date.now() + 365 * 864e5).toUTCString();
-        document.cookie = name + '=' + value + ';expires=' + expires + ';path=/';
-      }
-
-      function resolveTheme() {
-        const v = getCookie(THEME_KEY);
-        return v === LIGHT || v === DARK ? v : DARK;
-      }
-
-      const theme = resolveTheme();
-      document.documentElement.setAttribute('data-theme', theme);
-
-      function toggleTheme() {
-        const next = document.documentElement.getAttribute('data-theme') === DARK ? LIGHT : DARK;
-        document.documentElement.setAttribute('data-theme', next);
-        setCookie(THEME_KEY, next);
-      }
-    </script>
   </head>
   <body class="text-base-content">
     <div class="kc-shell bg-base-100">
@@ -187,16 +108,6 @@
             </svg>
             <span class="text-base font-extrabold tracking-tight" style="font-family: var(--font-display)">TestCraft</span>
           </a>
-        </div>
-        <div class="flex items-center gap-3 shrink-0">
-          <button onclick="toggleTheme()" class="btn btn-ghost btn-sm btn-circle" aria-label="Toggle theme">
-            <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-              <path d="M12 2.25a.75.75 0 0 1 .75.75v2.25a.75.75 0 0 1-1.5 0V3a.75.75 0 0 1 .75-.75ZM7.5 12a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM18.894 6.166a.75.75 0 0 0-1.06-1.06l-1.591 1.59a.75.75 0 1 0 1.06 1.061l1.591-1.59ZM21.75 12a.75.75 0 0 1-.75.75h-2.25a.75.75 0 0 1 0-1.5H21a.75.75 0 0 1 .75.75ZM17.834 18.894a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 1 0-1.061 1.06l1.59 1.591ZM12 18a.75.75 0 0 1 .75.75V21a.75.75 0 0 1-1.5 0v-2.25A.75.75 0 0 1 12 18ZM7.758 17.303a.75.75 0 0 0-1.061-1.06l-1.591 1.59a.75.75 0 0 0 1.06 1.061l1.591-1.59ZM6 12a.75.75 0 0 1-.75.75H3a.75.75 0 0 1 0-1.5h2.25A.75.75 0 0 1 6 12ZM6.697 7.757a.75.75 0 0 0 1.06-1.06l-1.59-1.591a.75.75 0 0 0-1.061 1.06l1.59 1.591Z"/>
-            </svg>
-            <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-              <path fill-rule="evenodd" d="M9.528 1.718a.75.75 0 0 1 .162.819A8.97 8.97 0 0 0 9 6a9 9 0 0 0 9 9 8.97 8.97 0 0 0 3.463-.69.75.75 0 0 1 .981.98 10.503 10.503 0 0 1-9.694 6.46c-5.799 0-10.5-4.7-10.5-10.5 0-4.368 2.667-8.112 6.46-9.694a.75.75 0 0 1 .818.162Z" clip-rule="evenodd"/>
-            </svg>
-          </button>
         </div>
       </nav>
 

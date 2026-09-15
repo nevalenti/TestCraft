@@ -6,7 +6,12 @@ import { z } from 'zod';
 import { FormActions } from '@/components/ui/FormActions';
 import { FormField } from '@/components/ui/FormField';
 import { FormInput } from '@/components/ui/FormInput';
-import { runStatusOptions } from '@/lib/constants';
+
+const runStatusOptions = [
+  { value: 'Active', label: 'Active' },
+  { value: 'Completed', label: 'Completed' },
+  { value: 'Archived', label: 'Archived' },
+] as const;
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required').max(255),

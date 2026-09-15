@@ -25,10 +25,12 @@ const FEATURES = [
   'analytics',
   'apiTokens',
   'attachments',
+  'dashboard',
   'labels',
   'notifications',
   'projectMembers',
   'projects',
+  'projectSettings',
   'shareTokens',
   'testCases',
   'testCaseSteps',
@@ -42,19 +44,21 @@ const SHARED_DIRS = [
   './src/api',
   './src/auth',
   './src/components',
-  './src/contexts',
   './src/hooks',
   './src/lib',
   './src/stores',
-  './src/types',
 ];
 
 const APP_DIRS = ['./src/pages', './src/layout'];
 
 const CROSS_FEATURE_EXCEPTIONS = {
-  analytics: ['testRuns'],
+  analytics: ['testRuns', 'projects'],
+  dashboard: ['testRuns', 'projects'],
+  labels: ['projects'],
+  projectSettings: ['apiTokens', 'notifications', 'projectMembers', 'projects'],
   testResults: ['testCases'],
-  testRuns: ['testResults'],
+  testRuns: ['testResults', 'projects'],
+  testSuites: ['projects'],
 };
 
 export default defineConfig([
@@ -134,12 +138,6 @@ export default defineConfig([
       'import-x/resolver': {
         typescript: { project: path.resolve(__dirname, 'tsconfig.app.json') },
       },
-    },
-  },
-  {
-    files: ['**/contexts/**'],
-    rules: {
-      'react-refresh/only-export-components': 'off',
     },
   },
   {

@@ -1,11 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  formatCiRunName,
-  formatDate,
-  formatDateTime,
-  formatDuration,
-} from '@/lib/format';
+import { formatDate, formatDateTime, formatDuration } from '@/lib/format';
 
 describe('formatDate', () => {
   describe('formatDate — given a Date object — returns a human-readable date string', () => {
@@ -59,36 +54,6 @@ describe('formatDateTime', () => {
       expect(formatDateTime(input).length).toBeGreaterThan(
         formatDate(input).length,
       );
-    });
-  });
-});
-
-describe('formatCiRunName', () => {
-  describe('given a CI-produced name — reduces it to "workflow · ref"', () => {
-    it('formats a PR merge-queue ref as "PR #<number>"', () => {
-      expect(formatCiRunName('#34390089026 api (191/merge)')).toBe(
-        'api · PR #191',
-      );
-    });
-
-    it('keeps a plain branch ref as-is', () => {
-      expect(formatCiRunName('#12345678 web (main)')).toBe('web · main');
-    });
-
-    it('drops the raw run id entirely', () => {
-      expect(formatCiRunName('#34390089026 api (191/merge)')).not.toContain(
-        '34390089026',
-      );
-    });
-  });
-
-  describe('given a name that does not match the CI-produced shape', () => {
-    it('returns it unchanged', () => {
-      expect(formatCiRunName('Nightly regression')).toBe('Nightly regression');
-    });
-
-    it('returns an empty string unchanged', () => {
-      expect(formatCiRunName('')).toBe('');
     });
   });
 });

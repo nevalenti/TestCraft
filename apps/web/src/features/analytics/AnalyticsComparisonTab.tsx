@@ -2,23 +2,14 @@ import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
 import { useMemo, useState } from 'react';
 
 import { EmptyState } from '@/components/ui/EmptyState';
+import { TablePager } from '@/components/ui/TablePager';
+import { rowBg, STATUS_BADGE } from '@/features/analytics/comparisonHelpers';
 import { useRunComparison } from '@/features/analytics/hooks';
+import { RunComparisonPicker } from '@/features/analytics/RunComparisonPicker';
 import { useTestRuns } from '@/features/testRuns/hooks';
+import { usePagination } from '@/hooks/usePagination';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { cn } from '@/lib/cn';
-
-const STATUS_BADGE: Record<string, string> = {
-  Passed: 'badge-success',
-  Failed: 'badge-error',
-  Blocked: 'badge-warning',
-  Skipped: 'badge-ghost',
-};
-
-const rowBg = (isRegression: boolean, isFix: boolean) => {
-  if (isRegression) return 'bg-error/5';
-  if (isFix) return 'bg-success/5';
-  return '';
-};
 
 type Filter = 'all' | 'changes';
 
@@ -58,77 +49,36 @@ export const AnalyticsComparisonTab = () => {
     return comparison.results;
   }, [comparison, filter]);
 
-  const canCompare = runA && runB && runA !== runB;
+  const {
+    page: safePage,
+    setPage,
+    pageCount,
+    pageItems: pageRows,
+  } = usePagination(visibleRows);
+
+  const canCompare = !!runA && !!runB && runA !== runB;
 
   return (
     <div className="space-y-4 pb-10">
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="min-w-36 flex-1">
-          <label
-            htmlFor="run-a"
-            className="mb-1 block text-xs font-medium text-base-content/75"
-          >
-            Run A
-          </label>
-          <select
-            id="run-a"
-            className="select-bordered select w-full select-sm"
-            value={runA}
-            onChange={(event) => {
-              setRunA(event.target.value);
-              setSubmitted(false);
-            }}
-          >
-            <option value="">Select…</option>
-            {(runs ?? []).map((run) => (
-              <option key={run.id} value={run.id} disabled={run.id === runB}>
-                {run.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <span className="pb-1.5 text-xs font-semibold text-base-content/55 select-none">
-          VS
-        </span>
-
-        <div className="min-w-36 flex-1">
-          <label
-            htmlFor="run-b"
-            className="mb-1 block text-xs font-medium text-base-content/75"
-          >
-            Run B
-          </label>
-          <select
-            id="run-b"
-            className="select-bordered select w-full select-sm"
-            value={runB}
-            onChange={(event) => {
-              setRunB(event.target.value);
-              setSubmitted(false);
-            }}
-          >
-            <option value="">Select…</option>
-            {(runs ?? []).map((run) => (
-              <option key={run.id} value={run.id} disabled={run.id === runA}>
-                {run.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <button
-          className="btn shrink-0 btn-sm btn-primary"
-          disabled={!canCompare}
-          onClick={() => {
-            setFilter('all');
-            setSubmitted(true);
-          }}
-        >
-          <ArrowsRightLeftIcon className="size-3.5" />
-          Compare
-        </button>
-      </div>
+      <RunComparisonPicker
+        runs={runs}
+        runA={runA}
+        runB={runB}
+        canCompare={canCompare}
+        onChangeRunA={(id) => {
+          setRunA(id);
+          setSubmitted(false);
+        }}
+        onChangeRunB={(id) => {
+          setRunB(id);
+          setSubmitted(false);
+        }}
+        onCompare={() => {
+          setFilter('all');
+          setSubmitted(true);
+          setPage(0);
+        }}
+      />
 
       {!submitted && (
         <EmptyState
@@ -182,7 +132,10 @@ export const AnalyticsComparisonTab = () => {
                       ? 'bg-base-100 text-base-content shadow-sm'
                       : 'text-base-content/75 hover:text-base-content',
                   )}
-                  onClick={() => setFilter(key)}
+                  onClick={() => {
+                    setFilter(key);
+                    setPage(0);
+                  }}
                 >
                   {label}
                 </button>
@@ -195,76 +148,83 @@ export const AnalyticsComparisonTab = () => {
               No changes between these two runs.
             </p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-border">
-              <table className="table table-sm">
-                <thead>
-                  <tr className="border-b border-border text-xs text-base-content/75">
-                    <th className="font-medium">Test Case</th>
-                    <th className="font-medium">{comparison.runAName}</th>
-                    <th className="font-medium">{comparison.runBName}</th>
-                    <th className="font-medium">Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleRows.map((row) => (
-                    <tr
-                      key={row.testCaseId}
-                      className={cn(
-                        'hover:bg-base-300/70',
-                        rowBg(row.isRegression, row.isFix),
-                      )}
-                    >
-                      <td className="max-w-xs truncate text-sm font-medium">
-                        {row.testCaseName}
-                      </td>
-                      <td>
-                        {row.statusInA ? (
-                          <span
-                            className={cn(
-                              'badge badge-sm',
-                              STATUS_BADGE[row.statusInA] ?? 'badge-ghost',
-                            )}
-                          >
-                            {row.statusInA}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-base-content/55">
-                            —
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        {row.statusInB ? (
-                          <span
-                            className={cn(
-                              'badge badge-sm',
-                              STATUS_BADGE[row.statusInB] ?? 'badge-ghost',
-                            )}
-                          >
-                            {row.statusInB}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-base-content/55">
-                            —
-                          </span>
-                        )}
-                      </td>
-                      <td>
-                        {row.isRegression && (
-                          <span className="badge gap-1 badge-sm badge-error">
-                            ↓ Regression
-                          </span>
-                        )}
-                        {row.isFix && (
-                          <span className="badge gap-1 badge-sm badge-success">
-                            ↑ Fixed
-                          </span>
-                        )}
-                      </td>
+            <div className="overflow-hidden rounded-xl border border-border">
+              <div className="overflow-x-auto">
+                <table className="table table-sm">
+                  <thead>
+                    <tr className="border-b border-border text-xs text-base-content/75">
+                      <th className="font-medium">Test Case</th>
+                      <th className="font-medium">{comparison.runAName}</th>
+                      <th className="font-medium">{comparison.runBName}</th>
+                      <th className="font-medium">Change</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {pageRows.map((row) => (
+                      <tr
+                        key={row.testCaseId}
+                        className={cn(
+                          'hover:bg-base-300/70',
+                          rowBg(row.isRegression, row.isFix),
+                        )}
+                      >
+                        <td className="max-w-xs truncate text-sm font-medium">
+                          {row.testCaseName}
+                        </td>
+                        <td>
+                          {row.statusInA ? (
+                            <span
+                              className={cn(
+                                'badge badge-sm',
+                                STATUS_BADGE[row.statusInA] ?? 'badge-ghost',
+                              )}
+                            >
+                              {row.statusInA}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-base-content/55">
+                              —
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          {row.statusInB ? (
+                            <span
+                              className={cn(
+                                'badge badge-sm',
+                                STATUS_BADGE[row.statusInB] ?? 'badge-ghost',
+                              )}
+                            >
+                              {row.statusInB}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-base-content/55">
+                              —
+                            </span>
+                          )}
+                        </td>
+                        <td>
+                          {row.isRegression && (
+                            <span className="badge gap-1 badge-sm badge-error">
+                              ↓ Regression
+                            </span>
+                          )}
+                          {row.isFix && (
+                            <span className="badge gap-1 badge-sm badge-success">
+                              ↑ Fixed
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <TablePager
+                page={safePage}
+                pageCount={pageCount}
+                onPageChange={setPage}
+              />
             </div>
           )}
         </>

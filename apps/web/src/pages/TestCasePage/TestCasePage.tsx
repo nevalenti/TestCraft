@@ -21,15 +21,15 @@ import {
   useTestCaseSteps,
   useUpdateTestCaseStep,
 } from '@/features/testCaseSteps/hooks';
+import { StepForm } from '@/features/testCaseSteps/StepForm';
+import { StepRowSkeleton } from '@/features/testCaseSteps/StepRowSkeleton';
+import { StepsList } from '@/features/testCaseSteps/StepsList';
 import { useTestSuite } from '@/features/testSuites/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { LabelSelect } from '@/pages/TestCasePage/LabelSelect';
-import { StepForm } from '@/pages/TestCasePage/StepForm';
-import { StepRowSkeleton } from '@/pages/TestCasePage/StepRowSkeleton';
-import { StepsList } from '@/pages/TestCasePage/StepsList';
 
 export const TestCasePage = () => {
   const projectId = useRequiredParam('projectId');

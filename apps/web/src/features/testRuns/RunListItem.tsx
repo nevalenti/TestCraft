@@ -2,7 +2,7 @@ import type { TestRun, TestRunSummary } from '@testcraft/types';
 
 import { MetaPill } from '@/components/ui/MetaPill';
 import { ResourceListItem } from '@/components/ui/ResourceListItem';
-import { RunStatusBadge } from '@/components/ui/RunStatusBadge';
+import { RunStatusBadge } from '@/features/testRuns/RunStatusBadge';
 import { RunStatusIcon } from '@/features/testRuns/RunStatusIcon';
 import { formatDate } from '@/lib/format';
 

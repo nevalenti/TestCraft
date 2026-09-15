@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 
-import { type BreadcrumbItem } from '@/types';
+export interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
 
 interface BreadcrumbsState {
   items: BreadcrumbItem[] | null;
