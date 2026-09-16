@@ -103,13 +103,7 @@ public static class CreateTestPlan
             CancellationToken cancellationToken
         )
         {
-            var plan = new TestPlan
-            {
-                Id = TestPlanId.New(),
-                Name = request.Name,
-                Description = request.Description,
-                ProjectId = request.ProjectId,
-            };
+            var plan = TestPlan.Create(request.Name, request.Description, request.ProjectId);
 
             context.TestPlans.Add(plan);
 

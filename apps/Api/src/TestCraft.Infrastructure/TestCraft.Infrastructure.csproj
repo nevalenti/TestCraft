@@ -18,7 +18,6 @@
   <ItemGroup>
     <ProjectReference Include="..\TestCraft.Domain\TestCraft.Domain.csproj" />
     <ProjectReference Include="..\TestCraft.Application\TestCraft.Application.csproj" />
-    <ProjectReference Include="..\TestCraft.Persistence\TestCraft.Persistence.csproj" />
     <ProjectReference Include="..\..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
   </ItemGroup>
 

@@ -84,15 +84,13 @@ public static class CreateApiToken
             var rawToken = hasher.GenerateToken();
             var tokenHash = hasher.Hash(rawToken);
 
-            var token = new ApiToken
-            {
-                Id = ApiTokenId.New(),
-                Name = request.Name,
-                TokenHash = tokenHash,
-                ProjectId = request.ProjectId,
-                CreatedById = currentUser.UserId,
-                ExpiresAt = request.ExpiresAt,
-            };
+            var token = ApiToken.Create(
+                request.Name,
+                tokenHash,
+                request.ProjectId,
+                currentUser.UserId,
+                request.ExpiresAt
+            );
 
             context.ApiTokens.Add(token);
 

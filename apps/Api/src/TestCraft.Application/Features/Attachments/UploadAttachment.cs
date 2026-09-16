@@ -128,16 +128,14 @@ public static class UploadAttachment
                 cancellationToken
             );
 
-            var attachment = new Attachment
-            {
-                Id = AttachmentId.New(),
-                TestResultId = request.ResultId,
-                FileName = request.FileName,
-                ContentType = request.ContentType,
-                SizeBytes = request.SizeBytes,
-                StorageKey = storageKey,
-                CreatedById = currentUser.UserId,
-            };
+            var attachment = Attachment.Create(
+                request.ResultId,
+                request.FileName,
+                request.ContentType,
+                request.SizeBytes,
+                storageKey,
+                currentUser.UserId
+            );
 
             context.Attachments.Add(attachment);
 

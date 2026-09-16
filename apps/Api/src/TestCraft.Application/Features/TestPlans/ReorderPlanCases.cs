@@ -81,7 +81,7 @@ public static class ReorderPlanCases
             {
                 if (orderMap.TryGetValue(entry.TestCaseId, out var newOrder))
                 {
-                    entry.Order = newOrder;
+                    entry.Reorder(newOrder);
                 }
             }
 

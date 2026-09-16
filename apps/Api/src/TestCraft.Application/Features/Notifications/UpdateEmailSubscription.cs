@@ -60,9 +60,11 @@ public static class UpdateEmailSubscription
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            subscription.Email = request.Email;
-            subscription.Events = JsonSerializer.Serialize(request.Events);
-            subscription.IsActive = request.IsActive;
+            subscription.Update(
+                request.Email,
+                JsonSerializer.Serialize(request.Events),
+                request.IsActive
+            );
 
             await context.SaveChangesAsync(cancellationToken);
 

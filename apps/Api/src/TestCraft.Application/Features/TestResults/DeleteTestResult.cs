@@ -42,8 +42,7 @@ public static class DeleteTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            result.IsDeleted = true;
-            result.DeletedAt = DateTimeOffset.UtcNow;
+            result.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
 

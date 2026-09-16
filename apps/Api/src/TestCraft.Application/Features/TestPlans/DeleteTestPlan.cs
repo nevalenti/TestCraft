@@ -34,8 +34,7 @@ public static class DeleteTestPlan
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            plan.IsDeleted = true;
-            plan.DeletedAt = DateTimeOffset.UtcNow;
+            plan.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
         }

@@ -66,15 +66,13 @@ public static class CreateRunFromPlan
                 .ToListAsync(cancellationToken);
 
             var now = DateTimeOffset.UtcNow;
-            var run = new TestRun
-            {
-                Id = TestRunId.New(),
-                ProjectId = request.ProjectId,
-                Name = request.Name,
-                Environment = request.Environment,
-                ExecutedById = currentUser.UserId,
-                ExecutedByName = currentUser.UserName,
-            };
+            var run = TestRun.Create(
+                request.ProjectId,
+                request.Name,
+                request.Environment,
+                executedById: currentUser.UserId,
+                executedByName: currentUser.UserName
+            );
 
             context.TestRuns.Add(run);
 
@@ -83,15 +81,16 @@ public static class CreateRunFromPlan
             foreach (var caseId in cases)
             {
                 context.TestResults.Add(
-                    new TestResult
-                    {
-                        Id = TestResultId.New(),
-                        TestRunId = run.Id,
-                        TestCaseId = caseId,
-                        Status = TestResultStatus.Blocked,
-                        ExecutedAt = now,
-                        ExecutedById = currentUser.UserId,
-                    }
+                    TestResult.Create(
+                        run.Id,
+                        caseId,
+                        TestResultStatus.Blocked,
+                        notes: null,
+                        defectType: null,
+                        durationMs: null,
+                        executedAt: now,
+                        executedById: currentUser.UserId
+                    )
                 );
             }
 

@@ -57,7 +57,7 @@ public static class AddTestCaseLabel
             }
 
             context.TestCaseLabels.Add(
-                new TestCaseLabel { TestCaseId = request.TestCaseId, LabelId = request.LabelId }
+                TestCaseLabel.Create(request.TestCaseId, request.LabelId)
             );
 
             await context.SaveChangesAsync(cancellationToken);

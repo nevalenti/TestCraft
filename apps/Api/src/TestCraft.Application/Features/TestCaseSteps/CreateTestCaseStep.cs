@@ -87,14 +87,12 @@ public static class CreateTestCaseStep
                 throw new NotFoundException();
             }
 
-            var step = new TestCaseStep
-            {
-                Id = TestCaseStepId.New(),
-                TestCaseId = request.CaseId,
-                Order = request.Order,
-                Action = request.Action,
-                ExpectedResult = request.ExpectedResult,
-            };
+            var step = TestCaseStep.Create(
+                request.CaseId,
+                request.Order,
+                request.Action,
+                request.ExpectedResult
+            );
 
             context.TestCaseSteps.Add(step);
 

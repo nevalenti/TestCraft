@@ -55,8 +55,7 @@ public static class UpdateTestPlan
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            plan.Name = request.Name;
-            plan.Description = request.Description;
+            plan.Update(request.Name, request.Description);
 
             await context.SaveChangesAsync(cancellationToken);
 

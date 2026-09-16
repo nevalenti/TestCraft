@@ -53,9 +53,12 @@ public static class GetTestResults
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
+#pragma warning disable CA1304, CA1311
+                var pattern = $"%{request.Search.ToLower()}%";
                 query = query.Where(result =>
-                    EF.Functions.ILike(result.TestCase!.Name, $"%{request.Search}%")
+                    EF.Functions.Like(result.TestCase!.Name.ToLower(), pattern)
                 );
+#pragma warning restore CA1304, CA1311
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);

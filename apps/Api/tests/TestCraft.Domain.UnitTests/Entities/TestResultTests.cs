@@ -7,10 +7,22 @@ namespace TestCraft.Domain.UnitTests.Entities;
 
 public class TestResultTests
 {
+    private static TestResult MakeResult(TestResultStatus status = TestResultStatus.Passed) =>
+        TestResult.Create(
+            TestRunId.New(),
+            TestCaseId.New(),
+            status,
+            notes: null,
+            defectType: null,
+            durationMs: null,
+            executedAt: DateTimeOffset.UtcNow,
+            executedById: null
+        );
+
     [Fact]
     public void Update_SetsStatusNotesAndDefectType()
     {
-        var result = new TestResult { Status = TestResultStatus.Passed };
+        var result = MakeResult();
 
         result.Update(TestResultStatus.Failed, "Found a regression", DefectType.ProductBug);
 
@@ -22,12 +34,8 @@ public class TestResultTests
     [Fact]
     public void Update_WithNullNotesAndNullDefectType_ClearsFields()
     {
-        var result = new TestResult
-        {
-            Status = TestResultStatus.Failed,
-            Notes = "some notes",
-            DefectType = DefectType.AutomationBug,
-        };
+        var result = MakeResult(TestResultStatus.Failed);
+        result.Update(TestResultStatus.Failed, "some notes", DefectType.AutomationBug);
 
         result.Update(TestResultStatus.Passed, null, null);
 
@@ -42,7 +50,7 @@ public class TestResultTests
     [InlineData(TestResultStatus.Skipped)]
     public void Update_AcceptsAllStatusValues(TestResultStatus status)
     {
-        var result = new TestResult { Status = TestResultStatus.Passed };
+        var result = MakeResult();
 
         result.Update(status, null, null);
 
@@ -56,7 +64,7 @@ public class TestResultTests
     [InlineData(DefectType.ToInvestigate)]
     public void Update_AcceptsAllDefectTypeValues(DefectType defectType)
     {
-        var result = new TestResult { Status = TestResultStatus.Failed };
+        var result = MakeResult(TestResultStatus.Failed);
 
         result.Update(TestResultStatus.Failed, null, defectType);
 

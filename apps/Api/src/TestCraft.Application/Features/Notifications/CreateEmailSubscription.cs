@@ -65,15 +65,11 @@ public static class CreateEmailSubscription
             CancellationToken cancellationToken
         )
         {
-            var subscription = new EmailSubscription
-            {
-                Id = EmailSubscriptionId.New(),
-                ProjectId = request.ProjectId,
-                Email = request.Email,
-                Events = JsonSerializer.Serialize(request.Events),
-                IsActive = true,
-                CreatedAt = DateTimeOffset.UtcNow,
-            };
+            var subscription = EmailSubscription.Create(
+                request.ProjectId,
+                request.Email,
+                JsonSerializer.Serialize(request.Events)
+            );
 
             context.EmailSubscriptions.Add(subscription);
 

@@ -101,13 +101,7 @@ public static class ImportAllure
             CancellationToken cancellationToken
         )
         {
-            var job = new ImportJob
-            {
-                Id = ImportJobId.New(),
-                ProjectId = request.ProjectId,
-                Status = ImportJobStatus.Pending,
-                CreatedById = currentUser.UserId,
-            };
+            var job = ImportJob.Create(request.ProjectId, currentUser.UserId);
 
             context.ImportJobs.Add(job);
 

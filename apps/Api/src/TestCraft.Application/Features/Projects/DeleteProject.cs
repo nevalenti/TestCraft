@@ -37,8 +37,7 @@ public static class DeleteProject
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            project.IsDeleted = true;
-            project.DeletedAt = DateTimeOffset.UtcNow;
+            project.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
         }

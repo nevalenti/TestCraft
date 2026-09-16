@@ -10,13 +10,7 @@ public class TestRunDomainEventsTests
 {
     private static TestRun MakeRun(TestRunStatus startingStatus = TestRunStatus.Active)
     {
-        var run = new TestRun
-        {
-            Id = TestRunId.New(),
-            ProjectId = ProjectId.New(),
-            Name = "Smoke Run",
-            Environment = "ci",
-        };
+        var run = TestRun.Create(ProjectId.New(), "Smoke Run", "ci");
 
         if (startingStatus != TestRunStatus.Active)
         {

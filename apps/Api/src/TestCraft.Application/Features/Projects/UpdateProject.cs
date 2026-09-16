@@ -55,8 +55,7 @@ public static class UpdateProject
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            project.Name = request.Name;
-            project.Description = request.Description;
+            project.Update(request.Name, request.Description);
 
             try
             {

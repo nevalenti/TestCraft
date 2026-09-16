@@ -67,13 +67,7 @@ public static class CreateTestSuite
             CancellationToken cancellationToken
         )
         {
-            var suite = new TestSuite
-            {
-                Id = TestSuiteId.New(),
-                ProjectId = request.ProjectId,
-                Name = request.Name,
-                Description = request.Description,
-            };
+            var suite = TestSuite.Create(request.ProjectId, request.Name, request.Description);
 
             context.TestSuites.Add(suite);
 

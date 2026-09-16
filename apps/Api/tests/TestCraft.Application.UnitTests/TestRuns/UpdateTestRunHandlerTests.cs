@@ -45,19 +45,8 @@ public class UpdateTestRunHandlerTests
     {
         var publisher = new RecordingPublisher();
         var context = TestDbContextFactory.Create(publisher);
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Project",
-            UserId = UserId.New(),
-        };
-        var run = new TestRun
-        {
-            Id = TestRunId.New(),
-            Name = "Nightly Run",
-            Environment = "ci",
-            ProjectId = project.Id,
-        };
+        var project = Project.Create("Project", null, UserId.New());
+        var run = TestRun.Create(project.Id, "Nightly Run", "ci");
 
         context.Projects.Add(project);
         context.TestRuns.Add(run);

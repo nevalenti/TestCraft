@@ -80,14 +80,12 @@ public static class AddProjectMember
                     ErrorCode = DomainErrorCodes.AlreadyProjectOwner,
                 };
 
-            var member = new ProjectMember
-            {
-                Id = ProjectMemberId.New(),
-                ProjectId = request.ProjectId,
-                UserId = keycloakUser.Id,
-                Email = keycloakUser.Email,
-                DisplayName = keycloakUser.DisplayName,
-            };
+            var member = ProjectMember.Create(
+                request.ProjectId,
+                keycloakUser.Id,
+                keycloakUser.Email,
+                keycloakUser.DisplayName
+            );
 
             context.ProjectMembers.Add(member);
 

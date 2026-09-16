@@ -37,8 +37,7 @@ public static class DeleteTestCaseStep
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            step.IsDeleted = true;
-            step.DeletedAt = DateTimeOffset.UtcNow;
+            step.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
         }

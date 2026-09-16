@@ -15,12 +15,7 @@ public class StaleTestRunCleanupJobTests
     private static async Task<(AppDbContext Context, Project Project)> SeedProjectAsync()
     {
         var context = TestDbContextFactory.Create();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Project",
-            UserId = UserId.New(),
-        };
+        var project = Project.Create("Project", null, UserId.New());
 
         context.Projects.Add(project);
         await context.SaveChangesAsync();
@@ -34,13 +29,7 @@ public class StaleTestRunCleanupJobTests
         DateTimeOffset createdAt
     )
     {
-        var run = new TestRun
-        {
-            Id = TestRunId.New(),
-            Name = "CI Run",
-            Environment = "ci",
-            ProjectId = projectId,
-        };
+        var run = TestRun.Create(projectId, "CI Run", "ci");
 
         context.TestRuns.Add(run);
         await context.SaveChangesAsync();

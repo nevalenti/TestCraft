@@ -38,7 +38,13 @@ public static class GetTestRuns
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(run => EF.Functions.ILike(run.Name, $"%{request.Search}%"));
+                // ToLowerInvariant() and Contains(string, StringComparison) don't translate
+                // against the Npgsql provider; ToLower() + EF.Functions.Like is the portable,
+                // provider-agnostic equivalent of the old EF.Functions.ILike.
+#pragma warning disable CA1304, CA1311
+                var pattern = $"%{request.Search.ToLower()}%";
+                query = query.Where(run => EF.Functions.Like(run.Name.ToLower(), pattern));
+#pragma warning restore CA1304, CA1311
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);

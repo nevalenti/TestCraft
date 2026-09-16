@@ -97,14 +97,12 @@ public static class CreateTestCase
                 throw new NotFoundException();
             }
 
-            var testCase = new TestCase
-            {
-                Id = TestCaseId.New(),
-                SuiteId = request.SuiteId,
-                Name = request.Name,
-                Description = request.Description,
-                Priority = request.Priority ?? TestCasePriority.Medium,
-            };
+            var testCase = TestCase.Create(
+                request.SuiteId,
+                request.Name,
+                request.Description,
+                request.Priority ?? TestCasePriority.Medium
+            );
 
             context.TestCases.Add(testCase);
 

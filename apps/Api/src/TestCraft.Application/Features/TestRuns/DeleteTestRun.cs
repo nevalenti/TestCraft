@@ -34,8 +34,7 @@ public static class DeleteTestRun
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            run.IsDeleted = true;
-            run.DeletedAt = DateTimeOffset.UtcNow;
+            run.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
 

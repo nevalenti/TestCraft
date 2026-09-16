@@ -71,13 +71,7 @@ public static class CreateProject
             CancellationToken cancellationToken
         )
         {
-            var project = new Project
-            {
-                Id = ProjectId.New(),
-                UserId = currentUser.UserId,
-                Name = request.Name,
-                Description = request.Description,
-            };
+            var project = Project.Create(request.Name, request.Description, currentUser.UserId);
 
             context.Projects.Add(project);
 

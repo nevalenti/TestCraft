@@ -2,9 +2,15 @@ namespace TestCraft.Domain.Exceptions;
 
 public static class DomainErrorCodes
 {
+    public const string RequiredField = "REQUIRED_FIELD";
+
     public const string UnknownRunStatus = "UNKNOWN_RUN_STATUS";
     public const string InvalidRunStatusTransition = "INVALID_RUN_STATUS_TRANSITION";
     public const string RunNotModifiable = "RUN_NOT_MODIFIABLE";
+
+    public const string InvalidImportJobStatusTransition = "INVALID_IMPORT_JOB_STATUS_TRANSITION";
+    public const string InvalidNotificationDeliveryStatusTransition =
+        "INVALID_NOTIFICATION_DELIVERY_STATUS_TRANSITION";
 
     public const string InvalidJUnitXml = "INVALID_JUNIT_XML";
 

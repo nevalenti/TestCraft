@@ -71,10 +71,12 @@ public static class UpdateWebhookSubscription
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            subscription.Url = request.Url;
-            subscription.Secret = request.Secret;
-            subscription.Events = JsonSerializer.Serialize(request.Events);
-            subscription.IsActive = request.IsActive;
+            subscription.Update(
+                request.Url,
+                request.Secret,
+                JsonSerializer.Serialize(request.Events),
+                request.IsActive
+            );
 
             await context.SaveChangesAsync(cancellationToken);
 

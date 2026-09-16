@@ -20,30 +20,14 @@ public class CreateTestResultHandlerTests
     {
         var context = TestDbContextFactory.Create();
 
-        var project = new Project { Id = ProjectId.New(), Name = "Project", UserId = UserId.New() };
+        var project = Project.Create("Project", null, UserId.New());
         context.Projects.Add(project);
 
-        var suite = new TestSuite
-        {
-            Id = TestSuiteId.New(),
-            Name = "Suite",
-            ProjectId = project.Id,
-        };
+        var suite = TestSuite.Create(project.Id, "Suite");
         context.TestSuites.Add(suite);
 
-        var testCase = new TestCraft.Domain.Entities.TestCase
-        {
-            Id = TestCaseId.New(),
-            Name = "Case",
-            SuiteId = suite.Id,
-        };
-        var run = new TestRun
-        {
-            Id = TestRunId.New(),
-            Name = "Run",
-            Environment = "ci",
-            ProjectId = project.Id,
-        };
+        var testCase = TestCraft.Domain.Entities.TestCase.Create(suite.Id, "Case");
+        var run = TestRun.Create(project.Id, "Run", "ci");
 
         context.TestCases.Add(testCase);
         context.TestRuns.Add(run);

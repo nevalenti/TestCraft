@@ -2,14 +2,55 @@ using FluentAssertions;
 
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.UnitTests.Rules;
 
 public class TestRunRulesTests
 {
+    [Fact]
+    public void Create_WithEmptyName_ThrowsDomainException()
+    {
+        var act = () => TestRun.Create(ProjectId.New(), "", "ci");
+
+        act.Should()
+            .Throw<DomainException>()
+            .Which.ErrorCode.Should()
+            .Be(DomainErrorCodes.RequiredField);
+    }
+
+    [Fact]
+    public void Create_WithEmptyEnvironment_ThrowsDomainException()
+    {
+        var act = () => TestRun.Create(ProjectId.New(), "run", "");
+
+        act.Should().Throw<DomainException>();
+    }
+
+    [Fact]
+    public void Update_WithEmptyName_ThrowsDomainException()
+    {
+        var run = TestRun.Create(ProjectId.New(), "run", "ci");
+
+        var act = () => run.Update("", "ci");
+
+        act.Should().Throw<DomainException>();
+    }
+
+    [Fact]
+    public void Update_SetsNameAndEnvironment()
+    {
+        var run = TestRun.Create(ProjectId.New(), "run", "ci");
+
+        run.Update("new name", "staging");
+
+        run.Name.Should().Be("new name");
+        run.Environment.Should().Be("staging");
+    }
+
     private static TestRun RunWithStatus(TestRunStatus status)
     {
-        var run = new TestRun { Name = "run", Environment = "ci" };
+        var run = TestRun.Create(ProjectId.New(), "run", "ci");
         if (status != TestRunStatus.Active)
             run.TransitionTo(status);
         return run;
