@@ -204,7 +204,7 @@ export const TestRunPage = () => {
       <section
         className={cn(
           'page-content min-h-0 flex-1',
-          view === 'logs' ? 'flex overflow-hidden' : 'overflow-y-auto',
+          view === 'table' ? 'overflow-y-auto' : 'flex overflow-hidden',
         )}
       >
         {viewContent}
