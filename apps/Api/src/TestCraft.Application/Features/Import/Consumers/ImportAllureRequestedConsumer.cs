@@ -33,7 +33,7 @@ public partial class ImportAllureRequestedConsumer(
             return;
         }
 
-        job.Status = ImportJobStatus.Processing;
+        job.MarkProcessing();
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
@@ -61,8 +61,7 @@ public partial class ImportAllureRequestedConsumer(
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.Status = ImportJobStatus.Failed;
-            job.Error = ex.Message;
+            job.MarkFailed(ex.Message);
 
             await dbContext.SaveChangesAsync(cancellationToken);
         }
@@ -70,8 +69,7 @@ public partial class ImportAllureRequestedConsumer(
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.Status = ImportJobStatus.Failed;
-            job.Error = "Import failed due to an unexpected error";
+            job.MarkFailed("Import failed due to an unexpected error");
 
             await dbContext.SaveChangesAsync(cancellationToken);
         }

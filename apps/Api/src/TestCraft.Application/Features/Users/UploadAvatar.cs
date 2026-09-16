@@ -105,13 +105,13 @@ public static partial class UploadAvatar
 
             if (profile is null)
             {
-                profile = new UserProfile { UserId = userId, AvatarKey = storageKey };
+                profile = UserProfile.Create(userId, storageKey);
 
                 context.UserProfiles.Add(profile);
             }
             else
             {
-                profile.AvatarKey = storageKey;
+                profile.SetAvatarKey(storageKey);
             }
 
             await context.SaveChangesAsync(cancellationToken);

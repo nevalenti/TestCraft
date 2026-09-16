@@ -63,12 +63,7 @@ public static class AddCaseToPlan
                 .MaxAsync(cancellationToken);
 
             context.TestPlanCases.Add(
-                new TestPlanCase
-                {
-                    TestPlanId = request.TestPlanId,
-                    TestCaseId = request.TestCaseId,
-                    Order = (maxOrder ?? 0) + 1,
-                }
+                TestPlanCase.Create(request.TestPlanId, request.TestCaseId, (maxOrder ?? 0) + 1)
             );
 
             await context.SaveChangesAsync(cancellationToken);

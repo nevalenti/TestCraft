@@ -76,16 +76,12 @@ public static class CreateWebhookSubscription
             CancellationToken cancellationToken
         )
         {
-            var subscription = new WebhookSubscription
-            {
-                Id = WebhookSubscriptionId.New(),
-                ProjectId = request.ProjectId,
-                Url = request.Url,
-                Secret = request.Secret,
-                Events = JsonSerializer.Serialize(request.Events),
-                IsActive = true,
-                CreatedAt = DateTimeOffset.UtcNow,
-            };
+            var subscription = WebhookSubscription.Create(
+                request.ProjectId,
+                request.Url,
+                request.Secret,
+                JsonSerializer.Serialize(request.Events)
+            );
 
             context.WebhookSubscriptions.Add(subscription);
 

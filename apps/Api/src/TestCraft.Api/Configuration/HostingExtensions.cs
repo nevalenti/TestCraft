@@ -20,6 +20,7 @@ using TestCraft.Application.Common.Interfaces;
 using TestCraft.Common.Http;
 using TestCraft.Infrastructure;
 using TestCraft.Infrastructure.Configuration;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.Configuration;
 
@@ -50,6 +51,9 @@ public static class HostingExtensions
         builder.Services.AddStartupOptions(swaggerBasicAuthOptions);
         builder.Services.AddStartupOptions(hangfireBasicAuthOptions);
 
+        builder.Services.AddPersistence(
+            ConnectionStringHelpers.ToNpgsqlConnectionString(infrastructureOptions.DatabaseUrl)
+        );
         builder.Services.AddInfrastructure(infrastructureOptions);
         builder.Services.AddApplication();
 

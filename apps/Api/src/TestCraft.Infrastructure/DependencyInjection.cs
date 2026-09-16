@@ -7,7 +7,6 @@ using TestCraft.Infrastructure.Email;
 using TestCraft.Infrastructure.Messaging;
 using TestCraft.Infrastructure.Notifications;
 using TestCraft.Infrastructure.Storage;
-using TestCraft.Persistence;
 
 namespace TestCraft.Infrastructure;
 
@@ -19,10 +18,6 @@ public static class DependencyInjection
     )
     {
         services.AddStartupOptions(options);
-
-        services.AddPersistence(
-            ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl)
-        );
 
         services
             .AddCaching(options)

@@ -2,15 +2,37 @@ using FluentAssertions;
 
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
+using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.UnitTests.Entities;
 
 public class TestCaseTests
 {
     [Fact]
+    public void Create_WithEmptyName_ThrowsDomainException()
+    {
+        var act = () => TestCase.Create(TestSuiteId.New(), "");
+
+        act.Should()
+            .Throw<DomainException>()
+            .Which.ErrorCode.Should()
+            .Be(DomainErrorCodes.RequiredField);
+    }
+
+    [Fact]
+    public void Update_WithEmptyName_ThrowsDomainException()
+    {
+        var testCase = TestCase.Create(TestSuiteId.New(), "Case");
+
+        var act = () => testCase.Update("", null, TestCasePriority.Medium);
+
+        act.Should().Throw<DomainException>();
+    }
+
+    [Fact]
     public void DefaultPriority_IsMedium()
     {
-        var testCase = new TestCase { Name = "Login" };
+        var testCase = TestCase.Create(TestSuiteId.New(), "Login");
 
         testCase.Priority.Should().Be(TestCasePriority.Medium);
     }
@@ -18,7 +40,7 @@ public class TestCaseTests
     [Fact]
     public void Update_SetsNameDescriptionAndPriority()
     {
-        var testCase = new TestCase { Name = "Old Name" };
+        var testCase = TestCase.Create(TestSuiteId.New(), "Old Name");
 
         testCase.Update("New Name", "A description", TestCasePriority.High);
 
@@ -30,7 +52,7 @@ public class TestCaseTests
     [Fact]
     public void Update_WithNullDescription_SetsDescriptionToNull()
     {
-        var testCase = new TestCase { Name = "Case", Description = "old description" };
+        var testCase = TestCase.Create(TestSuiteId.New(), "Case", "old description");
 
         testCase.Update("Case", null, TestCasePriority.Medium);
 
@@ -44,7 +66,7 @@ public class TestCaseTests
     [InlineData(TestCasePriority.Critical)]
     public void Update_AcceptsAllPriorityValues(TestCasePriority priority)
     {
-        var testCase = new TestCase { Name = "Case" };
+        var testCase = TestCase.Create(TestSuiteId.New(), "Case");
 
         testCase.Update("Case", null, priority);
 

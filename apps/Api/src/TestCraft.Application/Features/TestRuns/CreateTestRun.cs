@@ -49,16 +49,14 @@ public static class CreateTestRun
             CancellationToken cancellationToken
         )
         {
-            var run = new TestRun
-            {
-                Id = TestRunId.New(),
-                ProjectId = request.ProjectId,
-                Name = request.Name,
-                Environment = request.Environment,
-                Source = request.Source?.ToLowerInvariant(),
-                ExecutedById = currentUser.UserId,
-                ExecutedByName = currentUser.UserName,
-            };
+            var run = TestRun.Create(
+                request.ProjectId,
+                request.Name,
+                request.Environment,
+                source: request.Source?.ToLowerInvariant(),
+                executedById: currentUser.UserId,
+                executedByName: currentUser.UserName
+            );
 
             context.TestRuns.Add(run);
 

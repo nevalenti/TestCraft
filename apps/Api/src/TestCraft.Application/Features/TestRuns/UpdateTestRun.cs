@@ -60,8 +60,7 @@ public static class UpdateTestRun
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            run.Name = request.Name;
-            run.Environment = request.Environment;
+            run.Update(request.Name, request.Environment);
             run.TransitionTo(request.Status);
 
             await context.SaveChangesAsync(cancellationToken);

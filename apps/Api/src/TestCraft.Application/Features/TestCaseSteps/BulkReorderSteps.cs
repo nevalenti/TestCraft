@@ -102,7 +102,7 @@ public static class BulkReorderSteps
 
             foreach (var entity in entities)
             {
-                entity.Order = orderById[entity.Id];
+                entity.Reorder(orderById[entity.Id]);
             }
 
             await context.SaveChangesAsync(cancellationToken);

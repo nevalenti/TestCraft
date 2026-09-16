@@ -1,3 +1,4 @@
+using TestCraft.Domain.Common;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Events;
 using TestCraft.Domain.Exceptions;
@@ -6,18 +7,43 @@ namespace TestCraft.Domain.Entities;
 
 public class TestRun : SoftDeletableEntity
 {
-    public TestRunId Id { get; set; }
-    public required string Name { get; set; }
-    public required string Environment { get; set; }
+    public TestRunId Id { get; private set; }
+    public string Name { get; private set; } = null!;
+    public string Environment { get; private set; } = null!;
     public TestRunStatus Status { get; private set; } = TestRunStatus.Active;
-    public string? Source { get; set; }
-    public UserId? ExecutedById { get; set; }
-    public string? ExecutedByName { get; set; }
-    public ProjectId ProjectId { get; set; }
+    public string? Source { get; private set; }
+    public UserId? ExecutedById { get; private set; }
+    public string? ExecutedByName { get; private set; }
+    public ProjectId ProjectId { get; private set; }
 
     public Project? Project { get; set; }
     public ICollection<TestResult> TestResults { get; set; } = [];
     public ICollection<ShareToken> ShareTokens { get; set; } = [];
+
+    public static TestRun Create(
+        ProjectId projectId,
+        string name,
+        string environment,
+        string? source = null,
+        UserId? executedById = null,
+        string? executedByName = null
+    ) =>
+        new()
+        {
+            Id = TestRunId.New(),
+            ProjectId = projectId,
+            Name = Guard.AgainstEmpty(name, nameof(Name)),
+            Environment = Guard.AgainstEmpty(environment, nameof(Environment)),
+            Source = source,
+            ExecutedById = executedById,
+            ExecutedByName = executedByName,
+        };
+
+    public void Update(string name, string environment)
+    {
+        Name = Guard.AgainstEmpty(name, nameof(Name));
+        Environment = Guard.AgainstEmpty(environment, nameof(Environment));
+    }
 
     public bool CanTransitionTo(TestRunStatus to) => Rank(to) >= Rank(Status);
 

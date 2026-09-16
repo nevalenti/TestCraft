@@ -2,6 +2,6 @@ namespace TestCraft.Domain.Entities;
 
 public interface ISoftDeletableEntity
 {
-    bool IsDeleted { get; set; }
-    DateTimeOffset? DeletedAt { get; set; }
+    bool IsDeleted { get; }
+    DateTimeOffset? DeletedAt { get; }
 }

@@ -38,7 +38,10 @@ public static class GetTestSuites
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
-                query = query.Where(suite => EF.Functions.ILike(suite.Name, $"%{request.Search}%"));
+#pragma warning disable CA1304, CA1311
+                var pattern = $"%{request.Search.ToLower()}%";
+                query = query.Where(suite => EF.Functions.Like(suite.Name.ToLower(), pattern));
+#pragma warning restore CA1304, CA1311
             }
 
             var pagination = PaginationParams.Create(request.Page, request.PageSize);

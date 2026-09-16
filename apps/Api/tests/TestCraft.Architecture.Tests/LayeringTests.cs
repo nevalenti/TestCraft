@@ -77,6 +77,18 @@ public class LayeringTests
         result.IsSuccessful.Should().BeTrue(FailureMessage(result));
     }
 
+    [Fact]
+    public void Infrastructure_ShouldNotDependOnPersistence()
+    {
+        var result = Types
+            .InAssembly(InfrastructureAssembly)
+            .Should()
+            .NotHaveDependencyOnAny(PersistenceAssembly.GetName().Name)
+            .GetResult();
+
+        result.IsSuccessful.Should().BeTrue(FailureMessage(result));
+    }
+
     private static string FailureMessage(TestResult result) =>
         $"Types violating the layering rule: {string.Join(", ", result.FailingTypeNames ?? [])}";
 }

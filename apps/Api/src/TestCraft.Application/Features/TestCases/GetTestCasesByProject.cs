@@ -44,9 +44,12 @@ public static class GetTestCasesByProject
 
             if (!string.IsNullOrWhiteSpace(request.Search))
             {
+#pragma warning disable CA1304, CA1311
+                var pattern = $"%{request.Search.ToLower()}%";
                 query = query.Where(testCase =>
-                    EF.Functions.ILike(testCase.Name, $"%{request.Search}%")
+                    EF.Functions.Like(testCase.Name.ToLower(), pattern)
                 );
+#pragma warning restore CA1304, CA1311
             }
 
             if (request.LabelId.HasValue)

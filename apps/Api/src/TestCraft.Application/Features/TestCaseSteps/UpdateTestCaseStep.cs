@@ -64,9 +64,7 @@ public static class UpdateTestCaseStep
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            step.Order = request.Order;
-            step.Action = request.Action;
-            step.ExpectedResult = request.ExpectedResult;
+            step.Update(request.Order, request.Action, request.ExpectedResult);
 
             await context.SaveChangesAsync(cancellationToken);
 

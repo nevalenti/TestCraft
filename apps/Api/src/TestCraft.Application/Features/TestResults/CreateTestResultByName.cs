@@ -94,13 +94,7 @@ public static class CreateTestResultByName
 
             if (suite is null)
             {
-                suite = new TestSuite
-                {
-                    Id = TestSuiteId.New(),
-                    ProjectId = request.ProjectId,
-                    Name = request.SuiteName,
-                    Source = request.Source,
-                };
+                suite = TestSuite.Create(request.ProjectId, request.SuiteName, source: request.Source);
 
                 context.TestSuites.Add(suite);
 
@@ -116,29 +110,23 @@ public static class CreateTestResultByName
 
             if (testCase is null)
             {
-                testCase = new TestCase
-                {
-                    Id = TestCaseId.New(),
-                    SuiteId = suite.Id,
-                    Name = request.TestCaseName,
-                };
+                testCase = TestCase.Create(suite.Id, request.TestCaseName);
 
                 context.TestCases.Add(testCase);
 
                 await context.SaveChangesAsync(cancellationToken);
             }
 
-            var result = new TestResult
-            {
-                Id = TestResultId.New(),
-                TestRunId = request.RunId,
-                TestCaseId = testCase.Id,
-                Status = request.Status,
-                Notes = request.Notes,
-                DurationMs = request.DurationMs,
-                ExecutedAt = request.ExecutedAt,
-                ExecutedById = currentUser.UserId,
-            };
+            var result = TestResult.Create(
+                request.RunId,
+                testCase.Id,
+                request.Status,
+                request.Notes,
+                defectType: null,
+                request.DurationMs,
+                request.ExecutedAt,
+                currentUser.UserId
+            );
 
             context.TestResults.Add(result);
 

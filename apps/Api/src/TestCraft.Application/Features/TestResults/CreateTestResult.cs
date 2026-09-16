@@ -90,18 +90,16 @@ public static class CreateTestResult
                 throw new NotFoundException();
             }
 
-            var result = new TestResult
-            {
-                Id = TestResultId.New(),
-                TestRunId = request.RunId,
-                TestCaseId = request.TestCaseId,
-                Status = request.Status,
-                Notes = request.Notes,
-                DurationMs = request.DurationMs,
-                DefectType = request.DefectType,
-                ExecutedAt = request.ExecutedAt,
-                ExecutedById = currentUser.UserId,
-            };
+            var result = TestResult.Create(
+                request.RunId,
+                request.TestCaseId,
+                request.Status,
+                request.Notes,
+                request.DefectType,
+                request.DurationMs,
+                request.ExecutedAt,
+                currentUser.UserId
+            );
 
             context.TestResults.Add(result);
 

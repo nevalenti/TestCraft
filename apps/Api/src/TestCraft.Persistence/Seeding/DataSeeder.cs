@@ -136,13 +136,7 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
         CancellationToken cancellationToken
     )
     {
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = seed.Name,
-            Description = seed.Description,
-            UserId = ownerId,
-        };
+        var project = Project.Create(seed.Name, seed.Description, ownerId);
         context.Projects.Add(project);
 
         var labels = SeedContent
@@ -160,15 +154,12 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
         var memberCount = random.Next(1, 3);
         var members = Enumerable
             .Range(0, memberCount)
-            .Select(_ => new ProjectMember
-            {
-                Id = ProjectMemberId.New(),
-                ProjectId = project.Id,
-                UserId = UserId.New(),
-                Email = faker.Internet.Email(),
-                DisplayName = faker.Name.FullName(),
-                CreatedAt = DateTimeOffset.UtcNow,
-            })
+            .Select(_ => ProjectMember.Create(
+                project.Id,
+                UserId.New(),
+                faker.Internet.Email(),
+                faker.Name.FullName()
+            ))
             .ToList();
         context.ProjectMembers.AddRange(members);
 
@@ -177,29 +168,15 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
 
         foreach (var suiteSeed in seed.Suites)
         {
-            var suite = new TestSuite
-            {
-                Id = TestSuiteId.New(),
-                Name = suiteSeed.Name,
-                ProjectId = project.Id,
-            };
+            var suite = TestSuite.Create(project.Id, suiteSeed.Name);
             suites.Add(suite);
 
             foreach (var caseTitle in suiteSeed.Cases)
             {
-                var testCase = new TestCase
-                {
-                    Id = TestCaseId.New(),
-                    Name = caseTitle,
-                    SuiteId = suite.Id,
-                    Priority = PickPriority(random),
-                };
+                var testCase = TestCase.Create(suite.Id, caseTitle, priority: PickPriority(random));
 
-                var order = 1;
-                foreach (var step in BuildSteps(caseTitle, faker))
+                foreach (var step in BuildSteps(testCase.Id, caseTitle, faker))
                 {
-                    step.Order = order++;
-                    step.TestCaseId = testCase.Id;
                     testCase.Steps.Add(step);
                 }
 
@@ -209,7 +186,7 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
                     foreach (var label in labels.OrderBy(_ => random.Next()).Take(labelCount))
                     {
                         testCase.TestCaseLabels.Add(
-                            new TestCaseLabel { TestCaseId = testCase.Id, LabelId = label.Id }
+                            TestCaseLabel.Create(testCase.Id, label.Id)
                         );
                     }
                 }
@@ -223,24 +200,12 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
 
         var plans = PlanNames.Select(name =>
         {
-            var plan = new TestPlan
-            {
-                Id = TestPlanId.New(),
-                Name = name,
-                ProjectId = project.Id,
-            };
+            var plan = TestPlan.Create(name, description: null, project.Id);
 
             var order = 0;
             foreach (var planCase in allCases.OrderBy(_ => random.Next()).Take(random.Next(5, 11)))
             {
-                plan.TestPlanCases.Add(
-                    new TestPlanCase
-                    {
-                        TestPlanId = plan.Id,
-                        TestCaseId = planCase.Id,
-                        Order = order++,
-                    }
-                );
+                plan.TestPlanCases.Add(TestPlanCase.Create(plan.Id, planCase.Id, order++));
             }
 
             return plan;
@@ -294,29 +259,23 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
             {
                 var source = SeedContent.CiSources[random.Next(SeedContent.CiSources.Count)];
                 var branch = Branches[random.Next(Branches.Length)];
-                run = new TestRun
-                {
-                    Id = TestRunId.New(),
-                    Name = $"#{random.Next(100_000, 999_999)} {source} ({branch})",
-                    Environment = "ci",
-                    Source = source,
-                    ProjectId = projectId,
-                };
+                run = TestRun.Create(
+                    projectId,
+                    $"#{random.Next(100_000, 999_999)} {source} ({branch})",
+                    "ci",
+                    source: source
+                );
             }
             else
             {
                 var member = teamMembers[random.Next(teamMembers.Count)];
-                run = new TestRun
-                {
-                    Id = TestRunId.New(),
-                    Name = SeedContent.ManualRunNames[
-                        random.Next(SeedContent.ManualRunNames.Count)
-                    ],
-                    Environment = Environments[random.Next(Environments.Length)],
-                    ExecutedById = member.Id,
-                    ExecutedByName = member.Name,
-                    ProjectId = projectId,
-                };
+                run = TestRun.Create(
+                    projectId,
+                    SeedContent.ManualRunNames[random.Next(SeedContent.ManualRunNames.Count)],
+                    Environments[random.Next(Environments.Length)],
+                    executedById: member.Id,
+                    executedByName: member.Name
+                );
             }
 
             runs.Add((run, createdAt));
@@ -367,18 +326,16 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
                 }
 
                 results.Add(
-                    new TestResult
-                    {
-                        Id = TestResultId.New(),
-                        TestRunId = run.Id,
-                        TestCaseId = testCase.Id,
-                        Status = status,
-                        Notes = notes,
-                        DefectType = defectType,
-                        DurationMs = random.Next(80, 6000),
-                        ExecutedAt = createdAt.AddMinutes(random.Next(0, 45)),
-                        ExecutedById = run.ExecutedById,
-                    }
+                    TestResult.Create(
+                        run.Id,
+                        testCase.Id,
+                        status,
+                        notes,
+                        defectType,
+                        durationMs: random.Next(80, 6000),
+                        executedAt: createdAt.AddMinutes(random.Next(0, 45)),
+                        executedById: run.ExecutedById
+                    )
                 );
             }
 
@@ -409,7 +366,11 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
             _ => TestResultStatus.Blocked,
         };
 
-    private static List<TestCaseStep> BuildSteps(string caseTitle, Faker faker)
+    private static List<TestCaseStep> BuildSteps(
+        TestCaseId testCaseId,
+        string caseTitle,
+        Faker faker
+    )
     {
         var isNegativeCase =
             caseTitle.Contains("error", StringComparison.OrdinalIgnoreCase)
@@ -418,37 +379,33 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
             || caseTitle.Contains("block", StringComparison.OrdinalIgnoreCase)
             || caseTitle.Contains("fail", StringComparison.OrdinalIgnoreCase);
 
-        var steps = new List<TestCaseStep>
+        var stepDescriptions = new List<(string Action, string ExpectedResult)>
         {
-            new()
-            {
-                Id = TestCaseStepId.New(),
-                Action = "Navigate to the relevant section and sign in as a test user",
-                ExpectedResult = "The page loads without errors",
-            },
-            new()
-            {
-                Id = TestCaseStepId.New(),
-                Action = caseTitle,
-                ExpectedResult = isNegativeCase
+            (
+                "Navigate to the relevant section and sign in as a test user",
+                "The page loads without errors"
+            ),
+            (
+                caseTitle,
+                isNegativeCase
                     ? "An appropriate error message is shown and no state is changed"
-                    : "The expected result is reflected immediately in the UI/response",
-            },
+                    : "The expected result is reflected immediately in the UI/response"
+            ),
         };
 
         if (faker.Random.Bool(ThirdStepProbability))
         {
-            steps.Add(
-                new TestCaseStep
-                {
-                    Id = TestCaseStepId.New(),
-                    Action = "Refresh the page or re-fetch the resource",
-                    ExpectedResult = "The change persists as expected",
-                }
+            stepDescriptions.Add(
+                ("Refresh the page or re-fetch the resource", "The change persists as expected")
             );
         }
 
-        return steps;
+        return stepDescriptions
+            .Select(
+                (step, index) =>
+                    TestCaseStep.Create(testCaseId, index + 1, step.Action, step.ExpectedResult)
+            )
+            .ToList();
     }
 
     [LoggerMessage(

@@ -14,12 +14,7 @@ public class ProjectOwnershipGuardTests
     {
         await using var context = TestDbContextFactory.Create();
         var ownerId = UserId.New();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Owned Project",
-            UserId = ownerId,
-        };
+        var project = Project.Create("Owned Project", null, ownerId);
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -38,12 +33,7 @@ public class ProjectOwnershipGuardTests
     public async Task EnsureOwnerAsync_UserDoesNotOwnProject_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Someone Else's Project",
-            UserId = UserId.New(),
-        };
+        var project = Project.Create("Someone Else's Project", null, UserId.New());
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 

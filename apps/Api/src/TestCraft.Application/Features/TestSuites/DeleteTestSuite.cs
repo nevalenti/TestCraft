@@ -33,8 +33,7 @@ public static class DeleteTestSuite
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            suite.IsDeleted = true;
-            suite.DeletedAt = DateTimeOffset.UtcNow;
+            suite.Delete();
 
             await context.SaveChangesAsync(cancellationToken);
         }

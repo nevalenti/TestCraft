@@ -21,12 +21,7 @@ public class ProjectAuthorizationBehaviourTests
     {
         await using var context = TestDbContextFactory.Create();
         var ownerId = UserId.New();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Project",
-            UserId = ownerId,
-        };
+        var project = Project.Create("Project", null, ownerId);
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 
@@ -50,21 +45,10 @@ public class ProjectAuthorizationBehaviourTests
         await using var context = TestDbContextFactory.Create();
         var ownerId = UserId.New();
         var memberId = UserId.New();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Project",
-            UserId = ownerId,
-        };
+        var project = Project.Create("Project", null, ownerId);
         context.Projects.Add(project);
         context.ProjectMembers.Add(
-            new ProjectMember
-            {
-                Id = ProjectMemberId.New(),
-                ProjectId = project.Id,
-                UserId = memberId,
-                Email = "member@test.com",
-            }
+            ProjectMember.Create(project.Id, memberId, "member@test.com", displayName: null)
         );
         await context.SaveChangesAsync();
 
@@ -86,12 +70,7 @@ public class ProjectAuthorizationBehaviourTests
     public async Task Handle_UserHasNoAccessToProject_ThrowsNotFoundException()
     {
         await using var context = TestDbContextFactory.Create();
-        var project = new Project
-        {
-            Id = ProjectId.New(),
-            Name = "Project",
-            UserId = UserId.New(),
-        };
+        var project = Project.Create("Project", null, UserId.New());
         context.Projects.Add(project);
         await context.SaveChangesAsync();
 

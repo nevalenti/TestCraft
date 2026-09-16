@@ -56,12 +56,7 @@ public static class AppendRunLogs
                 return;
 
             var entries = request
-                .Lines.Select(line => new RunLog
-                {
-                    Id = RunLogId.New(),
-                    RunId = request.RunId,
-                    Message = line,
-                })
+                .Lines.Select(line => RunLog.Create(request.RunId, line))
                 .ToList();
 
             context.RunLogs.AddRange(entries);

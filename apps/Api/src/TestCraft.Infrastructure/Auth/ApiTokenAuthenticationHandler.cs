@@ -55,7 +55,7 @@ public class ApiTokenAuthenticationHandler(
         )
             return AuthenticateResult.Fail("API token is not valid for this project");
 
-        apiToken.LastUsedAt = DateTimeOffset.UtcNow;
+        apiToken.RecordUsage();
         await dbContext.SaveChangesAsync(Context.RequestAborted);
 
         var claims = new[]

@@ -32,7 +32,7 @@ public static class RevokeApiToken
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            token.IsRevoked = true;
+            token.Revoke();
 
             await context.SaveChangesAsync(cancellationToken);
         }

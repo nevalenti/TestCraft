@@ -33,16 +33,14 @@ internal static class ImportRunWriter
 
             var now = DateTimeOffset.UtcNow;
 
-            var run = new TestRun
-            {
-                Id = TestRunId.New(),
-                ProjectId = projectId,
-                Name = name,
-                Environment = environment,
-                Source = source,
-                ExecutedById = userId,
-                ExecutedByName = userName,
-            };
+            var run = TestRun.Create(
+                projectId,
+                name,
+                environment,
+                source: source,
+                executedById: userId,
+                executedByName: userName
+            );
 
             if (status != TestRunStatus.Active)
                 run.TransitionTo(status);
@@ -62,8 +60,7 @@ internal static class ImportRunWriter
                 cancellationToken
             );
 
-            job.Status = ImportJobStatus.Completed;
-            job.TestRunId = run.Id;
+            job.MarkCompleted(run.Id);
 
             await context.SaveChangesAsync(cancellationToken);
 
@@ -115,8 +112,7 @@ internal static class ImportRunWriter
             );
 
             run.TransitionTo(TestRunStatus.Completed);
-            job.Status = ImportJobStatus.Completed;
-            job.TestRunId = run.Id;
+            job.MarkCompleted(run.Id);
 
             await context.SaveChangesAsync(cancellationToken);
 
@@ -184,7 +180,7 @@ internal static class ImportRunWriter
                 )
             )
             {
-                suite.Source = source;
+                suite.BackfillSource(source);
             }
         }
 
@@ -196,13 +192,7 @@ internal static class ImportRunWriter
                 continue;
             }
 
-            var suite = new TestSuite
-            {
-                Id = TestSuiteId.New(),
-                ProjectId = projectId,
-                Name = suiteName,
-                Source = source,
-            };
+            var suite = TestSuite.Create(projectId, suiteName, source: source);
 
             context.TestSuites.Add(suite);
             newSuites[suiteName] = suite;
@@ -255,25 +245,14 @@ internal static class ImportRunWriter
                 continue;
             }
 
-            var testCase = new TestCase
-            {
-                Id = TestCaseId.New(),
-                SuiteId = suiteId,
-                Name = parsedCase.CaseName,
-            };
+            var testCase = TestCase.Create(suiteId, parsedCase.CaseName);
 
             if (parsedCase.Steps is { Count: > 0 })
             {
                 foreach (var step in parsedCase.Steps)
                 {
                     testCase.Steps.Add(
-                        new TestCaseStep
-                        {
-                            Id = TestCaseStepId.New(),
-                            Order = step.Order,
-                            Action = step.Action,
-                            ExpectedResult = step.ExpectedResult,
-                        }
+                        TestCaseStep.Create(testCase.Id, step.Order, step.Action, step.ExpectedResult)
                     );
                 }
             }
@@ -317,17 +296,16 @@ internal static class ImportRunWriter
             var key = (suiteId, parsedCase.CaseName);
 
             context.TestResults.Add(
-                new TestResult
-                {
-                    Id = TestResultId.New(),
-                    TestRunId = runId,
-                    TestCaseId = caseMap[key],
-                    Status = parsedCase.Status,
-                    Notes = parsedCase.Notes,
-                    DurationMs = parsedCase.DurationMs,
-                    ExecutedAt = now,
-                    ExecutedById = userId,
-                }
+                TestResult.Create(
+                    runId,
+                    caseMap[key],
+                    parsedCase.Status,
+                    parsedCase.Notes,
+                    defectType: null,
+                    parsedCase.DurationMs,
+                    executedAt: now,
+                    executedById: userId
+                )
             );
         }
 

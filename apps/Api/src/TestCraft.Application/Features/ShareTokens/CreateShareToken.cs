@@ -72,15 +72,12 @@ public static class CreateShareToken
                 .Replace("/", "_")
                 .TrimEnd('=');
 
-            var shareToken = new ShareToken
-            {
-                Id = ShareTokenId.New(),
-                TestRunId = request.RunId,
-                Token = token,
-                ExpiresAt = request.ExpiresAt,
-                CreatedById = currentUser.UserId,
-                CreatedAt = DateTimeOffset.UtcNow,
-            };
+            var shareToken = ShareToken.Create(
+                request.RunId,
+                token,
+                request.ExpiresAt,
+                currentUser.UserId
+            );
 
             context.ShareTokens.Add(shareToken);
 
