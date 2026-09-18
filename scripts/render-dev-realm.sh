@@ -13,6 +13,7 @@ jq '
   (.clients[] | select(.clientId == "testcraft-api") | .secret) = "testcraft-api-dev-secret" |
   (.clients[] | select(.clientId == "testcraft-ci") | .secret) = "testcraft-ci-dev-secret" |
   .users = [{
+    "id": "00000000-0000-0000-0000-000000000001",
     "username": "e2e@testcraft.pro",
     "email": "e2e@testcraft.pro",
     "emailVerified": true,

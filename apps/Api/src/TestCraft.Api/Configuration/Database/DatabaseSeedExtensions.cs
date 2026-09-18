@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
 using TestCraft.Persistence.Seeding;
@@ -8,10 +6,6 @@ namespace TestCraft.Api.Configuration.Database;
 
 public static partial class DatabaseSeedExtensions
 {
-    private static readonly UserId DefaultDevelopmentOwnerId = UserId.From(
-        Guid.Parse("00000000-0000-0000-0000-000000000001")
-    );
-
     public static async Task SeedDevelopmentDataAsync(this WebApplication app)
     {
         if (!app.Environment.IsDevelopment())
@@ -23,12 +17,7 @@ public static partial class DatabaseSeedExtensions
         var ownerId = ResolveOwnerId(app.Configuration, seedLogger);
         var infrastructureOptions = app.Services.GetRequiredService<InfrastructureOptions>();
 
-        var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
-        optionsBuilder.UseNpgsql(
-            ConnectionStringHelpers.ToNpgsqlConnectionString(infrastructureOptions.DatabaseUrl)
-        );
-
-        await using var dbContext = new AppDbContext(optionsBuilder.Options, new NullPublisher());
+        await using var dbContext = AppDbContextFactory.Create(infrastructureOptions.DatabaseUrl);
         var seeder = new DataSeeder(dbContext, seedLogger);
 
         try
@@ -43,14 +32,14 @@ public static partial class DatabaseSeedExtensions
 
     private static UserId ResolveOwnerId(IConfiguration configuration, ILogger logger)
     {
-        var raw = configuration["SEED_OWNER_USER_ID"];
+        var raw = configuration[SeedOwner.EnvironmentVariable];
         if (Guid.TryParse(raw, out var guid))
         {
             return UserId.From(guid);
         }
 
-        LogUsingSyntheticOwner(logger, DefaultDevelopmentOwnerId);
-        return DefaultDevelopmentOwnerId;
+        LogUsingSyntheticOwner(logger, SeedOwner.DefaultId);
+        return SeedOwner.DefaultId;
     }
 
     [LoggerMessage(
