@@ -1,35 +1,17 @@
-using Prometheus;
+using DotNetEnv;
 
-using TestCraft.Common.Http;
 using TestCraft.Gateway.Configuration;
-using TestCraft.Gateway.Middleware;
+
+Env.NoClobber().TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-var gatewayLoggingOptions = GatewayLoggingOptions.Bind(builder.Configuration);
-builder.AddSerilogLogging(gatewayLoggingOptions);
-builder.AddOpenTelemetryTracing(gatewayLoggingOptions);
-
-builder
-    .Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+builder.ConfigureServices();
 
 var app = builder.Build();
 
-var seqBasicAuthOptions = SeqBasicAuthOptions.Bind(builder.Configuration);
-var gatewayMetricsOptions = GatewayMetricsOptions.Bind(builder.Configuration);
+app.Logger.LogStartupConfiguration(app.Configuration);
 
-app.Logger.LogStartupConfiguration(builder.Configuration);
-
-app.UseRequestId();
-app.UseRequestLogging();
-app.UseHttpsRedirectionWithAcmeExemption();
-app.UseLegacyPathRedirects();
-app.UseDotPathGuard();
-app.UseSeqBasicAuth(seqBasicAuthOptions);
-app.UseHttpMetrics();
-
-app.MapGatewayMetrics(gatewayMetricsOptions);
-app.MapReverseProxy();
+app.ConfigurePipeline();
 
 await app.RunAsync();

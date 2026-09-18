@@ -7,4 +7,5 @@ public static class GatewayPaths
         WellKnownPrefix + "/acme-challenge";
     public const string SeqPrefix = "/seq";
     public const string MetricsPath = "/metrics";
+    public const string HealthPath = "/healthz";
 }

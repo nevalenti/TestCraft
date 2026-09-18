@@ -172,6 +172,52 @@ public class GatewayMiddlewareTests
         response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
 
+    [Fact]
+    public async Task Get_Healthz_OverHttp_ReturnsOkWithoutRedirect()
+    {
+        var client = _factory.CreateClient(
+            new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false,
+                BaseAddress = new Uri("http://localhost"),
+            }
+        );
+
+        var response = await client.GetAsync("/healthz");
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
+    public async Task Get_HttpsRequest_SetsHstsAndOmitsServerHeader()
+    {
+        var client = CreateClient();
+
+        var response = await client.GetAsync("/healthz");
+
+        response
+            .Headers.GetValues("Strict-Transport-Security")
+            .Should()
+            .ContainSingle("max-age=15552000; includeSubDomains");
+        response.Headers.Contains("Server").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Get_HttpRequest_DoesNotSetHsts()
+    {
+        var client = _factory.CreateClient(
+            new WebApplicationFactoryClientOptions
+            {
+                AllowAutoRedirect = false,
+                BaseAddress = new Uri("http://localhost"),
+            }
+        );
+
+        var response = await client.GetAsync("/healthz");
+
+        response.Headers.Contains("Strict-Transport-Security").Should().BeFalse();
+    }
+
     private WebApplicationFactory<Program> WithSeqBasicAuthConfigured() =>
         _factory.WithWebHostBuilder(builder =>
             builder.ConfigureAppConfiguration(

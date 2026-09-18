@@ -1,4 +1,4 @@
-using TestCraft.Api.Middleware;
+using TestCraft.Common.Security;
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration.Swagger;

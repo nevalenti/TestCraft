@@ -5,7 +5,7 @@ using Microsoft.OpenApi;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-using TestCraft.Api.Middleware;
+using TestCraft.Common.Security;
 
 namespace TestCraft.Api.Configuration.Swagger;
 
