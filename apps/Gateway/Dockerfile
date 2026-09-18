@@ -30,6 +30,6 @@ USER appuser
 EXPOSE 80 443 8443 443/udp
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -fk https://localhost/ || exit 1
+  CMD curl -f http://localhost/healthz || exit 1
 
 ENTRYPOINT ["dotnet", "TestCraft.Gateway.dll"]

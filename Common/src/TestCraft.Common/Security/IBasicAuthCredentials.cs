@@ -1,4 +1,4 @@
-namespace TestCraft.Api.Middleware;
+namespace TestCraft.Common.Security;
 
 public interface IBasicAuthCredentials
 {

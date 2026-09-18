@@ -19,11 +19,16 @@ public static class HttpsRedirectionExtensions
                     GatewayPaths.MetricsPath,
                     StringComparison.Ordinal
                 );
+                var isHealthCheck = path.Equals(
+                    GatewayPaths.HealthPath,
+                    StringComparison.Ordinal
+                );
 
                 if (
                     !context.Request.IsHttps
                     && !isAcmeChallenge
                     && !isMetricsScrape
+                    && !isHealthCheck
                 )
                 {
                     context.Response.StatusCode =

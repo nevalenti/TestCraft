@@ -1,10 +1,10 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 
-using TestCraft.Api.Middleware;
 using TestCraft.Application.Features.Notifications;
 using TestCraft.Application.Features.ShareTokens;
 using TestCraft.Application.Features.TestRuns;
+using TestCraft.Common.Security;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
 

@@ -1,6 +1,7 @@
-using TestCraft.Common.Security;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 
-namespace TestCraft.Api.Middleware;
+namespace TestCraft.Common.Security;
 
 public class BasicAuthMiddleware<TOptions>(RequestDelegate next, TOptions options)
     where TOptions : IBasicAuthCredentials
