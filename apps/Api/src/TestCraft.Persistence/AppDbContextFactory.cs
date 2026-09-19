@@ -10,11 +10,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
         "postgresql://testcraft:changeme@localhost:5432/testcraft_dotnet_db";
 #pragma warning restore S1075, S2068
 
-    public AppDbContext CreateDbContext(string[] args)
-    {
-        var databaseUrl =
-            Environment.GetEnvironmentVariable("DATABASE_URL") ?? DesignTimeDatabaseUrl;
+    public AppDbContext CreateDbContext(string[] args) =>
+        Create(Environment.GetEnvironmentVariable("DATABASE_URL") ?? DesignTimeDatabaseUrl);
 
+    public static AppDbContext Create(string databaseUrl)
+    {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseNpgsql(ConnectionStringHelpers.ToNpgsqlConnectionString(databaseUrl));
 
