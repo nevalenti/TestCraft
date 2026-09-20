@@ -28,7 +28,7 @@ ENV VITE_GLITCHTIP_DSN=$VITE_GLITCHTIP_DSN
 RUN pnpm --filter @testcraft/types run build
 RUN pnpm --filter testcraft-web run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
 
 ARG APK_CACHE_BUST=0
 RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
