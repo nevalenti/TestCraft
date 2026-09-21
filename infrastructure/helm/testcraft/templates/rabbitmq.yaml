@@ -27,23 +27,12 @@ spec:
         app: rabbitmq
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 100
-        runAsGroup: 101
-        fsGroup: 101
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 100 "gid" 101 "fsGroup" 101) | nindent 8 }}
       initContainers:
         - name: fix-cookie-permissions
           image: {{ .Values.thirdPartyImages.rabbitmq }}
           securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-            runAsGroup: 0
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-              add: ["CHOWN", "FOWNER"]
+            {{- include "testcraft.rootInitSecurityContext" (dict "add" (list "CHOWN" "FOWNER")) | nindent 12 }}
           command:
             - sh
             - -c
@@ -59,9 +48,7 @@ spec:
         - name: rabbitmq
           image: {{ .Values.thirdPartyImages.rabbitmq }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: RABBITMQ_DEFAULT_USER
               valueFrom:

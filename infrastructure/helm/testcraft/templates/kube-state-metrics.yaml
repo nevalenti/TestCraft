@@ -49,18 +49,12 @@ spec:
     spec:
       serviceAccountName: kube-state-metrics
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534) | nindent 8 }}
       containers:
         - name: kube-state-metrics
           image: {{ .Values.thirdPartyImages.kube_state_metrics }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           ports:
             - containerPort: 8080
               name: metrics

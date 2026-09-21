@@ -27,19 +27,12 @@ spec:
         app: postgres
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 70
-        runAsGroup: 70
-        fsGroup: 70
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 70 "gid" 70 "fsGroup" 70) | nindent 8 }}
       containers:
         - name: postgres
           image: {{ .Values.thirdPartyImages.postgres }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_USER
               valueFrom:

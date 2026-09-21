@@ -14,18 +14,12 @@ spec:
         app: redis
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 999
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 999 "gid" 1000) | nindent 8 }}
       containers:
         - name: redis
           image: {{ .Values.thirdPartyImages.redis }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           command:
             - redis-server
             - --requirepass

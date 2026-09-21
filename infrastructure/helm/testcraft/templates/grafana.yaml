@@ -27,19 +27,12 @@ spec:
         app: grafana
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 472
-        runAsGroup: 0
-        fsGroup: 0
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 472 "gid" 0 "fsGroup" 0) | nindent 8 }}
       containers:
         - name: grafana
           image: {{ .Values.thirdPartyImages.grafana }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: GF_SECURITY_ADMIN_USER
               value: admin

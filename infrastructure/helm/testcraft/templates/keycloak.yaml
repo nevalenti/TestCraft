@@ -27,19 +27,12 @@ spec:
         app: keycloak
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 0
-        fsGroup: 0
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 0 "fsGroup" 0) | nindent 8 }}
       initContainers:
         - name: copy-realm
           image: {{ .Values.thirdPartyImages.busybox }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           command:
             - /bin/sh
             - -c
@@ -92,9 +85,7 @@ spec:
         - name: install-theme
           image: {{ .Values.thirdPartyImages.keycloak }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           command:
             - /bin/sh
             - -c
@@ -116,9 +107,7 @@ spec:
         - name: keycloak
           image: {{ .Values.thirdPartyImages.keycloak }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           args: ["start", "--import-realm"]
           env:
             - name: KC_BOOTSTRAP_ADMIN_USERNAME

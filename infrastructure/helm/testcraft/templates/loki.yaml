@@ -27,19 +27,12 @@ spec:
         app: loki
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 10001 "gid" 10001 "fsGroup" 10001) | nindent 8 }}
       containers:
         - name: loki
           image: {{ .Values.thirdPartyImages.loki }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           args: ["-config.file=/etc/loki/local-config.yaml"]
           ports:
             - containerPort: 3100

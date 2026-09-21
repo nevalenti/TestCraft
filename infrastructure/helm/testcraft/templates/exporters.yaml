@@ -14,18 +14,12 @@ spec:
         app: postgres-exporter
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534) | nindent 8 }}
       containers:
         - name: postgres-exporter
           image: {{ .Values.thirdPartyImages.postgres_exporter }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_MONITOR_PASSWORD
               valueFrom:
@@ -72,18 +66,12 @@ spec:
         app: redis-exporter
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 59000
-        runAsGroup: 59000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 59000 "gid" 59000) | nindent 8 }}
       containers:
         - name: redis-exporter
           image: {{ .Values.thirdPartyImages.redis_exporter }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: REDIS_ADDR
               value: redis://redis:6379
@@ -130,18 +118,12 @@ spec:
         app: rabbitmq-exporter
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
         - name: rabbitmq-exporter
           image: {{ .Values.thirdPartyImages.rabbitmq_exporter }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: RABBIT_URL
               value: http://rabbitmq:15672
