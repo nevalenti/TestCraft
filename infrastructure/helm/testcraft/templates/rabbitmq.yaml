@@ -26,6 +26,7 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 100 "gid" 101 "fsGroup" 101) | nindent 8 }}
       initContainers:

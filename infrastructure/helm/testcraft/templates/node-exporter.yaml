@@ -17,6 +17,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       tolerations:
         - operator: Exists
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534) | nindent 8 }}
       containers:

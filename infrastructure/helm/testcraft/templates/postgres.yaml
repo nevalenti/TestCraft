@@ -26,6 +26,7 @@ spec:
       labels:
         app: postgres
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 70 "gid" 70 "fsGroup" 70) | nindent 8 }}
       containers:

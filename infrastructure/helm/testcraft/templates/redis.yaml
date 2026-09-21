@@ -13,6 +13,7 @@ spec:
       labels:
         app: redis
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 999 "gid" 1000) | nindent 8 }}
       containers:

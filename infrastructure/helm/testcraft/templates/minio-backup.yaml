@@ -12,11 +12,19 @@ spec:
     spec:
       backoffLimit: 2
       template:
+        metadata:
+          labels:
+            app: minio-backup
         spec:
           restartPolicy: OnFailure
+          automountServiceAccountToken: false
+          securityContext:
+            {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 12 }}
           containers:
             - name: mirror
               image: {{ .Values.thirdPartyImages.minio_client }}
+              securityContext:
+                {{- include "testcraft.containerSecurityContext" dict | nindent 16 }}
               command:
                 - /bin/sh
                 - -c

@@ -13,6 +13,7 @@ spec:
       labels:
         app: postgres-exporter
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534) | nindent 8 }}
       containers:
@@ -65,6 +66,7 @@ spec:
       labels:
         app: redis-exporter
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 59000 "gid" 59000) | nindent 8 }}
       containers:
@@ -117,6 +119,7 @@ spec:
       labels:
         app: rabbitmq-exporter
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:

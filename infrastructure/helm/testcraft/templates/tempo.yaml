@@ -26,6 +26,7 @@ spec:
       labels:
         app: tempo
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 10001 "gid" 10001 "fsGroup" 10001) | nindent 8 }}
       containers:

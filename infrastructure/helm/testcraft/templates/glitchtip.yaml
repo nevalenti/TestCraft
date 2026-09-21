@@ -15,6 +15,7 @@ spec:
         app: glitchtip-migrate
     spec:
       restartPolicy: Never
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
@@ -59,6 +60,7 @@ spec:
       labels:
         app: glitchtip-web
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
@@ -125,6 +127,7 @@ spec:
       labels:
         app: glitchtip-worker
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
