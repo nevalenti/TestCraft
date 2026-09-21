@@ -18,6 +18,7 @@ spec:
       labels:
         app: api
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1001 "gid" 1001) | nindent 8 }}
       containers:

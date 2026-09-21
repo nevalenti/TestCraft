@@ -26,6 +26,7 @@ spec:
       labels:
         app: keycloak
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 0 "fsGroup" 0) | nindent 8 }}
       initContainers:

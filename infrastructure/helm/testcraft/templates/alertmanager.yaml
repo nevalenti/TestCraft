@@ -28,6 +28,7 @@ spec:
       annotations:
         checksum/config: {{ include (print $.Template.BasePath "/configmap-alertmanager.yaml") . | sha256sum }}
     spec:
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534 "fsGroup" 65534) | nindent 8 }}
       containers:

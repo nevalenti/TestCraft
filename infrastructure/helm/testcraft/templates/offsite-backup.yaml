@@ -13,8 +13,12 @@ spec:
     spec:
       backoffLimit: 2
       template:
+        metadata:
+          labels:
+            app: offsite-backup-sync
         spec:
           restartPolicy: OnFailure
+          automountServiceAccountToken: false
           securityContext:
             {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 12 }}
           containers:

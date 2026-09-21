@@ -15,6 +15,7 @@ spec:
         app: migrator
     spec:
       restartPolicy: Never
+      automountServiceAccountToken: false
       securityContext:
         {{- include "testcraft.podSecurityContext" (dict "uid" 1001 "gid" 1001) | nindent 8 }}
       containers:
