@@ -16,19 +16,13 @@ spec:
     spec:
       restartPolicy: Never
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
         - name: migrate
           image: {{ .Values.thirdPartyImages.glitchtip }}
           command: ["./manage.py", "migrate"]
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_GLITCHTIP_PASSWORD
               valueFrom:
@@ -66,18 +60,12 @@ spec:
         app: glitchtip-web
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
         - name: web
           image: {{ .Values.thirdPartyImages.glitchtip }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_GLITCHTIP_PASSWORD
               valueFrom:
@@ -138,19 +126,13 @@ spec:
         app: glitchtip-worker
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
       containers:
         - name: worker
           image: {{ .Values.thirdPartyImages.glitchtip }}
           command: ["./bin/run-celery-with-beat.sh"]
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_GLITCHTIP_PASSWORD
               valueFrom:

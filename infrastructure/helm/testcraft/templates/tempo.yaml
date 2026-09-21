@@ -27,19 +27,12 @@ spec:
         app: tempo
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 10001 "gid" 10001 "fsGroup" 10001) | nindent 8 }}
       containers:
         - name: tempo
           image: {{ .Values.thirdPartyImages.tempo }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           args: ["-config.file=/etc/tempo/tempo.yaml"]
           ports:
             - containerPort: 3200

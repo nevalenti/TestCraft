@@ -28,23 +28,12 @@ spec:
         app: minio
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000 "fsGroup" 1000) | nindent 8 }}
       initContainers:
         - name: fix-data-permissions
           image: {{ .Values.thirdPartyImages.minio }}
           securityContext:
-            runAsNonRoot: false
-            runAsUser: 0
-            runAsGroup: 0
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
-              add: ["CHOWN", "FOWNER"]
+            {{- include "testcraft.rootInitSecurityContext" (dict "add" (list "CHOWN" "FOWNER")) | nindent 12 }}
           command: ["chown", "-R", "1000:1000", "/data"]
           volumeMounts:
             - name: minio-data
@@ -53,9 +42,7 @@ spec:
         - name: minio
           image: {{ .Values.thirdPartyImages.minio }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           args: ["server", "/data", "--console-address", ":9001"]
           env:
             - name: MINIO_ROOT_USER

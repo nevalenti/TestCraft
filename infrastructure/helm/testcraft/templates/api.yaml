@@ -19,19 +19,13 @@ spec:
         app: api
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1001
-        runAsGroup: 1001
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1001 "gid" 1001) | nindent 8 }}
       containers:
         - name: api
           image: {{ .Values.images.api.repository }}:{{ .Values.images.api.tag }}
           imagePullPolicy: {{ .Values.images.api.pullPolicy }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             - name: POSTGRES_HOST
               value: postgres

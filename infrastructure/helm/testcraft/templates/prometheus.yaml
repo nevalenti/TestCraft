@@ -30,19 +30,12 @@ spec:
     spec:
       serviceAccountName: prometheus
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65534
-        runAsGroup: 65534
-        fsGroup: 65534
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 65534 "gid" 65534 "fsGroup" 65534) | nindent 8 }}
       containers:
         - name: prometheus
           image: {{ .Values.thirdPartyImages.prometheus }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           args:
             - --config.file=/etc/prometheus/prometheus.yml
             - --storage.tsdb.retention.time=30d

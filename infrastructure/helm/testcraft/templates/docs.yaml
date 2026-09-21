@@ -19,19 +19,13 @@ spec:
         app: docs
     spec:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 101
-        runAsGroup: 101
-        seccompProfile:
-          type: RuntimeDefault
+        {{- include "testcraft.podSecurityContext" (dict "uid" 101 "gid" 101) | nindent 8 }}
       containers:
         - name: docs
           image: {{ .Values.images.docs.repository }}:{{ .Values.images.docs.tag }}
           imagePullPolicy: {{ .Values.images.docs.pullPolicy }}
           securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop: ["ALL"]
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           ports:
             - containerPort: 8080
           readinessProbe:

@@ -16,18 +16,12 @@ spec:
         spec:
           restartPolicy: OnFailure
           securityContext:
-            runAsNonRoot: true
-            runAsUser: 1000
-            runAsGroup: 1000
-            seccompProfile:
-              type: RuntimeDefault
+            {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 12 }}
           containers:
             - name: sync
               image: {{ .Values.thirdPartyImages.minio_client }}
               securityContext:
-                allowPrivilegeEscalation: false
-                capabilities:
-                  drop: ["ALL"]
+                {{- include "testcraft.containerSecurityContext" dict | nindent 16 }}
               command:
                 - /bin/sh
                 - -c
