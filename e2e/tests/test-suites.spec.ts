@@ -47,7 +47,9 @@ test.describe('Test Suites tab', () => {
   });
 
   test('renders suites tab by default', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'New Suite' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'New Test Suite' }),
+    ).toBeVisible();
     await expect(page.getByRole('tab', { name: /Test Suites/i })).toBeVisible();
     await expect(page.getByRole('tab', { name: /Test Runs/i })).toBeVisible();
   });

@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { PlusIcon } from '@heroicons/react/24/solid';
 import type { Table } from '@tanstack/react-table';
 import type { Paginated, TestResult, TestResultStatus } from '@testcraft/types';
@@ -76,23 +77,31 @@ export const ResultsContent = ({
 
   if (resultsPage?.items.length === 0)
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center">
-        <p className="mb-2 text-sm font-semibold text-base-content/85">
-          No results match
-        </p>
-        <div className="flex gap-2">
-          {debouncedSearch && (
-            <button className="btn btn-ghost btn-sm" onClick={onClearSearch}>
-              Clear search
-            </button>
-          )}
-          {statusFilter !== null && (
-            <button className="btn btn-outline btn-sm" onClick={onClearFilter}>
-              Clear filter
-            </button>
-          )}
-        </div>
-      </div>
+      <EmptyState
+        icon={<MagnifyingGlassIcon className="size-5" />}
+        title="No results match"
+        description="Try a different search term or clear the active filter."
+        action={
+          <div className="flex gap-2">
+            {debouncedSearch && (
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={onClearSearch}
+              >
+                Clear search
+              </button>
+            )}
+            {statusFilter !== null && (
+              <button
+                className="btn btn-outline btn-sm"
+                onClick={onClearFilter}
+              >
+                Clear filter
+              </button>
+            )}
+          </div>
+        }
+      />
     );
 
   return <ResultsTable table={table} pageCount={pageCount} />;

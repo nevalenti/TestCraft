@@ -7,7 +7,6 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceView } from '@/components/ui/ResourceView';
-import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateProject,
   useDeleteProject,
@@ -20,12 +19,10 @@ import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
-import { useViewModeStore } from '@/stores/viewMode';
 
 export const ProjectsPage = () => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
-  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<Project>();
   const {
@@ -53,21 +50,10 @@ export const ProjectsPage = () => {
 
   const deleteItem = modal.type === 'delete' ? modal.item : null;
 
-  const renderListItem = (project: Project) => (
-    <ProjectCard
-      key={project.id}
-      project={project}
-      viewMode="list"
-      onEdit={() => openEdit(project)}
-      onDelete={() => openDelete(project)}
-    />
-  );
-
   const renderCard = (project: Project) => (
     <ProjectCard
       key={project.id}
       project={project}
-      viewMode="grid"
       onEdit={() => openEdit(project)}
       onDelete={() => openDelete(project)}
     />
@@ -79,10 +65,9 @@ export const ProjectsPage = () => {
         <div>
           <h1 className="page-title">Projects</h1>
           <p className="mt-0.5 text-sm text-base-content/70">
-            Manage and organise your testing projects
+            Manage and organize your testing projects
           </p>
         </div>
-        <ViewToggle />
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
@@ -105,10 +90,9 @@ export const ProjectsPage = () => {
             error={error}
             onRetry={refetch}
             items={projects}
-            viewMode={viewMode}
+            viewMode="grid"
             emptyTitle="No projects yet"
             emptyDescription="Projects group your test suites and runs."
-            renderListItem={renderListItem}
             renderCard={renderCard}
           />
         </div>

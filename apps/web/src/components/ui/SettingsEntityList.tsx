@@ -1,6 +1,8 @@
 import { TrashIcon } from '@heroicons/react/24/solid';
 import type { ReactNode } from 'react';
 
+import { EmptyState } from '@/components/ui/EmptyState';
+
 interface SettingsEntityListProps<T> {
   items: T[];
   getKey: (item: T) => string;
@@ -10,6 +12,8 @@ interface SettingsEntityListProps<T> {
   removeAriaLabel: (item: T) => string;
   removeLabel?: ReactNode;
   isRemoveHidden?: (item: T) => boolean;
+  emptyTitle: string;
+  emptyDescription?: string;
 }
 
 export const SettingsEntityList = <T,>({
@@ -21,8 +25,11 @@ export const SettingsEntityList = <T,>({
   removeAriaLabel,
   removeLabel,
   isRemoveHidden,
+  emptyTitle,
+  emptyDescription,
 }: SettingsEntityListProps<T>) => {
-  if (items.length === 0) return null;
+  if (items.length === 0)
+    return <EmptyState title={emptyTitle} description={emptyDescription} />;
 
   return (
     <ul className="space-y-2">

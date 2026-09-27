@@ -75,6 +75,8 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
           }
           onRemove={(member) => removeMember.mutate(member.id)}
           removeAriaLabel={(member) => `Remove ${member.email}`}
+          emptyTitle="No members yet"
+          emptyDescription="Invite teammates to collaborate on this project."
         />
       )}
     </div>

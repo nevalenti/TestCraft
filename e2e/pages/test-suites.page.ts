@@ -17,7 +17,7 @@ export class TestSuitesPage {
   }
 
   get createButton() {
-    return this.page.getByRole('button', { name: 'New Suite' });
+    return this.page.getByRole('button', { name: 'New Test Suite' });
   }
 
   get dialog() {

@@ -1,6 +1,7 @@
 import {
   ArrowLeftIcon,
   ChartBarIcon,
+  ClipboardDocumentCheckIcon,
   Cog6ToothIcon,
   PlayCircleIcon,
   RectangleStackIcon,
@@ -119,6 +120,19 @@ export const ProjectDetailPage = () => {
                 {!!project?.suiteCount && (
                   <TabCountBadge count={project.suiteCount} />
                 )}
+              </Link>
+              <Link
+                to="/projects/$projectId/plans"
+                params={{ projectId }}
+                role="tab"
+                className={NAV_BASE}
+                activeProps={{ className: NAV_ACTIVE }}
+              >
+                <ClipboardDocumentCheckIcon
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
+                Test Plans
               </Link>
               <Link
                 to="/projects/$projectId/analytics"

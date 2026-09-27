@@ -1,5 +1,6 @@
 import { Skeleton } from '@/components/ui/Skeleton';
-import type { ViewMode } from '@/stores/viewMode';
+
+export type ViewMode = 'grid' | 'list';
 
 const ResourceCardSkeleton = () => (
   <div className="flex items-start gap-3 rounded-xl border border-border bg-base-100 p-4 shadow-card">

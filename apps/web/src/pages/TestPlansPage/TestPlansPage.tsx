@@ -1,10 +1,15 @@
 import { PlusIcon } from '@heroicons/react/24/solid';
-import type { TestPlan } from '@testcraft/types';
+import type {
+  CreateTestPlan,
+  TestPlan,
+  UpdateTestPlan,
+} from '@testcraft/types';
+import { useState } from 'react';
 
-import { ErrorState } from '@/components/ErrorState';
-import { EmptyState } from '@/components/ui/EmptyState';
+import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
+import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
+import { ResourceView } from '@/components/ui/ResourceView';
 import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestPlan,
@@ -12,10 +17,10 @@ import {
   useTestPlans,
   useUpdateTestPlan,
 } from '@/features/testPlans/hooks';
-import { PlanListItem } from '@/features/testPlans/PlanListItem';
-import { PlanRowSkeleton } from '@/features/testPlans/PlanRowSkeleton';
 import { TestPlanForm } from '@/features/testPlans/TestPlanForm';
+import { TestPlansTable } from '@/features/testPlans/TestPlansTable';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
@@ -23,6 +28,8 @@ import { useRequiredParam } from '@/hooks/useRequiredParam';
 export const TestPlansPage = () => {
   const projectId = useRequiredParam('projectId');
   const { data: project } = useProject(projectId);
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const {
     data: plans,
     isPending,
@@ -33,7 +40,8 @@ export const TestPlansPage = () => {
   const createPlan = useCreateTestPlan(projectId);
   const updatePlan = useUpdateTestPlan(projectId);
   const deletePlan = useDeleteTestPlan(projectId);
-  const { modal, close, openCreate, openEdit } = useModal<TestPlan>();
+  const { modal, close, openCreate, openEdit, openDelete } =
+    useModal<TestPlan>();
   const showSkeleton = useIsLoadingVisible(isPending);
 
   useBreadcrumbs([
@@ -42,68 +50,65 @@ export const TestPlansPage = () => {
     { label: 'Test Plans' },
   ]);
 
-  if (isError) return <ErrorState error={error} onRetry={refetch} />;
+  const handleCreate = (input: CreateTestPlan) =>
+    createPlan.mutate(input, { onSuccess: close });
+  const handleUpdate = (id: string) => (input: UpdateTestPlan) =>
+    updatePlan.mutate({ id, ...input }, { onSuccess: close });
+  const handleDelete = (id: string) =>
+    deletePlan.mutate(id, { onSuccess: close });
 
-  let planListContent: React.ReactNode;
-  if (isPending) {
-    planListContent = showSkeleton ? (
-      <SkeletonStatus label="Loading test plans…">
-        <ul className="space-y-2">
-          {Array.from({ length: 5 }, (_, i) => (
-            <PlanRowSkeleton key={i} />
-          ))}
-        </ul>
-      </SkeletonStatus>
-    ) : null;
-  } else if (plans?.length) {
-    planListContent = (
-      <ul className="space-y-2">
-        {plans.map((plan) => (
-          <PlanListItem
-            key={plan.id}
-            plan={plan}
-            projectId={projectId}
-            onEdit={() => openEdit(plan)}
-            onDelete={() => deletePlan.mutate(plan.id)}
-          />
-        ))}
-      </ul>
-    );
-  } else {
-    planListContent = (
-      <EmptyState
-        title="No test plans yet"
-        description="Create a plan to pre-select test cases and run them as a structured suite."
-        action={
-          <button
-            className="btn gap-1.5 btn-sm btn-primary"
-            onClick={openCreate}
-          >
-            <PlusIcon className="size-4" />
-            New Plan
-          </button>
-        }
-      />
-    );
-  }
+  const deleteItem = modal.type === 'delete' ? modal.item : null;
+
+  const visiblePlans = debouncedSearch
+    ? (plans ?? []).filter((plan) =>
+        plan.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+    : plans;
+
+  const renderTable = (items: TestPlan[]) => (
+    <TestPlansTable
+      plans={items}
+      projectId={projectId}
+      onEdit={openEdit}
+      onDelete={openDelete}
+    />
+  );
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header flex items-center justify-between gap-4">
-        <div>
-          <h1 className="page-title">Test Plans</h1>
-          <p className="mt-0.5 text-sm text-base-content/70">
-            Pre-select test cases for structured test runs
-          </p>
-        </div>
-        <button className="btn gap-1.5 btn-sm btn-primary" onClick={openCreate}>
-          <PlusIcon className="size-4" />
-          New Plan
-        </button>
+      <header className="page-header">
+        <h1 className="page-title">Test Plans</h1>
+        <p className="mt-0.5 text-sm text-base-content/70">
+          Pre-select test cases for structured test runs
+        </p>
       </header>
 
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
-        {planListContent}
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          placeholder="Search test plans…"
+        >
+          <button className="btn btn-sm btn-primary" onClick={openCreate}>
+            <PlusIcon className="size-4" aria-hidden="true" />
+            New Test Plan
+          </button>
+        </ListToolbar>
+
+        <ResourceView
+          isPending={isPending}
+          showSkeleton={showSkeleton}
+          skeletonLabel="Loading test plans…"
+          isError={isError}
+          error={error}
+          onRetry={refetch}
+          items={plans}
+          displayItems={visiblePlans}
+          viewMode="list"
+          emptyTitle="No test plans yet"
+          emptyDescription="Create a plan to pre-select test cases and run them as a structured suite."
+          renderTable={renderTable}
+        />
       </section>
 
       <Modal
@@ -114,7 +119,7 @@ export const TestPlansPage = () => {
         {modal.type === 'create' && (
           <TestPlanForm
             submitLabel="Create"
-            onSubmit={(data) => createPlan.mutate(data, { onSuccess: close })}
+            onSubmit={handleCreate}
             onCancel={close}
             isLoading={createPlan.isPending}
           />
@@ -134,17 +139,21 @@ export const TestPlansPage = () => {
               name: modal.item.name,
               description: modal.item.description ?? '',
             }}
-            onSubmit={(data) =>
-              updatePlan.mutate(
-                { id: modal.item.id, ...data },
-                { onSuccess: close },
-              )
-            }
+            onSubmit={handleUpdate(modal.item.id)}
             onCancel={close}
             isLoading={updatePlan.isPending}
           />
         )}
       </Modal>
+
+      <ConfirmDialog
+        isOpen={modal.type === 'delete'}
+        onClose={close}
+        onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
+        title="Delete Test Plan"
+        description={deleteItem ? `Delete "${deleteItem.name}"?` : ''}
+        isLoading={deletePlan.isPending}
+      />
     </div>
   );
 };

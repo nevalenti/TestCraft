@@ -47,7 +47,9 @@ test.describe('Test Runs tab', () => {
   });
 
   test('renders runs tab', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'New Run' })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: 'New Test Run' }),
+    ).toBeVisible();
   });
 
   test('opens and closes the create run dialog', async ({

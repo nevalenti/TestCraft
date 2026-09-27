@@ -101,11 +101,11 @@ const setupMocks = ({
 
 describe('DashboardPage', () => {
   describe('renders the runs tabs', () => {
-    it('shows the Test Runs tab', () => {
+    it('shows the Active Runs tab', () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole('button', { name: /Test Runs/ }),
+        screen.getByRole('button', { name: /Active Runs/ }),
       ).toBeInTheDocument();
     });
 
@@ -115,16 +115,6 @@ describe('DashboardPage', () => {
       expect(
         screen.getByRole('button', { name: /Recently Completed/ }),
       ).toBeInTheDocument();
-    });
-  });
-
-  describe('stat cards — display counts', () => {
-    it('shows the correct project count', () => {
-      setupMocks({
-        projects: [makeProject('p1', 'A'), makeProject('p2', 'B')],
-      });
-      render(<DashboardPage />);
-      expect(screen.getByText('2')).toBeInTheDocument();
     });
   });
 
@@ -143,6 +133,11 @@ describe('DashboardPage', () => {
       setupMocks({ activeRuns: [] });
       render(<DashboardPage />);
       expect(screen.getByText('No active runs')).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          'Start a test run from any project to track results here.',
+        ),
+      ).toBeInTheDocument();
     });
   });
 

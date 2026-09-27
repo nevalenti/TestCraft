@@ -138,22 +138,22 @@ describe('TestPlansPage', () => {
     });
   });
 
-  describe('New Plan button — is rendered', () => {
-    it('shows the New Plan button', () => {
+  describe('New Test Plan button — is rendered', () => {
+    it('shows the New Test Plan button', () => {
       setupMocks([]);
       render(<TestPlansPage />);
       expect(
-        screen.getAllByRole('button', { name: /New Plan/i })[0],
+        screen.getAllByRole('button', { name: /New Test Plan/i })[0],
       ).toBeInTheDocument();
     });
   });
 
-  describe('New Plan button — opens the create modal', () => {
+  describe('New Test Plan button — opens the create modal', () => {
     it('shows the New Test Plan modal heading on click', async () => {
       setupMocks([makePlan()]);
       render(<TestPlansPage />);
       await userEvent.click(
-        screen.getAllByRole('button', { name: /New Plan/i })[0],
+        screen.getAllByRole('button', { name: /New Test Plan/i })[0],
       );
       await waitFor(() =>
         expect(
@@ -172,6 +172,44 @@ describe('TestPlansPage', () => {
         expect(
           screen.getByRole('heading', { name: 'Edit Test Plan' }),
         ).toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe('given a search term — filters the visible plans', () => {
+    it('hides plans that do not match the typed name', async () => {
+      setupMocks([
+        makePlan({ id: 'plan-1', name: 'Sprint 1' }),
+        makePlan({ id: 'plan-2', name: 'Regression' }),
+      ]);
+      render(<TestPlansPage />);
+      await userEvent.type(
+        screen.getByPlaceholderText('Search test plans…'),
+        'Sprint',
+      );
+
+      await waitFor(() =>
+        expect(screen.queryByText('Regression')).not.toBeInTheDocument(),
+      );
+      expect(screen.getByText('Sprint 1')).toBeInTheDocument();
+    });
+  });
+
+  describe('given Delete is clicked and confirmed — deletes the plan', () => {
+    it('calls the delete mutation with the selected plan id', async () => {
+      setupMocks([makePlan({ id: 'plan-1', name: 'Sprint 1' })]);
+      render(<TestPlansPage />);
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Delete plan' }),
+      );
+      await userEvent.click(
+        await screen.findByRole('button', { name: /^delete$/i }),
+      );
+
+      expect(noopMutation.mutate).toHaveBeenCalledWith(
+        'plan-1',
+        expect.anything(),
       );
     });
   });

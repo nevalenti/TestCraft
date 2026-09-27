@@ -35,6 +35,9 @@ vi.mock('@/lib/env', () => ({
   env: { VITE_API_URL: 'http://localhost:5000' },
 }));
 
+const notifyMock = vi.hoisted(() => vi.fn());
+vi.mock('@/lib/notify', () => ({ notify: notifyMock }));
+
 beforeEach(() => {
   mockConnection.on.mockClear();
   mockConnection.off.mockClear();
@@ -43,6 +46,7 @@ beforeEach(() => {
   mockConnection.start.mockClear().mockResolvedValue(undefined);
   mockConnection.stop.mockClear().mockResolvedValue(undefined);
   mockConnection.invoke.mockClear().mockResolvedValue(undefined);
+  notifyMock.mockClear();
 });
 
 describe('useSignalR', () => {
@@ -203,6 +207,48 @@ describe('useSignalR', () => {
       await act(async () => {});
 
       expect(mockConnection.stop).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('given unmount while start() is still pending — avoids the stop/start race', () => {
+    it('does not call stop() until the in-flight start() has settled', async () => {
+      let resolveStart!: () => void;
+      mockConnection.start.mockReturnValue(
+        // eslint-disable-next-line unicorn/prefer-promise-with-resolvers -- Promise.withResolvers needs an ES2024 lib target; this project's tsconfig targets ES2023.
+        new Promise<void>((resolve) => {
+          resolveStart = resolve;
+        }),
+      );
+
+      const { unmount } = renderHook(() => useSignalR('run-1', {}));
+      unmount();
+      await act(async () => {});
+
+      expect(mockConnection.stop).not.toHaveBeenCalled();
+
+      resolveStart();
+      await act(async () => {});
+
+      expect(mockConnection.stop).toHaveBeenCalledOnce();
+    });
+
+    it('does not show the "unavailable" error toast for a deliberate unmount', async () => {
+      let rejectStart!: (error: unknown) => void;
+      mockConnection.start.mockReturnValue(
+        // eslint-disable-next-line unicorn/prefer-promise-with-resolvers -- Promise.withResolvers needs an ES2024 lib target; this project's tsconfig targets ES2023.
+        new Promise<void>((_, reject) => {
+          rejectStart = reject;
+        }),
+      );
+
+      const { unmount } = renderHook(() => useSignalR('run-1', {}));
+      unmount();
+      await act(async () => {});
+
+      rejectStart(new Error('connection was stopped during negotiation'));
+      await act(async () => {});
+
+      expect(notifyMock).not.toHaveBeenCalled();
     });
   });
 });

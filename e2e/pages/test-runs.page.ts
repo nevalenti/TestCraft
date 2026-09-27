@@ -13,12 +13,12 @@ export class TestRunsPage {
     await this.page.goto(projectPath);
     await this.page.getByRole('tab', { name: /Test Runs/i }).click();
     await expect(
-      this.page.getByRole('button', { name: 'New Run' }),
+      this.page.getByRole('button', { name: 'New Test Run' }),
     ).toBeVisible();
   }
 
   get createButton() {
-    return this.page.getByRole('button', { name: 'New Run' });
+    return this.page.getByRole('button', { name: 'New Test Run' });
   }
 
   get dialog() {

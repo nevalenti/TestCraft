@@ -1,4 +1,4 @@
-import { PlusIcon, RectangleStackIcon } from '@heroicons/react/24/solid';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import type {
   CreateTestSuite,
   TestSuite,
@@ -9,12 +9,8 @@ import { useState } from 'react';
 import { SourceFilter } from '@/components/SourceFilter';
 import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListToolbar } from '@/components/ui/ListToolbar';
-import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
-import { ResourceCard } from '@/components/ui/ResourceCard';
-import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { ResourceView } from '@/components/ui/ResourceView';
-import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestSuite,
   useDeleteTestSuite,
@@ -22,19 +18,17 @@ import {
   useUpdateTestSuite,
 } from '@/features/testSuites/hooks';
 import { SuiteForm } from '@/features/testSuites/SuiteForm';
+import { SuitesTable } from '@/features/testSuites/SuitesTable';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { formatDate } from '@/lib/format';
-import { useViewModeStore } from '@/stores/viewMode';
 
 export const SuitesTab = () => {
   const projectId = useRequiredParam('projectId');
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
-  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestSuite>();
   const {
@@ -74,64 +68,13 @@ export const SuitesTab = () => {
     ? allSuites.filter((suite) => suite.source === sourceFilter)
     : suites;
 
-  const renderListItem = (suite: TestSuite) => (
-    <ResourceListItem
-      key={suite.id}
-      testId="suite-card"
-      onEdit={() => openEdit(suite)}
-      onDelete={() => openDelete(suite)}
-      to={`/projects/${projectId}/suites/${suite.id}`}
-      label="test suite"
-      cardBg="card-bg-success"
-      accentText="text-success"
-      typeIcon={<RectangleStackIcon className="size-4" />}
-    >
-      <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-sm font-semibold">{suite.name}</span>
-        <p className="truncate text-xs text-base-content/70">
-          {suite.description ?? (
-            <span className="text-base-content/55 italic">No description</span>
-          )}
-        </p>
-      </div>
-      <div className="hidden shrink-0 items-center gap-2 sm:flex">
-        {suite.source && <MetaPill>{suite.source}</MetaPill>}
-        <span className="text-xs font-medium text-base-content/55 tabular-nums">
-          {formatDate(suite.createdAt)}
-        </span>
-      </div>
-    </ResourceListItem>
-  );
-
-  const renderCard = (suite: TestSuite) => (
-    <ResourceCard
-      key={suite.id}
-      testId="suite-card"
-      onEdit={() => openEdit(suite)}
-      onDelete={() => openDelete(suite)}
-      to={`/projects/${projectId}/suites/${suite.id}`}
-      label="test suite"
-      cardBg="card-bg-success"
-      accentText="text-success"
-      typeIcon={<RectangleStackIcon className="size-3.5" />}
-    >
-      <div className="flex flex-col gap-1">
-        <span className="line-clamp-2 text-base leading-snug font-semibold">
-          {suite.name}
-        </span>
-        <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-          {suite.description ?? (
-            <span className="text-base-content/55 italic">No description</span>
-          )}
-        </p>
-      </div>
-      <div className="flex items-center justify-between gap-2">
-        {suite.source ? <MetaPill>{suite.source}</MetaPill> : <span />}
-        <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
-          {formatDate(suite.createdAt)}
-        </span>
-      </div>
-    </ResourceCard>
+  const renderTable = (items: TestSuite[]) => (
+    <SuitesTable
+      suites={items}
+      projectId={projectId}
+      onEdit={openEdit}
+      onDelete={openDelete}
+    />
   );
 
   return (
@@ -141,10 +84,9 @@ export const SuitesTab = () => {
         onSearch={setSearch}
         placeholder="Search test suites…"
       >
-        <ViewToggle />
         <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" aria-hidden="true" />
-          New Suite
+          New Test Suite
         </button>
       </ListToolbar>
 
@@ -164,11 +106,10 @@ export const SuitesTab = () => {
         onRetry={refetch}
         items={suites}
         displayItems={visibleSuites}
-        viewMode={viewMode}
+        viewMode="list"
         emptyTitle="No test suites yet"
         emptyDescription="Group related test cases into suites."
-        renderListItem={renderListItem}
-        renderCard={renderCard}
+        renderTable={renderTable}
       />
 
       <Modal

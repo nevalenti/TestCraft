@@ -92,7 +92,8 @@ spec:
             - -c
             - |
               cp -r /opt/keycloak/themes/* /themes/ &&
-              mkdir -p /themes/dracula/login &&
+              mkdir -p /themes/dracula/login/resources/images &&
+              cp /theme-source/contours.svg /themes/dracula/login/resources/images/contours.svg &&
               cp /theme-source/theme.properties /themes/dracula/login/theme.properties &&
               cp /theme-source/template.ftl /themes/dracula/login/template.ftl &&
               cp /theme-source/login.ftl /themes/dracula/login/login.ftl &&

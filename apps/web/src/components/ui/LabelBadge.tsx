@@ -2,7 +2,7 @@ import type { Label } from '@testcraft/types';
 
 export const LabelBadge = ({ label }: { label: Label }) => (
   <span
-    className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+    className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
     style={{
       backgroundColor: `${label.color}22`,
       color: label.color,

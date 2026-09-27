@@ -35,9 +35,9 @@ export const StepRow = ({ step, onEdit, onDelete }: StepRowProps) => {
     >
       <div
         data-testid="step-row"
-        style={{ '--card-glow': 'var(--color-info)' } as React.CSSProperties}
+        style={{ '--card-glow': 'var(--color-primary)' } as React.CSSProperties}
         className={cn(
-          'card-bg-info group relative rounded-lg border transition-[box-shadow] duration-200 ease-out',
+          'card-bg-primary group relative rounded-lg border transition-[box-shadow] duration-200 ease-out',
           isDragging
             ? 'border-dashed border-primary/30 shadow-none'
             : 'border-base-content/20 shadow-card hover:shadow-[0_0_0_1px_oklch(from_var(--card-glow)_l_c_h/0.55),0_0_6px_0px_oklch(from_var(--card-glow)_l_c_h/0.2)]',

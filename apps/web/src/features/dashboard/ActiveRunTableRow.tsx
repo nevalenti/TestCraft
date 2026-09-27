@@ -2,6 +2,7 @@ import { BoltIcon, ClockIcon } from '@heroicons/react/24/solid';
 import { Link } from '@tanstack/react-router';
 import type { Project, TestRun, TestRunSummary } from '@testcraft/types';
 
+import { MetaPill } from '@/components/ui/MetaPill';
 import { formatCiRunName } from '@/features/dashboard/format';
 import {
   ProgressBarSkeleton,
@@ -9,7 +10,7 @@ import {
   RunAvatarBubble,
   RunMiniBadges,
   RunResultsBar,
-} from '@/features/dashboard/RunListItemParts';
+} from '@/features/testRuns/RunListItemParts';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { formatElapsed } from '@/lib/format';
 
@@ -31,25 +32,31 @@ export const ActiveRunTableRow = ({
   const isSummaryLoading = summary === undefined;
   const isSummarySkeletonVisible = useIsLoadingVisible(isSummaryLoading);
 
-  let progressContent: React.ReactNode = null;
-  let resultsContent: React.ReactNode = null;
+  let resultContent: React.ReactNode = null;
   if (isSummaryLoading) {
     if (isSummarySkeletonVisible) {
-      progressContent = <ProgressBarSkeleton />;
-      resultsContent = <ResultsBadgesSkeleton />;
+      resultContent = (
+        <div className="flex items-center gap-2.5">
+          <ProgressBarSkeleton />
+          <ResultsBadgesSkeleton />
+        </div>
+      );
     }
   } else if (hasResults) {
-    progressContent = <RunResultsBar passed={passed} failed={failed} />;
-    resultsContent = (
-      <RunMiniBadges passed={passed} failed={failed} emphasize />
+    resultContent = (
+      <div className="flex items-center gap-2.5">
+        <div className="max-w-28 min-w-16 flex-1">
+          <RunResultsBar passed={passed} failed={failed} />
+        </div>
+        <RunMiniBadges passed={passed} failed={failed} emphasize />
+      </div>
     );
   } else {
-    progressContent = (
+    resultContent = (
       <span className="text-xs whitespace-nowrap text-base-content/55">
         Waiting for results…
       </span>
     );
-    resultsContent = <span className="text-xs text-base-content/40">—</span>;
   }
 
   return (
@@ -80,22 +87,36 @@ export const ActiveRunTableRow = ({
             executedByAvatarUrl={run.executedByAvatarUrl}
             source={run.source}
           />
-          <span
-            className="min-w-0 truncate text-sm font-semibold group-hover:underline"
-            title={run.name}
-          >
-            {formatCiRunName(run.name)}
+          <span className="flex min-w-0 flex-col">
+            <span
+              className="truncate text-sm font-semibold group-hover:underline"
+              title={run.name}
+            >
+              {formatCiRunName(run.name)}
+            </span>
+            <span className="truncate text-xs text-base-content/55">
+              {run.environment}
+              {run.source && ` · ${run.source}`}
+            </span>
           </span>
         </Link>
       </td>
-      <td className="text-sm font-semibold whitespace-nowrap text-base-content/85">
-        {project?.name ?? '—'}
+      <td>
+        {project ? (
+          <Link
+            to="/projects/$projectId/runs"
+            params={{ projectId: project.id }}
+            className="inline-flex"
+          >
+            <MetaPill className="transition-colors hover:text-base-content">
+              {project.name}
+            </MetaPill>
+          </Link>
+        ) : (
+          <span className="text-xs text-base-content/40">—</span>
+        )}
       </td>
-      <td className="text-xs whitespace-nowrap text-base-content/70">
-        {run.environment}
-      </td>
-      <td className="min-w-36">{progressContent}</td>
-      <td>{resultsContent}</td>
+      <td>{resultContent}</td>
       <td className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
         {formatElapsed(run.createdAt)} ago
       </td>

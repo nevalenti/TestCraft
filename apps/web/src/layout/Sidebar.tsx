@@ -17,7 +17,7 @@ export const Sidebar = () => {
     <aside className="hidden w-56 shrink-0 flex-col border-r border-border bg-base-200 lg:flex">
       <Link
         to="/"
-        className="header-stripes flex h-14 shrink-0 items-center gap-2.5 border-b border-border px-4 text-base-content transition-opacity hover:opacity-75"
+        className="header-stripes flex h-14 shrink-0 items-center gap-2.5 border-b border-border bg-base-300 px-4 text-base-content transition-opacity hover:opacity-75"
       >
         <LogoMark />
         <span

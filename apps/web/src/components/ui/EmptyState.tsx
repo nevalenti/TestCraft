@@ -1,4 +1,4 @@
-import { InboxIcon } from '@heroicons/react/24/solid';
+import { InboxIcon } from '@heroicons/react/24/outline';
 
 import { cn } from '@/lib/cn';
 
@@ -17,21 +17,16 @@ export const EmptyState = ({
   icon,
   iconClassName,
 }: EmptyStateProps) => (
-  <div className="flex flex-col items-center justify-center py-20 text-center select-none">
-    <div
-      className={cn(
-        'mb-4 flex size-12 items-center justify-center rounded-xl border border-border bg-base-200 text-base-content/60',
-        iconClassName,
-      )}
-    >
+  <div className="flex flex-col items-center justify-center gap-2 py-10 text-center select-none">
+    <span className={cn('text-base-content/30 opacity-70', iconClassName)}>
       {icon ?? <InboxIcon className="size-5" />}
-    </div>
-    <p className="text-sm font-semibold text-base-content/80">{title}</p>
+    </span>
+    <p className="text-sm font-medium text-base-content/70">{title}</p>
     {description && (
-      <p className="mt-1.5 max-w-[220px] text-xs leading-relaxed text-base-content/65">
+      <p className="max-w-[240px] text-xs leading-relaxed text-base-content/50">
         {description}
       </p>
     )}
-    {action && <div className="mt-5 flex justify-center">{action}</div>}
+    {action && <div className="mt-2 flex justify-center">{action}</div>}
   </div>
 );

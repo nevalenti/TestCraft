@@ -89,6 +89,8 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
           renderSecondary={(wh) => wh.events.join(', ')}
           onRemove={(wh) => deleteWebhook.mutate(wh.id)}
           removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
+          emptyTitle="No webhooks yet"
+          emptyDescription="Add a webhook to get notified on run events."
         />
       )}
     </div>

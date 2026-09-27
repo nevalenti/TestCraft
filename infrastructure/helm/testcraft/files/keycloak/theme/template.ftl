@@ -65,11 +65,18 @@
       }
 
       .header-stripes {
-        background-image: repeating-linear-gradient(
-          45deg,
-          transparent 0px, transparent 8px,
-          oklch(1 0 0 / 0.06) 8px, oklch(1 0 0 / 0.06) 10px
-        );
+        position: relative;
+        isolation: isolate;
+      }
+
+      .header-stripes::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0.4;
+        background: url('${url.resourcesPath}/images/contours.svg') center / cover fixed no-repeat;
       }
 
       @keyframes modal-enter {
@@ -95,12 +102,47 @@
       ::-webkit-scrollbar { width: 5px; height: 5px; }
       ::-webkit-scrollbar-track { background: transparent; }
       ::-webkit-scrollbar-thumb { background: var(--color-base-300); border-radius: 999px; }
+
+      .contour-background {
+        position: relative;
+        isolation: isolate;
+      }
+
+      .contour-background::before,
+      .contour-background::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        z-index: -1;
+        pointer-events: none;
+        border-radius: inherit;
+      }
+
+      .contour-background::before {
+        opacity: 0.5;
+        background: url('${url.resourcesPath}/images/contours.svg') center / cover no-repeat;
+        mask-image: radial-gradient(ellipse at 40% 50%, black 25%, transparent 90%);
+      }
+
+      .contour-background::after {
+        background:
+          radial-gradient(
+            ellipse at 0% 35%,
+            color-mix(in oklab, var(--color-primary) 7%, transparent),
+            transparent 65%
+          ),
+          radial-gradient(
+            ellipse at 100% 85%,
+            color-mix(in oklab, var(--color-accent) 4%, transparent),
+            transparent 55%
+          );
+      }
     </style>
   </head>
-  <body class="text-base-content">
-    <div class="kc-shell bg-base-100">
+  <body class="contour-background text-base-content">
+    <div class="kc-shell bg-base-300">
 
-      <nav class="navbar bg-base-200 header-stripes shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; height: 3.5rem; border-bottom: 1px solid var(--color-border);">
+      <nav class="navbar bg-base-300 header-stripes shrink-0 px-4 sm:px-6 lg:px-8" style="min-height: 3.5rem; height: 3.5rem; border-bottom: 1px solid var(--color-border);">
         <div class="flex-1 flex items-center min-w-0">
           <a href="https://testcraft.pro" class="flex items-center gap-2.5 transition-opacity hover:opacity-75 text-base-content shrink-0">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 shrink-0 text-primary" aria-hidden="true">

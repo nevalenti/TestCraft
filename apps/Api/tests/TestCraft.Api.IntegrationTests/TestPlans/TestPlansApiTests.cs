@@ -56,6 +56,31 @@ public class TestPlansApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task AddCase_Then_GetCases_ReturnsCaseInOrder()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Login Test");
+        var plan = await client.CreatePlanAsync(project.Id);
+
+        await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
+            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
+        );
+
+        var getResponse = await client.GetAsync(
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases"
+        );
+        getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var cases = await getResponse.Content.ReadFromJsonAsync<
+            List<TestPlanCaseResponse>
+        >(ApiTestHelpers.JsonOptions);
+        cases.Should().ContainSingle(planCase => planCase.TestCaseId == testCase.Id);
+    }
+
+    [Fact]
     public async Task AddCase_Then_GetById_IncludesCaseInPlan()
     {
         var client = CreateClient(Guid.NewGuid());

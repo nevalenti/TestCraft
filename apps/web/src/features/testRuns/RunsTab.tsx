@@ -8,7 +8,6 @@ import { ConfirmDialog } from '@/components/ui/ConfirmDialog';
 import { ListToolbar } from '@/components/ui/ListToolbar';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceView } from '@/components/ui/ResourceView';
-import { ViewToggle } from '@/components/ui/ViewToggle';
 import {
   useCreateTestRun,
   useDeleteTestRun,
@@ -19,22 +18,19 @@ import {
   useUpdateTestRun,
 } from '@/features/testRuns/hooks';
 import { ImportForm } from '@/features/testRuns/resultImport/ImportForm';
-import { RunCard } from '@/features/testRuns/RunCard';
 import { RunForm } from '@/features/testRuns/RunForm';
-import { RunListItem } from '@/features/testRuns/RunListItem';
+import { RunsTable } from '@/features/testRuns/RunsTable';
 import { useRunSources } from '@/features/testRuns/useRunSources';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useViewModeStore } from '@/stores/viewMode';
 
 export const RunsTab = () => {
   const projectId = useRequiredParam('projectId');
   const [search, setSearch] = useState('');
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
-  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete, openImport } =
     useModal<TestRun>();
   const {
@@ -88,25 +84,13 @@ export const RunsTab = () => {
     sourceFilter,
   );
 
-  const renderListItem = (run: TestRun) => (
-    <RunListItem
-      key={run.id}
-      run={run}
-      summary={summaryMap.get(run.id)}
+  const renderTable = (items: TestRun[]) => (
+    <RunsTable
+      runs={items}
       projectId={projectId}
-      onEdit={() => openEdit(run)}
-      onDelete={() => openDelete(run)}
-    />
-  );
-
-  const renderCard = (run: TestRun) => (
-    <RunCard
-      key={run.id}
-      run={run}
-      summary={summaryMap.get(run.id)}
-      projectId={projectId}
-      onEdit={() => openEdit(run)}
-      onDelete={() => openDelete(run)}
+      summaryMap={summaryMap}
+      onEdit={openEdit}
+      onDelete={openDelete}
     />
   );
 
@@ -117,7 +101,6 @@ export const RunsTab = () => {
         onSearch={setSearch}
         placeholder="Search test runs…"
       >
-        <ViewToggle />
         <button
           className="btn gap-1.5 btn-sm btn-secondary"
           onClick={openImport}
@@ -127,7 +110,7 @@ export const RunsTab = () => {
         </button>
         <button className="btn btn-sm btn-primary" onClick={openCreate}>
           <PlusIcon className="size-4" aria-hidden="true" />
-          New Run
+          New Test Run
         </button>
       </ListToolbar>
 
@@ -147,11 +130,10 @@ export const RunsTab = () => {
         onRetry={refetch}
         items={runs}
         displayItems={visibleRuns}
-        viewMode={viewMode}
+        viewMode="list"
         emptyTitle="No test runs yet"
         emptyDescription="Start a test run to record and track results."
-        renderListItem={renderListItem}
-        renderCard={renderCard}
+        renderTable={renderTable}
       />
 
       <Modal

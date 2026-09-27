@@ -5,6 +5,57 @@ import keycloak from '@/auth/keycloak';
 import { env } from '@/lib/env';
 import { notify } from '@/lib/notify';
 
+interface CancellationState {
+  wasCancelled: boolean;
+}
+
+const startConnection = async (
+  connection: HubConnection,
+  runId: string,
+  state: CancellationState,
+) => {
+  try {
+    await connection.start();
+    if (state.wasCancelled) return;
+    await connection.invoke('JoinRun', runId);
+  } catch (error) {
+    // A deliberate unmount aborts the in-flight start via cleanup's
+    // connection.stop() below, which rejects the same way a real connection
+    // failure would — don't surface an error toast for that.
+    if (state.wasCancelled) return;
+    console.error(error);
+    notify(
+      'Live updates are unavailable — refresh the page to retry.',
+      'error',
+    );
+  }
+};
+
+const stopConnection = async (
+  connection: HubConnection,
+  runId: string,
+  startPromise: Promise<void>,
+) => {
+  // Wait for the in-flight start to settle before stopping — calling stop()
+  // while start() is still negotiating throws "the connection was stopped
+  // during negotiation" instead of cleanly tearing down.
+  try {
+    await startPromise;
+  } catch {
+    // already surfaced (or suppressed) by startConnection above
+  }
+  try {
+    await connection.invoke('LeaveRun', runId);
+  } catch (error) {
+    console.debug('Failed to leave SignalR run group during cleanup', error);
+  }
+  try {
+    await connection.stop();
+  } catch (error) {
+    console.debug('Failed to stop SignalR connection during cleanup', error);
+  }
+};
+
 export const useSignalR = (
   runId: string | undefined,
   handlers: Record<string, (data: unknown) => void>,
@@ -53,39 +104,13 @@ export const useSignalR = (
       notify('Live updates disconnected, reconnecting…', 'error');
     });
 
-    (async () => {
-      try {
-        await connection.start();
-        await connection.invoke('JoinRun', runId);
-      } catch (error) {
-        console.error(error);
-        notify(
-          'Live updates are unavailable — refresh the page to retry.',
-          'error',
-        );
-      }
-    })();
+    const cancellationState: CancellationState = { wasCancelled: false };
+    const startPromise = startConnection(connection, runId, cancellationState);
 
     return () => {
+      cancellationState.wasCancelled = true;
       connectionRef.current = null;
-      (async () => {
-        try {
-          await connection.invoke('LeaveRun', runId);
-        } catch (error) {
-          console.debug(
-            'Failed to leave SignalR run group during cleanup',
-            error,
-          );
-        }
-        try {
-          await connection.stop();
-        } catch (error) {
-          console.debug(
-            'Failed to stop SignalR connection during cleanup',
-            error,
-          );
-        }
-      })();
+      void stopConnection(connection, runId, startPromise);
     };
   }, [runId]);
 

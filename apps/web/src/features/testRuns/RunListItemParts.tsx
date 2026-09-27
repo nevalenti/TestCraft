@@ -1,7 +1,7 @@
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import type { ReactNode } from 'react';
 
-import { RunAvatar } from '@/features/dashboard/RunAvatar';
+import { RunAvatar } from '@/features/testRuns/RunAvatar';
 import { cn } from '@/lib/cn';
 
 export const RunAvatarBubble = ({

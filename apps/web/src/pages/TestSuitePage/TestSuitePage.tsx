@@ -11,7 +11,6 @@ import { ListToolbar } from '@/components/ui/ListToolbar';
 import { MetaPill } from '@/components/ui/MetaPill';
 import { Modal } from '@/components/ui/Modal';
 import { ResourceView } from '@/components/ui/ResourceView';
-import { ViewToggle } from '@/components/ui/ViewToggle';
 import { useProject } from '@/features/projects/hooks';
 import {
   useCreateTestCase,
@@ -19,23 +18,20 @@ import {
   useTestCases,
   useUpdateTestCase,
 } from '@/features/testCases/hooks';
-import { TestCaseCard } from '@/features/testCases/TestCaseCard';
 import { TestCaseForm } from '@/features/testCases/TestCaseForm';
-import { TestCaseListItem } from '@/features/testCases/TestCaseListItem';
+import { TestCasesTable } from '@/features/testCases/TestCasesTable';
 import { useTestSuite } from '@/features/testSuites/hooks';
 import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { useModal } from '@/hooks/useModal';
 import { useRequiredParam } from '@/hooks/useRequiredParam';
-import { useViewModeStore } from '@/stores/viewMode';
 
 export const TestSuitePage = () => {
   const projectId = useRequiredParam('projectId');
   const suiteId = useRequiredParam('suiteId');
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
-  const viewMode = useViewModeStore((state) => state.viewMode);
   const { modal, close, openCreate, openEdit, openDelete } =
     useModal<TestCase>();
 
@@ -68,25 +64,13 @@ export const TestSuitePage = () => {
 
   const deleteItem = modal.type === 'delete' ? modal.item : null;
 
-  const renderListItem = (testCase: TestCase) => (
-    <TestCaseListItem
-      key={testCase.id}
-      testCase={testCase}
+  const renderTable = (items: TestCase[]) => (
+    <TestCasesTable
+      testCases={items}
       projectId={projectId}
       suiteId={suiteId}
-      onEdit={() => openEdit(testCase)}
-      onDelete={() => openDelete(testCase)}
-    />
-  );
-
-  const renderCard = (testCase: TestCase) => (
-    <TestCaseCard
-      key={testCase.id}
-      testCase={testCase}
-      projectId={projectId}
-      suiteId={suiteId}
-      onEdit={() => openEdit(testCase)}
-      onDelete={() => openDelete(testCase)}
+      onEdit={openEdit}
+      onDelete={openDelete}
     />
   );
 
@@ -110,7 +94,6 @@ export const TestSuitePage = () => {
           onSearch={setSearch}
           placeholder="Search test cases…"
         >
-          <ViewToggle />
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
             <PlusIcon className="size-4" aria-hidden="true" />
             New Test Case
@@ -125,11 +108,10 @@ export const TestSuitePage = () => {
             error={error}
             onRetry={refetch}
             items={testCases}
-            viewMode={viewMode}
+            viewMode="list"
             emptyTitle="No test cases yet"
-            emptyDescription="Add test cases to document expected behaviour."
-            renderListItem={renderListItem}
-            renderCard={renderCard}
+            emptyDescription="Add test cases to document expected behavior."
+            renderTable={renderTable}
           />
         </div>
       </section>

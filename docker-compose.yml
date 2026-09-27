@@ -89,6 +89,7 @@ services:
       - '8080:8080'
     volumes:
       - keycloak_data:/opt/keycloak/data
+      - ./infrastructure/helm/testcraft/files/keycloak/theme/resources:/opt/keycloak/themes/dracula/login/resources:ro
       - ./infrastructure/helm/testcraft/files/keycloak/theme/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro
       - ./infrastructure/helm/testcraft/files/keycloak/theme/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro
       - ./infrastructure/helm/testcraft/files/keycloak/theme/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro
