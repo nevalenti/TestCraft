@@ -56,7 +56,6 @@ vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
 
 import { testSuiteQueries, testSuitesApi } from '@/features/testSuites/api';
 import { SuitesTab } from '@/features/testSuites/SuitesTab';
-import { useViewModeStore } from '@/stores/viewMode';
 
 const makeSuite = (overrides: Partial<Record<string, unknown>> = {}) => ({
   id: 's1',
@@ -89,7 +88,6 @@ const mockSuites = (items: ReturnType<typeof makeSuite>[]) => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  useViewModeStore.setState({ viewMode: 'grid' });
   mockSuites([]);
 });
 
@@ -101,7 +99,7 @@ describe('SuitesTab', () => {
     });
   });
 
-  describe('given suites — renders a card per suite', () => {
+  describe('given suites — renders a table row per suite', () => {
     it('shows each suite name', async () => {
       mockSuites([
         makeSuite({ id: 's1', name: 'Login Flow' }),
@@ -111,21 +109,7 @@ describe('SuitesTab', () => {
 
       expect(await screen.findByText('Login Flow')).toBeInTheDocument();
       expect(screen.getByText('Checkout')).toBeInTheDocument();
-    });
-  });
-
-  describe('given the view toggle — switches between grid and list', () => {
-    it('marks list view as pressed after clicking it', async () => {
-      mockSuites([makeSuite()]);
-      renderWithClient();
-      await screen.findByText('Login Flow');
-
-      await userEvent.click(screen.getByRole('button', { name: /list view/i }));
-
-      expect(
-        screen.getByRole('button', { name: /list view/i }),
-      ).toHaveAttribute('aria-pressed', 'true');
-      expect(screen.getAllByTestId('suite-card')).toHaveLength(1);
+      expect(screen.getAllByTestId('suite-card')).toHaveLength(2);
     });
   });
 
@@ -174,7 +158,9 @@ describe('SuitesTab', () => {
       renderWithClient();
       await screen.findByText('No test suites yet');
 
-      await userEvent.click(screen.getByRole('button', { name: /new suite/i }));
+      await userEvent.click(
+        screen.getByRole('button', { name: /new test suite/i }),
+      );
       await userEvent.type(await screen.findByLabelText('Name'), 'New Suite');
       await userEvent.click(screen.getByRole('button', { name: /save/i }));
 

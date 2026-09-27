@@ -25,7 +25,7 @@ export const Header = () => {
 
   return (
     <>
-      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-200 px-3 lg:hidden">
+      <nav className="header-stripes navbar h-14 shrink-0 border-b border-border bg-base-300 px-3 lg:hidden">
         <div className="flex min-w-0 flex-1 items-center gap-1">
           <label
             htmlFor="mobile-nav-drawer"

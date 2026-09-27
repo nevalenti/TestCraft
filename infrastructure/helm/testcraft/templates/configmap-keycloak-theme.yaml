@@ -16,3 +16,5 @@ data:
 {{ .Files.Get "files/keycloak/theme/error.ftl" | indent 4 }}
   login-verify-email.ftl: |
 {{ .Files.Get "files/keycloak/theme/login-verify-email.ftl" | indent 4 }}
+  contours.svg: |
+{{ .Files.Get "files/keycloak/theme/resources/images/contours.svg" | indent 4 }}

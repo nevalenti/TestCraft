@@ -114,6 +114,7 @@ export default defineConfig([
             'drawer-overlay',
             'dropdown.*',
             'header-stripes',
+            'contour-background',
             'page-header',
             'page-content',
             'page-title',

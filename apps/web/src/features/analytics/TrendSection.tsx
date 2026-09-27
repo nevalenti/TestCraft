@@ -32,7 +32,9 @@ export const TrendSection = ({ group }: { group: SourceGroup }) => {
     const latest = data.at(-1)!;
     const previousPoint = data.length > 1 ? data.at(-2)! : null;
     const delta =
-      previousPoint === null ? null : latest.passRate - previousPoint.passRate;
+      previousPoint === null
+        ? null
+        : Math.round((latest.passRate - previousPoint.passRate) * 10) / 10;
     let sum = 0;
     for (const point of data) sum += point.passRate;
     const avg = Math.round(sum / data.length);

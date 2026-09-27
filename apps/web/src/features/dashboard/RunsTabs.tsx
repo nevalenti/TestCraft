@@ -15,54 +15,42 @@ export const RunsTabs = ({
   activeCount: number;
   completedCount: number;
 }) => (
-  <div className="inline-flex w-fit max-w-full flex-wrap gap-1 rounded-2xl border border-border bg-base-100 p-1">
+  <div className="flex items-center gap-6 border-b border-border px-4">
     <button
       type="button"
       onClick={() => onChange('active')}
       aria-pressed={tab === 'active'}
       className={cn(
-        'inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
+        'relative flex items-center gap-2 py-3 text-xs font-bold whitespace-nowrap transition-colors',
         tab === 'active'
-          ? 'card-bg-warning text-warning'
-          : 'border-transparent text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
+          ? 'text-warning'
+          : 'text-base-content/50 hover:text-base-content/75',
       )}
     >
-      <BoltIcon className="size-4" />
-      Test Runs
-      <span
-        className={cn(
-          'inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 font-mono text-xs font-bold tabular-nums',
-          tab === 'active'
-            ? 'bg-warning text-warning-content'
-            : 'bg-base-content/9',
-        )}
-      >
-        {activeCount}
-      </span>
+      <BoltIcon className="size-3.5" />
+      Active Runs
+      <span className="opacity-70">{activeCount}</span>
+      {tab === 'active' && (
+        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-warning" />
+      )}
     </button>
     <button
       type="button"
       onClick={() => onChange('completed')}
       aria-pressed={tab === 'completed'}
       className={cn(
-        'inline-flex items-center gap-2 rounded-xl border px-3.5 py-2 text-sm font-bold whitespace-nowrap transition-colors',
+        'relative flex items-center gap-2 py-3 text-xs font-bold whitespace-nowrap transition-colors',
         tab === 'completed'
-          ? 'card-bg-success text-success'
-          : 'border-transparent text-base-content/60 hover:bg-base-content/6 hover:text-base-content',
+          ? 'text-success'
+          : 'text-base-content/50 hover:text-base-content/75',
       )}
     >
-      <CheckCircleIcon className="size-4" />
+      <CheckCircleIcon className="size-3.5" />
       Recently Completed
-      <span
-        className={cn(
-          'inline-flex min-w-5 items-center justify-center rounded-full px-1.5 py-0.5 font-mono text-xs font-bold tabular-nums',
-          tab === 'completed'
-            ? 'bg-success text-success-content'
-            : 'bg-base-content/9',
-        )}
-      >
-        {completedCount}
-      </span>
+      <span className="opacity-70">{completedCount}</span>
+      {tab === 'completed' && (
+        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-success" />
+      )}
     </button>
   </div>
 );

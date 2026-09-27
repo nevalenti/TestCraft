@@ -48,13 +48,21 @@
   }
 
   .header-stripes {
-    background-image: repeating-linear-gradient(
-      45deg,
-      transparent 0px,
-      transparent 8px,
-      oklch(1 0 0 / 0.06) 8px,
-      oklch(1 0 0 / 0.06) 10px
-    );
+    position: relative;
+    isolation: isolate;
+  }
+
+  .header-stripes::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.4;
+    /* Same artwork as .contour-background, anchored to the viewport (not each
+       element's own box) so the header reads as a window onto the same
+       background pattern instead of a separate, disconnected texture. */
+    background: url('/contours.svg') center / cover fixed no-repeat;
   }
 
   .font-display {
@@ -149,6 +157,10 @@
     animation: modal-enter 0.18s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  dialog.modal::backdrop {
+    background-color: oklch(0% 0 0 / 0.55);
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
@@ -180,4 +192,39 @@
     outline-color: oklch(from var(--color-primary) l c h / 0.22);
     outline-width: 3px;
   }
+}
+
+.contour-background {
+  position: relative;
+  isolation: isolate;
+}
+
+.contour-background::before,
+.contour-background::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+.contour-background::before {
+  opacity: 0.5;
+  background: url('/contours.svg') center / cover no-repeat;
+  mask-image: radial-gradient(ellipse at 40% 50%, black 25%, transparent 90%);
+}
+
+.contour-background::after {
+  background:
+    radial-gradient(
+      ellipse at 0% 35%,
+      color-mix(in oklab, var(--color-primary) 7%, transparent),
+      transparent 65%
+    ),
+    radial-gradient(
+      ellipse at 100% 85%,
+      color-mix(in oklab, var(--color-accent) 4%, transparent),
+      transparent 55%
+    );
 }

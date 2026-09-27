@@ -20,10 +20,10 @@ import { useRequiredParam } from '@/hooks/useRequiredParam';
 import { formatDate, truncate } from '@/lib/format';
 
 const COLORS = {
-  passed: '#36d399',
-  failed: '#f87272',
-  blocked: '#fbbd23',
-  skipped: '#94a3b8',
+  passed: 'var(--color-success)',
+  failed: 'var(--color-error)',
+  blocked: 'var(--color-warning)',
+  skipped: 'var(--color-neutral)',
 };
 
 export const AnalyticsSuiteTab = () => {

@@ -8,24 +8,28 @@ const typeConfig: Record<
   { cls: string; textCls: string; dismissCls: string }
 > = {
   success: {
-    cls: 'border-success/40 bg-base-100 border shadow-lg',
-    textCls: 'text-success',
-    dismissCls: 'text-success/70 hover:bg-success/10 hover:text-success',
+    cls: 'bg-success shadow-lg',
+    textCls: 'text-success-content',
+    dismissCls:
+      'text-success-content/70 hover:bg-success-content/10 hover:text-success-content',
   },
   error: {
-    cls: 'border-error/40 bg-base-100 border shadow-lg',
-    textCls: 'text-error',
-    dismissCls: 'text-error/70 hover:bg-error/10 hover:text-error',
+    cls: 'bg-error shadow-lg',
+    textCls: 'text-error-content',
+    dismissCls:
+      'text-error-content/70 hover:bg-error-content/10 hover:text-error-content',
   },
   info: {
-    cls: 'border-info/40 bg-base-100 border shadow-lg',
-    textCls: 'text-info',
-    dismissCls: 'text-info/70 hover:bg-info/10 hover:text-info',
+    cls: 'bg-info shadow-lg',
+    textCls: 'text-info-content',
+    dismissCls:
+      'text-info-content/70 hover:bg-info-content/10 hover:text-info-content',
   },
   warning: {
-    cls: 'border-warning/40 bg-base-100 border shadow-lg',
-    textCls: 'text-warning',
-    dismissCls: 'text-warning/70 hover:bg-warning/10 hover:text-warning',
+    cls: 'bg-warning shadow-lg',
+    textCls: 'text-warning-content',
+    dismissCls:
+      'text-warning-content/70 hover:bg-warning-content/10 hover:text-warning-content',
   },
 };
 

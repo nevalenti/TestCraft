@@ -1,14 +1,14 @@
 const PALETTE = [
-  '#818cf8',
-  '#36d399',
-  '#f97316',
-  '#f43f5e',
-  '#facc15',
-  '#22d3ee',
-  '#a78bfa',
+  'var(--color-primary)',
+  'var(--color-secondary)',
+  'var(--color-accent)',
+  'var(--color-info)',
+  'var(--color-success)',
+  'var(--color-warning)',
+  'var(--color-error)',
 ];
 
-const MANUAL_COLOR = '#94a3b8';
+const MANUAL_COLOR = 'var(--color-neutral)';
 
 export const sourceLabel = (source: string | undefined) =>
   source ? source.charAt(0).toUpperCase() + source.slice(1) : 'Manual';

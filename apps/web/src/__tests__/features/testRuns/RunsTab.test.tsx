@@ -69,7 +69,6 @@ vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
 import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
 import { importsApi } from '@/features/testRuns/resultImport/importsApi';
 import { RunsTab } from '@/features/testRuns/RunsTab';
-import { useViewModeStore } from '@/stores/viewMode';
 
 const makeRun = (overrides: Partial<Record<string, unknown>> = {}) => ({
   id: 'r1',
@@ -103,7 +102,6 @@ const mockRuns = (items: ReturnType<typeof makeRun>[]) => {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  useViewModeStore.setState({ viewMode: 'grid' });
   mockRuns([]);
 });
 
@@ -115,7 +113,7 @@ describe('RunsTab', () => {
     });
   });
 
-  describe('given runs — renders a card per run', () => {
+  describe('given runs — renders a table row per run', () => {
     it('shows each run name', async () => {
       mockRuns([
         makeRun({ id: 'r1', name: 'Sprint 42 Regression' }),
@@ -127,21 +125,7 @@ describe('RunsTab', () => {
         await screen.findByText('Sprint 42 Regression'),
       ).toBeInTheDocument();
       expect(screen.getByText('Nightly Smoke')).toBeInTheDocument();
-    });
-  });
-
-  describe('given the view toggle — switches between grid and list', () => {
-    it('marks list view as pressed after clicking it', async () => {
-      mockRuns([makeRun()]);
-      renderWithClient();
-      await screen.findByText('Sprint 42 Regression');
-
-      await userEvent.click(screen.getByRole('button', { name: /list view/i }));
-
-      expect(
-        screen.getByRole('button', { name: /list view/i }),
-      ).toHaveAttribute('aria-pressed', 'true');
-      expect(screen.getAllByTestId('run-card')).toHaveLength(1);
+      expect(screen.getAllByTestId('run-card')).toHaveLength(2);
     });
   });
 
@@ -190,7 +174,9 @@ describe('RunsTab', () => {
       renderWithClient();
       await screen.findByText('No test runs yet');
 
-      await userEvent.click(screen.getByRole('button', { name: /new run/i }));
+      await userEvent.click(
+        screen.getByRole('button', { name: /new test run/i }),
+      );
       await userEvent.type(await screen.findByLabelText('Name'), 'New Run');
       await userEvent.type(screen.getByLabelText('Environment'), 'staging');
       await userEvent.click(screen.getByRole('button', { name: /save/i }));

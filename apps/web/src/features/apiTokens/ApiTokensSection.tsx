@@ -128,6 +128,8 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
           removeAriaLabel={() => 'Revoke token'}
           removeLabel="Revoke"
           isRemoveHidden={(t) => t.isRevoked}
+          emptyTitle="No API tokens yet"
+          emptyDescription="Create a token to authenticate CI pipelines and scripts."
         />
       )}
     </div>

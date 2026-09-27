@@ -1,11 +1,5 @@
-import {
-  BoltIcon,
-  CheckCircleIcon,
-  ClipboardDocumentListIcon,
-  ClockIcon,
-  FolderIcon,
-} from '@heroicons/react/24/solid';
-import type { Project, TestRun } from '@testcraft/types';
+import { CheckCircleIcon, ClockIcon } from '@heroicons/react/24/outline';
+import type { TestRun } from '@testcraft/types';
 import { TestRunStatus } from '@testcraft/types';
 import { compareDesc, format } from 'date-fns';
 import { useMemo, useState } from 'react';
@@ -20,7 +14,6 @@ import { CompletedRunTableRow } from '@/features/dashboard/CompletedRunTableRow'
 import { DashboardSkeleton } from '@/features/dashboard/DashboardSkeleton';
 import { useDashboardTabStore } from '@/features/dashboard/dashboardTab';
 import { RunsTabs } from '@/features/dashboard/RunsTabs';
-import { StatCard } from '@/features/dashboard/StatCard';
 import { useProjects } from '@/features/projects/hooks';
 import {
   useProjectsTestRuns,
@@ -38,12 +31,11 @@ const getGreeting = () => {
   return 'Good evening';
 };
 
-type DashboardSortKey = 'name' | 'project' | 'environment' | 'date';
+type DashboardSortKey = 'name' | 'date';
 
 const sortRuns = (
   runs: TestRun[],
   sort: SortState<DashboardSortKey> | null,
-  projectMap: Map<string, Project>,
   dateOf: (run: TestRun) => string,
 ): TestRun[] => {
   if (!sort) return runs;
@@ -53,13 +45,6 @@ const sortRuns = (
 
   return runs.toSorted((runA, runB) => {
     if (key === 'name') return sign * runA.name.localeCompare(runB.name);
-    if (key === 'environment')
-      return sign * runA.environment.localeCompare(runB.environment);
-    if (key === 'project') {
-      const nameA = projectMap.get(runA.projectId)?.name ?? '';
-      const nameB = projectMap.get(runB.projectId)?.name ?? '';
-      return sign * nameA.localeCompare(nameB);
-    }
     return sign * dateOf(runA).localeCompare(dateOf(runB));
   });
 };
@@ -78,11 +63,7 @@ export const DashboardPage = () => {
     [projects],
   );
 
-  const {
-    runs: allRuns,
-    total: totalRuns,
-    isPending: runsPending,
-  } = useProjectsTestRuns(
+  const { runs: allRuns, isPending: runsPending } = useProjectsTestRuns(
     (projects ?? []).map((project) => project.id),
     {
       refetchInterval: 5000,
@@ -112,13 +93,11 @@ export const DashboardPage = () => {
   const sortedActiveRunsAll = sortRuns(
     activeRunsAll,
     activeSort,
-    projectMap,
     (run) => run.createdAt,
   );
   const sortedCompletedRunsAll = sortRuns(
     recentlyCompletedRunsAll,
     completedSort,
-    projectMap,
     (run) => run.updatedAt ?? run.createdAt,
   );
 
@@ -159,41 +138,20 @@ export const DashboardPage = () => {
 
   const isContentReady = !isLoading && !showSkeleton;
 
-  const totalSuites = (projects ?? []).reduce(
-    (sum, project) => sum + (project.suiteCount ?? 0),
-    0,
-  );
-
-  const loadedSummaries = [
-    ...activeRunSummaries.values(),
-    ...completedRunSummaries.values(),
-  ].filter((summary) => summary != null);
-  const loadedPassed = loadedSummaries.reduce(
-    (sum, summary) => sum + summary.passed,
-    0,
-  );
-  const loadedFailed = loadedSummaries.reduce(
-    (sum, summary) => sum + summary.failed,
-    0,
-  );
-  const loadedTotal = loadedPassed + loadedFailed;
-  const recentPassRate =
-    loadedTotal > 0 ? Math.round((loadedPassed / loadedTotal) * 100) : null;
-
   const displayName =
     keycloak.tokenParsed?.name ?? keycloak.tokenParsed?.preferred_username;
   const firstName = displayName?.split(' ', 1)[0];
 
-  const activeRunsPanel =
+  const activeBody =
     activeRuns.length === 0 ? (
       <EmptyState
         icon={<ClockIcon className="size-5" />}
-        iconClassName="border-warning/20 bg-warning/10 text-warning"
+        iconClassName="text-warning"
         title="No active runs"
         description="Start a test run from any project to track results here."
       />
     ) : (
-      <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
+      <>
         <div className="overflow-x-auto">
           <table className="table table-sm">
             <thead>
@@ -204,20 +162,8 @@ export const DashboardPage = () => {
                   sort={activeSort}
                   onSort={handleActiveSort}
                 />
-                <SortableHeader
-                  label="Project"
-                  sortKey="project"
-                  sort={activeSort}
-                  onSort={handleActiveSort}
-                />
-                <SortableHeader
-                  label="Environment"
-                  sortKey="environment"
-                  sort={activeSort}
-                  onSort={handleActiveSort}
-                />
-                <th>Progress</th>
-                <th>Results</th>
+                <th>Project</th>
+                <th>Result</th>
                 <SortableHeader
                   label="Started"
                   sortKey="date"
@@ -243,19 +189,19 @@ export const DashboardPage = () => {
           pageCount={activePageCount}
           onPageChange={setActivePageIndex}
         />
-      </div>
+      </>
     );
 
-  const completedRunsPanel =
+  const completedBody =
     recentlyCompletedRuns.length === 0 ? (
       <EmptyState
         icon={<CheckCircleIcon className="size-5" />}
-        iconClassName="border-success/20 bg-success/10 text-success"
+        iconClassName="text-success"
         title="No completed runs"
         description="Completed test runs will appear here."
       />
     ) : (
-      <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
+      <>
         <div className="overflow-x-auto">
           <table className="table table-sm">
             <thead>
@@ -266,21 +212,8 @@ export const DashboardPage = () => {
                   sort={completedSort}
                   onSort={handleCompletedSort}
                 />
-                <SortableHeader
-                  label="Project"
-                  sortKey="project"
-                  sort={completedSort}
-                  onSort={handleCompletedSort}
-                />
-                <SortableHeader
-                  label="Environment"
-                  sortKey="environment"
-                  sort={completedSort}
-                  onSort={handleCompletedSort}
-                />
-                <th>Progress</th>
-                <th>Results</th>
-                <th>Pass Rate</th>
+                <th>Project</th>
+                <th>Result</th>
                 <SortableHeader
                   label="Completed"
                   sortKey="date"
@@ -306,7 +239,7 @@ export const DashboardPage = () => {
           pageCount={completedPageCount}
           onPageChange={setCompletedPageIndex}
         />
-      </div>
+      </>
     );
 
   return (
@@ -322,7 +255,7 @@ export const DashboardPage = () => {
           <header className="page-header">
             <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
               <div>
-                <h1 className="font-display text-2xl font-extrabold tracking-tight text-base-content sm:text-3xl">
+                <h1 className="page-title">
                   {firstName ? `${getGreeting()}, ${firstName}` : 'Dashboard'}
                 </h1>
                 <p className="mt-1.5 text-sm text-base-content/70">
@@ -342,42 +275,7 @@ export const DashboardPage = () => {
           </header>
 
           <section className="page-content flex flex-col gap-8">
-            <div className="flex shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card sm:flex-row [&>*+*]:border-t [&>*+*]:border-base-content/8 sm:[&>*+*]:border-t-0 sm:[&>*+*]:border-l">
-              <StatCard
-                label="Projects"
-                value={projects?.length ?? 0}
-                icon={<FolderIcon className="size-5" />}
-                accentText="text-primary"
-                cardBg="card-bg-primary"
-                to="/projects"
-                description="Click to view all projects"
-                testId="stat-projects"
-              />
-              <StatCard
-                label="Test Runs"
-                value={totalRuns}
-                icon={<BoltIcon className="size-5" />}
-                accentText="text-warning"
-                cardBg="card-bg-warning"
-                description={
-                  recentPassRate === null
-                    ? 'Across all projects'
-                    : `${recentPassRate}% recent pass rate`
-                }
-                testId="stat-runs"
-              />
-              <StatCard
-                label="Test Suites"
-                value={totalSuites}
-                icon={<ClipboardDocumentListIcon className="size-5" />}
-                accentText="text-success"
-                cardBg="card-bg-success"
-                description={`Across ${projects?.length ?? 0} project${projects?.length === 1 ? '' : 's'}`}
-                testId="stat-suites"
-              />
-            </div>
-
-            <div className="flex flex-col gap-3">
+            <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
               <RunsTabs
                 tab={tab}
                 onChange={setTab}
@@ -385,7 +283,7 @@ export const DashboardPage = () => {
                 completedCount={recentlyCompletedRunsAll.length}
               />
 
-              {tab === 'active' ? activeRunsPanel : completedRunsPanel}
+              {tab === 'active' ? activeBody : completedBody}
             </div>
           </section>
         </>

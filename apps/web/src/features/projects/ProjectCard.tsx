@@ -3,13 +3,10 @@ import type { Project } from '@testcraft/types';
 
 import { MetaPill } from '@/components/ui/MetaPill';
 import { ResourceCard } from '@/components/ui/ResourceCard';
-import { ResourceListItem } from '@/components/ui/ResourceListItem';
 import { formatDate } from '@/lib/format';
-import type { ViewMode } from '@/stores/viewMode';
 
 interface ProjectCardProps {
   project: Project;
-  viewMode?: ViewMode;
   onEdit: () => void;
   onDelete?: () => void;
 }
@@ -32,42 +29,10 @@ const CountBadges = ({ project }: { project: Project }) => {
 
 export const ProjectCard = ({
   project,
-  viewMode = 'grid',
   onEdit,
   onDelete,
 }: ProjectCardProps) => {
   const deleteHandler = project.isOwner ? onDelete : undefined;
-
-  if (viewMode === 'list')
-    return (
-      <ResourceListItem
-        to={`/projects/${project.id}`}
-        onEdit={onEdit}
-        onDelete={deleteHandler}
-        label="project"
-        testId="project-card"
-        cardBg="card-bg-primary"
-        accentText="text-primary"
-        typeIcon={<FolderIcon className="size-4" />}
-      >
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="truncate text-sm font-semibold">{project.name}</span>
-          <p className="truncate text-xs text-base-content/70">
-            {project.description ?? (
-              <span className="text-base-content/55 italic">
-                No description
-              </span>
-            )}
-          </p>
-        </div>
-        <div className="hidden shrink-0 items-center gap-2 sm:flex">
-          <CountBadges project={project} />
-          <span className="text-xs font-medium text-base-content/55 tabular-nums">
-            {formatDate(project.createdAt)}
-          </span>
-        </div>
-      </ResourceListItem>
-    );
 
   return (
     <ResourceCard

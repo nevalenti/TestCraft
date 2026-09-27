@@ -1,7 +1,9 @@
+import { ClockIcon } from '@heroicons/react/24/outline';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { TestResultStatus, TestRunStatus } from '@testcraft/types';
 import { useRef } from 'react';
 
+import { EmptyState } from '@/components/ui/EmptyState';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
 import { StatusBadge } from '@/components/ui/StatusBadge';
@@ -84,9 +86,11 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
       </div>
 
       {items.length === 0 ? (
-        <p className="py-16 text-center text-sm text-base-content/55">
-          Waiting for results…
-        </p>
+        <EmptyState
+          icon={<ClockIcon className="size-5" />}
+          title="Waiting for results"
+          description="Results will appear here as the run reports them."
+        />
       ) : (
         <div
           ref={scrollRef}

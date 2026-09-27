@@ -90,6 +90,22 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         return NoContent();
     }
 
+    /// <summary>Lists the test cases in a plan, in order.</summary>
+    [HttpGet("{id:guid}/cases")]
+    [ProducesResponseType(typeof(IReadOnlyList<TestPlanCaseResponse>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IReadOnlyList<TestPlanCaseResponse>>> GetCases(
+        ProjectId projectId,
+        TestPlanId id,
+        CancellationToken cancellationToken
+    )
+    {
+        var query = new GetTestPlanCases.Query { ProjectId = projectId, TestPlanId = id };
+
+        var result = await sender.Send(query, cancellationToken);
+
+        return Ok(result);
+    }
+
     /// <summary>Adds a test case to a plan.</summary>
     [HttpPost("{id:guid}/cases")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

@@ -6,14 +6,13 @@ import {
 import { Link } from '@tanstack/react-router';
 import type { Project, TestRun, TestRunSummary } from '@testcraft/types';
 
+import { MetaPill } from '@/components/ui/MetaPill';
 import { formatCiRunName } from '@/features/dashboard/format';
 import {
-  ProgressBarSkeleton,
   ResultsBadgesSkeleton,
   RunAvatarBubble,
   RunMiniBadges,
-  RunResultsBar,
-} from '@/features/dashboard/RunListItemParts';
+} from '@/features/testRuns/RunListItemParts';
 import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
 import { cn } from '@/lib/cn';
 import { formatDateTime } from '@/lib/format';
@@ -86,21 +85,27 @@ export const CompletedRunTableRow = ({
   const avatarBadge = getAvatarBadge(isLoading, hasFailed);
   const passRateBadge = getPassRateBadge(passRate, hasFailed);
 
-  let progressContent: React.ReactNode = null;
-  let resultsContent: React.ReactNode = null;
+  let resultContent: React.ReactNode = null;
   if (isLoading) {
     if (isSkeletonVisible) {
-      progressContent = <ProgressBarSkeleton />;
-      resultsContent = <ResultsBadgesSkeleton />;
+      resultContent = (
+        <div className="flex items-center gap-2.5">
+          <div className="h-6 w-14 rounded-md bg-base-content/10 motion-safe:animate-pulse" />
+          <ResultsBadgesSkeleton />
+        </div>
+      );
     }
   } else if (total > 0) {
-    progressContent = <RunResultsBar passed={passed} failed={failed} />;
-    resultsContent = <RunMiniBadges passed={passed} failed={failed} />;
+    resultContent = (
+      <div className="flex items-center gap-2.5">
+        {passRateBadge}
+        <RunMiniBadges passed={passed} failed={failed} />
+      </div>
+    );
   } else {
-    progressContent = (
+    resultContent = (
       <span className="text-xs text-base-content/55">No results logged</span>
     );
-    resultsContent = <span className="text-xs text-base-content/40">—</span>;
   }
 
   return (
@@ -121,29 +126,36 @@ export const CompletedRunTableRow = ({
             executedByAvatarUrl={run.executedByAvatarUrl}
             source={run.source}
           />
-          <span
-            className="min-w-0 truncate text-sm font-semibold group-hover:underline"
-            title={run.name}
-          >
-            {formatCiRunName(run.name)}
+          <span className="flex min-w-0 flex-col">
+            <span
+              className="truncate text-sm font-semibold group-hover:underline"
+              title={run.name}
+            >
+              {formatCiRunName(run.name)}
+            </span>
+            <span className="truncate text-xs text-base-content/55">
+              {run.environment}
+              {run.source && ` · ${run.source}`}
+            </span>
           </span>
         </Link>
       </td>
-      <td className="text-sm font-semibold whitespace-nowrap text-base-content/85">
-        {project?.name ?? '—'}
-      </td>
-      <td className="text-xs whitespace-nowrap text-base-content/70">
-        {run.environment}
-      </td>
-      <td className="min-w-36">{progressContent}</td>
-      <td>{resultsContent}</td>
       <td>
-        {isLoading
-          ? isSkeletonVisible && (
-              <div className="h-6 w-14 rounded-md bg-base-content/10 motion-safe:animate-pulse" />
-            )
-          : passRateBadge}
+        {project ? (
+          <Link
+            to="/projects/$projectId/runs"
+            params={{ projectId: project.id }}
+            className="inline-flex"
+          >
+            <MetaPill className="transition-colors hover:text-base-content">
+              {project.name}
+            </MetaPill>
+          </Link>
+        ) : (
+          <span className="text-xs text-base-content/40">—</span>
+        )}
       </td>
+      <td>{resultContent}</td>
       <td className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
         {formatDateTime(run.updatedAt ?? run.createdAt)}
       </td>

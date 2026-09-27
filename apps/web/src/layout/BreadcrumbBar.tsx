@@ -69,7 +69,7 @@ export const BreadcrumbBar = () => {
   };
 
   return (
-    <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-200 px-4 sm:px-6 lg:h-14 lg:px-8">
+    <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-300 px-4 sm:px-6 lg:h-14 lg:px-8">
       {content()}
       <div className="ml-auto hidden items-center gap-2 lg:flex">
         <AccountMenu />

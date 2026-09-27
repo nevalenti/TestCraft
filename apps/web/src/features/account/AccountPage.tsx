@@ -126,7 +126,7 @@ export const AccountPage = () => {
               href={keycloakAccountUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn gap-2 btn-sm"
+              className="btn btn-secondary gap-2 btn-sm"
             >
               <ArrowTopRightOnSquareIcon className="size-3.5" />
               Manage account

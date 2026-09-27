@@ -1,5 +1,7 @@
+import { CommandLineIcon } from '@heroicons/react/24/outline';
 import { useEffect, useRef } from 'react';
 
+import { EmptyState } from '@/components/ui/EmptyState';
 import { useResultFeed } from '@/features/testRuns/useResultFeed';
 
 interface Props {
@@ -16,9 +18,11 @@ export const LogPanel = ({ projectId, runId }: Props) => {
   }, [logs]);
 
   return logs.length === 0 ? (
-    <p className="py-16 text-center text-sm text-base-content/55">
-      No pipeline output yet…
-    </p>
+    <EmptyState
+      icon={<CommandLineIcon className="size-5" />}
+      title="No pipeline output yet"
+      description="Log lines will stream here once the run starts reporting."
+    />
   ) : (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-border bg-base-300">
       <div className="flex shrink-0 items-center gap-2 border-b border-border px-4 py-2">

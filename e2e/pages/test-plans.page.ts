@@ -1,17 +1,23 @@
 import { expect, type Page } from '@playwright/test';
 
+import { ConfirmDialog } from '../components/confirm-dialog';
+
 export class TestPlansPage {
-  constructor(private page: Page) {}
+  readonly confirmDialog: ConfirmDialog;
+
+  constructor(private page: Page) {
+    this.confirmDialog = new ConfirmDialog(page);
+  }
 
   async goto(plansPath: string) {
     await this.page.goto(plansPath);
     await expect(
-      this.page.getByRole('button', { name: 'New Plan' }).first(),
+      this.page.getByRole('button', { name: 'New Test Plan' }).first(),
     ).toBeVisible();
   }
 
   get createButton() {
-    return this.page.getByRole('button', { name: 'New Plan' }).first();
+    return this.page.getByRole('button', { name: 'New Test Plan' }).first();
   }
 
   get dialog() {
@@ -19,7 +25,9 @@ export class TestPlansPage {
   }
 
   getPlanRow(name: string) {
-    return this.page.locator('li').filter({ hasText: name });
+    return this.page
+      .locator('[data-testid="plan-row"]')
+      .filter({ hasText: name });
   }
 
   async create(name: string) {
@@ -34,12 +42,15 @@ export class TestPlansPage {
 
   async delete(name: string) {
     const row = this.getPlanRow(name);
+    await row.hover();
     await row.getByRole('button', { name: 'Delete plan' }).click();
+    await this.confirmDialog.confirmDelete();
     await expect(this.getPlanRow(name)).toHaveCount(0);
   }
 
   async edit(name: string, newName: string) {
     const row = this.getPlanRow(name);
+    await row.hover();
     await row.getByRole('button', { name: 'Edit plan' }).click();
     await expect(
       this.page.getByRole('heading', { name: 'Edit Test Plan' }),
