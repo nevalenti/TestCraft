@@ -12,7 +12,7 @@ COPY apps/docs/ ./apps/docs/
 
 RUN pnpm --filter testcraft-docs run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
 
 ARG APK_CACHE_BUST=0
 RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
