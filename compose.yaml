@@ -17,6 +17,18 @@ services:
       timeout: 5s
       retries: 5
 
+  pgweb:
+    image: ${PGWEB_IMAGE}
+    container_name: testcraft-pgweb
+    environment:
+      PGWEB_DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable'
+      PGWEB_LOCK_SESSION: 'true'
+    ports:
+      - '127.0.0.1:8081:8081'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   redis:
     image: ${REDIS_IMAGE}
     container_name: testcraft-redis
@@ -120,9 +132,9 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
       - ./infrastructure/helm/testcraft/files/grafana/grafana-datasources.yaml:/etc/grafana/provisioning/datasources/datasources.yaml:ro
+      - ./infrastructure/helm/testcraft/files/grafana/grafana-datasources-tempo.yaml:/etc/grafana/provisioning/datasources/datasources-tempo.yaml:ro
       - ./infrastructure/helm/testcraft/files/grafana/grafana-dashboards.yaml:/etc/grafana/provisioning/dashboards/dashboards.yaml:ro
-      - ./infrastructure/helm/testcraft/files/grafana/dashboards/api-logs.json:/etc/grafana/provisioning/dashboards/api-logs.json:ro
-      - ./infrastructure/helm/testcraft/files/grafana/dashboards/api-http.json:/etc/grafana/provisioning/dashboards/api-http.json:ro
+      - ./infrastructure/helm/testcraft/files/grafana/dashboards/overview.json:/etc/grafana/provisioning/dashboards/overview.json:ro
       - ./infrastructure/helm/testcraft/files/grafana/dashboards/redis-metrics.json:/etc/grafana/provisioning/dashboards/redis-metrics.json:ro
       - ./infrastructure/helm/testcraft/files/grafana/dashboards/postgres-metrics.json:/etc/grafana/provisioning/dashboards/postgres-metrics.json:ro
       - ./infrastructure/helm/testcraft/files/grafana/dashboards/rabbitmq-metrics.json:/etc/grafana/provisioning/dashboards/rabbitmq-metrics.json:ro
@@ -132,6 +144,7 @@ services:
     depends_on:
       - prometheus
       - loki
+      - tempo
       - alertmanager
 
   prometheus:
@@ -145,6 +158,8 @@ services:
       - prometheus_data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
+      - --web.enable-otlp-receiver
+      - --enable-feature=exemplar-storage
     ports:
       - '9090:9090'
 
@@ -171,15 +186,17 @@ services:
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
 
-  seq:
-    image: ${SEQ_IMAGE}
-    container_name: testcraft-seq
-    environment:
-      ACCEPT_EULA: 'Y'
+  tempo:
+    image: ${TEMPO_IMAGE}
+    container_name: testcraft-tempo
+    user: '0'
     ports:
-      - '5341:80'
+      - '3200:3200'
+      - '4318:4318'
     volumes:
-      - seq_data:/data
+      - ./infrastructure/helm/testcraft/files/tempo/tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo_data:/var/tempo
+    command: -config.file=/etc/tempo/tempo.yaml
 
   mailpit:
     image: axllent/mailpit:latest
@@ -196,6 +213,30 @@ services:
       DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/glitchtip'
     depends_on:
       postgres:
+        condition: service_healthy
+
+  glitchtip-bootstrap:
+    image: ${GLITCHTIP_IMAGE}
+    container_name: testcraft-glitchtip-bootstrap
+    user: '0:0'
+    command:
+      - /bin/sh
+      - -c
+      - rm -f /output/dsn; ./manage.py createsuperuser --no-input >/dev/null 2>&1 || true; ./manage.py shell < /bootstrap.py
+    environment:
+      DATABASE_URL: 'postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/glitchtip'
+      REDIS_URL: 'redis://redis:6379/1'
+      SECRET_KEY: ${GLITCHTIP_SECRET_KEY:-local-dev-only-not-secret}
+      GLITCHTIP_DOMAIN: 'http://localhost:8001'
+      DJANGO_SUPERUSER_EMAIL: ${GLITCHTIP_ADMIN_EMAIL:-admin@testcraft.local}
+      DJANGO_SUPERUSER_PASSWORD: ${GLITCHTIP_ADMIN_PASSWORD:-admin}
+    volumes:
+      - ./scripts/glitchtip-bootstrap.py:/bootstrap.py:ro
+      - ./.local/glitchtip:/output
+    depends_on:
+      glitchtip-migrate:
+        condition: service_completed_successfully
+      redis:
         condition: service_healthy
 
   glitchtip:
@@ -218,6 +259,8 @@ services:
       redis:
         condition: service_healthy
       glitchtip-migrate:
+        condition: service_completed_successfully
+      glitchtip-bootstrap:
         condition: service_completed_successfully
 
   glitchtip-worker:
@@ -263,6 +306,7 @@ services:
       RABBIT_URL: 'http://rabbitmq:15672'
       RABBIT_USER: ${RABBITMQ_USER}
       RABBIT_PASSWORD: ${RABBITMQ_PASSWORD}
+      PUBLISH_PORT: '9419'
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -276,4 +320,4 @@ volumes:
   prometheus_data:
   alertmanager_data:
   loki_data:
-  seq_data:
+  tempo_data:
