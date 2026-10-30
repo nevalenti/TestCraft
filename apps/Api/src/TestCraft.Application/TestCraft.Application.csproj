@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -21,5 +20,4 @@
   <ItemGroup>
     <ProjectReference Include="..\TestCraft.Domain\TestCraft.Domain.csproj" />
   </ItemGroup>
-
 </Project>

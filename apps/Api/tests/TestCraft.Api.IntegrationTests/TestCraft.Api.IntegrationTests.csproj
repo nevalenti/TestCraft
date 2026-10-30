@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <IsPackable>false</IsPackable>
     <NoWarn>$(NoWarn);CA1707;CA1711</NoWarn>
@@ -15,6 +14,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.Redis" />
     <PackageReference Include="Verify.Xunit" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
@@ -29,8 +29,6 @@
     <ProjectReference Include="..\..\src\TestCraft.Domain\TestCraft.Domain.csproj" />
     <ProjectReference Include="..\..\src\TestCraft.Application\TestCraft.Application.csproj" />
     <ProjectReference Include="..\..\src\TestCraft.Infrastructure\TestCraft.Infrastructure.csproj" />
-    <ProjectReference
-      Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
+    <ProjectReference Include="..\..\..\..\tools\TestCraft.VSTestLogger\TestCraft.VSTestLogger.csproj" />
   </ItemGroup>
-
 </Project>

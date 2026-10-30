@@ -1,5 +1,4 @@
 <Solution>
-
   <Folder Name="/src/">
     <Project Path="apps/Api/src/TestCraft.Api/TestCraft.Api.csproj" />
     <Project Path="apps/Api/src/TestCraft.Application/TestCraft.Application.csproj" />
@@ -12,10 +11,8 @@
   </Folder>
 
   <Folder Name="/tests/">
-    <Project
-      Path="apps/Api/tests/TestCraft.Api.IntegrationTests/TestCraft.Api.IntegrationTests.csproj" />
-    <Project
-      Path="apps/Api/tests/TestCraft.Application.UnitTests/TestCraft.Application.UnitTests.csproj" />
+    <Project Path="apps/Api/tests/TestCraft.Api.IntegrationTests/TestCraft.Api.IntegrationTests.csproj" />
+    <Project Path="apps/Api/tests/TestCraft.Application.UnitTests/TestCraft.Application.UnitTests.csproj" />
     <Project Path="apps/Api/tests/TestCraft.Architecture.Tests/TestCraft.Architecture.Tests.csproj" />
     <Project Path="apps/Api/tests/TestCraft.Domain.UnitTests/TestCraft.Domain.UnitTests.csproj" />
     <Project Path="apps/Gateway/tests/TestCraft.Gateway.Tests/TestCraft.Gateway.Tests.csproj" />
@@ -24,5 +21,4 @@
   <Folder Name="/tools/">
     <Project Path="tools/TestCraft.VSTestLogger/TestCraft.VSTestLogger.csproj" />
   </Folder>
-
 </Solution>
