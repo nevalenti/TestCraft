@@ -1,7 +1,6 @@
 using Prometheus;
-
-using TestCraft.Common.Security;
 using TestCraft.Gateway;
+using TestCraft.Gateway.Security;
 
 namespace TestCraft.Gateway.Configuration;
 

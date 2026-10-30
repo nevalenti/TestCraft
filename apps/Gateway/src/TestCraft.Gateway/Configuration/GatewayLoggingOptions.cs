@@ -1,19 +1,21 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace TestCraft.Gateway.Configuration;
 
 public sealed class GatewayLoggingOptions
 {
-    public string ServiceName { get; init; } = "testcraft-gateway";
-    public string? LokiUrl { get; init; }
-    public string? SeqUrl { get; init; }
-    public string? SeqApiKey { get; init; }
-    public string? OtelExporterEndpoint { get; init; }
+    public string ServiceName { get; } = "testcraft-gateway";
 
-    public static GatewayLoggingOptions Bind(IConfiguration configuration) =>
-        new()
-        {
-            LokiUrl = configuration["LOKI_URL"],
-            SeqUrl = configuration["SEQ_URL"],
-            SeqApiKey = configuration["SEQ_API_KEY"],
-            OtelExporterEndpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"],
-        };
+    [ConfigurationKeyName("LOKI_URL")]
+    public string? LokiUrl { get; set; }
+
+    [ConfigurationKeyName("OTEL_EXPORTER_OTLP_ENDPOINT")]
+    public string? OtelExporterEndpoint { get; set; }
+
+    [ConfigurationKeyName("RELEASE")]
+    public string Release { get; set; } = "dev";
+
+    [ConfigurationKeyName("OTEL_TRACES_SAMPLER_ARG")]
+    [Range(0.0, 1.0)]
+    public double TraceSampleRatio { get; set; } = 1.0;
 }

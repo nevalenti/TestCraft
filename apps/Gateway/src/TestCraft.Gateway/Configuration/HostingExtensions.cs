@@ -1,7 +1,5 @@
+using Microsoft.Extensions.Options;
 using Prometheus;
-
-using TestCraft.Common.Http;
-using TestCraft.Common.Security;
 using TestCraft.Gateway.Middleware;
 
 namespace TestCraft.Gateway.Configuration;
@@ -16,17 +14,17 @@ public static class HostingExtensions
             options.ValidateScopes = true;
         });
 
-        var loggingOptions = GatewayLoggingOptions.Bind(builder.Configuration);
-
-        builder.Services.AddSingleton(loggingOptions);
-        builder.Services.AddSingleton(services =>
-            SeqBasicAuthOptions.Bind(services.GetRequiredService<IConfiguration>())
-        );
-        builder.Services.AddSingleton(services =>
-            GatewayMetricsOptions.Bind(services.GetRequiredService<IConfiguration>())
+        var loggingOptions =
+            builder.Services.AddStartupOptions<GatewayLoggingOptions>(
+                builder.Configuration
+            );
+        builder.Services.AddStartupOptions<GatewayMetricsOptions>(
+            builder.Configuration
         );
 
-        builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+        builder.WebHost.ConfigureKestrel(options =>
+            options.AddServerHeader = false
+        );
 
         builder.Services.AddProblemDetails();
         builder.Services.AddHealthChecks();
@@ -51,15 +49,14 @@ public static class HostingExtensions
         app.UseLegacyPathRedirects();
         app.UseDotPathGuard();
 
-        app.UseWhen(
-            context => context.Request.Path.StartsWithSegments(GatewayPaths.SeqPrefix),
-            branch => branch.UseBasicAuth<SeqBasicAuthOptions>()
-        );
-
         app.UseHttpMetrics();
 
         app.MapHealthChecks(GatewayPaths.HealthPath);
-        app.MapGatewayMetrics(app.Services.GetRequiredService<GatewayMetricsOptions>());
+        app.MapGatewayMetrics(
+            app.Services.GetRequiredService<
+                IOptions<GatewayMetricsOptions>
+            >().Value
+        );
         app.MapReverseProxy();
     }
 }

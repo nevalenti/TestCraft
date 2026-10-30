@@ -1,11 +1,8 @@
 using System.Net;
-using System.Net.Http.Headers;
-using System.Text;
-
 using FluentAssertions;
-
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Yarp.ReverseProxy;
 
 namespace TestCraft.Gateway.Tests;
 
@@ -19,12 +16,8 @@ public class GatewayMiddlewareTests
         _factory = factory.WithWebHostBuilder(_ => { });
     }
 
-    private HttpClient CreateClient() => CreateClient(_factory);
-
-    private static HttpClient CreateClient(
-        WebApplicationFactory<Program> factory
-    ) =>
-        factory.CreateClient(
+    private HttpClient CreateClient() =>
+        _factory.CreateClient(
             new WebApplicationFactoryClientOptions
             {
                 AllowAutoRedirect = false,
@@ -55,17 +48,6 @@ public class GatewayMiddlewareTests
 
         response.StatusCode.Should().Be(HttpStatusCode.MovedPermanently);
         response.Headers.Location!.ToString().Should().Be("/grafana/");
-    }
-
-    [Fact]
-    public async Task Get_Seq_RedirectsToSeqPath()
-    {
-        var client = CreateClient();
-
-        var response = await client.GetAsync("/seq");
-
-        response.StatusCode.Should().Be(HttpStatusCode.MovedPermanently);
-        response.Headers.Location!.ToString().Should().Be("/seq/");
     }
 
     [Fact]
@@ -122,6 +104,41 @@ public class GatewayMiddlewareTests
     }
 
     [Fact]
+    public void RunEventSockets_AreRoutedToTheApi_AheadOfTheWebCatchAll()
+    {
+        var proxyState =
+            _factory.Services.GetRequiredService<IProxyStateLookup>();
+
+        proxyState.TryGetRoute("api-ws", out var socketRoute).Should().BeTrue();
+        proxyState.TryGetRoute("web", out var webRoute).Should().BeTrue();
+
+        socketRoute!.Config.ClusterId.Should().Be("api");
+        socketRoute.Config.Match.Path.Should().Be("/ws/{**catch-all}");
+        socketRoute
+            .Config.Order.Should()
+            .BeLessThan(webRoute!.Config.Order ?? 0);
+    }
+
+    [Fact]
+    public void ApiRequests_AreRoutedToTheApi_AheadOfTheWebCatchAll()
+    {
+        var proxyState =
+            _factory.Services.GetRequiredService<IProxyStateLookup>();
+
+        proxyState.TryGetRoute("api", out var apiRoute).Should().BeTrue();
+        proxyState.TryGetRoute("web", out var webRoute).Should().BeTrue();
+
+        apiRoute!.Config.ClusterId.Should().Be("api");
+        apiRoute.Config.Match.Path.Should().Be("/api/{**catch-all}");
+        apiRoute.Config.Order.Should().BeLessThan(webRoute!.Config.Order ?? 0);
+        proxyState.TryGetCluster("api", out var cluster).Should().BeTrue();
+        cluster!
+            .Destinations.Values.Single()
+            .Model.Config.Address.Should()
+            .Be("http://api:8080");
+    }
+
+    [Fact]
     public async Task Get_ApiRoute_IsNotBlockedByDotfileGuardOrRedirects()
     {
         var client = CreateClient();
@@ -130,46 +147,6 @@ public class GatewayMiddlewareTests
 
         response.StatusCode.Should().NotBe(HttpStatusCode.Forbidden);
         response.StatusCode.Should().NotBe(HttpStatusCode.MovedPermanently);
-    }
-
-    [Fact]
-    public async Task Get_SeqSubPath_WithoutCredentials_ReturnsUnauthorized()
-    {
-        var client = CreateClient();
-
-        var response = await client.GetAsync("/seq/");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Get_SeqSubPath_WithWrongCredentials_ReturnsUnauthorized()
-    {
-        var factory = WithSeqBasicAuthConfigured();
-        var client = CreateClient(factory);
-        client.DefaultRequestHeaders.Authorization = BasicAuthHeader(
-            "admin",
-            "wrong-password"
-        );
-
-        var response = await client.GetAsync("/seq/");
-
-        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
-    }
-
-    [Fact]
-    public async Task Get_SeqSubPath_WithCorrectCredentials_IsNotUnauthorized()
-    {
-        var factory = WithSeqBasicAuthConfigured();
-        var client = CreateClient(factory);
-        client.DefaultRequestHeaders.Authorization = BasicAuthHeader(
-            "admin",
-            "correct-password"
-        );
-
-        var response = await client.GetAsync("/seq/");
-
-        response.StatusCode.Should().NotBe(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -215,31 +192,9 @@ public class GatewayMiddlewareTests
 
         var response = await client.GetAsync("/healthz");
 
-        response.Headers.Contains("Strict-Transport-Security").Should().BeFalse();
+        response
+            .Headers.Contains("Strict-Transport-Security")
+            .Should()
+            .BeFalse();
     }
-
-    private WebApplicationFactory<Program> WithSeqBasicAuthConfigured() =>
-        _factory.WithWebHostBuilder(builder =>
-            builder.ConfigureAppConfiguration(
-                (_, config) =>
-                    config.AddInMemoryCollection(
-                        new Dictionary<string, string?>
-                        {
-                            ["SEQ_BASIC_AUTH_USERNAME"] = "admin",
-                            ["SEQ_BASIC_AUTH_PASSWORD"] = "correct-password",
-                        }
-                    )
-            )
-        );
-
-    private static AuthenticationHeaderValue BasicAuthHeader(
-        string username,
-        string password
-    ) =>
-        new(
-            "Basic",
-            Convert.ToBase64String(
-                Encoding.UTF8.GetBytes($"{username}:{password}")
-            )
-        );
 }

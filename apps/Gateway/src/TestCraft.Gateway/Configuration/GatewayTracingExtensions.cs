@@ -1,6 +1,5 @@
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-
 using TestCraft.Gateway;
 
 namespace TestCraft.Gateway.Configuration;
@@ -20,10 +19,25 @@ public static class GatewayTracingExtensions
         builder
             .Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
-                resource.AddService(loggingOptions.ServiceName)
+                resource
+                    .AddService(
+                        loggingOptions.ServiceName,
+                        serviceVersion: loggingOptions.Release
+                    )
+                    .AddAttributes([
+                        new(
+                            "deployment.environment",
+                            builder.Environment.EnvironmentName.ToLowerInvariant()
+                        ),
+                    ])
             )
             .WithTracing(tracing =>
                 tracing
+                    .SetSampler(
+                        new TraceIdRatioBasedSampler(
+                            loggingOptions.TraceSampleRatio
+                        )
+                    )
                     .AddAspNetCoreInstrumentation(options =>
                         options.Filter = context =>
                             context.Request.Path.Value

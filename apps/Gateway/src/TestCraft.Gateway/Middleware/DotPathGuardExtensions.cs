@@ -1,5 +1,3 @@
-using TestCraft.Gateway;
-
 namespace TestCraft.Gateway.Middleware;
 
 public static class DotPathGuardExtensions

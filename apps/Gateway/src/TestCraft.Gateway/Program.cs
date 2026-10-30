@@ -1,5 +1,4 @@
 using DotNetEnv;
-
 using TestCraft.Gateway.Configuration;
 
 Env.NoClobber().TraversePath().Load();
