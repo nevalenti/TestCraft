@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
   </PropertyGroup>
@@ -12,5 +11,4 @@
   <ItemGroup>
     <ProjectReference Include="..\TestCraft.Persistence\TestCraft.Persistence.csproj" />
   </ItemGroup>
-
 </Project>
