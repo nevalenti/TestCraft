@@ -10,7 +10,6 @@ public static class LegacyPathRedirectExtensions
     {
         ["/keycloak"] = "https://auth.testcraft.pro/",
         ["/grafana"] = "/grafana/",
-        [GatewayPaths.SeqPrefix] = $"{GatewayPaths.SeqPrefix}/",
         ["/docs"] = "/docs/",
     };
 

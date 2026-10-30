@@ -1,5 +1,3 @@
-using System.Globalization;
-
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Enrichers.Span;
@@ -30,8 +28,13 @@ public static class SerilogLoggingExtensions
                     )
                     .ReadFrom.Configuration(context.Configuration)
                     .Enrich.FromLogContext()
-                    .Enrich.WithSpan()
-                    .Enrich.WithProperty("environment", environmentName);
+                    .Enrich.WithProperty("environment", environmentName)
+                    .Enrich.WithProperty("release", loggingOptions.Release);
+
+                if (!builder.Environment.IsDevelopment())
+                {
+                    loggerConfig.Enrich.WithSpan();
+                }
 
                 if (!string.IsNullOrEmpty(loggingOptions.LokiUrl))
                 {
@@ -41,7 +44,7 @@ public static class SerilogLoggingExtensions
                         [
                             new LokiLabel
                             {
-                                Key = "app",
+                                Key = "service_name",
                                 Value = loggingOptions.ServiceName,
                             },
                             new LokiLabel
@@ -51,15 +54,6 @@ public static class SerilogLoggingExtensions
                             },
                         ],
                         handleLogLevelAsLabel: true
-                    );
-                }
-
-                if (!string.IsNullOrEmpty(loggingOptions.SeqUrl))
-                {
-                    loggerConfig.WriteTo.Seq(
-                        loggingOptions.SeqUrl,
-                        apiKey: loggingOptions.SeqApiKey,
-                        formatProvider: CultureInfo.InvariantCulture
                     );
                 }
             },

@@ -1,13 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
-COPY Directory.Build.props Directory.Packages.props ./
-COPY Common/src/TestCraft.Common/TestCraft.Common.csproj Common/src/TestCraft.Common/
+COPY .editorconfig Directory.Build.props Directory.Packages.props ./
 COPY apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj apps/Gateway/src/TestCraft.Gateway/
 
 RUN dotnet restore apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj
 
-COPY Common/src/ Common/src/
 COPY apps/Gateway/src/ apps/Gateway/src/
 
 RUN dotnet publish apps/Gateway/src/TestCraft.Gateway/TestCraft.Gateway.csproj -c Release -o /app --no-restore
@@ -24,6 +22,9 @@ RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-ca
 COPY --from=build /app .
 
 ENV ASPNETCORE_ENVIRONMENT=Production
+
+ARG GIT_SHA=dev
+ENV RELEASE=$GIT_SHA
 
 USER appuser
 
