@@ -1,0 +1,14 @@
+[files]
+extend-exclude = [
+  "apps/web/src/api/generated/**",
+  "apps/web/src/routeTree.gen.ts",
+  "packages/types/src/generated/**",
+  "apps/Api/openapi/**",
+  "apps/Api/src/TestCraft.Persistence/Migrations/**",
+  "pnpm-lock.yaml",
+]
+
+[default.extend-identifiers]
+alog = "alog"
+froms = "froms"
+get_final_froms = "get_final_froms"

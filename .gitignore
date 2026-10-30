@@ -11,6 +11,8 @@
 *.pem
 .env
 .env.*
+.local/
+http-client.private.env.json
 infrastructure/image-versions.env
 infrastructure/keycloak/realm.json
 infrastructure/nginx/tls/
@@ -49,3 +51,5 @@ TestResults/
 !apps/Api/tests/TestCraft.Application.UnitTests/TestResults/
 !apps/Api/tests/TestCraft.Application.UnitTests/TestResults/**
 *.received.txt
+
+core.[0-9]*
