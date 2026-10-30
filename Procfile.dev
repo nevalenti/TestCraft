@@ -1,0 +1,2 @@
+api: just api-serve
+web: pnpm --filter testcraft-web dev
