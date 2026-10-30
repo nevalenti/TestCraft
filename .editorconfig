@@ -56,6 +56,8 @@ indent_style = space
 
 csharp_new_line_before_open_brace = all
 csharp_new_line_between_query_expression_clauses = true
+csharp_prefer_braces = true:warning
+dotnet_diagnostic.IDE0011.severity = warning
 
 csharp_space_after_cast = false
 csharp_space_after_keywords_in_control_flow_statements = true

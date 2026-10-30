@@ -1,0 +1,28 @@
+minimum_pre_commit_version: '4.0.0'
+exclude: '(^|/)(node_modules|dist|test-results|e2e-results|artifacts|\.venv|charts)/|^packages/types/src/generated/|^apps/web/src/(api/generated/|routeTree\.gen\.ts)|^apps/Api/src/TestCraft\.Infrastructure/Notifications/Templates/|^apps/Api/openapi/|^apps/Api/src/TestCraft\.Persistence/Migrations/|^pnpm-lock\.yaml$'
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: 3e8a8703264a2f4a69428a0aa4dcb512790b2c8c # v6.0.0
+    hooks:
+      - id: check-added-large-files
+        args: ['--maxkb=1024']
+      - id: check-toml
+      - id: check-yaml
+        args: ['--unsafe']
+        exclude: '^infrastructure/helm/.*/templates/'
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: https://github.com/crate-ci/typos
+    rev: 00f422f3b19c57bc6338715ebfe3316d38768461 # v1.50.3
+    hooks:
+      - id: typos
+        args: ['--force-exclude']
+  - repo: local
+    hooks:
+      - id: web-eslint
+        name: web eslint
+        entry: pnpm --filter testcraft-web exec eslint
+        language: system
+        files: '^apps/web/src/.*\.(ts|tsx)$'
+        pass_filenames: false
+        args: ['src']

@@ -1,2 +1,3 @@
-.nuget/
-Directory.Packages.props
+**/bin/**
+**/obj/**
+apps/Api/src/TestCraft.Persistence/Migrations/**
