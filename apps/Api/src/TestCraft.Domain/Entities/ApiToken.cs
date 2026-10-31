@@ -1,4 +1,5 @@
 using TestCraft.Domain.Common;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Domain.Entities;
 
@@ -8,6 +9,7 @@ public class ApiToken
     public string Name { get; private set; } = null!;
     public string TokenHash { get; private set; } = null!;
     public ProjectId ProjectId { get; private set; }
+    public ApiTokenScope[] Scopes { get; private set; } = [];
 
     public UserId CreatedById { get; private set; }
     public DateTimeOffset? LastUsedAt { get; private set; }
@@ -15,14 +17,15 @@ public class ApiToken
     public bool IsRevoked { get; private set; }
     public DateTimeOffset CreatedAt { get; set; }
 
-    public Project? Project { get; set; }
+    public Project? Project { get; }
 
     public static ApiToken Create(
         string name,
         string tokenHash,
         ProjectId projectId,
         UserId createdById,
-        DateTimeOffset? expiresAt
+        DateTimeOffset? expiresAt,
+        IEnumerable<ApiTokenScope> scopes
     ) =>
         new()
         {
@@ -32,9 +35,21 @@ public class ApiToken
             ProjectId = projectId,
             CreatedById = createdById,
             ExpiresAt = expiresAt,
+            Scopes = [.. scopes],
         };
 
     public void Revoke() => IsRevoked = true;
 
-    public void RecordUsage() => LastUsedAt = DateTimeOffset.UtcNow;
+    /// <summary>How stale <see cref="LastUsedAt"/> may get, so that busy tokens don't write on every request.</summary>
+    public static readonly TimeSpan UsageResolution = TimeSpan.FromMinutes(1);
+
+    public void RecordUsage(DateTimeOffset now)
+    {
+        if (LastUsedAt is { } lastUsedAt && now - lastUsedAt < UsageResolution)
+        {
+            return;
+        }
+
+        LastUsedAt = now;
+    }
 }

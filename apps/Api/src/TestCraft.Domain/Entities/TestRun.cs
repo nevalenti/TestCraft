@@ -5,7 +5,7 @@ using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestRun : SoftDeletableEntity
+public class TestRun : SoftDeletableEntity, IVersioned
 {
     public TestRunId Id { get; private set; }
     public string Name { get; private set; } = null!;
@@ -15,10 +15,11 @@ public class TestRun : SoftDeletableEntity
     public UserId? ExecutedById { get; private set; }
     public string? ExecutedByName { get; private set; }
     public ProjectId ProjectId { get; private set; }
+    public int Version { get; private set; } = 1;
 
-    public Project? Project { get; set; }
-    public ICollection<TestResult> TestResults { get; set; } = [];
-    public ICollection<ShareToken> ShareTokens { get; set; } = [];
+    public Project? Project { get; }
+    public ICollection<TestResult> TestResults { get; } = [];
+    public ICollection<ShareToken> ShareTokens { get; } = [];
 
     public static TestRun Create(
         ProjectId projectId,
@@ -64,13 +65,17 @@ public class TestRun : SoftDeletableEntity
     public void TransitionTo(TestRunStatus to)
     {
         if (!CanTransitionTo(to))
+        {
             throw new DomainException($"Cannot transition run status from {Status} to {to}")
             {
                 ErrorCode = DomainErrorCodes.InvalidRunStatusTransition,
             };
+        }
 
         if (Status == to)
+        {
             return;
+        }
 
         var oldStatus = Status;
         Status = to;
@@ -80,9 +85,11 @@ public class TestRun : SoftDeletableEntity
     public void EnsureCanAddResult()
     {
         if (!CanAddResult())
+        {
             throw new DomainException($"Cannot modify results in a {Status} test run")
             {
                 ErrorCode = DomainErrorCodes.RunNotModifiable,
             };
+        }
     }
 }

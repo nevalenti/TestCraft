@@ -2,22 +2,23 @@ using TestCraft.Domain.Common;
 
 namespace TestCraft.Domain.Entities;
 
-public class Project : SoftDeletableEntity
+public class Project : SoftDeletableEntity, IVersioned
 {
     public ProjectId Id { get; private set; }
+    public int Version { get; private set; } = 1;
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public UserId UserId { get; private set; }
 
-    public ICollection<TestSuite> TestSuites { get; set; } = [];
-    public ICollection<TestRun> TestRuns { get; set; } = [];
-    public ICollection<Label> Labels { get; set; } = [];
-    public ICollection<TestPlan> TestPlans { get; set; } = [];
-    public ICollection<ApiToken> ApiTokens { get; set; } = [];
-    public ICollection<WebhookSubscription> WebhookSubscriptions { get; set; } = [];
-    public ICollection<EmailSubscription> EmailSubscriptions { get; set; } = [];
-    public ICollection<ProjectMember> Members { get; set; } = [];
-    public ICollection<NotificationDelivery> NotificationDeliveries { get; set; } = [];
+    public ICollection<TestSuite> TestSuites { get; } = [];
+    public ICollection<TestRun> TestRuns { get; } = [];
+    public ICollection<Label> Labels { get; } = [];
+    public ICollection<TestPlan> TestPlans { get; } = [];
+    public ICollection<ApiToken> ApiTokens { get; } = [];
+    public ICollection<WebhookSubscription> WebhookSubscriptions { get; } = [];
+    public ICollection<EmailSubscription> EmailSubscriptions { get; } = [];
+    public ICollection<ProjectMember> Members { get; } = [];
+    public ICollection<NotificationDelivery> NotificationDeliveries { get; } = [];
 
     public static Project Create(string name, string? description, UserId ownerId) =>
         new()

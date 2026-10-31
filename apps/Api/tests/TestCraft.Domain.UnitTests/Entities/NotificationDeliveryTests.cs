@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
@@ -8,6 +7,8 @@ namespace TestCraft.Domain.UnitTests.Entities;
 
 public class NotificationDeliveryTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
     [Fact]
     public void FromFailedAttempt_WithEmptyTarget_ThrowsDomainException()
     {
@@ -19,7 +20,8 @@ public class NotificationDeliveryTests
                 "",
                 "{}",
                 secret: null,
-                "connection refused"
+                "connection refused",
+                Now
             );
 
         act.Should()
@@ -38,13 +40,14 @@ public class NotificationDeliveryTests
             "https://example.com/hook",
             "{}",
             "secret",
-            "connection refused"
+            "connection refused",
+            Now
         );
 
         delivery.AttemptCount.Should().Be(1);
         delivery.Status.Should().Be(NotificationDeliveryStatus.Pending);
         delivery.LastError.Should().Be("connection refused");
-        delivery.NextAttemptAt.Should().BeAfter(DateTimeOffset.UtcNow);
+        delivery.NextAttemptAt.Should().BeAfter(Now);
     }
 
     [Fact]
@@ -57,11 +60,12 @@ public class NotificationDeliveryTests
             "https://example.com/hook",
             "{}",
             secret: null,
-            "connection refused"
+            "connection refused",
+            Now
         );
         var firstNextAttempt = delivery.NextAttemptAt;
 
-        delivery.RecordFailedAttempt("timed out");
+        delivery.RecordFailedAttempt("timed out", Now);
 
         delivery.AttemptCount.Should().Be(2);
         delivery.LastError.Should().Be("timed out");
@@ -79,11 +83,14 @@ public class NotificationDeliveryTests
             "user@example.com",
             "{}",
             secret: null,
-            "smtp error"
+            "smtp error",
+            Now
         );
 
         while (delivery.Status == NotificationDeliveryStatus.Pending)
-            delivery.RecordFailedAttempt("smtp error");
+        {
+            delivery.RecordFailedAttempt("smtp error", Now);
+        }
 
         delivery.Status.Should().Be(NotificationDeliveryStatus.Abandoned);
     }
@@ -98,7 +105,8 @@ public class NotificationDeliveryTests
             "https://example.com/hook",
             "{}",
             secret: null,
-            "connection refused"
+            "connection refused",
+            Now
         );
 
         delivery.MarkSent();
@@ -116,10 +124,13 @@ public class NotificationDeliveryTests
             "user@example.com",
             "{}",
             secret: null,
-            "smtp error"
+            "smtp error",
+            Now
         );
         while (delivery.Status == NotificationDeliveryStatus.Pending)
-            delivery.RecordFailedAttempt("smtp error");
+        {
+            delivery.RecordFailedAttempt("smtp error", Now);
+        }
 
         var act = () => delivery.MarkSent();
 
@@ -141,7 +152,8 @@ public class NotificationDeliveryTests
             "https://example.com/hook",
             "{}",
             secret: null,
-            "connection refused"
+            "connection refused",
+            Now
         );
         delivery.MarkSent();
 
@@ -161,11 +173,12 @@ public class NotificationDeliveryTests
             "https://example.com/hook",
             "{}",
             secret: null,
-            "connection refused"
+            "connection refused",
+            Now
         );
         delivery.MarkSent();
 
-        var act = () => delivery.RecordFailedAttempt("late failure");
+        var act = () => delivery.RecordFailedAttempt("late failure", Now);
 
         act.Should().Throw<DomainException>();
     }

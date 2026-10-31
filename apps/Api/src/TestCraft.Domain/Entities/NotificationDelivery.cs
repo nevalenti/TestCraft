@@ -22,7 +22,7 @@ public class NotificationDelivery : AuditableEntity
 
     public NotificationDeliveryId Id { get; private set; }
     public ProjectId ProjectId { get; private set; }
-    public Project? Project { get; set; }
+    public Project? Project { get; }
     public NotificationChannel Channel { get; private set; }
     public string EventType { get; private set; } = null!;
     public string Target { get; private set; } = null!;
@@ -41,7 +41,8 @@ public class NotificationDelivery : AuditableEntity
         string target,
         string payload,
         string? secret,
-        string error
+        string error,
+        DateTimeOffset now
     ) =>
         new()
         {
@@ -53,7 +54,7 @@ public class NotificationDelivery : AuditableEntity
             Payload = Guard.AgainstEmpty(payload, nameof(Payload)),
             Secret = secret,
             AttemptCount = 1,
-            NextAttemptAt = DateTimeOffset.UtcNow + BackoffSchedule[0],
+            NextAttemptAt = now + BackoffSchedule[0],
             LastError = Truncate(error),
         };
 
@@ -69,17 +70,19 @@ public class NotificationDelivery : AuditableEntity
     private void TransitionTo(NotificationDeliveryStatus to)
     {
         if (!CanTransitionTo(to))
+        {
             throw new DomainException(
                 $"Cannot transition notification delivery status from {Status} to {to}"
             )
             {
                 ErrorCode = DomainErrorCodes.InvalidNotificationDeliveryStatusTransition,
             };
+        }
 
         Status = to;
     }
 
-    public void RecordFailedAttempt(string error)
+    public void RecordFailedAttempt(string error, DateTimeOffset now)
     {
         AttemptCount++;
         LastError = Truncate(error);
@@ -91,7 +94,9 @@ public class NotificationDelivery : AuditableEntity
         );
 
         if (Status == NotificationDeliveryStatus.Pending)
-            NextAttemptAt = DateTimeOffset.UtcNow + BackoffSchedule[AttemptCount - 1];
+        {
+            NextAttemptAt = now + BackoffSchedule[AttemptCount - 1];
+        }
     }
 
     public void MarkSent() => TransitionTo(NotificationDeliveryStatus.Sent);

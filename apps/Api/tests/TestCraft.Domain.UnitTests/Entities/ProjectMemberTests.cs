@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Exceptions;
 

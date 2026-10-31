@@ -5,9 +5,9 @@ public abstract class SoftDeletableEntity : AuditableEntity, ISoftDeletableEntit
     public bool IsDeleted { get; private set; }
     public DateTimeOffset? DeletedAt { get; private set; }
 
-    public void Delete()
+    public void Delete(DateTimeOffset now)
     {
         IsDeleted = true;
-        DeletedAt = DateTimeOffset.UtcNow;
+        DeletedAt = now;
     }
 }
