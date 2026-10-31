@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.WebUtilities;
+
 namespace TestCraft.Api.Errors;
 
 public static class Problems
@@ -9,8 +11,17 @@ public static class Problems
         {
             Type = AboutBlank,
             Title = "Validation Failed",
-            Status = StatusCodes.Status400BadRequest,
+            Status = StatusCodes.Status422UnprocessableEntity,
+            Detail = ValidationErrors.Summary(errors),
             Errors = errors,
+        };
+
+    public static ProblemResponse ForStatus(int status) =>
+        new()
+        {
+            Type = AboutBlank,
+            Title = ReasonPhrases.GetReasonPhrase(status),
+            Status = status,
         };
 
     public static ProblemResponse Unauthorized() =>
@@ -55,6 +66,15 @@ public static class Problems
             Detail = detail,
         };
 
+    public static ProblemResponse PreconditionFailed(string detail) =>
+        new()
+        {
+            Type = AboutBlank,
+            Title = "Precondition Failed",
+            Status = StatusCodes.Status412PreconditionFailed,
+            Detail = detail,
+        };
+
     public static ProblemResponse Unprocessable(string detail, string? code = null) =>
         new()
         {
@@ -65,13 +85,31 @@ public static class Problems
             Code = code,
         };
 
+    public static ProblemResponse ContentTooLarge() =>
+        new()
+        {
+            Type = AboutBlank,
+            Title = "Content Too Large",
+            Status = StatusCodes.Status413PayloadTooLarge,
+            Detail = "Request body too large",
+        };
+
     public static ProblemResponse TooManyRequests() =>
         new()
         {
             Type = AboutBlank,
             Title = "Too Many Requests",
             Status = StatusCodes.Status429TooManyRequests,
-            Detail = "Rate limit exceeded, please try again later.",
+            Detail = "Too Many Requests",
+        };
+
+    public static ProblemResponse ServiceUnavailable() =>
+        new()
+        {
+            Type = AboutBlank,
+            Title = "Service Unavailable",
+            Status = StatusCodes.Status503ServiceUnavailable,
+            Detail = "A backing service is unavailable; please retry",
         };
 
     public static ProblemResponse Internal(string? detail = null) =>

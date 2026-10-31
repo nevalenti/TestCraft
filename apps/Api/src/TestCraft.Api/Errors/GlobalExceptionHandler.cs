@@ -1,10 +1,10 @@
 using FluentValidation;
-
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-
 using Serilog.Context;
-
+using StackExchange.Redis;
+using TestCraft.Api.Configuration.Controllers;
+using TestCraft.Api.Configuration.Observability;
 using TestCraft.Api.Middleware;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
@@ -26,20 +26,86 @@ public partial class GlobalExceptionHandler(
         CancellationToken cancellationToken
     )
     {
+        var pageId = httpContext.Items[PageIdMiddleware.ItemsKey] as string;
+        var userId = httpContext.User.GetUserIdOrNull();
         using var _ = LogContextExtensions.PushProperties(
             LogContext.PushProperty("requestId", httpContext.TraceIdentifier),
-            httpContext.Items[PageIdMiddleware.ItemsKey] is string pageId
-                ? LogContext.PushProperty("pageId", pageId)
-                : null,
-            httpContext.User.GetUserIdOrNull() is { } userId
-                ? LogContext.PushProperty("userId", userId)
-                : null
+            pageId is not null ? LogContext.PushProperty("pageId", pageId) : null,
+            userId is not null ? LogContext.PushProperty("userId", userId) : null
         );
+        var safePath = ApiPaths.RedactSecrets(httpContext.Request.Path);
 
         switch (exception)
         {
+            case BadHttpRequestException badRequestException:
+                LogBadRequest(
+                    logger,
+                    badRequestException,
+                    httpContext.Request.Method,
+                    safePath,
+                    badRequestException.StatusCode
+                );
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    badRequestException.StatusCode == StatusCodes.Status413PayloadTooLarge
+                        ? Problems.ContentTooLarge()
+                        : Problems.ForStatus(badRequestException.StatusCode)
+                );
+
+                return true;
+
             case NotFoundException:
                 await ProblemWriter.WriteAsync(httpContext, Problems.NotFound());
+
+                return true;
+
+            case UnauthorizedException unauthorizedException:
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.Unauthorized() with
+                    {
+                        Detail = unauthorizedException.Message,
+                    }
+                );
+
+                return true;
+
+            case ConflictException conflictException:
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.Conflict(conflictException.Message) with
+                    {
+                        Code = conflictException.Code,
+                    }
+                );
+
+                return true;
+
+            case ForbiddenException forbiddenException:
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.Forbidden() with
+                    {
+                        Detail = forbiddenException.Message,
+                        Code = forbiddenException.Code,
+                    }
+                );
+
+                return true;
+
+            case PreconditionFailedException preconditionFailedException:
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.PreconditionFailed(preconditionFailedException.Message)
+                );
+
+                return true;
+
+            case DbUpdateConcurrencyException:
+                await ProblemWriter.WriteAsync(
+                    httpContext,
+                    Problems.PreconditionFailed("The resource changed during the update")
+                );
 
                 return true;
 
@@ -48,7 +114,7 @@ public partial class GlobalExceptionHandler(
                     logger,
                     domainException,
                     httpContext.Request.Method,
-                    httpContext.Request.Path,
+                    safePath,
                     domainException.Message
                 );
                 await ProblemWriter.WriteAsync(
@@ -63,10 +129,13 @@ public partial class GlobalExceptionHandler(
                     httpContext,
                     Problems.Validation(
                         validationException
-                            .Errors.Select(error => new FieldError(
-                                FieldNameConverter.ToCamelCase(error.PropertyName),
-                                error.ErrorMessage
-                            ))
+                            .Errors.Select(error =>
+                                ValidationErrors.ForMember(
+                                    httpContext.Request,
+                                    error.PropertyName,
+                                    error.ErrorMessage
+                                )
+                            )
                             .ToList()
                     )
                 );
@@ -79,7 +148,7 @@ public partial class GlobalExceptionHandler(
                     logger,
                     dbUpdateException,
                     httpContext.Request.Method,
-                    httpContext.Request.Path
+                    safePath
                 );
                 await ProblemWriter.WriteAsync(
                     httpContext,
@@ -94,7 +163,7 @@ public partial class GlobalExceptionHandler(
                     logger,
                     dbUpdateException,
                     httpContext.Request.Method,
-                    httpContext.Request.Path
+                    safePath
                 );
                 await ProblemWriter.WriteAsync(
                     httpContext,
@@ -103,18 +172,26 @@ public partial class GlobalExceptionHandler(
 
                 return true;
 
+            case RedisException redisException:
+                LogBackingServiceUnavailable(
+                    logger,
+                    redisException,
+                    httpContext.Request.Method,
+                    safePath
+                );
+                httpContext.Response.Headers.RetryAfter = "1";
+                await ProblemWriter.WriteAsync(httpContext, Problems.ServiceUnavailable());
+
+                return true;
+
             case OperationCanceledException when httpContext.RequestAborted.IsCancellationRequested:
-                LogClientDisconnected(logger, httpContext.Request.Method, httpContext.Request.Path);
+                LogClientDisconnected(logger, httpContext.Request.Method, safePath);
 
                 return true;
 
             default:
-                LogUnhandledException(
-                    logger,
-                    exception,
-                    httpContext.Request.Method,
-                    httpContext.Request.Path
-                );
+                LogUnhandledException(logger, exception, httpContext.Request.Method, safePath);
+                ErrorTracking.Capture(exception, httpContext.TraceIdentifier, pageId, userId);
                 await ProblemWriter.WriteAsync(
                     httpContext,
                     Problems.Internal(
@@ -134,6 +211,18 @@ public partial class GlobalExceptionHandler(
         Exception exception,
         string method,
         PathString path
+    );
+
+    [LoggerMessage(
+        Level = LogLevel.Information,
+        Message = "Bad request for {Method} {Path}: {StatusCode}"
+    )]
+    private static partial void LogBadRequest(
+        ILogger logger,
+        Exception exception,
+        string method,
+        PathString path,
+        int statusCode
     );
 
     [LoggerMessage(
@@ -161,6 +250,14 @@ public partial class GlobalExceptionHandler(
         Message = "Unique constraint conflict for {Method} {Path}"
     )]
     private static partial void LogUniqueConstraintConflict(
+        ILogger logger,
+        Exception exception,
+        string method,
+        PathString path
+    );
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Redis unavailable for {Method} {Path}")]
+    private static partial void LogBackingServiceUnavailable(
         ILogger logger,
         Exception exception,
         string method,
