@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.UnitTests.Common.Fakes;

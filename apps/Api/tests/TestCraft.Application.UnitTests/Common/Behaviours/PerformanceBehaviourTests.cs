@@ -1,9 +1,6 @@
 using FluentAssertions;
-
 using MediatR;
-
 using Microsoft.Extensions.Logging.Abstractions;
-
 using TestCraft.Application.Common.Behaviours;
 
 namespace TestCraft.Application.UnitTests.Common.Behaviours;
