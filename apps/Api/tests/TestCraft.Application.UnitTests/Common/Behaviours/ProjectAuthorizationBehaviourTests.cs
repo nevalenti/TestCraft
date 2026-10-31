@@ -1,7 +1,5 @@
 using FluentAssertions;
-
 using MediatR;
-
 using TestCraft.Application.Common.Behaviours;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Security;
@@ -26,8 +24,7 @@ public class ProjectAuthorizationBehaviourTests
         await context.SaveChangesAsync();
 
         var behaviour = new ProjectAuthorizationBehaviour<TestRequest, string>(
-            context,
-            new FakeCurrentUser { UserId = ownerId }
+            new ProjectAccess(context, new FakeCurrentUser { UserId = ownerId })
         );
 
         var result = await behaviour.Handle(
@@ -53,8 +50,7 @@ public class ProjectAuthorizationBehaviourTests
         await context.SaveChangesAsync();
 
         var behaviour = new ProjectAuthorizationBehaviour<TestRequest, string>(
-            context,
-            new FakeCurrentUser { UserId = memberId }
+            new ProjectAccess(context, new FakeCurrentUser { UserId = memberId })
         );
 
         var result = await behaviour.Handle(
@@ -75,8 +71,7 @@ public class ProjectAuthorizationBehaviourTests
         await context.SaveChangesAsync();
 
         var behaviour = new ProjectAuthorizationBehaviour<TestRequest, string>(
-            context,
-            new FakeCurrentUser()
+            new ProjectAccess(context, new FakeCurrentUser())
         );
 
         var act = () =>
@@ -95,8 +90,7 @@ public class ProjectAuthorizationBehaviourTests
         await using var context = TestDbContextFactory.Create();
 
         var behaviour = new ProjectAuthorizationBehaviour<TestRequest, string>(
-            context,
-            new FakeCurrentUser()
+            new ProjectAccess(context, new FakeCurrentUser())
         );
 
         var act = () =>

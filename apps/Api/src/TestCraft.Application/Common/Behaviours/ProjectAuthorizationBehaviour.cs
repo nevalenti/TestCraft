@@ -1,17 +1,15 @@
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
-using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Common.Behaviours;
 
-public class ProjectAuthorizationBehaviour<TRequest, TResponse>(
-    IApplicationDbContext context,
-    ICurrentUser currentUser
-) : IPipelineBehavior<TRequest, TResponse>
+/// <summary>
+/// Hides projects the caller can't see. The minimum role per action is checked over HTTP by
+/// <c>ProjectRoleRequirement</c>; only controllers send requests, which an architecture test checks.
+/// </summary>
+public class ProjectAuthorizationBehaviour<TRequest, TResponse>(ProjectAccess projectAccess)
+    : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IProjectScopedRequest
 {
     public async Task<TResponse> Handle(
@@ -20,17 +18,7 @@ public class ProjectAuthorizationBehaviour<TRequest, TResponse>(
         CancellationToken cancellationToken
     )
     {
-        var hasAccess = await context.Projects.AnyAsync(
-            project =>
-                project.Id == request.ProjectId
-                && (
-                    project.UserId == currentUser.UserId
-                    || project.Members.Any(member => member.UserId == currentUser.UserId)
-                ),
-            cancellationToken
-        );
-
-        if (!hasAccess)
+        if (await projectAccess.RoleOfAsync(request.ProjectId, cancellationToken) is null)
         {
             throw new NotFoundException();
         }
