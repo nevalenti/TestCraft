@@ -1,5 +1,5 @@
 using FluentValidation;
-
+using FluentValidation.Results;
 using MediatR;
 
 namespace TestCraft.Application.Common.Behaviours;
@@ -19,19 +19,15 @@ public class ValidationBehaviour<TRequest, TResponse>(IEnumerable<IValidator<TRe
             return await next(cancellationToken);
         }
 
-        var failures = (
-            await Task.WhenAll(
-                validators.Select(validator =>
-                    validator.ValidateAsync(
-                        new ValidationContext<TRequest>(request),
-                        cancellationToken
-                    )
-                )
-            )
-        )
-            .SelectMany(result => result.Errors)
-            .Where(failure => failure is not null)
-            .ToList();
+        var failures = new List<ValidationFailure>();
+        foreach (var validator in validators)
+        {
+            var result = await validator.ValidateAsync(
+                new ValidationContext<TRequest>(request),
+                cancellationToken
+            );
+            failures.AddRange(result.Errors);
+        }
 
         if (failures.Count > 0)
         {
