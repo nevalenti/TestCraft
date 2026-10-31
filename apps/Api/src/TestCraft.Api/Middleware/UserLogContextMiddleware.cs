@@ -1,5 +1,4 @@
 using Serilog.Context;
-
 using TestCraft.Common.Logging;
 using TestCraft.Infrastructure.Auth;
 
