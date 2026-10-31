@@ -3,8 +3,10 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Features.TestPlans;
 
 namespace TestCraft.Application.Features.TestSuites;
 
@@ -21,7 +23,8 @@ public static class DeleteTestSuite
         public required TestSuiteId Id { get; init; }
     }
 
-    public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>
+    public sealed class Handler(IApplicationDbContext context, TimeProvider timeProvider)
+        : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
@@ -33,7 +36,7 @@ public static class DeleteTestSuite
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            suite.Delete();
+            suite.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
         }

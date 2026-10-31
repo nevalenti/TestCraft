@@ -52,7 +52,9 @@ public static class UpdateTestResult
     public sealed class Handler(
         IApplicationDbContext context,
         ICacheService cache,
-        ITestRunNotifier notifier
+        ITestRunNotifier notifier,
+        ICurrentUser currentUser,
+        TimeProvider timeProvider
     ) : IRequestHandler<Command, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
@@ -78,7 +80,7 @@ public static class UpdateTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            result.Update(request.Status, request.Notes, request.DefectType);
+            result.Update(request.Status, request.Notes, request.DefectType, timeProvider.GetStoredUtcNow(), currentUser.UserId);
 
             await context.SaveChangesAsync(cancellationToken);
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);

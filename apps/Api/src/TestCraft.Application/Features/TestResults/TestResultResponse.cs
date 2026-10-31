@@ -33,7 +33,7 @@ public record TestResultResponse
     public DefectType? DefectType { get; init; }
 
     /// <summary>When the test was executed.</summary>
-    public required DateTimeOffset ExecutedAt { get; init; }
+    public required DateTimeOffset? ExecutedAt { get; init; }
 
     /// <summary>The user who recorded the result, if any.</summary>
     public UserId? ExecutedById { get; init; }

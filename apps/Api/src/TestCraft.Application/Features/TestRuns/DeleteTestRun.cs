@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -22,8 +23,11 @@ public static class DeleteTestRun
         public required TestRunId Id { get; init; }
     }
 
-    public sealed class Handler(IApplicationDbContext context, ICacheService cache)
-        : IRequestHandler<Command>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        ICacheService cache,
+        TimeProvider timeProvider
+    ) : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
@@ -34,7 +38,7 @@ public static class DeleteTestRun
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            run.Delete();
+            run.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
 

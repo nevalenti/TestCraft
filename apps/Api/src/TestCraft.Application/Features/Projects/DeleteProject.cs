@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -19,8 +20,11 @@ public static class DeleteProject
         ProjectId IProjectScopedRequest.ProjectId => Id;
     }
 
-    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
-        : IRequestHandler<Command>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        ICurrentUser currentUser,
+        TimeProvider timeProvider
+    ) : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
@@ -37,7 +41,7 @@ public static class DeleteProject
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            project.Delete();
+            project.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
         }
