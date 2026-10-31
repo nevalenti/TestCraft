@@ -1,9 +1,6 @@
 using FluentAssertions;
-
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Behaviours;
 
 namespace TestCraft.Application.UnitTests.Common.Behaviours;
