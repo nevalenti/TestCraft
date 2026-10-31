@@ -4,6 +4,7 @@ using FluentValidation;
 
 using MediatR;
 
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
@@ -57,7 +58,7 @@ public static class CreateEmailSubscription
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(IApplicationDbContext context, TimeProvider timeProvider)
         : IRequestHandler<Command, EmailSubscriptionResponse>
     {
         public async Task<EmailSubscriptionResponse> Handle(
@@ -68,7 +69,8 @@ public static class CreateEmailSubscription
             var subscription = EmailSubscription.Create(
                 request.ProjectId,
                 request.Email,
-                JsonSerializer.Serialize(request.Events)
+                JsonSerializer.Serialize(request.Events),
+                timeProvider.GetStoredUtcNow()
             );
 
             context.EmailSubscriptions.Add(subscription);

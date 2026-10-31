@@ -4,6 +4,7 @@ using FluentValidation;
 
 using MediatR;
 
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
@@ -68,7 +69,7 @@ public static class CreateWebhookSubscription
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(IApplicationDbContext context, TimeProvider timeProvider)
         : IRequestHandler<Command, WebhookSubscriptionResponse>
     {
         public async Task<WebhookSubscriptionResponse> Handle(
@@ -80,7 +81,8 @@ public static class CreateWebhookSubscription
                 request.ProjectId,
                 request.Url,
                 request.Secret,
-                JsonSerializer.Serialize(request.Events)
+                JsonSerializer.Serialize(request.Events),
+                timeProvider.GetStoredUtcNow()
             );
 
             context.WebhookSubscriptions.Add(subscription);

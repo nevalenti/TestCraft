@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
@@ -19,7 +20,8 @@ public partial class NotificationDispatcher(
     IEmailService email,
     IHttpClientFactory httpClientFactory,
     [FromKeyedServices(FeatureToggleNames.NotificationDeliveryRetry)] IFeatureToggle retryToggle,
-    ILogger<NotificationDispatcher> logger
+    ILogger<NotificationDispatcher> logger,
+    TimeProvider timeProvider
 ) : INotificationDispatcher
 {
     private readonly record struct DeliveryAttemptResult(
@@ -73,12 +75,14 @@ public partial class NotificationDispatcher(
         var due = await context
             .NotificationDeliveries.Where(delivery =>
                 delivery.Status == NotificationDeliveryStatus.Pending
-                && delivery.NextAttemptAt <= DateTimeOffset.UtcNow
+                && delivery.NextAttemptAt <= timeProvider.GetUtcNow()
             )
             .ToListAsync(cancellationToken);
 
         if (due.Count == 0)
+        {
             return;
+        }
 
         foreach (var delivery in due)
         {
@@ -104,7 +108,7 @@ public partial class NotificationDispatcher(
             }
             else
             {
-                delivery.RecordFailedAttempt(result.Error!);
+                delivery.RecordFailedAttempt(result.Error!, timeProvider.GetStoredUtcNow());
                 if (delivery.Status == NotificationDeliveryStatus.Abandoned)
                 {
                     NotificationMetrics.RecordAbandoned(delivery.Channel);
@@ -150,7 +154,9 @@ public partial class NotificationDispatcher(
             );
 
             if (result.Success)
+            {
                 continue;
+            }
 
             LogWebhookFailed(
                 logger,
@@ -168,7 +174,8 @@ public partial class NotificationDispatcher(
                     webhook.Url,
                     json,
                     webhook.Secret,
-                    result.Error!
+                    result.Error!,
+                    timeProvider.GetStoredUtcNow()
                 )
             );
         }
@@ -197,7 +204,9 @@ public partial class NotificationDispatcher(
         {
             var result = await TrySendEmailAsync(recipient, subject, body, cancellationToken);
             if (result.Success)
+            {
                 continue;
+            }
 
             LogEmailFailed(
                 logger,
@@ -215,7 +224,8 @@ public partial class NotificationDispatcher(
                     recipient,
                     JsonSerializer.Serialize(new EmailPayload(subject, body)),
                     secret: null,
-                    result.Error!
+                    result.Error!,
+                    timeProvider.GetStoredUtcNow()
                 )
             );
         }
