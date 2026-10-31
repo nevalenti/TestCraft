@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 
@@ -20,6 +19,8 @@ internal static class ProjectOwnershipGuard
         );
 
         if (!isOwner)
+        {
             throw new NotFoundException();
+        }
     }
 }
