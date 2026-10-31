@@ -2,15 +2,16 @@ using TestCraft.Domain.Common;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestCaseStep : SoftDeletableEntity
+public class TestCaseStep : SoftDeletableEntity, IVersioned
 {
     public TestCaseStepId Id { get; private set; }
+    public int Version { get; private set; } = 1;
     public int Order { get; private set; }
     public string Action { get; private set; } = null!;
     public string ExpectedResult { get; private set; } = null!;
     public TestCaseId TestCaseId { get; private set; }
 
-    public TestCase? TestCase { get; set; }
+    public TestCase? TestCase { get; }
 
     public static TestCaseStep Create(
         TestCaseId testCaseId,

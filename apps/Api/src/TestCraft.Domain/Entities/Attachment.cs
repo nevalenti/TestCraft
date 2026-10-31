@@ -14,7 +14,7 @@ public class Attachment
     public UserId CreatedById { get; private set; }
     public DateTimeOffset CreatedAt { get; set; }
 
-    public TestResult? TestResult { get; set; }
+    public TestResult? TestResult { get; }
 
     public static Attachment Create(
         TestResultId testResultId,

@@ -2,16 +2,17 @@ using TestCraft.Domain.Common;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestSuite : SoftDeletableEntity
+public class TestSuite : SoftDeletableEntity, IVersioned
 {
     public TestSuiteId Id { get; private set; }
+    public int Version { get; private set; } = 1;
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public string? Source { get; private set; }
     public ProjectId ProjectId { get; private set; }
 
-    public Project? Project { get; set; }
-    public ICollection<TestCase> TestCases { get; set; } = [];
+    public Project? Project { get; }
+    public ICollection<TestCase> TestCases { get; } = [];
 
     public static TestSuite Create(
         ProjectId projectId,
@@ -38,6 +39,8 @@ public class TestSuite : SoftDeletableEntity
     public void BackfillSource(string source)
     {
         if (string.IsNullOrEmpty(Source))
+        {
             Source = source;
+        }
     }
 }

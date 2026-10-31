@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
@@ -52,7 +51,10 @@ public class TestRunRulesTests
     {
         var run = TestRun.Create(ProjectId.New(), "run", "ci");
         if (status != TestRunStatus.Active)
+        {
             run.TransitionTo(status);
+        }
+
         return run;
     }
 

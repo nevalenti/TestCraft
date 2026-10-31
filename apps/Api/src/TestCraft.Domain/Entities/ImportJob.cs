@@ -33,12 +33,12 @@ public class ImportJob : AuditableEntity
     private void TransitionTo(ImportJobStatus to)
     {
         if (!CanTransitionTo(to))
-            throw new DomainException(
-                $"Cannot transition import job status from {Status} to {to}"
-            )
+        {
+            throw new DomainException($"Cannot transition import job status from {Status} to {to}")
             {
                 ErrorCode = DomainErrorCodes.InvalidImportJobStatusTransition,
             };
+        }
 
         Status = to;
     }

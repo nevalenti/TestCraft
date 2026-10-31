@@ -18,10 +18,11 @@ public static class DomainErrorCodes
 
     public const string StepsNotFound = "STEPS_NOT_FOUND";
 
-    public const string UserNotAuthenticated = "USER_NOT_AUTHENTICATED";
     public const string MissingSubjectClaim = "MISSING_SUBJECT_CLAIM";
 
     public const string UserNotFound = "USER_NOT_FOUND";
     public const string AlreadyProjectOwner = "ALREADY_PROJECT_OWNER";
     public const string MemberAlreadyExists = "MEMBER_ALREADY_EXISTS";
+    public const string EmailNotVerified = "EMAIL_NOT_VERIFIED";
+    public const string AdminRoleOwnerOnly = "ADMIN_ROLE_OWNER_ONLY";
 }

@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Exceptions;
 
@@ -7,6 +6,8 @@ namespace TestCraft.Domain.UnitTests.Entities;
 
 public class ProjectTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
     [Fact]
     public void Create_WithEmptyName_ThrowsDomainException()
     {
@@ -56,9 +57,9 @@ public class ProjectTests
     {
         var project = Project.Create("Project", null, UserId.New());
 
-        project.Delete();
+        project.Delete(Now);
 
         project.IsDeleted.Should().BeTrue();
-        project.DeletedAt.Should().NotBeNull();
+        project.DeletedAt.Should().Be(Now);
     }
 }

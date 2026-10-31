@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Exceptions;
 
@@ -7,10 +6,12 @@ namespace TestCraft.Domain.UnitTests.Entities;
 
 public class EmailSubscriptionTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
     [Fact]
     public void Create_WithEmptyEmail_ThrowsDomainException()
     {
-        var act = () => EmailSubscription.Create(ProjectId.New(), "", "[\"run.completed\"]");
+        var act = () => EmailSubscription.Create(ProjectId.New(), "", "[\"run.completed\"]", Now);
 
         act.Should()
             .Throw<DomainException>()
@@ -24,7 +25,8 @@ public class EmailSubscriptionTests
         var subscription = EmailSubscription.Create(
             ProjectId.New(),
             "team@example.com",
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         subscription.IsActive.Should().BeTrue();
@@ -36,7 +38,8 @@ public class EmailSubscriptionTests
         var subscription = EmailSubscription.Create(
             ProjectId.New(),
             "team@example.com",
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         var act = () => subscription.Update("", "[\"run.completed\"]", true);
@@ -50,7 +53,8 @@ public class EmailSubscriptionTests
         var subscription = EmailSubscription.Create(
             ProjectId.New(),
             "team@example.com",
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         subscription.Update("other@example.com", "[\"run.failed\"]", false);

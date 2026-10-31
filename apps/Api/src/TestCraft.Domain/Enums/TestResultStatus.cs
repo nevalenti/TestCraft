@@ -6,4 +6,5 @@ public enum TestResultStatus
     Failed,
     Blocked,
     Skipped,
+    Untested,
 }

@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Exceptions;
 
@@ -7,10 +6,13 @@ namespace TestCraft.Domain.UnitTests.Entities;
 
 public class WebhookSubscriptionTests
 {
+    private static readonly DateTimeOffset Now = new(2026, 1, 1, 0, 0, 0, TimeSpan.Zero);
+
     [Fact]
     public void Create_WithEmptyUrl_ThrowsDomainException()
     {
-        var act = () => WebhookSubscription.Create(ProjectId.New(), "", null, "[\"run.completed\"]");
+        var act = () =>
+            WebhookSubscription.Create(ProjectId.New(), "", null, "[\"run.completed\"]", Now);
 
         act.Should()
             .Throw<DomainException>()
@@ -25,7 +27,8 @@ public class WebhookSubscriptionTests
             ProjectId.New(),
             "https://example.com/hook",
             null,
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         subscription.IsActive.Should().BeTrue();
@@ -38,7 +41,8 @@ public class WebhookSubscriptionTests
             ProjectId.New(),
             "https://example.com/hook",
             null,
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         var act = () => subscription.Update("", null, "[\"run.completed\"]", true);
@@ -53,7 +57,8 @@ public class WebhookSubscriptionTests
             ProjectId.New(),
             "https://example.com/hook",
             null,
-            "[\"run.completed\"]"
+            "[\"run.completed\"]",
+            Now
         );
 
         subscription.Update("https://example.com/updated", "secret", "[\"run.failed\"]", false);

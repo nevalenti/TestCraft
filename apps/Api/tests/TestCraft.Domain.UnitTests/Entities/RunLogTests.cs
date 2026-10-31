@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Domain.UnitTests.Entities;

@@ -3,19 +3,20 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Domain.Entities;
 
-public class TestCase : SoftDeletableEntity
+public class TestCase : SoftDeletableEntity, IVersioned
 {
     public TestCaseId Id { get; private set; }
+    public int Version { get; private set; } = 1;
     public string Name { get; private set; } = null!;
     public string? Description { get; private set; }
     public TestCasePriority Priority { get; private set; } = TestCasePriority.Medium;
     public TestSuiteId SuiteId { get; private set; }
 
-    public TestSuite? Suite { get; set; }
-    public ICollection<TestCaseStep> Steps { get; set; } = [];
-    public ICollection<TestResult> TestResults { get; set; } = [];
-    public ICollection<TestCaseLabel> TestCaseLabels { get; set; } = [];
-    public ICollection<TestPlanCase> TestPlanCases { get; set; } = [];
+    public TestSuite? Suite { get; }
+    public ICollection<TestCaseStep> Steps { get; } = [];
+    public ICollection<TestResult> TestResults { get; } = [];
+    public ICollection<TestCaseLabel> TestCaseLabels { get; } = [];
+    public ICollection<TestPlanCase> TestPlanCases { get; } = [];
 
     public static TestCase Create(
         TestSuiteId suiteId,

@@ -6,8 +6,8 @@ public class TestPlanCase
     public TestCaseId TestCaseId { get; private set; }
     public int Order { get; private set; }
 
-    public TestPlan? TestPlan { get; set; }
-    public TestCase? TestCase { get; set; }
+    public TestPlan? TestPlan { get; }
+    public TestCase? TestCase { get; }
 
     public static TestPlanCase Create(TestPlanId testPlanId, TestCaseId testCaseId, int order) =>
         new()
