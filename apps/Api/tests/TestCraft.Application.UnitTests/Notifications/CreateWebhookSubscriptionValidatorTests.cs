@@ -35,6 +35,15 @@ public class CreateWebhookSubscriptionValidatorTests
     [InlineData("http://172.16.0.5/webhook")]
     [InlineData("http://192.168.1.5/webhook")]
     [InlineData("http://[::1]/webhook")]
+    [InlineData("http://100.64.0.1/webhook")]
+    [InlineData("http://198.18.0.1/webhook")]
+    [InlineData("http://192.0.0.8/webhook")]
+    [InlineData("http://224.0.0.1/webhook")]
+    [InlineData("http://255.255.255.255/webhook")]
+    [InlineData("http://[::]/webhook")]
+    [InlineData("http://[64:ff9b::a00:5]/webhook")]
+    [InlineData("http://[2002:a00:5::]/webhook")]
+    [InlineData("http://[2001:0:4136:e378:8000:63bf:f5ff:fffa]/webhook")]
     public void NonHttpUrl_FailsValidation(string url)
     {
         var result = _validator.TestValidate(ValidCommand() with { Url = url });
