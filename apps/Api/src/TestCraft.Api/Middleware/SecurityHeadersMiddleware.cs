@@ -30,8 +30,6 @@ public class SecurityHeadersMiddleware(RequestDelegate next)
                 + "frame-ancestors 'self'";
             headers["Permissions-Policy"] =
                 "camera=(), microphone=(), geolocation=(), payment=(), usb=()";
-            headers.Remove("X-Powered-By");
-            headers.Remove("Server");
 
             return Task.CompletedTask;
         });
