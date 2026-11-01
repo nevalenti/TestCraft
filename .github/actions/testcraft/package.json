@@ -11,8 +11,8 @@
     "testcraft-ci-reporter": "workspace:*"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "esbuild": "^0.25.0",
-    "typescript": "^5.8.0"
+    "@types/node": "^22.20.5",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.9.3"
   }
 }

@@ -191,7 +191,6 @@ public partial class GlobalExceptionHandler(
 
             default:
                 LogUnhandledException(logger, exception, httpContext.Request.Method, safePath);
-                ErrorTracking.Capture(exception, httpContext.TraceIdentifier, pageId, userId);
                 await ProblemWriter.WriteAsync(
                     httpContext,
                     Problems.Internal(

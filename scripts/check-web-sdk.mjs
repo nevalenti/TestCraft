@@ -1,4 +1,4 @@
-import { format } from "prettier";
+import { format } from "oxfmt";
 
 import { spawnSync } from "node:child_process";
 import { mkdtemp, readFile, readdir, rm } from "node:fs/promises";
@@ -10,6 +10,19 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const web = path.join(root, "apps/web");
 const temporary = await mkdtemp(path.join(tmpdir(), "testcraft-sdk-"));
 const output = path.join(temporary, "generated");
+const formatOptions = JSON.parse(
+  await readFile(path.join(root, ".oxfmtrc.json"), "utf8"),
+);
+delete formatOptions.$schema;
+delete formatOptions.ignorePatterns;
+
+async function formatted(file, source) {
+  const result = await format(file, source.toString(), formatOptions);
+  if (result.errors.length > 0)
+    throw new Error(`Failed to format SDK file: ${file}`);
+  return result.code;
+}
+
 async function entries(directory) {
   const children = await readdir(directory, { withFileTypes: true });
   return (
@@ -42,10 +55,7 @@ try {
       readFile(path.join(output, file)),
       readFile(path.join(committed, file)),
     ]);
-    if (
-      (await format(expected.toString(), { parser: "typescript" })) !==
-      (await format(actual.toString(), { parser: "typescript" }))
-    )
+    if ((await formatted(file, expected)) !== (await formatted(file, actual)))
       throw new Error(
         `SDK is stale: ${file}. Run pnpm --filter testcraft-web generate:sdk.`,
       );
