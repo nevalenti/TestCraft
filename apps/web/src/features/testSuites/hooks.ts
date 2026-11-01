@@ -3,12 +3,12 @@ import {
   useMutation,
   useQuery,
   useQueryClient,
-} from '@tanstack/react-query';
-import type { CreateTestSuite, UpdateTestSuite } from '@testcraft/types';
+} from "@tanstack/react-query";
+import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
 
-import { queryKeys } from '@/api/queryKeys';
-import { testSuiteQueries, testSuitesApi } from '@/features/testSuites/api';
-import { notify } from '@/lib/notify';
+import { queryKeys } from "@/api/queryKeys";
+import { testSuiteQueries, testSuitesApi } from "@/features/testSuites/api";
+import { notify } from "@/lib/notify";
 
 export const useTestSuites = (projectId: string, search?: string) =>
   useQuery({
@@ -42,15 +42,24 @@ export const useUpdateTestSuite = (projectId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: UpdateTestSuite & { id: string }) =>
-      testSuitesApi.update(projectId, id, input),
-    onSuccess: (_, { id, name }) => {
+    mutationFn: ({
+      id,
+      version,
+      ...input
+    }: UpdateTestSuite & {
+      id: string;
+      version: number;
+    }) => testSuitesApi.update(projectId, id, input, version),
+    onSuccess: (_, { name }) => {
       notify(`Suite "${name}" updated`);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testSuites.all(projectId),
+        queryKey: queryKeys.analytics.all(projectId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testSuites.detail(projectId, id),
+        queryKey: queryKeys.testPlans.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testSuites.all(projectId),
       });
     },
   });
@@ -62,7 +71,13 @@ export const useDeleteTestSuite = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testSuitesApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      notify('Suite deleted');
+      notify("Suite deleted");
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.byProject(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testPlans.all(projectId),
+      });
       queryClient.invalidateQueries({
         queryKey: queryKeys.testSuites.all(projectId),
       });

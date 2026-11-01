@@ -4,17 +4,27 @@ on:
   push:
     branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/ci-web.yml'
+      - "apps/web/**"
+      - "packages/**"
+      - "apps/Api/openapi/contract/**"
+      - "apps/Api/openapi/redocly.yaml"
+      - "apps/Api/openapi/redocly-plugin.mjs"
+      - "apps/Api/openapi/.redocly.lint-ignore.yaml"
+      - "pnpm-lock.yaml"
+      - "scripts/check-web-sdk.mjs"
+      - ".github/workflows/ci-web.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'apps/web/**'
-      - 'packages/**'
-      - 'pnpm-lock.yaml'
-      - '.github/workflows/ci-web.yml'
+      - "apps/web/**"
+      - "packages/**"
+      - "apps/Api/openapi/contract/**"
+      - "apps/Api/openapi/redocly.yaml"
+      - "apps/Api/openapi/redocly-plugin.mjs"
+      - "apps/Api/openapi/.redocly.lint-ignore.yaml"
+      - "pnpm-lock.yaml"
+      - "scripts/check-web-sdk.mjs"
+      - ".github/workflows/ci-web.yml"
   workflow_dispatch:
 
 concurrency:
@@ -39,6 +49,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Setup pnpm
         uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
@@ -57,6 +69,12 @@ jobs:
       - name: Audit dependencies
         run: pnpm audit --audit-level=high
 
+      - name: Lint API contract
+        run: pnpm run lint:contract
+
+      - name: Check generated SDK
+        run: pnpm --filter testcraft-web check:sdk
+
       - name: Lint
         run: pnpm --filter testcraft-web run lint
 
@@ -70,13 +88,13 @@ jobs:
         id: testcraft-start
         if: always()
         continue-on-error: true
-        uses: ./.github/actions/testcraft
+        uses: ./.github/actions/testcraft # zizmor: ignore[self-repository]
         with:
           command: start
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
+          run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
           source: web
 
       - name: Test
@@ -91,13 +109,13 @@ jobs:
       - name: Import results to TestCraft
         if: always()
         continue-on-error: true
-        uses: ./.github/actions/testcraft
+        uses: ./.github/actions/testcraft # zizmor: ignore[self-repository]
         with:
           token: ${{ secrets.TESTCRAFT_TOKEN }}
           api-url: ${{ secrets.TESTCRAFT_API_URL }}
           project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
           junit-xml: apps/web/test-results/junit.xml
-          run-name: '#${{ github.run_id }} web (${{ github.ref_name }})'
+          run-name: "#${{ github.run_id }} web (${{ github.ref_name }})"
           source: web
 
       - name: Upload test report
@@ -129,6 +147,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
@@ -169,6 +189,8 @@ jobs:
             VITE_KEYCLOAK_REALM=testcraft
             VITE_KEYCLOAK_CLIENT_ID=testcraft-web
             VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
+            VITE_RELEASE=${{ github.sha }}
+            VITE_ENVIRONMENT=production
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
           cache-from: type=gha,scope=web
 
@@ -180,7 +202,7 @@ jobs:
           output: trivy-results.sarif
           severity: CRITICAL,HIGH
           ignore-unfixed: true
-          exit-code: '1'
+          exit-code: "1"
 
       - name: Upload scan results to Security tab
         if: always()
@@ -204,7 +226,14 @@ jobs:
             VITE_KEYCLOAK_REALM=testcraft
             VITE_KEYCLOAK_CLIENT_ID=testcraft-web
             VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
+            VITE_RELEASE=${{ github.sha }}
+            VITE_ENVIRONMENT=production
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
+            SENTRY_URL=${{ vars.GLITCHTIP_URL }}
+            SENTRY_ORG=${{ vars.GLITCHTIP_ORG }}
+            SENTRY_PROJECT=${{ vars.GLITCHTIP_WEB_PROJECT }}
+          secrets: |
+            glitchtip_auth_token=${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && secrets.GLITCHTIP_AUTH_TOKEN || '' }}
           cache-from: type=gha,scope=web
           cache-to: type=gha,mode=max,scope=web
           provenance: false
@@ -222,6 +251,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
           ref: main
 
       - name: Restore production secrets

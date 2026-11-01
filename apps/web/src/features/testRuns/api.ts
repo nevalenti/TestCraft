@@ -1,53 +1,108 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  CreateTestRun,
-  Paginated,
-  TestRun,
-  TestRunSummary,
-  UpdateTestRun,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import {
+  type CreateTestRun,
+  type RunLogPage,
+  TestRunStatus,
+  type UpdateTestRun,
+} from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-import { PAGE_SIZE } from '@/lib/constants';
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
-const BASE = (projectId: string) => `projects/${projectId}/runs`;
+export interface RunLogs {
+  lines: string[];
+  earliestSeq: number | null;
+  latestSeq: number | null;
+  hasMore: boolean;
+}
+
+const toRunLogs = (page: RunLogPage): RunLogs => ({
+  lines: page.items.map((item) => item.message),
+  earliestSeq: page.items[0]?.seq ?? null,
+  latestSeq: page.items.at(-1)?.seq ?? null,
+  hasMore: page.has_more,
+});
 
 export const testRunsApi = {
   getAll: async (projectId: string, search?: string) => {
-    const { data } = await client.get<Paginated<TestRun>>(BASE(projectId), {
-      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestRuns({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE, ...(search && { search }) },
+      });
+      return data;
+    });
+  },
+  getActive: async (projectId: string) => {
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestRuns({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE, status: TestRunStatus.Active },
+      });
+      return data;
+    });
+  },
+  getRecentlyCompleted: async (projectId: string, limit: number) => {
+    const { data } = await sdk.listTestRuns({
+      path: { project_id: projectId },
+      query: {
+        page: 1,
+        page_size: limit,
+        status: TestRunStatus.Completed,
+        sort_by: "updated_at",
+      },
     });
     return data;
   },
   getById: async (projectId: string, id: string) => {
-    const { data } = await client.get<TestRun>(`${BASE(projectId)}/${id}`);
+    const { data } = await sdk.getTestRun({
+      path: { project_id: projectId, run_id: id },
+    });
     return data;
   },
   create: async (projectId: string, input: CreateTestRun) => {
-    const { data } = await client.post<TestRun>(BASE(projectId), input);
+    const { data } = await sdk.createTestRun({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
-  update: async (projectId: string, id: string, input: UpdateTestRun) => {
-    const { data } = await client.put<TestRun>(`${BASE(projectId)}/${id}`, {
-      ...input,
-      id,
+  update: async (
+    projectId: string,
+    id: string,
+    input: UpdateTestRun,
+    version: number,
+  ) => {
+    const { data } = await sdk.updateTestRun({
+      path: { project_id: projectId, run_id: id },
+      body: input,
+      headers: ifMatch(version),
     });
     return data;
   },
   delete: (projectId: string, id: string) =>
-    client.delete(`${BASE(projectId)}/${id}`),
+    sdk.deleteTestRun({ path: { project_id: projectId, run_id: id } }),
   getSummary: async (projectId: string, id: string) => {
-    const { data } = await client.get<TestRunSummary>(
-      `${BASE(projectId)}/${id}/summary`,
-    );
+    const { data } = await sdk.getTestRunSummary({
+      path: { project_id: projectId, run_id: id },
+    });
     return data;
   },
-  getLogs: async (projectId: string, id: string) => {
-    const { data } = await client.get<string[]>(
-      `${BASE(projectId)}/${id}/logs`,
-    );
-    return data;
+  getLogs: async (projectId: string, id: string, beforeSeq?: number) => {
+    const { data } = await sdk.getTestRunLogs({
+      path: { project_id: projectId, run_id: id },
+      ...(beforeSeq !== undefined && { query: { before_seq: beforeSeq } }),
+    });
+    return toRunLogs(data);
+  },
+  createSocketTicket: async (projectId: string, id: string) => {
+    const { data } = await sdk.createTestRunSocketTicket({
+      path: { project_id: projectId, run_id: id },
+    });
+    return data.ticket;
   },
 };
 
@@ -56,6 +111,23 @@ export const testRunQueries = {
     queryOptions({
       queryKey: [...queryKeys.testRuns.all(projectId), search],
       queryFn: () => testRunsApi.getAll(projectId, search),
+      enabled: !!projectId,
+    }),
+  active: (projectId: string) =>
+    queryOptions({
+      queryKey: [...queryKeys.testRuns.all(projectId), "dashboard", "active"],
+      queryFn: () => testRunsApi.getActive(projectId),
+      enabled: !!projectId,
+    }),
+  recentlyCompleted: (projectId: string, limit: number) =>
+    queryOptions({
+      queryKey: [
+        ...queryKeys.testRuns.all(projectId),
+        "dashboard",
+        "completed",
+        limit,
+      ],
+      queryFn: () => testRunsApi.getRecentlyCompleted(projectId, limit),
       enabled: !!projectId,
     }),
   detail: (projectId: string, id: string) =>

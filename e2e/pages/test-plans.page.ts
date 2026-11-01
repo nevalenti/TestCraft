@@ -1,6 +1,6 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page } from "@playwright/test";
 
-import { ConfirmDialog } from '../components/confirm-dialog';
+import { ConfirmDialog } from "../components/confirm-dialog";
 
 export class TestPlansPage {
   readonly confirmDialog: ConfirmDialog;
@@ -12,16 +12,16 @@ export class TestPlansPage {
   async goto(plansPath: string) {
     await this.page.goto(plansPath);
     await expect(
-      this.page.getByRole('button', { name: 'New Test Plan' }).first(),
+      this.page.getByRole("button", { name: "New Test Plan" }).first(),
     ).toBeVisible();
   }
 
   get createButton() {
-    return this.page.getByRole('button', { name: 'New Test Plan' }).first();
+    return this.page.getByRole("button", { name: "New Test Plan" }).first();
   }
 
   get dialog() {
-    return this.page.locator('dialog[open]');
+    return this.page.locator("dialog[open]");
   }
 
   getPlanRow(name: string) {
@@ -33,17 +33,17 @@ export class TestPlansPage {
   async create(name: string) {
     await this.createButton.click();
     await expect(
-      this.page.getByRole('heading', { name: 'New Test Plan' }),
+      this.page.getByRole("heading", { name: "New Test Plan" }),
     ).toBeVisible();
-    await this.dialog.locator('#plan-name').fill(name);
-    await this.dialog.getByRole('button', { name: 'Create' }).click();
+    await this.dialog.locator("#plan-name").fill(name);
+    await this.dialog.getByRole("button", { name: "Create" }).click();
     await expect(this.getPlanRow(name)).toBeVisible({ timeout: 10_000 });
   }
 
   async delete(name: string) {
     const row = this.getPlanRow(name);
     await row.hover();
-    await row.getByRole('button', { name: 'Delete plan' }).click();
+    await row.getByRole("button", { name: "Delete plan" }).click();
     await this.confirmDialog.confirmDelete();
     await expect(this.getPlanRow(name)).toHaveCount(0);
   }
@@ -51,17 +51,17 @@ export class TestPlansPage {
   async edit(name: string, newName: string) {
     const row = this.getPlanRow(name);
     await row.hover();
-    await row.getByRole('button', { name: 'Edit plan' }).click();
+    await row.getByRole("button", { name: "Edit plan" }).click();
     await expect(
-      this.page.getByRole('heading', { name: 'Edit Test Plan' }),
+      this.page.getByRole("heading", { name: "Edit Test Plan" }),
     ).toBeVisible();
-    await this.dialog.locator('#plan-name').fill(newName);
-    await this.dialog.getByRole('button', { name: 'Save' }).click();
+    await this.dialog.locator("#plan-name").fill(newName);
+    await this.dialog.getByRole("button", { name: "Save" }).click();
     await expect(this.dialog).not.toBeVisible();
     await expect(this.getPlanRow(newName)).toBeVisible({ timeout: 10_000 });
   }
 
   async open(name: string) {
-    await this.getPlanRow(name).getByRole('link', { name }).click();
+    await this.getPlanRow(name).getByRole("link", { name }).click();
   }
 }

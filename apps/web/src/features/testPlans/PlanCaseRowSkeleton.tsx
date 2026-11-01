@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 
 export const PlanCaseRowSkeleton = () => (
   <li className="flex items-center gap-3 rounded-lg border border-border bg-base-100 px-4 py-3">

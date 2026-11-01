@@ -1,7 +1,5 @@
 using System.Reflection;
-
 using FluentAssertions;
-
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Architecture.Tests;

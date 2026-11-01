@@ -4,13 +4,13 @@ on:
   push:
     branches: [main]
     paths:
-      - 'infrastructure/helm/**'
-      - '.github/workflows/infra-helm-chart.yml'
+      - "infrastructure/helm/**"
+      - ".github/workflows/infra-helm-chart.yml"
   pull_request:
     branches: [main]
     paths:
-      - 'infrastructure/helm/**'
-      - '.github/workflows/infra-helm-chart.yml'
+      - "infrastructure/helm/**"
+      - ".github/workflows/infra-helm-chart.yml"
   workflow_dispatch:
 
 permissions:
@@ -24,11 +24,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
 
       - name: Set up Helm
         uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4
         with:
-          version: 'v3.16.4'
+          version: "v3.16.4"
 
       - name: Helm dependency update
         run: helm dependency update infrastructure/helm/testcraft
@@ -45,3 +47,11 @@ jobs:
             --values infrastructure/helm/testcraft/values.production.yaml \
             --values infrastructure/helm/testcraft/values.secrets.yaml.example \
             > /dev/null
+
+      - name: Check and test alert rules
+        working-directory: infrastructure/helm/testcraft/files/prometheus
+        run: |
+          docker run --rm -v "$PWD":/rules:ro -w /rules --entrypoint promtool \
+            prom/prometheus:v3.4.0 check rules alert-rules.yml
+          docker run --rm -v "$PWD":/rules:ro -w /rules --entrypoint promtool \
+            prom/prometheus:v3.4.0 test rules alert-rules.test.yml

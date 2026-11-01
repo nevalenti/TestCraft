@@ -22,6 +22,7 @@ images:
 
 thirdPartyImages:
   postgres: postgres:16-alpine
+  pgweb: sosedoff/pgweb:0.17.0
   redis: redis:7-alpine
   rabbitmq: rabbitmq:4-management-alpine
   minio: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
@@ -33,7 +34,6 @@ thirdPartyImages:
   tempo: grafana/tempo:2.7.1
   prometheus: prom/prometheus:v3.4.0
   alertmanager: prom/alertmanager:v0.27.0
-  seq: datalust/seq:2024.3
   postgres_exporter: prometheuscommunity/postgres-exporter:v0.17.1
   redis_exporter: oliver006/redis_exporter:v1.67.0
   rabbitmq_exporter: kbudde/rabbitmq-exporter:v0.29.0
@@ -59,13 +59,18 @@ storage:
   postgres: 5Gi
   rabbitmq: 1Gi
   loki: 5Gi
-  seq: 5Gi
   prometheus: 10Gi
   alertmanager: 1Gi
   grafana: 1Gi
   keycloak: 1Gi
   minio: 10Gi
   tempo: 5Gi
+
+observability:
+  traceSampleRatio: "1.0"
+
+proxy:
+  knownNetworks: ""
 
 backups:
   postgresSchedule: "0 3 * * *"
@@ -88,6 +93,7 @@ secrets:
   postgresMonitorPassword: ""
   postgresGlitchtipPassword: ""
   glitchtipSecretKey: ""
+  apiGlitchtipDsn: ""
   rabbitmqUser: ""
   rabbitmqPassword: ""
   redisPassword: ""
@@ -100,7 +106,6 @@ secrets:
   minioBucket: ""
   minioPublicEndpoint: ""
   grafanaAdminPassword: ""
-  seqAdminPassword: ""
   keycloakAdmin: ""
   keycloakAdminPassword: ""
   keycloakAdminClientSecret: ""

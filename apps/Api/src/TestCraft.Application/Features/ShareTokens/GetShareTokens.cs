@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -34,7 +32,6 @@ public static class GetShareTokens
                 {
                     Id = st.Id,
                     TestRunId = st.TestRunId,
-                    Token = st.Token,
                     ExpiresAt = st.ExpiresAt,
                     CreatedAt = st.CreatedAt,
                 })

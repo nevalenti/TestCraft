@@ -1,5 +1,5 @@
-import { ArrowsRightLeftIcon } from '@heroicons/react/24/outline';
-import type { TestRun } from '@testcraft/types';
+import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
+import type { TestRun } from "@testcraft/types";
 
 interface RunComparisonPickerProps {
   runs: TestRun[] | undefined;
@@ -24,7 +24,7 @@ export const RunComparisonPicker = ({
     <div className="min-w-36 flex-1">
       <label
         htmlFor="run-a"
-        className="mb-1 block text-xs font-medium text-base-content/75"
+        className="mb-1 block text-xs font-medium text-fg-secondary"
       >
         Run A
       </label>
@@ -43,14 +43,14 @@ export const RunComparisonPicker = ({
       </select>
     </div>
 
-    <span className="pb-1.5 text-xs font-semibold text-base-content/55 select-none">
+    <span className="pb-1.5 text-xs font-semibold text-fg-subtle select-none">
       VS
     </span>
 
     <div className="min-w-36 flex-1">
       <label
         htmlFor="run-b"
-        className="mb-1 block text-xs font-medium text-base-content/75"
+        className="mb-1 block text-xs font-medium text-fg-secondary"
       >
         Run B
       </label>

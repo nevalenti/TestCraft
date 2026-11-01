@@ -1,5 +1,4 @@
 using Prometheus;
-
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Infrastructure.Notifications;

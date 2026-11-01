@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Configuration;
 

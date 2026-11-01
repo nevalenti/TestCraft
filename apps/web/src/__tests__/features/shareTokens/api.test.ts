@@ -1,47 +1,67 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listShareTokens: vi.fn(),
+  createShareToken: vi.fn(),
+  revokeShareToken: vi.fn(),
+  getRunByShareToken: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { shareTokensApi } from '@/features/shareTokens/api';
+import * as sdk from "@/api/sdk";
+import { shareTokensApi } from "@/features/shareTokens/api";
+import { TABLE_PAGE_SIZE } from "@/lib/constants";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('shareTokensApi', () => {
-  it('getAll fetches share tokens for the run', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+describe("shareTokensApi", () => {
+  it("getAll fetches share tokens for the run", async () => {
+    vi.mocked(sdk.listShareTokens).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await shareTokensApi.getAll('p1', 'r1');
+    await shareTokensApi.getAll("p1", "r1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/runs/r1/share');
-  });
-
-  it('create posts the expiry payload', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: { id: 's1' } });
-
-    await shareTokensApi.create('p1', 'r1', { expiresAt: '2026-01-01' });
-
-    expect(client.post).toHaveBeenCalledWith('projects/p1/runs/r1/share', {
-      expiresAt: '2026-01-01',
+    expect(sdk.listShareTokens).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
     });
   });
 
-  it('revoke deletes the token by id', () => {
-    shareTokensApi.revoke('p1', 'r1', 's1');
+  it("create posts the expiry payload", async () => {
+    vi.mocked(sdk.createShareToken).mockResolvedValue({
+      data: { id: "s1" },
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith('projects/p1/runs/r1/share/s1');
+    await shareTokensApi.create("p1", "r1", { expires_at: "2026-01-01" });
+
+    expect(sdk.createShareToken).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
+      body: {
+        expires_at: "2026-01-01",
+      },
+    });
   });
 
-  it('getByToken fetches the shared run by its public token, not nested under a project', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { runId: 'r1' } });
+  it("revoke deletes the token by id", () => {
+    shareTokensApi.revoke("p1", "r1", "s1");
 
-    const result = await shareTokensApi.getByToken('public-token');
+    expect(sdk.revokeShareToken).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1", token_id: "s1" },
+    });
+  });
 
-    expect(client.get).toHaveBeenCalledWith('share/public-token');
-    expect(result).toEqual({ runId: 'r1' });
+  it("getByToken fetches the shared run by its public token, not nested under a project", async () => {
+    vi.mocked(sdk.getRunByShareToken).mockResolvedValue({
+      data: { runId: "r1" },
+    } as never);
+
+    const result = await shareTokensApi.getByToken("public-token");
+
+    expect(sdk.getRunByShareToken).toHaveBeenCalledWith({
+      path: { token: "public-token" },
+      query: { page: 1, page_size: TABLE_PAGE_SIZE },
+    });
+    expect(result).toEqual({ runId: "r1" });
   });
 });

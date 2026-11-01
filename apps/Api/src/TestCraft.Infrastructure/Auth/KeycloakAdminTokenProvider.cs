@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
-
+using Microsoft.Extensions.Options;
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Auth;
@@ -14,37 +14,41 @@ internal interface IKeycloakAdminTokenProvider
 
 internal sealed class KeycloakAdminTokenProvider(
     IHttpClientFactory httpClientFactory,
-    InfrastructureOptions options
+    IOptions<InfrastructureOptions> options,
+    TimeProvider timeProvider
 ) : IKeycloakAdminTokenProvider, IDisposable
 {
     private readonly SemaphoreSlim _lock = new(1, 1);
-    private string? _token;
-    private DateTimeOffset _expiresAt = DateTimeOffset.MinValue;
+    private volatile CachedToken? _token;
 
     public void Dispose() => _lock.Dispose();
 
-    public void Invalidate() => _expiresAt = DateTimeOffset.MinValue;
+    public void Invalidate() => _token = null;
 
     public async Task<string> GetAccessTokenAsync(CancellationToken cancellationToken)
     {
-        if (_token is not null && DateTimeOffset.UtcNow < _expiresAt)
-            return _token;
+        if (_token is { } cached && timeProvider.GetUtcNow() < cached.ExpiresAt)
+        {
+            return cached.Value;
+        }
 
         await _lock.WaitAsync(cancellationToken);
         try
         {
-            if (_token is not null && DateTimeOffset.UtcNow < _expiresAt)
-                return _token;
+            if (_token is { } current && timeProvider.GetUtcNow() < current.ExpiresAt)
+            {
+                return current.Value;
+            }
 
             var client = httpClientFactory.CreateClient("keycloak-admin");
             var response = await client.PostAsync(
-                $"{options.KeycloakBaseUrl}/realms/{options.KeycloakRealm}/protocol/openid-connect/token",
+                $"{options.Value.KeycloakBaseUrl}/realms/{options.Value.KeycloakRealm}/protocol/openid-connect/token",
                 new FormUrlEncodedContent(
                     new Dictionary<string, string>
                     {
                         ["grant_type"] = "client_credentials",
-                        ["client_id"] = options.KeycloakAdminClientId,
-                        ["client_secret"] = options.KeycloakAdminClientSecret,
+                        ["client_id"] = options.Value.KeycloakAdminClientId,
+                        ["client_secret"] = options.Value.KeycloakAdminClientSecret,
                     }
                 ),
                 cancellationToken
@@ -55,15 +59,19 @@ internal sealed class KeycloakAdminTokenProvider(
                 cancellationToken: cancellationToken
             );
 
-            _token = payload!.AccessToken;
-            _expiresAt = DateTimeOffset.UtcNow.AddSeconds(payload.ExpiresIn - 30);
-            return _token;
+            _token = new CachedToken(
+                payload!.AccessToken,
+                timeProvider.GetUtcNow().AddSeconds(payload.ExpiresIn - 30)
+            );
+            return payload.AccessToken;
         }
         finally
         {
             _lock.Release();
         }
     }
+
+    private sealed record CachedToken(string Value, DateTimeOffset ExpiresAt);
 
     private sealed record TokenResponse(
         [property: JsonPropertyName("access_token")] string AccessToken,

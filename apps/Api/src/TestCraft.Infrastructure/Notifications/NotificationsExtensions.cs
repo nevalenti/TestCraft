@@ -1,7 +1,5 @@
 using System.Net.Http;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Infrastructure.FeatureToggles;
@@ -23,11 +21,14 @@ public static class NotificationsExtensions
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
         services
-            .AddHttpClient("notifications")
+            .AddHttpClient("notifications", client => client.Timeout = TimeSpan.FromSeconds(10))
             .ConfigurePrimaryHttpMessageHandler(() =>
-                new SocketsHttpHandler { ConnectCallback = SafeWebhookConnectCallback.ConnectAsync }
-            )
-            .AddStandardResilienceHandler();
+                new SocketsHttpHandler
+                {
+                    ConnectCallback = SafeWebhookConnectCallback.ConnectAsync,
+                    AllowAutoRedirect = false,
+                }
+            );
 
         return services;
     }

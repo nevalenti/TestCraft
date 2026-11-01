@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestSuites;
@@ -52,6 +50,54 @@ public class TestSuitesApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Names_AreUniqueAmongActiveSuitesInOneProject()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var otherProject = await client.CreateProjectAsync("Other Project");
+        var first = await client.CreateSuiteAsync(project.Id, "Regression");
+        var second = await client.CreateSuiteAsync(project.Id, "Smoke");
+
+        (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/suites",
+                new CreateTestSuite.Command { Name = "Regression" }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Conflict);
+        (
+            await client.UpdateAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/suites/{second.Id}",
+                new UpdateTestSuite.Command { Name = "Regression" }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Conflict);
+
+        (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{otherProject.Id}/suites",
+                new CreateTestSuite.Command { Name = "Regression" }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+
+        (await client.DeleteAsync($"/api/v1/projects/{project.Id}/suites/{first.Id}"))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
+        (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/suites",
+                new CreateTestSuite.Command { Name = "Regression" }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
     public async Task GetAll_FiltersBySearch()
     {
         var client = CreateClient(Guid.NewGuid());
@@ -69,13 +115,39 @@ public class TestSuitesApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task GetAll_SearchTreatsLikeWildcardsAsLiteralText()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        await client.CreateSuiteAsync(project.Id, "100% Coverage");
+        await client.CreateSuiteAsync(project.Id, "snake_case");
+        await client.CreateSuiteAsync(project.Id, "path\\name");
+        await client.CreateSuiteAsync(project.Id, "plain suite");
+
+        async Task<IReadOnlyList<string>> SearchAsync(string term)
+        {
+            var response = await client.GetAsync(
+                $"/api/v1/projects/{project.Id}/suites?search={Uri.EscapeDataString(term)}"
+            );
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+            var page = await response.Content.ReadFromJsonAsync<Paginated<TestSuiteResponse>>();
+            return page!.Items.Select(suite => suite.Name).ToList();
+        }
+
+        (await SearchAsync("%")).Should().Equal("100% Coverage");
+        (await SearchAsync("_")).Should().Equal("snake_case");
+        (await SearchAsync("\\")).Should().Equal("path\\name");
+        (await SearchAsync("coverage")).Should().Equal("100% Coverage");
+    }
+
+    [Fact]
     public async Task Update_ChangesNameAndDescription()
     {
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
         var suite = await client.CreateSuiteAsync(project.Id, "Old Name");
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}",
             new UpdateTestSuite.Command
             {
@@ -99,7 +171,7 @@ public class TestSuitesApiTests(ApiFactory factory)
         var project = await client.CreateProjectAsync();
         var suiteId = TestSuiteId.New();
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suiteId}",
             new UpdateTestSuite.Command { Id = suiteId, Name = "Doesn't matter" }
         );
@@ -165,7 +237,7 @@ public class TestSuitesApiTests(ApiFactory factory)
             new CreateTestSuite.Command { Name = "" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

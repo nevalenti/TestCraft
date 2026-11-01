@@ -1,7 +1,5 @@
 using FluentAssertions;
-
 using MediatR;
-
 using TestCraft.Application.Common.Events;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Features.TestRuns;
@@ -60,7 +58,7 @@ public class UpdateTestRunHandlerTests
     public async Task Handle_ValidTransition_UpdatesRunAndPublishesStatusChangedEvent()
     {
         var (context, run, publisher) = await SeedAsync();
-        var handler = new UpdateTestRun.Handler(context);
+        var handler = new UpdateTestRun.Handler(context, new NoopTestRunNotifier());
 
         var command = new UpdateTestRun.Command
         {
@@ -87,7 +85,7 @@ public class UpdateTestRunHandlerTests
     public async Task Handle_InvalidTransition_ThrowsDomainExceptionAndDoesNotPersistChanges()
     {
         var (context, run, publisher) = await SeedAsync();
-        var handler = new UpdateTestRun.Handler(context);
+        var handler = new UpdateTestRun.Handler(context, new NoopTestRunNotifier());
         run.TransitionTo(TestRunStatus.Archived);
         await context.SaveChangesAsync();
         publisher.PublishedNotifications.Clear();
@@ -111,7 +109,7 @@ public class UpdateTestRunHandlerTests
     public async Task Handle_SameStatus_DoesNotPublishEvent()
     {
         var (context, run, publisher) = await SeedAsync();
-        var handler = new UpdateTestRun.Handler(context);
+        var handler = new UpdateTestRun.Handler(context, new NoopTestRunNotifier());
 
         var command = new UpdateTestRun.Command
         {
@@ -131,7 +129,7 @@ public class UpdateTestRunHandlerTests
     public async Task Handle_RunNotFound_ThrowsNotFoundException()
     {
         var context = TestDbContextFactory.Create();
-        var handler = new UpdateTestRun.Handler(context);
+        var handler = new UpdateTestRun.Handler(context, new NoopTestRunNotifier());
 
         var command = new UpdateTestRun.Command
         {
@@ -151,7 +149,7 @@ public class UpdateTestRunHandlerTests
     public async Task Handle_RunBelongsToDifferentProject_ThrowsNotFoundException()
     {
         var (context, run, _) = await SeedAsync();
-        var handler = new UpdateTestRun.Handler(context);
+        var handler = new UpdateTestRun.Handler(context, new NoopTestRunNotifier());
 
         var command = new UpdateTestRun.Command
         {

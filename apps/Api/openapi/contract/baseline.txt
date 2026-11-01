@@ -1,0 +1,3 @@
+# Differences between the generated OpenAPI document and openapi/contract/v1.json.
+# "missing" is in the contract but not served; "extra" is served but not in the contract.
+# Keep an entry only with a "# reason"; rewrite with UPDATE_CONTRACT_BASELINE=1.

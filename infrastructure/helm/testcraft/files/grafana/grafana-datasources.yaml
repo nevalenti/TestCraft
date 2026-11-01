@@ -7,12 +7,24 @@ datasources:
     url: http://prometheus:9090
     isDefault: true
     uid: prometheus
+    jsonData:
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
 
   - name: Loki
     type: loki
     access: proxy
     url: http://loki:3100
     uid: loki
+    jsonData:
+      derivedFields:
+        - name: TraceID
+          matcherType: regex
+          matcherRegex: '"(?:trace_id|_?TraceId)":\s*"([0-9a-f]{32})"'
+          url: '$${__value.raw}'
+          datasourceUid: tempo
+          urlDisplayLabel: View trace
 
   - name: Alertmanager
     type: alertmanager

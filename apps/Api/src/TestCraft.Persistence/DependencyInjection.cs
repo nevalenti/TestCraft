@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Persistence;
@@ -24,6 +23,7 @@ public static class DependencyInjection
         );
 
         services.AddSingleton<IDbExceptionClassifier, PostgresExceptionClassifier>();
+        services.AddScoped<IRunLogWriter, PostgresRunLogWriter>();
 
         return services;
     }

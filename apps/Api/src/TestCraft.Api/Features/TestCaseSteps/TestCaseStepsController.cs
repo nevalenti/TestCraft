@@ -1,12 +1,13 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestCaseSteps;
 
 namespace TestCraft.Api.Features.TestCaseSteps;
 
+[ApiTokenScope("cases")]
 [Route(
     "api/v{version:apiVersion}/projects/{projectId:guid}/suites/{suiteId:guid}/cases/{caseId:guid}/steps"
 )]
@@ -14,7 +15,7 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists the steps for a test case.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(Paginated<TestCaseStepResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseStepResponse>>> GetAll(
         ProjectId projectId,
         TestSuiteId suiteId,
@@ -32,7 +33,7 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
 
     /// <summary>Gets a test case step by ID.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<TestCaseStepResponse>> GetById(
         ProjectId projectId,
         TestSuiteId suiteId,
@@ -50,12 +51,14 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
 
         var result = await sender.Send(query, cancellationToken);
 
+        SetETag(result.Version);
+
         return Ok(result);
     }
 
     /// <summary>Adds a step to a test case.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestCaseStepResponse>> Create(
         ProjectId projectId,
         TestSuiteId suiteId,
@@ -101,19 +104,29 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates a test case step.</summary>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(TestCaseStepResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<TestCaseStepResponse>> Update(
         ProjectId projectId,
         TestSuiteId suiteId,
         TestCaseId caseId,
         TestCaseStepId id,
         UpdateTestCaseStep.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, CaseId = caseId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            CaseId = caseId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }

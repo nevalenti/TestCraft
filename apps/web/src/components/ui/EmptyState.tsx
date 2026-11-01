@@ -1,6 +1,6 @@
-import { InboxIcon } from '@heroicons/react/24/outline';
+import { InboxIcon } from "@heroicons/react/24/outline";
 
-import { cn } from '@/lib/cn';
+import { cn } from "@/lib/cn";
 
 interface EmptyStateProps {
   title: string;
@@ -17,16 +17,21 @@ export const EmptyState = ({
   icon,
   iconClassName,
 }: EmptyStateProps) => (
-  <div className="flex flex-col items-center justify-center gap-2 py-10 text-center select-none">
-    <span className={cn('text-base-content/30 opacity-70', iconClassName)}>
-      {icon ?? <InboxIcon className="size-5" />}
+  <div className="flex w-full flex-col items-center justify-center px-4 py-12 text-center">
+    <span
+      className={cn(
+        "mb-3 flex size-10 items-center justify-center rounded-xl bg-base-content/6 text-fg-subtle [&>svg]:size-5",
+        iconClassName,
+      )}
+    >
+      {icon ?? <InboxIcon />}
     </span>
-    <p className="text-sm font-medium text-base-content/70">{title}</p>
+    <p className="text-sm font-semibold text-fg-secondary">{title}</p>
     {description && (
-      <p className="max-w-[240px] text-xs leading-relaxed text-base-content/50">
+      <p className="mt-1 max-w-xs text-sm leading-relaxed text-fg-subtle">
         {description}
       </p>
     )}
-    {action && <div className="mt-2 flex justify-center">{action}</div>}
+    {action && <div className="mt-4 flex justify-center">{action}</div>}
   </div>
 );

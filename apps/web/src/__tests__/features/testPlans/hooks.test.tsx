@@ -1,20 +1,16 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/features/testPlans/api', () => ({
+vi.mock("@/features/testPlans/api", () => ({
   testPlanQueries: {
-    all: vi.fn((projectId: string) => ({
-      queryKey: ['projects', projectId, 'plans'],
-      queryFn: vi.fn().mockResolvedValue([]),
-    })),
     detail: vi.fn((projectId: string, planId: string) => ({
-      queryKey: ['projects', projectId, 'plans', planId],
+      queryKey: ["projects", projectId, "plans", planId],
       queryFn: vi.fn().mockResolvedValue(null),
     })),
     cases: vi.fn((projectId: string, planId: string) => ({
-      queryKey: ['projects', projectId, 'plans', planId, 'cases'],
+      queryKey: ["projects", projectId, "plans", planId, "cases"],
       queryFn: vi.fn().mockResolvedValue([]),
     })),
   },
@@ -29,9 +25,9 @@ vi.mock('@/features/testPlans/api', () => ({
   },
 }));
 
-vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
+vi.mock("@/lib/notify", () => ({ notify: vi.fn() }));
 
-import { testPlanQueries, testPlansApi } from '@/features/testPlans/api';
+import { testPlanQueries, testPlansApi } from "@/features/testPlans/api";
 import {
   useAddCaseToPlan,
   useCreateRunFromPlan,
@@ -41,10 +37,9 @@ import {
   useReorderPlanCases,
   useTestPlan,
   useTestPlanCases,
-  useTestPlans,
   useUpdateTestPlan,
-} from '@/features/testPlans/hooks';
-import { notify } from '@/lib/notify';
+} from "@/features/testPlans/hooks";
+import { notify } from "@/lib/notify";
 
 const makeWrapper = () => {
   const queryClient = new QueryClient({
@@ -60,67 +55,57 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useTestPlans', () => {
-  describe('given a projectId — calls the query factory', () => {
-    it('calls testPlanQueries.all with the projectId', () => {
+describe("useTestPlan", () => {
+  describe("given projectId and planId — calls the detail query factory", () => {
+    it("calls testPlanQueries.detail with both ids", () => {
       const { wrapper } = makeWrapper();
-      renderHook(() => useTestPlans('proj-1'), { wrapper });
-      expect(testPlanQueries.all).toHaveBeenCalledWith('proj-1');
+      renderHook(() => useTestPlan("proj-1", "plan-1"), { wrapper });
+      expect(testPlanQueries.detail).toHaveBeenCalledWith("proj-1", "plan-1");
     });
   });
 });
 
-describe('useTestPlan', () => {
-  describe('given projectId and planId — calls the detail query factory', () => {
-    it('calls testPlanQueries.detail with both ids', () => {
+describe("useTestPlanCases", () => {
+  describe("given projectId and planId — calls the cases query factory", () => {
+    it("calls testPlanQueries.cases with both ids", () => {
       const { wrapper } = makeWrapper();
-      renderHook(() => useTestPlan('proj-1', 'plan-1'), { wrapper });
-      expect(testPlanQueries.detail).toHaveBeenCalledWith('proj-1', 'plan-1');
+      renderHook(() => useTestPlanCases("proj-1", "plan-1"), { wrapper });
+      expect(testPlanQueries.cases).toHaveBeenCalledWith("proj-1", "plan-1");
     });
   });
 });
 
-describe('useTestPlanCases', () => {
-  describe('given projectId and planId — calls the cases query factory', () => {
-    it('calls testPlanQueries.cases with both ids', () => {
-      const { wrapper } = makeWrapper();
-      renderHook(() => useTestPlanCases('proj-1', 'plan-1'), { wrapper });
-      expect(testPlanQueries.cases).toHaveBeenCalledWith('proj-1', 'plan-1');
-    });
-  });
-});
-
-describe('useCreateTestPlan', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls testPlansApi.create with projectId and input', async () => {
+describe("useCreateTestPlan", () => {
+  describe("on mutate — calls API and notifies", () => {
+    it("calls testPlansApi.create with projectId and input", async () => {
       vi.mocked(testPlansApi.create).mockResolvedValue({
-        id: 'plan-1',
-        name: 'Sprint 1',
+        id: "plan-1",
+        name: "Sprint 1",
       } as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useCreateTestPlan('proj-1'), {
+      const { result } = renderHook(() => useCreateTestPlan("proj-1"), {
         wrapper,
       });
 
-      result.current.mutate({ name: 'Sprint 1' });
+      result.current.mutate({ name: "Sprint 1" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testPlansApi.create).toHaveBeenCalledWith('proj-1', {
-        name: 'Sprint 1',
+      expect(testPlansApi.create).toHaveBeenCalledWith("proj-1", {
+        name: "Sprint 1",
       });
     });
 
     it("notifies 'Test plan created' on success", async () => {
       vi.mocked(testPlansApi.create).mockResolvedValue({
-        id: 'plan-1',
-        name: 'Sprint 1',
+        id: "plan-1",
+        name: "Sprint 1",
       } as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useCreateTestPlan('proj-1'), {
+      const { result } = renderHook(() => useCreateTestPlan("proj-1"), {
         wrapper,
       });
 
-      result.current.mutate({ name: 'Sprint 1' });
+      result.current.mutate({ name: "Sprint 1" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(notify).toHaveBeenCalledWith('Test plan "Sprint 1" created');
@@ -128,161 +113,214 @@ describe('useCreateTestPlan', () => {
   });
 });
 
-describe('useUpdateTestPlan', () => {
-  describe('on mutate — calls API with stripped input', () => {
-    it('calls testPlansApi.update with projectId, planId, and update payload', async () => {
+describe("useUpdateTestPlan", () => {
+  describe("on mutate — calls API with stripped input", () => {
+    it("calls testPlansApi.update with projectId, planId, and update payload", async () => {
       vi.mocked(testPlansApi.update).mockResolvedValue({
-        id: 'plan-1',
-        name: 'Sprint 2',
+        id: "plan-1",
+        name: "Sprint 2",
       } as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useUpdateTestPlan('proj-1'), {
+      const { result } = renderHook(() => useUpdateTestPlan("proj-1"), {
         wrapper,
       });
 
-      result.current.mutate({ id: 'plan-1', name: 'Sprint 2' });
+      result.current.mutate({ id: "plan-1", version: 3, name: "Sprint 2" });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testPlansApi.update).toHaveBeenCalledWith('proj-1', 'plan-1', {
-        name: 'Sprint 2',
-      });
+      expect(testPlansApi.update).toHaveBeenCalledWith(
+        "proj-1",
+        "plan-1",
+        {
+          name: "Sprint 2",
+        },
+        3,
+      );
     });
   });
 });
 
-describe('useDeleteTestPlan', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls testPlansApi.delete with projectId and planId', async () => {
+describe("useDeleteTestPlan", () => {
+  describe("on mutate — calls API and notifies", () => {
+    it("calls testPlansApi.delete with projectId and planId", async () => {
       vi.mocked(testPlansApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useDeleteTestPlan('proj-1'), {
+      const { result } = renderHook(() => useDeleteTestPlan("proj-1"), {
         wrapper,
       });
 
-      result.current.mutate('plan-1');
+      result.current.mutate("plan-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testPlansApi.delete).toHaveBeenCalledWith('proj-1', 'plan-1');
+      expect(testPlansApi.delete).toHaveBeenCalledWith("proj-1", "plan-1");
     });
 
     it("notifies 'Test plan deleted' on success", async () => {
       vi.mocked(testPlansApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useDeleteTestPlan('proj-1'), {
+      const { result } = renderHook(() => useDeleteTestPlan("proj-1"), {
         wrapper,
       });
 
-      result.current.mutate('plan-1');
+      result.current.mutate("plan-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test plan deleted');
+      expect(notify).toHaveBeenCalledWith("Test plan deleted");
     });
   });
 });
 
-describe('useAddCaseToPlan', () => {
-  describe('on mutate — calls addCase API', () => {
-    it('calls testPlansApi.addCase with projectId, planId, and caseId', async () => {
+describe("useAddCaseToPlan", () => {
+  describe("on mutate — calls addCase API", () => {
+    it("calls testPlansApi.addCase with projectId, planId, and caseId", async () => {
       vi.mocked(testPlansApi.addCase).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useAddCaseToPlan('proj-1', 'plan-1'),
+        () => useAddCaseToPlan("proj-1", "plan-1"),
         { wrapper },
       );
 
-      result.current.mutate('case-1');
+      result.current.mutate("case-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testPlansApi.addCase).toHaveBeenCalledWith(
-        'proj-1',
-        'plan-1',
-        'case-1',
+        "proj-1",
+        "plan-1",
+        "case-1",
       );
     });
   });
 });
 
-describe('useRemoveCaseFromPlan', () => {
-  describe('on mutate — calls removeCase API', () => {
-    it('calls testPlansApi.removeCase with projectId, planId, and caseId', async () => {
+describe("useRemoveCaseFromPlan", () => {
+  describe("on mutate — calls removeCase API", () => {
+    it("calls testPlansApi.removeCase with projectId, planId, and caseId", async () => {
       vi.mocked(testPlansApi.removeCase).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useRemoveCaseFromPlan('proj-1', 'plan-1'),
+        () => useRemoveCaseFromPlan("proj-1", "plan-1"),
         { wrapper },
       );
 
-      result.current.mutate('case-1');
+      result.current.mutate("case-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testPlansApi.removeCase).toHaveBeenCalledWith(
-        'proj-1',
-        'plan-1',
-        'case-1',
+        "proj-1",
+        "plan-1",
+        "case-1",
       );
     });
   });
 });
 
-describe('useReorderPlanCases', () => {
-  describe('on mutate — calls reorderCases API', () => {
-    it('calls testPlansApi.reorderCases with projectId, planId, and ordered cases', async () => {
+describe("useReorderPlanCases", () => {
+  describe("on mutate — calls reorderCases API", () => {
+    it("calls testPlansApi.reorderCases with projectId, planId, and ordered cases", async () => {
       vi.mocked(testPlansApi.reorderCases).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useReorderPlanCases('proj-1', 'plan-1'),
+        () => useReorderPlanCases("proj-1", "plan-1"),
         { wrapper },
       );
 
       const cases = [
-        { testCaseId: 'case-1', order: 1 },
-        { testCaseId: 'case-2', order: 2 },
+        { test_case_id: "case-1", order: 1 },
+        { test_case_id: "case-2", order: 2 },
       ];
       result.current.mutate(cases);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(testPlansApi.reorderCases).toHaveBeenCalledWith(
-        'proj-1',
-        'plan-1',
+        "proj-1",
+        "plan-1",
         cases,
       );
     });
   });
+
+  describe("optimistic update — the dropped order shows immediately", () => {
+    const cached = [
+      { test_case_id: "case-1", test_case_name: "A", order: 1 },
+      { test_case_id: "case-2", test_case_name: "B", order: 2 },
+    ];
+    const swapped = [
+      { test_case_id: "case-2", order: 1 },
+      { test_case_id: "case-1", order: 2 },
+    ];
+    const casesKey = ["projects", "proj-1", "plans", "plan-1", "cases"];
+
+    it("writes the new order before the request resolves", async () => {
+      vi.mocked(testPlansApi.reorderCases).mockReturnValue(
+        new Promise(() => {}) as any,
+      );
+      const { queryClient, wrapper } = makeWrapper();
+      queryClient.setQueryData(casesKey, cached);
+      const { result } = renderHook(
+        () => useReorderPlanCases("proj-1", "plan-1"),
+        { wrapper },
+      );
+
+      result.current.mutate(swapped);
+
+      await waitFor(() =>
+        expect(queryClient.getQueryData(casesKey)).toEqual([
+          { test_case_id: "case-1", test_case_name: "A", order: 2 },
+          { test_case_id: "case-2", test_case_name: "B", order: 1 },
+        ]),
+      );
+    });
+
+    it("rolls back to the previous order when the request fails", async () => {
+      vi.mocked(testPlansApi.reorderCases).mockRejectedValue(new Error("x"));
+      const { queryClient, wrapper } = makeWrapper();
+      queryClient.setQueryData(casesKey, cached);
+      const { result } = renderHook(
+        () => useReorderPlanCases("proj-1", "plan-1"),
+        { wrapper },
+      );
+
+      result.current.mutate(swapped);
+
+      await waitFor(() => expect(result.current.isError).toBe(true));
+      expect(queryClient.getQueryData(casesKey)).toEqual(cached);
+    });
+  });
 });
 
-describe('useCreateRunFromPlan', () => {
-  describe('on mutate — calls createRun API and notifies', () => {
-    it('calls testPlansApi.createRun with the plan and run details', async () => {
-      vi.mocked(testPlansApi.createRun).mockResolvedValue({ id: 'r1' } as any);
+describe("useCreateRunFromPlan", () => {
+  describe("on mutate — calls createRun API and notifies", () => {
+    it("calls testPlansApi.createRun with the plan and run details", async () => {
+      vi.mocked(testPlansApi.createRun).mockResolvedValue({ id: "r1" } as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useCreateRunFromPlan('proj-1'), {
+      const { result } = renderHook(() => useCreateRunFromPlan("proj-1"), {
         wrapper,
       });
 
       result.current.mutate({
-        planId: 'plan-1',
-        name: 'Sprint 1 Run',
-        environment: 'staging',
+        planId: "plan-1",
+        name: "Sprint 1 Run",
+        environment: "staging",
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testPlansApi.createRun).toHaveBeenCalledWith('proj-1', 'plan-1', {
-        name: 'Sprint 1 Run',
-        environment: 'staging',
+      expect(testPlansApi.createRun).toHaveBeenCalledWith("proj-1", "plan-1", {
+        name: "Sprint 1 Run",
+        environment: "staging",
       });
     });
 
     it("notifies 'Test run created from plan' on success", async () => {
-      vi.mocked(testPlansApi.createRun).mockResolvedValue({ id: 'r1' } as any);
+      vi.mocked(testPlansApi.createRun).mockResolvedValue({ id: "r1" } as any);
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useCreateRunFromPlan('proj-1'), {
+      const { result } = renderHook(() => useCreateRunFromPlan("proj-1"), {
         wrapper,
       });
 
       result.current.mutate({
-        planId: 'plan-1',
-        name: 'Sprint 1 Run',
-        environment: 'staging',
+        planId: "plan-1",
+        name: "Sprint 1 Run",
+        environment: "staging",
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));

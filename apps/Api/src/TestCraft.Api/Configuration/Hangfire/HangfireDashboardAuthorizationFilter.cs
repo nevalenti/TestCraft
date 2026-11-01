@@ -1,5 +1,4 @@
 using Hangfire.Dashboard;
-
 using TestCraft.Common.Security;
 
 namespace TestCraft.Api.Configuration.Hangfire;
@@ -11,7 +10,7 @@ public class HangfireDashboardAuthorizationFilter(
 {
     public bool Authorize(DashboardContext context)
     {
-        if (!environment.IsProduction())
+        if (environment.IsDevelopment())
         {
             return true;
         }

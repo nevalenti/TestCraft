@@ -1,53 +1,50 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 import type {
   CreateEmailSubscription,
   CreateWebhookSubscription,
-  EmailSubscription,
-  WebhookSubscription,
-} from '@testcraft/types';
+} from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const WEBHOOK_BASE = (projectId: string) =>
-  `projects/${projectId}/notifications/webhooks`;
-const EMAIL_BASE = (projectId: string) =>
-  `projects/${projectId}/notifications/emails`;
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const notificationsApi = {
   getWebhooks: async (projectId: string) => {
-    const { data } = await client.get<WebhookSubscription[]>(
-      WEBHOOK_BASE(projectId),
-    );
+    const { data } = await sdk.listWebhookSubscriptions({
+      path: { project_id: projectId },
+    });
     return data;
   },
   createWebhook: async (
     projectId: string,
     input: CreateWebhookSubscription,
   ) => {
-    const { data } = await client.post<WebhookSubscription>(
-      WEBHOOK_BASE(projectId),
-      input,
-    );
+    const { data } = await sdk.createWebhookSubscription({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
   deleteWebhook: (projectId: string, id: string) =>
-    client.delete(`${WEBHOOK_BASE(projectId)}/${id}`),
+    sdk.deleteWebhookSubscription({
+      path: { project_id: projectId, subscription_id: id },
+    }),
   getEmails: async (projectId: string) => {
-    const { data } = await client.get<EmailSubscription[]>(
-      EMAIL_BASE(projectId),
-    );
+    const { data } = await sdk.listEmailSubscriptions({
+      path: { project_id: projectId },
+    });
     return data;
   },
   createEmail: async (projectId: string, input: CreateEmailSubscription) => {
-    const { data } = await client.post<EmailSubscription>(
-      EMAIL_BASE(projectId),
-      input,
-    );
+    const { data } = await sdk.createEmailSubscription({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
   deleteEmail: (projectId: string, id: string) =>
-    client.delete(`${EMAIL_BASE(projectId)}/${id}`),
+    sdk.deleteEmailSubscription({
+      path: { project_id: projectId, subscription_id: id },
+    }),
 };
 
 export const notificationQueries = {

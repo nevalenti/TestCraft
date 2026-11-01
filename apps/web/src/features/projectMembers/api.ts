@@ -1,22 +1,34 @@
-import { queryOptions } from '@tanstack/react-query';
-import type { AddProjectMember, ProjectMember } from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { AddProjectMember, UpdateProjectMember } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string) => `projects/${projectId}/members`;
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const projectMembersApi = {
   getAll: async (projectId: string) => {
-    const { data } = await client.get<ProjectMember[]>(BASE(projectId));
+    const { data } = await sdk.listProjectMembers({
+      path: { project_id: projectId },
+    });
     return data;
   },
   add: async (projectId: string, input: AddProjectMember) => {
-    const { data } = await client.post<ProjectMember>(BASE(projectId), input);
+    const { data } = await sdk.addProjectMember({
+      path: { project_id: projectId },
+      body: input,
+    });
+    return data;
+  },
+  update: async (projectId: string, id: string, input: UpdateProjectMember) => {
+    const { data } = await sdk.updateProjectMember({
+      path: { project_id: projectId, member_id: id },
+      body: input,
+    });
     return data;
   },
   remove: (projectId: string, id: string) =>
-    client.delete(`${BASE(projectId)}/${id}`),
+    sdk.removeProjectMember({
+      path: { project_id: projectId, member_id: id },
+    }),
 };
 
 export const projectMemberQueries = {

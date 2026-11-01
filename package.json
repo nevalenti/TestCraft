@@ -8,17 +8,17 @@
     "test": "turbo test",
     "typecheck": "turbo typecheck",
     "lint": "turbo lint",
-    "format": "prettier . --write"
+    "lint:contract": "REDOCLY_TELEMETRY=off REDOCLY_SUPPRESS_UPDATE_NOTICE=true redocly lint --config apps/Api/openapi/redocly.yaml",
+    "format": "oxfmt . '!apps/Api/openapi/v1.json'",
+    "format:check": "oxfmt --check . '!apps/Api/openapi/v1.json'"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",
-    "@eslint/js": "^10.0.1",
-    "globals": "^17.7.0",
+    "@redocly/cli": "^2.62.1",
     "eslint-plugin-simple-import-sort": "^13.0.0",
     "eslint-plugin-sonarjs": "^4.1.0",
-    "eslint-plugin-unicorn": "^68.0.0",
-    "prettier": "^3.8.4",
-    "turbo": "^2.9.18",
-    "typescript-eslint": "^8.62.0"
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
+    "turbo": "^2.9.18"
   }
 }

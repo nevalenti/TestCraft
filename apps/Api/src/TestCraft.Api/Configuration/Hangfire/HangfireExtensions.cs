@@ -1,6 +1,7 @@
 using Hangfire;
 using Hangfire.PostgreSql;
-
+using Microsoft.Extensions.Options;
+using TestCraft.Api.Idempotency;
 using TestCraft.Application.Features.Notifications;
 using TestCraft.Application.Features.ShareTokens;
 using TestCraft.Application.Features.TestRuns;
@@ -17,6 +18,8 @@ public static class HangfireExtensions
         InfrastructureOptions infrastructureOptions
     )
     {
+        builder.Services.AddStartupOptions<HangfireBasicAuthOptions>(builder.Configuration);
+
         var connectionString = ConnectionStringHelpers.ToNpgsqlConnectionString(
             infrastructureOptions.DatabaseUrl
         );
@@ -35,6 +38,7 @@ public static class HangfireExtensions
         builder.Services.AddScoped<NotificationDeliveryRetryJob>();
         builder.Services.AddScoped<NotificationDeliveryCleanupJob>();
         builder.Services.AddScoped<StaleTestRunCleanupJob>();
+        builder.Services.AddScoped<IdempotencyCleanupJob>();
 
         GlobalJobFilters.Filters.Add(new HangfireMetricsFilter());
 
@@ -43,7 +47,9 @@ public static class HangfireExtensions
 
     public static WebApplication UseHangfireJobs(this WebApplication app)
     {
-        var hangfireBasicAuthOptions = app.Services.GetRequiredService<HangfireBasicAuthOptions>();
+        var hangfireBasicAuthOptions = app
+            .Services.GetRequiredService<IOptions<HangfireBasicAuthOptions>>()
+            .Value;
         var dashboardOptions = new DashboardOptions
         {
             Authorization =
@@ -52,7 +58,7 @@ public static class HangfireExtensions
             ],
         };
 
-        if (app.Environment.IsProduction())
+        if (!app.Environment.IsDevelopment())
         {
             app.UseWhen(
                 context => context.Request.Path.StartsWithSegments(ApiPaths.HangfirePrefix),
@@ -90,6 +96,12 @@ public static class HangfireExtensions
             "settle-stale-test-runs",
             job => job.RunAsync(CancellationToken.None),
             Cron.Hourly
+        );
+
+        RecurringJob.AddOrUpdate<IdempotencyCleanupJob>(
+            "cleanup-idempotency-records",
+            job => job.RunAsync(CancellationToken.None),
+            Cron.Daily
         );
 
         return app;

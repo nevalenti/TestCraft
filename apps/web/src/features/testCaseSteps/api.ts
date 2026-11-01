@@ -1,39 +1,25 @@
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 import type {
-  BulkReorderSteps,
   CreateTestCaseStep,
-  Paginated,
-  TestCaseStep,
+  ReorderTestCaseSteps,
   UpdateTestCaseStep,
-} from '@testcraft/types';
+} from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-import { PAGE_SIZE } from '@/lib/constants';
-
-const BASE = (projectId: string, suiteId: string, caseId: string) =>
-  `projects/${projectId}/suites/${suiteId}/cases/${caseId}/steps`;
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const testCaseStepsApi = {
   getAll: async (projectId: string, suiteId: string, caseId: string) => {
-    const { data } = await client.get<Paginated<TestCaseStep>>(
-      BASE(projectId, suiteId, caseId),
-      {
-        params: { pageSize: PAGE_SIZE },
-      },
-    );
-    return data;
-  },
-  getById: async (
-    projectId: string,
-    suiteId: string,
-    caseId: string,
-    id: string,
-  ) => {
-    const { data } = await client.get<TestCaseStep>(
-      `${BASE(projectId, suiteId, caseId)}/${id}`,
-    );
-    return data;
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestCaseSteps({
+        path: { project_id: projectId, suite_id: suiteId, case_id: caseId },
+        query: { page, page_size: PAGE_SIZE },
+      });
+      return data;
+    });
   },
   create: async (
     projectId: string,
@@ -41,10 +27,10 @@ export const testCaseStepsApi = {
     caseId: string,
     input: CreateTestCaseStep,
   ) => {
-    const { data } = await client.post<TestCaseStep>(
-      BASE(projectId, suiteId, caseId),
-      input,
-    );
+    const { data } = await sdk.createTestCaseStep({
+      path: { project_id: projectId, suite_id: suiteId, case_id: caseId },
+      body: input,
+    });
     return data;
   },
   update: async (
@@ -53,24 +39,39 @@ export const testCaseStepsApi = {
     caseId: string,
     id: string,
     input: UpdateTestCaseStep,
+    version: number,
   ) => {
-    const { data } = await client.put<TestCaseStep>(
-      `${BASE(projectId, suiteId, caseId)}/${id}`,
-      {
-        ...input,
-        id,
+    const { data } = await sdk.updateTestCaseStep({
+      path: {
+        project_id: projectId,
+        suite_id: suiteId,
+        case_id: caseId,
+        step_id: id,
       },
-    );
+      body: input,
+      headers: ifMatch(version),
+    });
     return data;
   },
-  bulkReorder: (
+  reorder: (
     projectId: string,
     suiteId: string,
     caseId: string,
-    input: BulkReorderSteps,
-  ) => client.put(`${BASE(projectId, suiteId, caseId)}/reorder`, input),
+    input: ReorderTestCaseSteps,
+  ) =>
+    sdk.reorderTestCaseSteps({
+      path: { project_id: projectId, suite_id: suiteId, case_id: caseId },
+      body: input,
+    }),
   delete: (projectId: string, suiteId: string, caseId: string, id: string) =>
-    client.delete(`${BASE(projectId, suiteId, caseId)}/${id}`),
+    sdk.deleteTestCaseStep({
+      path: {
+        project_id: projectId,
+        suite_id: suiteId,
+        case_id: caseId,
+        step_id: id,
+      },
+    }),
 };
 
 export const testCaseStepQueries = {
@@ -79,11 +80,5 @@ export const testCaseStepQueries = {
       queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
       queryFn: () => testCaseStepsApi.getAll(projectId, suiteId, caseId),
       enabled: !!projectId && !!suiteId && !!caseId,
-    }),
-  detail: (projectId: string, suiteId: string, caseId: string, id: string) =>
-    queryOptions({
-      queryKey: queryKeys.testCaseSteps.detail(projectId, suiteId, caseId, id),
-      queryFn: () => testCaseStepsApi.getById(projectId, suiteId, caseId, id),
-      enabled: !!projectId && !!suiteId && !!caseId && !!id,
     }),
 };

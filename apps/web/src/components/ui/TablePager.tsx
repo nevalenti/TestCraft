@@ -1,4 +1,4 @@
-import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/solid';
+import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 
 interface TablePagerProps {
   page: number;
@@ -8,7 +8,7 @@ interface TablePagerProps {
 }
 
 const DEFAULT_CLASS =
-  'flex items-center justify-between border-t border-border px-4 py-2';
+  "flex items-center justify-between border-t border-border px-4 py-2";
 
 export const TablePager = ({
   page,
@@ -20,9 +20,8 @@ export const TablePager = ({
 
   return (
     <div className={className ?? DEFAULT_CLASS}>
-      <span className="text-xs text-base-content/55">
-        Page{' '}
-        <span className="font-semibold text-base-content/80">{page + 1}</span>{' '}
+      <span className="text-xs text-fg-subtle">
+        Page <span className="font-semibold text-fg-secondary">{page + 1}</span>{" "}
         of {pageCount}
       </span>
       <div className="flex gap-1">

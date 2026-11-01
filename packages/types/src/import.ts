@@ -1,10 +1,7 @@
-import type { components } from './generated/schema.js';
+import type { components } from "./generated/schema.js";
 
-export type AllureResultItem =
-  components['schemas']['TestCraft.Application.Import.AllureResultItem'];
+export type AllureResultItem = components["schemas"]["AllureResultItem"];
 
-export type ImportJobResponse =
-  components['schemas']['TestCraft.Application.Import.ImportJobResponse'];
+export type ImportJobResponse = components["schemas"]["ImportJobResponse"];
 
-export type ImportJobStatus =
-  components['schemas']['TestCraft.Domain.Enums.ImportJobStatus'];
+export type ImportJobStatus = components["schemas"]["ImportJobStatus"];

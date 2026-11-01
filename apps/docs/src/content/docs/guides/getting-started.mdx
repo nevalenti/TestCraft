@@ -5,7 +5,7 @@ sidebar:
   order: 1
 ---
 
-import { Aside, Steps } from '@astrojs/starlight/components';
+import { Aside, Steps } from "@astrojs/starlight/components";
 
 Set up a local development environment in a few minutes.
 
@@ -15,6 +15,7 @@ Set up a local development environment in a few minutes.
 - **[.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)**
 - **[Node.js 24](https://nodejs.org/en/download)**
 - **[pnpm](https://pnpm.io/installation)**
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** (`just dev` runs honcho through `uvx`)
 - **[just](https://github.com/casey/just)**
 - **[jq](https://jqlang.org/download/)**
 - **[yq](https://github.com/mikefarah/yq)**
@@ -33,35 +34,35 @@ Set up a local development environment in a few minutes.
    cp apps/web/.env.example apps/web/.env
    ```
 
-2. Set `APPLY_MIGRATIONS=true` in `.env`.
+2. Start the local infrastructure via Docker Compose:
+
+   ```bash
+   just up
+   ```
+
+3. Create the database schema:
+
+   ```bash
+   just api-migrate
+   ```
 
    <Aside type="caution">
      Skip this and the database schema stays empty — the API will fail on its
      first request.
    </Aside>
 
-3. Start the local infrastructure via Docker Compose:
+4. Run the API and the web app outside Docker, both in one terminal:
 
    ```bash
-   just up
+   just dev
    ```
 
-4. Run the API and the web app outside Docker:
-
-   ```bash
-   # API
-   dotnet run --project apps/Api/src/TestCraft.Api
-   ```
-
-   ```bash
-   # Web
-   pnpm --filter testcraft-web dev
-   ```
+   The API runs in the Development environment, restarts when code changes, and applies migrations and seeds sample data before it starts. To run them separately instead, use `just api-serve` and `pnpm --filter testcraft-web dev`.
 
 </Steps>
 
-| Service    | URL                                                              |
-| ---------- | ---------------------------------------------------------------- |
-| Web        | [http://localhost:3000](http://localhost:3000)                   |
-| API        | [http://localhost:5000](http://localhost:5000)                   |
-| Swagger UI | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) |
+| Service       | URL                                                              |
+| ------------- | ---------------------------------------------------------------- |
+| Web           | [http://localhost:3000](http://localhost:3000)                   |
+| API           | [http://localhost:5000](http://localhost:5000)                   |
+| API reference | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) |

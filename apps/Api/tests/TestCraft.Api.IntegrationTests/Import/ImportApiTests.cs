@@ -1,12 +1,15 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Features.Import;
+using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.Import;
 
@@ -77,7 +80,7 @@ public class ImportApiTests(ApiFactory factory)
             new ImportJUnit.Command { Xml = "", Environment = "ci" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -92,7 +95,7 @@ public class ImportApiTests(ApiFactory factory)
             new ImportJUnit.Command { Xml = JUnitXml, Environment = "" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -112,7 +115,7 @@ public class ImportApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -132,7 +135,7 @@ public class ImportApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -177,7 +180,7 @@ public class ImportApiTests(ApiFactory factory)
             new ImportAllure.Command { Results = [], Environment = "ci" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -189,17 +192,14 @@ public class ImportApiTests(ApiFactory factory)
 
         var response = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/import/allure",
-            new ImportAllure.Command
+            new
             {
-                Environment = "ci",
-                Results =
-                [
-                    new AllureResultItem { Name = "weird result", Status = "not-a-real-status" },
-                ],
+                environment = "ci",
+                results = new[] { new { name = "weird result", status = "not-a-real-status" } },
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -219,7 +219,7 @@ public class ImportApiTests(ApiFactory factory)
                     new AllureResultItem
                     {
                         Name = "checkout flow works",
-                        Status = "passed",
+                        Status = AllureStatus.Passed,
                         Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },
                 ],
@@ -278,5 +278,40 @@ public class ImportApiTests(ApiFactory factory)
         var response = await other.GetAsync($"/api/v1/projects/{project.Id}/import/{job!.Id}");
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+    }
+
+    [Fact]
+    public async Task ImportJUnit_WhenSavingResultsFails_MarksJobFailedAndRollsBack()
+    {
+        await using var failingFactory = factory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services =>
+                services.ConfigureDbContext<AppDbContext>(options =>
+                    options.AddInterceptors(new FailingInsertsInterceptor<TestResult>())
+                )
+            )
+        );
+        var client = failingFactory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            Guid.NewGuid().ToString()
+        );
+        var project = await client.CreateProjectAsync();
+
+        var job = await (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/import/junit",
+                new ImportJUnit.Command { Xml = JUnitXml, Environment = "ci" }
+            )
+        ).Content.ReadFromJsonAsync<ImportJobResponse>(ApiTestHelpers.JsonOptions);
+
+        var finishedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
+        finishedJob.Status.Should().Be(ImportJobStatus.Failed);
+        finishedJob.TestRunId.Should().BeNull();
+
+        using var scope = failingFactory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        (await context.TestSuites.CountAsync(suite => suite.ProjectId == project.Id))
+            .Should()
+            .Be(0);
     }
 }

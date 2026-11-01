@@ -1,26 +1,26 @@
-import { existsSync, readdirSync } from 'node:fs';
-import path from 'node:path';
+import { existsSync, readdirSync } from "node:fs";
+import path from "node:path";
 
-import type { Options } from '../args';
-import { resolveJunitXml } from '../core/junit';
-import * as log from '../core/log';
+import type { Options } from "../args";
+import { resolveJunitXml } from "../core/junit";
+import * as log from "../core/log";
 import {
   ApiContext,
   fetchAllResults,
   importResults,
   pollJob,
   uploadAttachment,
-} from '../core/testcraft';
-import { slugify } from '../core/util';
-import { writeDotenv } from '../dotenv';
-import { clearState, readState } from '../stateStore';
+} from "../core/testcraft";
+import { slugify } from "../core/util";
+import { writeDotenv } from "../dotenv";
+import { clearState, readState } from "../stateStore";
 
 const uploadScreenshots = async (
   context: ApiContext,
   runId: string,
   screenshotsDir: string,
 ): Promise<void> => {
-  log.info('Uploading screenshots as attachments…');
+  log.info("Uploading screenshots as attachments…");
   const results = await fetchAllResults(context, runId);
   const screenshotDirs = readdirSync(screenshotsDir, {
     withFileTypes: true,
@@ -28,11 +28,11 @@ const uploadScreenshots = async (
 
   let uploaded = 0;
   for (const result of results) {
-    const slug = slugify(result.testCaseName);
+    const slug = slugify(result.test_case_name);
     const pngs = screenshotDirs.flatMap((dir) =>
       dir.name.toLowerCase().includes(slug)
         ? readdirSync(path.join(screenshotsDir, dir.name))
-            .filter((file) => file.endsWith('.png'))
+            .filter((file) => file.endsWith(".png"))
             .map((file) => path.join(screenshotsDir, dir.name, file))
         : [],
     );
@@ -90,10 +90,10 @@ const importAndPoll = async (
   if (savedRunId) {
     log.info(`Appending results to existing run ${savedRunId}…`);
   } else {
-    log.info('No pre-created run found — creating Active run for import…');
+    log.info("No pre-created run found — creating Active run for import…");
   }
 
-  log.info('Importing results…');
+  log.info("Importing results…");
   const job = await importResults(
     context,
     opts.runName,
@@ -102,14 +102,14 @@ const importAndPoll = async (
     savedRunId ?? undefined,
   );
 
-  log.info('Waiting for import job to complete…');
+  log.info("Waiting for import job to complete…");
   return pollJob(context, job.id);
 };
 
 const finalizeRun = (opts: Options, completedRunId: string | null): void => {
-  if (opts.dotenvPath) writeDotenv(opts.dotenvPath, completedRunId ?? '');
+  if (opts.dotenvPath) writeDotenv(opts.dotenvPath, completedRunId ?? "");
   log.info(
-    `Results imported successfully (TESTCRAFT_RUN_ID=${completedRunId ?? ''})`,
+    `Results imported successfully (TESTCRAFT_RUN_ID=${completedRunId ?? ""})`,
   );
   clearState();
 };
@@ -139,7 +139,7 @@ export const handleImport = async (
   const junitXmlPattern = opts.junitXml;
   if (!junitXmlPattern) {
     throw new Error(
-      '--junit-xml (or TESTCRAFT_JUNIT_XML) is required for the import command',
+      "--junit-xml (or TESTCRAFT_JUNIT_XML) is required for the import command",
     );
   }
 

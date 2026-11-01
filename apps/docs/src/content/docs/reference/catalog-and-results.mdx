@@ -1,0 +1,19 @@
+---
+title: Catalog names and result analytics
+description: Name uniqueness, repeated executions, and archived-run rules.
+---
+
+Active suite names are unique within a project. Active test case names are unique within a
+suite. Matching is exact and case-sensitive. Create and rename requests that conflict return
+HTTP `409`. A soft-deleted record's name can be reused. Imports and result-by-name submissions
+reuse matching active entries, preserve existing case content, and fill a missing suite source
+when a source is supplied. Imported steps are created only for new cases.
+
+A run can contain multiple executions of a case. Run summaries, trends, suite breakdowns, the
+dashboard, run comparison and flaky-test analytics all use one outcome per case/run: the latest
+execution by `executed_at`, breaking ties by `created_at` and then result ID (descending). An
+`untested` placeholder is used only when no executed result exists. Soft-deleted results are
+excluded. Flaky-test `total_runs` and `min_runs` therefore count runs rather than retry attempts.
+
+Archived runs reject result creation, updates, and deletion with HTTP `422` and code
+`RUN_NOT_MODIFIABLE`.

@@ -1,14 +1,14 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
-import { PlusIcon } from '@heroicons/react/24/solid';
-import type { Table } from '@tanstack/react-table';
-import type { Paginated, TestResult, TestResultStatus } from '@testcraft/types';
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { PlusIcon } from "@heroicons/react/24/solid";
+import type { Table } from "@tanstack/react-table";
+import type { Paginated, TestResult, TestResultStatus } from "@testcraft/types";
 
-import { ErrorState } from '@/components/ErrorState';
-import { EmptyState } from '@/components/ui/EmptyState';
-import { SkeletonStatus } from '@/components/ui/SkeletonStatus';
-import { TableSkeleton } from '@/components/ui/TableSkeleton';
-import { ResultsTable } from '@/features/testResults/ResultsTable';
-import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
+import { EmptyState } from "@/components/ui/EmptyState";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { SkeletonStatus } from "@/components/ui/skeleton/SkeletonStatus";
+import { TableSkeleton } from "@/components/ui/skeleton/TableSkeleton";
+import { ResultsTable } from "@/features/testResults/ResultsTable";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 
 interface ResultsContentProps {
   isPending: boolean;
@@ -19,7 +19,7 @@ interface ResultsContentProps {
   resultsPage: Paginated<TestResult> | undefined;
   statusFilter: TestResultStatus | null;
   debouncedSearch: string;
-  openCreate: () => void;
+  openCreate?: () => void;
   onClearSearch: () => void;
   onClearFilter: () => void;
   table: Table<TestResult>;
@@ -64,13 +64,15 @@ export const ResultsContent = ({
         title="No results recorded"
         description="Add results to track the outcome of each test case in this run."
         action={
-          <button
-            className="btn gap-1.5 btn-sm btn-primary"
-            onClick={openCreate}
-          >
-            <PlusIcon className="size-4" aria-hidden="true" />
-            Add Result
-          </button>
+          openCreate && (
+            <button
+              className="btn gap-1.5 btn-sm btn-primary"
+              onClick={openCreate}
+            >
+              <PlusIcon className="size-4" aria-hidden="true" />
+              Add Result
+            </button>
+          )
         }
       />
     );
@@ -84,10 +86,7 @@ export const ResultsContent = ({
         action={
           <div className="flex gap-2">
             {debouncedSearch && (
-              <button
-                className="btn btn-ghost btn-sm"
-                onClick={onClearSearch}
-              >
+              <button className="btn btn-ghost btn-sm" onClick={onClearSearch}>
                 Clear search
               </button>
             )}

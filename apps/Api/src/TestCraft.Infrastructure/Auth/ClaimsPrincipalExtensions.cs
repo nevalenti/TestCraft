@@ -1,5 +1,4 @@
 using System.Security.Claims;
-
 using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Infrastructure.Auth;
@@ -29,5 +28,9 @@ public static class ClaimsPrincipalExtensions
             user.FindFirstValue("name")
             ?? user.FindFirstValue(ClaimTypes.Name)
             ?? user.FindFirstValue("preferred_username");
+
+        public bool IsApiToken() =>
+            user.Identity?.AuthenticationType
+            == ApiTokenAuthenticationDefaults.AuthenticationScheme;
     }
 }

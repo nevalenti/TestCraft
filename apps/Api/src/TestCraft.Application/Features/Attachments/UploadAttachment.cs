@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -69,16 +66,18 @@ public static class UploadAttachment
         public required Stream Content { get; init; }
     }
 
+    public const long MaxSizeBytes = 52_428_800;
+
     public sealed class Validator : AbstractValidator<Command>
     {
-        private const long MaxSizeBytes = 52_428_800;
-
-        private static readonly string[] DisallowedContentTypes =
-        [
+        private static readonly HashSet<string> DisallowedMediaTypes = new(
+            StringComparer.OrdinalIgnoreCase
+        )
+        {
             "text/html",
             "application/xhtml+xml",
             "image/svg+xml",
-        ];
+        };
 
         public Validator()
         {
@@ -86,7 +85,9 @@ public static class UploadAttachment
             RuleFor(command => command.ContentType)
                 .NotEmpty()
                 .MaximumLength(FieldLengths.ContentType)
-                .Must(contentType => !DisallowedContentTypes.Contains(contentType))
+                .Must(contentType =>
+                    !DisallowedMediaTypes.Contains(contentType.Split(';')[0].Trim())
+                )
                 .WithMessage("This content type is not allowed for attachments");
             RuleFor(command => command.SizeBytes)
                 .GreaterThanOrEqualTo(0)
@@ -106,17 +107,18 @@ public static class UploadAttachment
             CancellationToken cancellationToken
         )
         {
-            var resultExists = await context.TestResults.AnyAsync(
-                testResult =>
-                    testResult.Id == request.ResultId
-                    && testResult.TestRunId == request.RunId
-                    && testResult.TestRun!.ProjectId == request.ProjectId,
-                cancellationToken
-            );
-            if (!resultExists)
-            {
-                throw new NotFoundException();
-            }
+            var run =
+                await context
+                    .TestResults.Where(testResult =>
+                        testResult.Id == request.ResultId
+                        && testResult.TestRunId == request.RunId
+                        && testResult.TestRun!.ProjectId == request.ProjectId
+                    )
+                    .Select(testResult => testResult.TestRun)
+                    .FirstOrDefaultAsync(cancellationToken)
+                ?? throw new NotFoundException();
+
+            run.EnsureCanAddResult();
 
             var extension = Path.GetExtension(request.FileName);
             var storageKey = $"{request.ProjectId}/{request.ResultId}/{Guid.NewGuid()}{extension}";
@@ -139,7 +141,15 @@ public static class UploadAttachment
 
             context.Attachments.Add(attachment);
 
-            await context.SaveChangesAsync(cancellationToken);
+            try
+            {
+                await context.SaveChangesAsync(cancellationToken);
+            }
+            catch
+            {
+                await storage.DeleteAsync(storageKey, CancellationToken.None);
+                throw;
+            }
 
             return new AttachmentResponse
             {

@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -33,14 +31,20 @@ public static class DeleteAttachment
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
             var attachment =
-                await context.Attachments.FirstOrDefaultAsync(
-                    attachmentEntity =>
-                        attachmentEntity.Id == request.AttachmentId
-                        && attachmentEntity.TestResultId == request.ResultId
-                        && attachmentEntity.TestResult!.TestRunId == request.RunId
-                        && attachmentEntity.TestResult.TestRun!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+                await context
+                    .Attachments.Include(entity => entity.TestResult)
+                        .ThenInclude(result => result!.TestRun)
+                    .FirstOrDefaultAsync(
+                        attachmentEntity =>
+                            attachmentEntity.Id == request.AttachmentId
+                            && attachmentEntity.TestResultId == request.ResultId
+                            && attachmentEntity.TestResult!.TestRunId == request.RunId
+                            && attachmentEntity.TestResult.TestRun!.ProjectId == request.ProjectId,
+                        cancellationToken
+                    )
+                ?? throw new NotFoundException();
+
+            attachment.TestResult!.TestRun!.EnsureCanAddResult();
 
             await storage.DeleteAsync(attachment.StorageKey, cancellationToken);
 

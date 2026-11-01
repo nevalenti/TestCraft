@@ -82,7 +82,7 @@ codegen:
 [group('api')]
 api-contract-baseline:
     UPDATE_CONTRACT_BASELINE=1 dotnet test apps/Api/tests/TestCraft.Api.IntegrationTests --filter "FullyQualifiedName~OpenApiContract"
-    pnpm exec prettier --write apps/Api/openapi/v1.json
+    pnpm exec oxfmt apps/Api/openapi/v1.json
 
 [group('api')]
 api-contract-lint *args:

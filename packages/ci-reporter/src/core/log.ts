@@ -7,7 +7,7 @@ export const setSecret = (value: string): void => {
 const redact = (message: string): string => {
   let text = message;
   for (const secret of secrets) {
-    text = text.split(secret).join('***');
+    text = text.split(secret).join("***");
   }
   return text;
 };

@@ -1,6 +1,6 @@
 using FluentValidation.TestHelper;
-
 using TestCraft.Application.Features.ApiTokens;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.UnitTests.ApiTokens;
 
@@ -9,7 +9,12 @@ public class CreateApiTokenValidatorTests
     private readonly CreateApiToken.Validator _validator = new();
 
     private static CreateApiToken.Command ValidCommand() =>
-        new() { ProjectId = ProjectId.New(), Name = "CI token" };
+        new()
+        {
+            ProjectId = ProjectId.New(),
+            Name = "CI token",
+            Scopes = [ApiTokenScope.RunsWrite],
+        };
 
     [Fact]
     public void ValidCommand_PassesValidation()

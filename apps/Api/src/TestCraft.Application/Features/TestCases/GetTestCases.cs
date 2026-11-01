@@ -1,36 +1,28 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
-using TestCraft.Application.Common.Extensions;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Features.TestCases;
 
 public static class GetTestCases
 {
-    /// <summary>Lists test cases within a suite.</summary>
-    public sealed record Query : IRequest<Paginated<TestCaseResponse>>, IProjectScopedRequest
+    /// <summary>Lists test cases within a suite; search matches the case name.</summary>
+    public sealed record Query
+        : TestCaseListQuery,
+            IRequest<Paginated<TestCaseResponse>>,
+            IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The suite to list test cases for.</summary>
+        [RouteValue]
         public TestSuiteId SuiteId { get; init; }
-
-        /// <summary>Filters test cases whose name contains this text.</summary>
-        public string? Search { get; init; }
-
-        /// <summary>Filters test cases that have this label attached.</summary>
-        public LabelId? LabelId { get; init; }
-
-        /// <summary>The page number to return, starting at 1.</summary>
-        public int? Page { get; init; }
-
-        /// <summary>The number of test cases per page.</summary>
-        public int? PageSize { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)
@@ -41,46 +33,19 @@ public static class GetTestCases
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestCases.Where(testCase =>
-                testCase.SuiteId == request.SuiteId
-                && testCase.Suite!.ProjectId == request.ProjectId
+            var suiteExists = await context.TestSuites.AnyAsync(
+                suite => suite.Id == request.SuiteId && suite.ProjectId == request.ProjectId,
+                cancellationToken
             );
-
-            if (!string.IsNullOrWhiteSpace(request.Search))
+            if (!suiteExists)
             {
-#pragma warning disable CA1304, CA1311
-                var pattern = $"%{request.Search.ToLower()}%";
-                query = query.Where(testCase =>
-                    EF.Functions.Like(testCase.Name.ToLower(), pattern)
-                );
-#pragma warning restore CA1304, CA1311
+                throw new NotFoundException();
             }
 
-            if (request.LabelId.HasValue)
-            {
-                query = query.Where(testCase =>
-                    testCase.TestCaseLabels.Any(tcl => tcl.LabelId == request.LabelId.Value)
-                );
-            }
-
-            var pagination = PaginationParams.Create(request.Page, request.PageSize);
-
-            var total = await query.CountAsync(cancellationToken);
-
-            var items = await query
-                .OrderBy(testCase => testCase.CreatedAt)
-                .Skip(pagination.Skip)
-                .Take(pagination.Take)
-                .ToTestCaseResponse()
-                .ToListAsync(cancellationToken);
-
-            return new Paginated<TestCaseResponse>
-            {
-                Items = items,
-                Total = total,
-                Page = pagination.Page,
-                PageSize = pagination.PageSize,
-            };
+            return await request.ToPageAsync(
+                context.TestCases.Where(testCase => testCase.SuiteId == request.SuiteId),
+                cancellationToken
+            );
         }
     }
 }

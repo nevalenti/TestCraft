@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -51,6 +49,11 @@ public static class DeleteTestResult
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
             await notifier.ResultDeletedAsync(request.RunId, request.Id, cancellationToken);
+            await notifier.DashboardChangedAsync(
+                request.ProjectId,
+                request.RunId,
+                cancellationToken
+            );
         }
     }
 }

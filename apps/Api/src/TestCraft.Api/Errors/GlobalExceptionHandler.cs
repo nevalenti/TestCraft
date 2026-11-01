@@ -1,12 +1,8 @@
 using FluentValidation;
-
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-
 using Serilog.Context;
-
 using StackExchange.Redis;
-
 using TestCraft.Api.Configuration.Controllers;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Api.Middleware;
@@ -195,6 +191,7 @@ public partial class GlobalExceptionHandler(
 
             default:
                 LogUnhandledException(logger, exception, httpContext.Request.Method, safePath);
+                ErrorTracking.Capture(exception, httpContext.TraceIdentifier, pageId, userId);
                 await ProblemWriter.WriteAsync(
                     httpContext,
                     Problems.Internal(

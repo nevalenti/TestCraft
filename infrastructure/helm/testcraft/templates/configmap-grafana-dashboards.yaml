@@ -6,10 +6,8 @@ metadata:
 data:
   dashboards.yaml: |
 {{ .Files.Get "files/grafana/grafana-dashboards.yaml" | indent 4 }}
-  api-logs.json: |
-{{ .Files.Get "files/grafana/dashboards/api-logs.json" | indent 4 }}
-  api-http.json: |
-{{ .Files.Get "files/grafana/dashboards/api-http.json" | indent 4 }}
+  overview.json: |
+{{ .Files.Get "files/grafana/dashboards/overview.json" | indent 4 }}
   redis-metrics.json: |
 {{ .Files.Get "files/grafana/dashboards/redis-metrics.json" | indent 4 }}
   postgres-metrics.json: |

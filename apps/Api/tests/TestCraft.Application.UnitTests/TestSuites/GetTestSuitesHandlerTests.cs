@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Application.Features.TestSuites;
 using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;

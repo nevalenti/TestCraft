@@ -1,10 +1,8 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -13,7 +11,13 @@ namespace TestCraft.Application.Features.TestPlans;
 public static class ReorderPlanCases
 {
     /// <summary>The new position for a single test case within a plan.</summary>
-    public sealed record PlanCaseOrder(TestCaseId TestCaseId, int Order);
+    public sealed record PlanCaseOrder
+    {
+        public required TestCaseId TestCaseId { get; init; }
+
+        /// <summary>The new position, from 1.</summary>
+        public required int Order { get; init; }
+    }
 
     /// <summary>Reorders the test cases within a plan.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
@@ -53,7 +57,8 @@ public static class ReorderPlanCases
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>
+    public sealed class Handler(IApplicationDbContext context, TimeProvider timeProvider)
+        : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
@@ -77,15 +82,30 @@ public static class ReorderPlanCases
                 caseOrder => caseOrder.TestCaseId,
                 caseOrder => caseOrder.Order
             );
+            var changed = false;
             foreach (var entry in entries)
             {
-                if (orderMap.TryGetValue(entry.TestCaseId, out var newOrder))
+                if (
+                    orderMap.TryGetValue(entry.TestCaseId, out var newOrder)
+                    && entry.Order != newOrder
+                )
                 {
                     entry.Reorder(newOrder);
+                    changed = true;
                 }
             }
 
+            if (!changed)
+            {
+                return;
+            }
+
             await context.SaveChangesAsync(cancellationToken);
+            await context.TouchPlanAsync(
+                request.TestPlanId,
+                timeProvider.GetStoredUtcNow(),
+                cancellationToken
+            );
         }
     }
 }

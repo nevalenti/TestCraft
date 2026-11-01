@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
-COPY Directory.Build.props Directory.Packages.props ./
+COPY .editorconfig Directory.Build.props Directory.Packages.props ./
 COPY apps/Api/.editorconfig apps/Api/
 COPY apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj apps/Api/src/TestCraft.Domain/
 COPY apps/Api/src/TestCraft.Application/TestCraft.Application.csproj apps/Api/src/TestCraft.Application/

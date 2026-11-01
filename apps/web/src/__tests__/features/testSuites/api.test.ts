@@ -1,70 +1,108 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listTestSuites: vi.fn(),
+  getTestSuite: vi.fn(),
+  createTestSuite: vi.fn(),
+  updateTestSuite: vi.fn(),
+  deleteTestSuite: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { testSuitesApi } from '@/features/testSuites/api';
-import { PAGE_SIZE } from '@/lib/constants';
+import * as sdk from "@/api/sdk";
+import { testSuitesApi } from "@/features/testSuites/api";
+import { PAGE_SIZE } from "@/lib/constants";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('testSuitesApi', () => {
-  it('getAll omits search when not given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+describe("testSuitesApi", () => {
+  it("getAll omits search when not given", async () => {
+    vi.mocked(sdk.listTestSuites).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testSuitesApi.getAll('p1');
+    await testSuitesApi.getAll("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites', {
-      params: { pageSize: PAGE_SIZE },
+    expect(sdk.listTestSuites).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { page: 1, page_size: PAGE_SIZE },
     });
   });
 
-  it('getAll includes search when given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+  it("getAll includes search when given", async () => {
+    vi.mocked(sdk.listTestSuites).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testSuitesApi.getAll('p1', 'auth');
+    await testSuitesApi.getAll("p1", "auth");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites', {
-      params: { pageSize: PAGE_SIZE, search: 'auth' },
+    expect(sdk.listTestSuites).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { page: 1, page_size: PAGE_SIZE, search: "auth" },
     });
   });
 
-  it('getById fetches a single suite', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: {} });
+  it("getById fetches a single suite", async () => {
+    vi.mocked(sdk.getTestSuite).mockResolvedValue({
+      data: {},
+    } as never);
 
-    await testSuitesApi.getById('p1', 's1');
+    await testSuitesApi.getById("p1", "s1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites/s1');
-  });
-
-  it('create posts the new suite', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: {} });
-
-    await testSuitesApi.create('p1', { name: 'Auth' } as any);
-
-    expect(client.post).toHaveBeenCalledWith('projects/p1/suites', {
-      name: 'Auth',
+    expect(sdk.getTestSuite).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
     });
   });
 
-  it('update puts changes including the id', async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: {} });
+  it("create posts the new suite", async () => {
+    vi.mocked(sdk.createTestSuite).mockResolvedValue({
+      data: {},
+    } as never);
 
-    await testSuitesApi.update('p1', 's1', { name: 'Renamed' } as any);
+    await testSuitesApi.create("p1", { name: "Auth" } as any);
 
-    expect(client.put).toHaveBeenCalledWith('projects/p1/suites/s1', {
-      name: 'Renamed',
-      id: 's1',
+    expect(sdk.createTestSuite).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      body: {
+        name: "Auth",
+      },
     });
   });
 
-  it('delete removes the suite by id', () => {
-    testSuitesApi.delete('p1', 's1');
+  it("update puts changes including the id", async () => {
+    vi.mocked(sdk.updateTestSuite).mockResolvedValue({
+      data: {},
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith('projects/p1/suites/s1');
+    await testSuitesApi.update("p1", "s1", { name: "Renamed" } as any, 1);
+
+    expect(sdk.updateTestSuite).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
+      body: {
+        name: "Renamed",
+      },
+      headers: { "if-match": '"1"' },
+    });
+  });
+
+  it("update sends the version it was based on as If-Match", async () => {
+    vi.mocked(sdk.updateTestSuite).mockResolvedValue({
+      data: {},
+    } as never);
+
+    await testSuitesApi.update("p1", "s1", { name: "Renamed" }, 7);
+
+    expect(sdk.updateTestSuite).toHaveBeenCalledWith(
+      expect.objectContaining({ headers: { "if-match": '"7"' } }),
+    );
+  });
+
+  it("delete removes the suite by id", () => {
+    testSuitesApi.delete("p1", "s1");
+
+    expect(sdk.deleteTestSuite).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
+    });
   });
 });

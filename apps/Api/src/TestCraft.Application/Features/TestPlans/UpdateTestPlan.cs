@@ -1,9 +1,7 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -29,6 +27,9 @@ public static class UpdateTestPlan
 
         /// <summary>The plan's new description.</summary>
         public string? Description { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -55,23 +56,14 @@ public static class UpdateTestPlan
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(plan, request.ExpectedVersion);
             plan.Update(request.Name, request.Description);
 
             await context.SaveChangesAsync(cancellationToken);
 
             return await context
                 .TestPlans.Where(updatedPlan => updatedPlan.Id == plan.Id)
-                .Select(updatedPlan => new TestPlanResponse
-                {
-                    Id = updatedPlan.Id,
-                    Name = updatedPlan.Name,
-                    Description = updatedPlan.Description,
-                    ProjectId = updatedPlan.ProjectId,
-                    CaseCount = updatedPlan.TestPlanCases.Count(tpc =>
-                        tpc.TestCase != null && !tpc.TestCase.IsDeleted
-                    ),
-                    CreatedAt = updatedPlan.CreatedAt,
-                })
+                .Select(TestPlanResponse.Projection)
                 .FirstAsync(cancellationToken);
         }
     }

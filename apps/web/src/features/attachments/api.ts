@@ -1,17 +1,19 @@
-import { queryOptions } from '@tanstack/react-query';
-import type { Attachment } from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string, runId: string, resultId: string) =>
-  `projects/${projectId}/runs/${runId}/results/${resultId}/attachments`;
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const attachmentsApi = {
-  getAll: async (projectId: string, runId: string, resultId: string) => {
-    const { data } = await client.get<Attachment[]>(
-      BASE(projectId, runId, resultId),
-    );
+  getPage: async (
+    projectId: string,
+    runId: string,
+    resultId: string,
+    page: number,
+  ) => {
+    const { data } = await sdk.listAttachments({
+      path: { project_id: projectId, run_id: runId, result_id: resultId },
+      query: { page, page_size: 20 },
+    });
     return data;
   },
   upload: async (
@@ -20,15 +22,10 @@ export const attachmentsApi = {
     resultId: string,
     file: File,
   ) => {
-    const formData = new FormData();
-    formData.append('file', file);
-    const { data } = await client.post<Attachment>(
-      BASE(projectId, runId, resultId),
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      },
-    );
+    const { data } = await sdk.uploadAttachment({
+      path: { project_id: projectId, run_id: runId, result_id: resultId },
+      body: { file },
+    });
     return data;
   },
   getDownloadUrl: async (
@@ -37,20 +34,32 @@ export const attachmentsApi = {
     resultId: string,
     id: string,
   ) => {
-    const { data } = await client.get<{ url: string }>(
-      `${BASE(projectId, runId, resultId)}/${id}/download`,
-    );
+    const { data } = await sdk.getAttachmentDownloadUrl({
+      path: {
+        project_id: projectId,
+        run_id: runId,
+        result_id: resultId,
+        attachment_id: id,
+      },
+    });
     return data.url;
   },
   delete: (projectId: string, runId: string, resultId: string, id: string) =>
-    client.delete(`${BASE(projectId, runId, resultId)}/${id}`),
+    sdk.deleteAttachment({
+      path: {
+        project_id: projectId,
+        run_id: runId,
+        result_id: resultId,
+        attachment_id: id,
+      },
+    }),
 };
 
 export const attachmentQueries = {
-  all: (projectId: string, runId: string, resultId: string) =>
+  page: (projectId: string, runId: string, resultId: string, page: number) =>
     queryOptions({
-      queryKey: queryKeys.attachments.all(projectId, runId, resultId),
-      queryFn: () => attachmentsApi.getAll(projectId, runId, resultId),
+      queryKey: queryKeys.attachments.page(projectId, runId, resultId, page),
+      queryFn: () => attachmentsApi.getPage(projectId, runId, resultId, page),
       enabled: !!projectId && !!runId && !!resultId,
     }),
 };

@@ -1,15 +1,15 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { CreateTestCaseStep, UpdateTestCaseStep } from '@testcraft/types';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { CreateTestCaseStep, UpdateTestCaseStep } from "@testcraft/types";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { FormActions } from '@/components/ui/FormActions';
-import { FormField } from '@/components/ui/FormField';
-import { FormTextarea } from '@/components/ui/FormTextarea';
+import { FormActions } from "@/components/ui/form/FormActions";
+import { FormField } from "@/components/ui/form/FormField";
+import { FormTextarea } from "@/components/ui/form/FormTextarea";
 
 const schema = z.object({
-  action: z.string().min(1, 'Action is required').max(255),
-  expectedResult: z.string().min(1, 'Expected result is required').max(255),
+  action: z.string().min(1, "Action is required").max(255),
+  expectedResult: z.string().min(1, "Expected result is required").max(255),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -37,14 +37,20 @@ export const StepForm = ({
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      action: defaultValues?.action ?? '',
-      expectedResult: defaultValues?.expectedResult ?? '',
+      action: defaultValues?.action ?? "",
+      expectedResult: defaultValues?.expectedResult ?? "",
     },
   });
 
   return (
     <form
-      onSubmit={handleSubmit((data) => onSubmit({ order, ...data }))}
+      onSubmit={handleSubmit((data) =>
+        onSubmit({
+          order,
+          action: data.action,
+          expected_result: data.expectedResult,
+        }),
+      )}
       className="space-y-4"
     >
       <FormField
@@ -58,7 +64,7 @@ export const StepForm = ({
           placeholder="Navigate to the login page"
           rows={3}
           autoFocus
-          {...register('action')}
+          {...register("action")}
         />
       </FormField>
       <FormField
@@ -71,10 +77,14 @@ export const StepForm = ({
           hasError={!!errors.expectedResult}
           placeholder="Login page is displayed"
           rows={3}
-          {...register('expectedResult')}
+          {...register("expectedResult")}
         />
       </FormField>
-      <FormActions onCancel={onCancel} isLoading={isLoading} />
+      <FormActions
+        onCancel={onCancel}
+        isLoading={isLoading}
+        label={defaultValues ? "Save" : "Add step"}
+      />
     </form>
   );
 };

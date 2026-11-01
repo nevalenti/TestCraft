@@ -1,11 +1,18 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.Attachments;
+using TestCraft.Application.Features.TestRuns;
+using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.Attachments;
 
@@ -58,6 +65,27 @@ public class AttachmentsApiTests(ApiFactory factory)
         return (project.Id, run.Id, result.Id);
     }
 
+    private static async Task ArchiveRunAsync(
+        HttpClient client,
+        ProjectId projectId,
+        TestRunId runId
+    )
+    {
+        var run = await client.GetRunAsync(projectId, runId);
+        var response = await client.UpdateAsJsonAsync(
+            $"/api/v1/projects/{projectId}/runs/{runId}",
+            new UpdateTestRun.Command
+            {
+                Id = runId,
+                Name = run.Name,
+                Environment = run.Environment,
+                Status = TestRunStatus.Archived,
+            },
+            version: run.Version
+        );
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
     [Fact]
     public async Task GetAll_NewResult_ReturnsEmptyList()
     {
@@ -68,10 +96,10 @@ public class AttachmentsApiTests(ApiFactory factory)
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var attachments = await response.Content.ReadFromJsonAsync<List<AttachmentResponse>>(
+        var attachments = await response.Content.ReadFromJsonAsync<Paginated<AttachmentResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        attachments.Should().BeEmpty();
+        attachments!.Items.Should().BeEmpty();
     }
 
     [Fact]
@@ -96,6 +124,53 @@ public class AttachmentsApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Upload_WhenSavingTheAttachmentFails_DeletesTheStoredFile()
+    {
+        await using var failingFactory = factory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(services =>
+                services.ConfigureDbContext<AppDbContext>(options =>
+                    options.AddInterceptors(new FailingInsertsInterceptor<Attachment>())
+                )
+            )
+        );
+        var client = failingFactory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            Guid.NewGuid().ToString()
+        );
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+
+        var response = await client.PostAsync(
+            AttachmentsUrl(projectId, runId, resultId),
+            BuildFileContent()
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
+        var storage = (FakeStorageService)
+            failingFactory.Services.GetRequiredService<IStorageService>();
+        storage.HasObjectsUnder($"{projectId}/{resultId}/").Should().BeFalse();
+    }
+
+    [Fact]
+    public async Task Upload_OnArchivedRun_ReturnsUnprocessable()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+        await ArchiveRunAsync(client, projectId, runId);
+
+        var response = await client.PostAsync(
+            AttachmentsUrl(projectId, runId, resultId),
+            BuildFileContent()
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        var attachments = await (
+            await client.GetAsync(AttachmentsUrl(projectId, runId, resultId))
+        ).Content.ReadFromJsonAsync<Paginated<AttachmentResponse>>(ApiTestHelpers.JsonOptions);
+        attachments!.Items.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task Upload_ThenGetAll_ReturnsUploadedAttachment()
     {
         var client = CreateClient(Guid.NewGuid());
@@ -109,10 +184,10 @@ public class AttachmentsApiTests(ApiFactory factory)
         var listResponse = await client.GetAsync(AttachmentsUrl(projectId, runId, resultId));
         listResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var attachments = await listResponse.Content.ReadFromJsonAsync<List<AttachmentResponse>>(
-            ApiTestHelpers.JsonOptions
-        );
-        attachments.Should().ContainSingle(attachment => attachment.FileName == "log.txt");
+        var attachments = await listResponse.Content.ReadFromJsonAsync<
+            Paginated<AttachmentResponse>
+        >(ApiTestHelpers.JsonOptions);
+        attachments!.Items.Should().ContainSingle(attachment => attachment.FileName == "log.txt");
     }
 
     [Fact]
@@ -135,10 +210,30 @@ public class AttachmentsApiTests(ApiFactory factory)
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var listResponse = await client.GetAsync(AttachmentsUrl(projectId, runId, resultId));
-        var remaining = await listResponse.Content.ReadFromJsonAsync<List<AttachmentResponse>>(
+        var remaining = await listResponse.Content.ReadFromJsonAsync<Paginated<AttachmentResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        remaining.Should().BeEmpty();
+        remaining!.Items.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Delete_OnArchivedRun_ReturnsUnprocessableAndKeepsAttachment()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
+        var url = AttachmentsUrl(projectId, runId, resultId);
+        var attachment = await (
+            await client.PostAsync(url, BuildFileContent())
+        ).Content.ReadFromJsonAsync<AttachmentResponse>(ApiTestHelpers.JsonOptions);
+        await ArchiveRunAsync(client, projectId, runId);
+
+        var response = await client.DeleteAsync($"{url}/{attachment!.Id}");
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        var attachments = await (await client.GetAsync(url)).Content.ReadFromJsonAsync<
+            Paginated<AttachmentResponse>
+        >(ApiTestHelpers.JsonOptions);
+        attachments!.Items.Should().ContainSingle(item => item.Id == attachment.Id);
     }
 
     [Fact]
@@ -252,7 +347,7 @@ public class AttachmentsApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Upload_FileExceedingConfiguredSizeLimit_ReturnsValidationProblem()
+    public async Task Upload_FileExceedingConfiguredSizeLimit_ReturnsContentTooLarge()
     {
         var client = CreateClient(Guid.NewGuid());
         var (projectId, runId, resultId) = await CreateProjectRunResultAsync(client);
@@ -265,7 +360,7 @@ public class AttachmentsApiTests(ApiFactory factory)
 
         var response = await client.PostAsync(AttachmentsUrl(projectId, runId, resultId), form);
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.RequestEntityTooLarge);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

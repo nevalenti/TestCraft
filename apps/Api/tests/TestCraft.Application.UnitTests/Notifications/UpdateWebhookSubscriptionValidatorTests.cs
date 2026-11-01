@@ -1,6 +1,6 @@
 using FluentValidation.TestHelper;
-
 using TestCraft.Application.Features.Notifications;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.UnitTests.Notifications;
 
@@ -14,7 +14,7 @@ public class UpdateWebhookSubscriptionValidatorTests
             ProjectId = ProjectId.New(),
             Id = WebhookSubscriptionId.New(),
             Url = "https://example.com/webhook",
-            Events = ["run.completed"],
+            Events = [NotificationEvent.RunCompleted],
             IsActive = true,
         };
 

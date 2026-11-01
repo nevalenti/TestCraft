@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-
 using Npgsql;
-
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Persistence;

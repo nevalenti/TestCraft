@@ -1,9 +1,7 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -35,6 +33,9 @@ public static class UpdateTestCaseStep
 
         /// <summary>The new expected result.</summary>
         public required string ExpectedResult { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -64,20 +65,12 @@ public static class UpdateTestCaseStep
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(step, request.ExpectedVersion);
             step.Update(request.Order, request.Action, request.ExpectedResult);
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new TestCaseStepResponse
-            {
-                Id = step.Id,
-                TestCaseId = step.TestCaseId,
-                Order = step.Order,
-                Action = step.Action,
-                ExpectedResult = step.ExpectedResult,
-                CreatedAt = step.CreatedAt,
-                UpdatedAt = step.UpdatedAt,
-            };
+            return TestCaseStepResponse.FromEntity(step);
         }
     }
 }

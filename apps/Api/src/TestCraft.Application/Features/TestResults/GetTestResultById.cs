@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -32,12 +30,13 @@ public static class GetTestResultById
             CancellationToken cancellationToken
         ) =>
             await context
-                .TestResults.Where(result =>
+                .LiveResults()
+                .Where(result =>
                     result.Id == request.Id
                     && result.TestRunId == request.RunId
                     && result.TestRun!.ProjectId == request.ProjectId
                 )
-                .ToTestResultResponse()
+                .Select(TestResultResponse.Projection)
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

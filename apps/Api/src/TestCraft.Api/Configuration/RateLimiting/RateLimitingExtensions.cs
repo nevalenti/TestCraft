@@ -1,48 +1,42 @@
-using System.Threading.RateLimiting;
-
-using TestCraft.Api.Errors;
-using TestCraft.Infrastructure.Auth;
+using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration.RateLimiting;
 
 public static class RateLimitingExtensions
 {
-    public static WebApplicationBuilder AddApiRateLimiting(this WebApplicationBuilder builder)
+    private static readonly string[] UnlimitedEnvironments =
+    [
+        "Development",
+        "Local",
+        "Test",
+        "Testing",
+    ];
+
+    public static WebApplicationBuilder AddApiRateLimiting(
+        this WebApplicationBuilder builder,
+        InfrastructureOptions infrastructureOptions
+    )
     {
-        builder.Services.AddRateLimiter(options =>
+        builder.Services.AddStartupOptions<RateLimitOptions>(builder.Configuration);
+
+        if (string.IsNullOrEmpty(infrastructureOptions.RedisUrl))
         {
-            options.OnRejected = async (context, _) =>
-                await ProblemWriter.WriteAsync(context.HttpContext, Problems.TooManyRequests());
-
-            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(
-                httpContext =>
-                {
-                    if (
-                        !builder.Environment.IsProduction()
-                        || !ApiPaths.IsVersionedApi(httpContext.Request.Path)
-                    )
-                    {
-                        return RateLimitPartition.GetNoLimiter("unrestricted");
-                    }
-
-                    var partitionKey =
-                        httpContext.User.GetUserIdOrNull()
-                        ?? httpContext.Connection.RemoteIpAddress?.ToString()
-                        ?? "anonymous";
-
-                    return RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey,
-                        _ => new FixedWindowRateLimiterOptions
-                        {
-                            PermitLimit = 1000,
-                            Window = TimeSpan.FromMinutes(15),
-                            QueueLimit = 0,
-                        }
-                    );
-                }
-            );
-        });
+            builder.Services.AddSingleton<IRateLimitCounter, InMemoryRateLimitCounter>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<IRateLimitCounter, RedisRateLimitCounter>();
+        }
 
         return builder;
     }
+
+    public static bool IsRateLimited(this IHostEnvironment environment) =>
+        !UnlimitedEnvironments.Any(name => environment.IsEnvironment(name));
+
+    public static IApplicationBuilder UseIpRateLimit(this WebApplication app) =>
+        app.Environment.IsRateLimited() ? app.UseMiddleware<IpRateLimitMiddleware>() : app;
+
+    public static IApplicationBuilder UsePrincipalRateLimit(this WebApplication app) =>
+        app.Environment.IsRateLimited() ? app.UseMiddleware<PrincipalRateLimitMiddleware>() : app;
 }

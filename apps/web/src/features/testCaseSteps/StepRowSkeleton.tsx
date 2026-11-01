@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/Skeleton';
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 
 export const StepRowSkeleton = () => (
   <div className="rounded-lg border border-base-content/20 bg-base-100 shadow-card">

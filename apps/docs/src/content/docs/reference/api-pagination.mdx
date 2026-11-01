@@ -1,0 +1,34 @@
+---
+title: List pagination
+description: Fetch bounded pages of projects, suites, cases, runs, results, plans, labels, attachments and notes.
+---
+
+The lists of projects, suites, cases, steps, runs, results, plans, labels,
+attachments and notes are paginated. They accept `page` (starting at 1) and
+`page_size` (up to 500), and return `items`, `total`, `page`, and `page_size`.
+There are `ceil(total / page_size)` pages.
+
+Short per-parent lists (API tokens, share tokens, project members and
+notification subscriptions) return a plain array.
+
+Every list except steps, attachments and shared results also accepts `search`
+(up to 200 characters, matched case insensitively against the name or title),
+`sort_by` and `sort_dir` (`asc` or `desc`). The sortable fields are:
+
+| List     | `sort_by`                                                              | Default           |
+| -------- | ---------------------------------------------------------------------- | ----------------- |
+| Projects | `name`, `created_at`                                                   | `created_at` desc |
+| Suites   | `name`, `created_at`                                                   | `created_at` asc  |
+| Cases    | `name`, `priority`, `created_at`                                       | `created_at` asc  |
+| Runs     | `name`, `environment`, `status`, `created_at`, `updated_at`            | `created_at` desc |
+| Results  | `test_case_name`, `status`, `duration_ms`, `executed_at`, `created_at` | `created_at` asc  |
+| Plans    | `name`, `created_at`                                                   | `created_at` desc |
+| Labels   | `name`, `created_at`                                                   | `name` asc        |
+| Notes    | `title`, `created_at`, `updated_at`                                    | `updated_at` desc |
+
+Priority sorts by rank (`low` < `medium` < `high` < `critical`). Ties are broken by id,
+so pages stay stable. Case lists also filter by `label_id`, and run and result lists by
+`status`.
+
+A query parameter the list does not define is rejected with `422`, so a typo such as
+`sort=name` fails instead of being ignored.

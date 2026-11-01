@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Persistence;
 
 namespace TestCraft.Application.UnitTests.Common.Fakes;
@@ -20,12 +18,19 @@ internal sealed class NoopPublisher : IPublisher
 
 internal static class TestDbContextFactory
 {
-    public static AppDbContext Create(IPublisher? publisher = null)
+    public static AppDbContext Create(
+        IPublisher? publisher = null,
+        TimeProvider? timeProvider = null
+    )
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(Guid.NewGuid().ToString())
             .Options;
 
-        return new AppDbContext(options, publisher ?? new NoopPublisher());
+        return new AppDbContext(
+            options,
+            publisher ?? new NoopPublisher(),
+            timeProvider ?? TimeProvider.System
+        );
     }
 }

@@ -1,13 +1,13 @@
-import { ClipboardIcon, TrashIcon } from '@heroicons/react/24/solid';
-import { useState } from 'react';
+import { ClipboardIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { useState } from "react";
 
-import { Modal } from '@/components/ui/Modal';
+import { Modal } from "@/components/ui/Modal";
 import {
   useCreateShareToken,
   useRevokeShareToken,
   useShareTokens,
-} from '@/features/shareTokens/hooks';
-import { formatDate, todayLocalDate } from '@/lib/format';
+} from "@/features/shareTokens/hooks";
+import { formatDate, todayLocalDate } from "@/lib/format";
 
 interface ShareModalProps {
   isOpen: boolean;
@@ -25,17 +25,17 @@ export const ShareModal = ({
   const { data: tokens, isPending } = useShareTokens(projectId, runId);
   const createToken = useCreateShareToken(projectId, runId);
   const revokeToken = useRevokeShareToken(projectId, runId);
-  const [expiresAt, setExpiresAt] = useState('');
+  const [expiresAt, setExpiresAt] = useState("");
   const [newToken, setNewToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
   const handleCreate = () => {
     createToken.mutate(
-      { expiresAt: expiresAt || undefined },
+      { expires_at: expiresAt || undefined },
       {
         onSuccess: (token) => {
           setNewToken(token.token);
-          setExpiresAt('');
+          setExpiresAt("");
         },
       },
     );
@@ -71,17 +71,18 @@ export const ShareModal = ({
                 title="Copy to clipboard"
               >
                 <ClipboardIcon className="size-4" />
-                {copied ? 'Copied!' : 'Copy'}
+                {copied ? "Copied!" : "Copy"}
               </button>
             </div>
-            <p className="mt-2 text-xs text-base-content/75">
+            <p className="mt-2 text-xs text-fg-secondary">
               Anyone with this link can view the run results without logging in.
+              Copy it now: it will not be shown again.
             </p>
           </div>
         )}
 
         <div>
-          <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
+          <p className="mb-3 text-xs font-semibold tracking-widest text-fg-secondary uppercase">
             Create Share Link
           </p>
           <div className="flex items-end gap-2">
@@ -106,7 +107,7 @@ export const ShareModal = ({
               {createToken.isPending ? (
                 <span className="loading loading-xs loading-spinner" />
               ) : (
-                'Create Link'
+                "Create Link"
               )}
             </button>
           </div>
@@ -114,7 +115,7 @@ export const ShareModal = ({
 
         {!isPending && tokens && tokens.length > 0 && (
           <div>
-            <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
+            <p className="mb-3 text-xs font-semibold tracking-widest text-fg-secondary uppercase">
               Active Links
             </p>
             <ul className="space-y-2">
@@ -124,17 +125,17 @@ export const ShareModal = ({
                   className="flex items-center justify-between gap-4 rounded-lg border border-border bg-base-200/40 px-3 py-2"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-mono text-xs text-base-content/85">
-                      /share/{token.token.slice(0, 12)}…
+                    <p className="truncate text-xs text-fg-secondary">
+                      Share link
                     </p>
-                    <p className="text-xs text-base-content/65">
-                      Created {formatDate(token.createdAt)}
-                      {token.expiresAt &&
-                        ` · expires ${formatDate(token.expiresAt)}`}
+                    <p className="text-xs text-fg-muted">
+                      Created {formatDate(token.created_at)}
+                      {token.expires_at &&
+                        ` · expires ${formatDate(token.expires_at)}`}
                     </p>
                   </div>
                   <button
-                    className="btn text-error btn-ghost btn-xs"
+                    className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
                     onClick={() => revokeToken.mutate(token.id)}
                     aria-label="Revoke share link"
                   >

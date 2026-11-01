@@ -3,6 +3,17 @@
   "enabled": true,
   "sslRequired": "external",
   "registrationAllowed": true,
+  "verifyEmail": "VERIFY_EMAIL_ENABLED",
+  "smtpServer": {
+    "host": "${SMTP_HOST}",
+    "port": "${SMTP_PORT}",
+    "from": "${SMTP_FROM_ADDRESS}",
+    "fromDisplayName": "TestCraft",
+    "auth": "SMTP_AUTH_ENABLED",
+    "user": "${SMTP_USER}",
+    "password": "${SMTP_PASSWORD}",
+    "starttls": "true"
+  },
   "registrationEmailAsUsername": true,
   "passwordPolicy": "length(12) and notUsername and notEmail and passwordHistory(3) and hashIterations(210000)",
   "accessTokenLifespan": 900,
@@ -65,7 +76,20 @@
       "standardFlowEnabled": false,
       "implicitFlowEnabled": false,
       "directAccessGrantsEnabled": false,
-      "serviceAccountsEnabled": true
+      "serviceAccountsEnabled": true,
+      "protocolMappers": [
+        {
+          "name": "testcraft-web-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "testcraft-web",
+            "id.token.claim": "false",
+            "access.token.claim": "true"
+          }
+        }
+      ]
     }
   ],
   "users": [

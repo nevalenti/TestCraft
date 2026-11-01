@@ -1,5 +1,4 @@
 !.env.example
-!apps/Api/.editorconfig
 **/*.tsbuildinfo
 **/.turbo
 **/coverage/
@@ -8,7 +7,6 @@
 **/playwright-report/
 *.md
 .DS_Store
-.editorconfig
 .env
 .env.*
 .git

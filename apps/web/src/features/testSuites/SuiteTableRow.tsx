@@ -1,16 +1,16 @@
-import { RectangleStackIcon } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
-import type { TestSuite } from '@testcraft/types';
+import { Link } from "@tanstack/react-router";
+import type { TestSuite } from "@testcraft/types";
 
-import { MetaPill } from '@/components/ui/MetaPill';
-import { ResourceActions } from '@/components/ui/ResourceActions';
-import { formatDate } from '@/lib/format';
+import { MetaPill } from "@/components/ui/MetaPill";
+import { RelativeTime } from "@/components/ui/RelativeTime";
+import { ResourceActions } from "@/components/ui/resource/ResourceActions";
 
 interface SuiteTableRowProps {
   suite: TestSuite;
   projectId: string;
-  onEdit: () => void;
-  onDelete: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
+  showDescription?: boolean;
 }
 
 export const SuiteTableRow = ({
@@ -18,6 +18,7 @@ export const SuiteTableRow = ({
   projectId,
   onEdit,
   onDelete,
+  showDescription = true,
 }: SuiteTableRowProps) => (
   <tr
     data-testid="suite-card"
@@ -25,13 +26,11 @@ export const SuiteTableRow = ({
   >
     <td>
       <Link
-        to={`/projects/${projectId}/suites/${suite.id}`}
+        to="/projects/$projectId/suites/$suiteId"
+        params={{ projectId, suiteId: suite.id }}
         aria-label="Open test suite"
-        className="flex min-w-56 items-center gap-2.5"
+        className="flex min-w-56 items-center"
       >
-        <span className="card-bg-primary flex size-7 shrink-0 items-center justify-center rounded-lg border text-primary">
-          <RectangleStackIcon className="size-3.5" />
-        </span>
         <span
           className="min-w-0 truncate text-sm font-semibold group-hover:underline"
           title={suite.name}
@@ -40,23 +39,32 @@ export const SuiteTableRow = ({
         </span>
       </Link>
     </td>
-    <td className="max-w-xs truncate text-xs text-base-content/70">
-      {suite.description ?? (
-        <span className="text-base-content/55 italic">No description</span>
-      )}
-    </td>
+    {showDescription && (
+      <td data-mobile-hide className="max-w-xs truncate text-xs text-fg-muted">
+        {suite.description || (
+          <span data-empty className="text-fg-subtle">
+            —
+          </span>
+        )}
+      </td>
+    )}
     <td>
       {suite.source ? (
         <MetaPill>{suite.source}</MetaPill>
       ) : (
-        <span className="text-xs text-base-content/40">—</span>
+        <span data-empty className="text-xs text-fg-subtle">
+          —
+        </span>
       )}
     </td>
-    <td className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
-      {formatDate(suite.createdAt)}
+    <td className="text-xs text-fg-muted">
+      <RelativeTime value={suite.created_at} />
     </td>
     <td>
-      <div className="flex items-center justify-end gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100">
+      <div
+        data-actions
+        className="flex items-center justify-end gap-1 opacity-100 transition-opacity sm:opacity-0 sm:group-hover:opacity-100"
+      >
         <ResourceActions
           onEdit={onEdit}
           onDelete={onDelete}

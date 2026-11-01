@@ -1,9 +1,10 @@
 using Asp.Versioning;
-
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api;
 
@@ -28,6 +29,9 @@ public abstract class ApiControllerBase : ControllerBase
 
         return version;
     }
+
+    protected ProjectRole CurrentProjectRole =>
+        HttpContext.Features.GetRequiredFeature<ProjectRoleFeature>().Role;
 
     protected void SetETag(int version) => Response.Headers.ETag = $"\"{version}\"";
 }

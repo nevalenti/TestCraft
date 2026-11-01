@@ -1,0 +1,48 @@
+apis:
+  contract:
+    root: contract/v1.json
+
+extends:
+  - recommended
+
+plugins:
+  - ./redocly-plugin.mjs
+
+rules:
+  no-invalid-schema-examples: error
+  no-invalid-media-type-examples: error
+
+  testcraft/enum-descriptions: error
+
+  rule/schema-names:
+    subject:
+      type: NamedSchemas
+    assertions:
+      casing: PascalCase
+    message: Schema names are PascalCase, without FastAPI-style underscores.
+
+  rule/schema-description:
+    subject:
+      type: Schema
+      property: description
+    where:
+      - subject:
+          type: NamedSchemas
+        assertions:
+          defined: true
+    assertions:
+      defined: true
+    message: Describe what the schema is and where it appears.
+
+  rule/property-description:
+    subject:
+      type: Schema
+      property: description
+    where:
+      - subject:
+          type: SchemaProperties
+        assertions:
+          defined: true
+    assertions:
+      defined: true
+    message: Describe the property; say what null means for nullable fields.

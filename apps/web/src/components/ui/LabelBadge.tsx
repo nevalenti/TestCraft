@@ -1,6 +1,10 @@
-import type { Label } from '@testcraft/types';
+import type { Label } from "@testcraft/types";
 
-export const LabelBadge = ({ label }: { label: Label }) => (
+interface LabelBadgeProps {
+  label: Pick<Label, "name" | "color">;
+}
+
+export const LabelBadge = ({ label }: LabelBadgeProps) => (
   <span
     className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
     style={{

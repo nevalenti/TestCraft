@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Domain.ValueObjects;
 
 namespace TestCraft.Migrator;

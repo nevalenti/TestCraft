@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Enums;
 
@@ -8,14 +7,15 @@ namespace TestCraft.Application.Features.Notifications;
 
 public sealed partial class NotificationDeliveryCleanupJob(
     IApplicationDbContext context,
-    ILogger<NotificationDeliveryCleanupJob> logger
+    ILogger<NotificationDeliveryCleanupJob> logger,
+    TimeProvider timeProvider
 )
 {
     private static readonly TimeSpan RetentionPeriod = TimeSpan.FromDays(30);
 
     public async Task RunAsync(CancellationToken cancellationToken)
     {
-        var cutoff = DateTimeOffset.UtcNow - RetentionPeriod;
+        var cutoff = timeProvider.GetUtcNow() - RetentionPeriod;
 
         var deleted = await context
             .NotificationDeliveries.Where(delivery =>

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -15,7 +14,11 @@ public class ShareTokenConfiguration : IEntityTypeConfiguration<ShareToken>
 
         builder.Property(st => st.TestRunId).HasColumnName("test_run_id");
 
-        builder.Property(st => st.Token).HasColumnName("token").HasMaxLength(100).IsRequired();
+        builder
+            .Property(st => st.TokenHash)
+            .HasColumnName("token_hash")
+            .HasMaxLength(64)
+            .IsRequired();
 
         builder.Property(st => st.ExpiresAt).HasColumnName("expires_at");
 
@@ -26,7 +29,7 @@ public class ShareTokenConfiguration : IEntityTypeConfiguration<ShareToken>
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()");
 
-        builder.HasIndex(st => st.Token).IsUnique();
+        builder.HasIndex(st => st.TokenHash).IsUnique();
 
         builder.HasIndex(st => st.TestRunId);
 
