@@ -1,20 +1,25 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Asp.Versioning.ApiExplorer;
-
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
 using Scalar.AspNetCore;
 
 using Swashbuckle.AspNetCore.SwaggerGen;
-
 using TestCraft.Common.Security;
+using TestCraft.Infrastructure.Configuration;
+using TestCraft.Persistence.Vogen;
 
 namespace TestCraft.Api.Configuration.Swagger;
 
 public static class SwaggerExtensions
 {
+    private const string ContractPath = $"{ApiPaths.DocsPrefix}/v1/contract.json";
+
     public static WebApplicationBuilder AddSwaggerDocs(this WebApplicationBuilder builder)
     {
+        builder.Services.AddStartupOptions<SwaggerBasicAuthOptions>(builder.Configuration);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
         builder.Services.AddSwaggerGen(options =>
@@ -40,7 +45,9 @@ public static class SwaggerExtensions
 
             options.OperationFilter<AnonymousEndpointsOperationFilter>();
             options.OperationFilter<ProblemResponsesOperationFilter>();
-            options.SchemaFilter<VogenSchemaFilter>();
+            options.OperationFilter<IdempotencyKeyOperationFilter>();
+            options.UseAllOfToExtendReferenceSchemas();
+            MapIdsToUuids(options);
 
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TestCraft.Api.xml"));
             options.IncludeXmlComments(
@@ -49,6 +56,17 @@ public static class SwaggerExtensions
         });
 
         return builder;
+    }
+
+    private static void MapIdsToUuids(SwaggerGenOptions options)
+    {
+        foreach (var idType in VogenGuidValueObjects.AllIn(typeof(ProjectId).Assembly))
+        {
+            options.MapType(
+                idType,
+                () => new OpenApiSchema { Type = JsonSchemaType.String, Format = "uuid" }
+            );
+        }
     }
 
     private static string GetSchemaId(Type type)
@@ -66,9 +84,6 @@ public static class SwaggerExtensions
 
     public static WebApplication UseSwaggerDocs(this WebApplication app)
     {
-        var apiVersionDescriptionProvider =
-            app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-
         if (app.Environment.IsProduction())
         {
             app.UseWhen(

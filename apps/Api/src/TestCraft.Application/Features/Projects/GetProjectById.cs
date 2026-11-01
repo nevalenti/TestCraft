@@ -1,8 +1,4 @@
 using MediatR;
-
-using Microsoft.EntityFrameworkCore;
-
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -22,24 +18,7 @@ public static class GetProjectById
     public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
         : IRequestHandler<Query, ProjectResponse>
     {
-        public async Task<ProjectResponse> Handle(
-            Query request,
-            CancellationToken cancellationToken
-        ) =>
-            await context
-                .Projects.Where(project => project.Id == request.Id)
-                .Select(project => new ProjectResponse
-                {
-                    Id = project.Id,
-                    Name = project.Name,
-                    Description = project.Description,
-                    CreatedAt = project.CreatedAt,
-                    UpdatedAt = project.UpdatedAt,
-                    SuiteCount = project.TestSuites.Count(suite => !suite.IsDeleted),
-                    RunCount = project.TestRuns.Count(run => !run.IsDeleted),
-                    IsOwner = project.UserId == currentUser.UserId,
-                })
-                .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException();
+        public Task<ProjectResponse> Handle(Query request, CancellationToken cancellationToken) =>
+            ProjectStats.LoadAsync(context, request.Id, currentUser.UserId, cancellationToken);
     }
 }

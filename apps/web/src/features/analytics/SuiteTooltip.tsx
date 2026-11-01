@@ -1,14 +1,12 @@
 type SuiteEntry = { name: string; value: number; fill: string };
 
-export const SuiteTooltip = ({
-  active,
-  payload,
-  label,
-}: {
+interface SuiteTooltipProps {
   active?: boolean;
   payload?: SuiteEntry[];
   label?: string;
-}) => {
+}
+
+export const SuiteTooltip = ({ active, payload, label }: SuiteTooltipProps) => {
   if (!active || !payload?.length) return null;
   const total = payload.reduce((sum, entry) => sum + (entry.value ?? 0), 0);
   return (
@@ -19,7 +17,7 @@ export const SuiteTooltip = ({
           key={entry.name}
           className="flex items-center justify-between gap-6"
         >
-          <span className="flex items-center gap-1.5 text-xs text-base-content/85">
+          <span className="flex items-center gap-1.5 text-xs text-fg-secondary">
             <span
               className="inline-block size-1.5 rounded-full"
               style={{ background: entry.fill }}
@@ -32,7 +30,7 @@ export const SuiteTooltip = ({
         </div>
       ))}
       <div className="mt-1.5 flex items-center justify-between border-t border-border pt-1.5">
-        <span className="text-xs text-base-content/65">Total</span>
+        <span className="text-xs text-fg-muted">Total</span>
         <span className="text-xs font-bold tabular-nums">{total}</span>
       </div>
     </div>

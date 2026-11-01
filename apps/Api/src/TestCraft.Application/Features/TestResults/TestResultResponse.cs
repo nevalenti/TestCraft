@@ -1,3 +1,5 @@
+using System.Linq.Expressions;
+using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestResults;
@@ -5,8 +7,30 @@ namespace TestCraft.Application.Features.TestResults;
 /// <summary>The outcome of executing one test case within a run.</summary>
 public record TestResultResponse
 {
+    public static readonly Expression<Func<TestResult, TestResultResponse>> Projection =
+        result => new TestResultResponse
+        {
+            Id = result.Id,
+            Version = result.Version,
+            TestRunId = result.TestRunId,
+            TestCaseId = result.TestCaseId,
+            SuiteId = result.TestCase!.SuiteId,
+            TestCaseName = result.TestCase.Name,
+            Status = result.Status,
+            Notes = result.Notes,
+            DurationMs = result.DurationMs,
+            DefectType = result.DefectType,
+            ExecutedAt = result.ExecutedAt,
+            ExecutedById = result.ExecutedById,
+            CreatedAt = result.CreatedAt,
+            UpdatedAt = result.UpdatedAt,
+        };
+
     /// <summary>The result's identifier.</summary>
     public required TestResultId Id { get; init; }
+
+    /// <summary>Current version; the ETag header carries the same value.</summary>
+    public required int Version { get; init; }
 
     /// <summary>The run this result belongs to.</summary>
     public required TestRunId TestRunId { get; init; }

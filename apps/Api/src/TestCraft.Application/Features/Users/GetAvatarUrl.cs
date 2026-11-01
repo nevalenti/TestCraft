@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.Users;
@@ -9,15 +7,15 @@ namespace TestCraft.Application.Features.Users;
 public static class GetAvatarUrl
 {
     /// <summary>Requests a presigned URL for the current user's avatar, if one is set.</summary>
-    public sealed record Query : IRequest<AvatarUrlResponse?>;
+    public sealed record Query : IRequest<AvatarUrlResponse>;
 
     public sealed class Handler(
         IApplicationDbContext context,
         ICurrentUser currentUser,
         IStorageService storage
-    ) : IRequestHandler<Query, AvatarUrlResponse?>
+    ) : IRequestHandler<Query, AvatarUrlResponse>
     {
-        public async Task<AvatarUrlResponse?> Handle(
+        public async Task<AvatarUrlResponse> Handle(
             Query request,
             CancellationToken cancellationToken
         )
@@ -32,7 +30,9 @@ public static class GetAvatarUrl
                 );
 
             if (profile?.AvatarKey is null)
-                return null;
+            {
+                return new AvatarUrlResponse { Url = null };
+            }
 
             var url = await storage.GetPresignedUrlAsync(
                 profile.AvatarKey,

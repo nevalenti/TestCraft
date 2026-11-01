@@ -1,11 +1,10 @@
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
-
+using MassTransit;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Events;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Events;
@@ -14,9 +13,11 @@ using TestCraft.Persistence.Vogen;
 
 namespace TestCraft.Persistence;
 
-public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher publisher)
-    : DbContext(options),
-        IApplicationDbContext
+public class AppDbContext(
+    DbContextOptions<AppDbContext> options,
+    IPublisher publisher,
+    TimeProvider timeProvider
+) : DbContext(options), IApplicationDbContext
 {
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<TestSuite> TestSuites => Set<TestSuite>();
@@ -38,10 +39,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
     public DbSet<RunLog> RunLogs => Set<RunLog>();
     public DbSet<ProjectMember> ProjectMembers => Set<ProjectMember>();
     public DbSet<NotificationDelivery> NotificationDeliveries => Set<NotificationDelivery>();
+    public DbSet<IdempotencyRecord> IdempotencyRecords => Set<IdempotencyRecord>();
+    public DbSet<Note> Notes => Set<Note>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+        modelBuilder.AddInboxStateEntity(inbox => inbox.ToTable("inbox_state"));
+        modelBuilder.AddOutboxMessageEntity(message => message.ToTable("outbox_messages"));
+        modelBuilder.AddOutboxStateEntity(outbox => outbox.ToTable("outbox_state"));
     }
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -56,15 +62,39 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        ApplyAuditTimestamps();
-        var result = await base.SaveChangesAsync(cancellationToken);
         await DispatchDomainEventsAsync(cancellationToken);
-        return result;
+        ApplyAuditTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
     }
+
+    public Task<T> ExecuteInTransactionAsync<T>(
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken
+    ) =>
+        Database
+            .CreateExecutionStrategy()
+            .ExecuteAsync(
+                async token =>
+                {
+                    await using var transaction = await Database.BeginTransactionAsync(token);
+                    try
+                    {
+                        var result = await operation(token);
+                        await transaction.CommitAsync(token);
+                        return result;
+                    }
+                    catch
+                    {
+                        ChangeTracker.Clear();
+                        throw;
+                    }
+                },
+                cancellationToken
+            );
 
     private void ApplyAuditTimestamps()
     {
-        var now = DateTimeOffset.UtcNow;
+        var now = timeProvider.GetStoredUtcNow();
         foreach (var entry in ChangeTracker.Entries<IAuditableEntity>())
         {
             switch (entry.State)
@@ -76,6 +106,14 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, IPublisher pub
                 case EntityState.Modified:
                     entry.Entity.UpdatedAt = now;
                     break;
+            }
+        }
+
+        foreach (var entry in ChangeTracker.Entries<IVersioned>())
+        {
+            if (entry.State == EntityState.Modified)
+            {
+                entry.Property(entity => entity.Version).CurrentValue++;
             }
         }
     }

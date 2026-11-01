@@ -33,12 +33,12 @@ public static class AllureParser
         return cases;
     }
 
-    private static TestResultStatus ResolveStatus(string? status) =>
+    private static TestResultStatus ResolveStatus(AllureStatus? status) =>
         status switch
         {
-            "passed" => TestResultStatus.Passed,
-            "failed" or "broken" => TestResultStatus.Failed,
-            "skipped" => TestResultStatus.Skipped,
+            AllureStatus.Passed => TestResultStatus.Passed,
+            AllureStatus.Failed or AllureStatus.Broken => TestResultStatus.Failed,
+            AllureStatus.Skipped => TestResultStatus.Skipped,
             _ => TestResultStatus.Blocked,
         };
 

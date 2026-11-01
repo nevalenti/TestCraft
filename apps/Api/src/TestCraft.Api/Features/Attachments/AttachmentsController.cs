@@ -1,11 +1,15 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
+using TestCraft.Api.Errors;
+using TestCraft.Api.Middleware;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.Attachments;
 
 namespace TestCraft.Api.Features.Attachments;
 
+[ApiTokenScope("results")]
 [Route(
     "api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/results/{resultId:guid}/attachments"
 )]
@@ -13,38 +17,39 @@ public class AttachmentsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists attachments for a test result.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<AttachmentResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<AttachmentResponse>>> GetAll(
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<Paginated<AttachmentResponse>>> GetAll(
         ProjectId projectId,
         TestRunId runId,
         TestResultId resultId,
+        [FromQuery] GetAttachments.Query query,
         CancellationToken cancellationToken
     )
     {
-        var query = new GetAttachments.Query
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            ResultId = resultId,
-        };
+        var scopedQuery = query with { ProjectId = projectId, RunId = runId, ResultId = resultId };
 
-        var result = await sender.Send(query, cancellationToken);
+        var result = await sender.Send(scopedQuery, cancellationToken);
 
         return Ok(result);
     }
 
     /// <summary>Uploads an attachment to a test result.</summary>
     [HttpPost]
-    [RequestSizeLimit(52_428_800)]
-    [ProducesResponseType(typeof(AttachmentResponse), StatusCodes.Status201Created)]
+    [RequestSizeLimit(UploadAttachment.MaxSizeBytes + MaxBodySizeMiddleware.MultipartOverheadBytes)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<AttachmentResponse>> Upload(
         ProjectId projectId,
         TestRunId runId,
         TestResultId resultId,
-        IFormFile file,
+        [Required] IFormFile file,
         CancellationToken cancellationToken
     )
     {
+        if (file.Length > UploadAttachment.MaxSizeBytes)
+        {
+            return new ProblemResult(Problems.ContentTooLarge());
+        }
+
         await using var stream = file.OpenReadStream();
 
         var command = new UploadAttachment.Command
@@ -65,7 +70,7 @@ public class AttachmentsController(ISender sender) : ApiControllerBase
 
     /// <summary>Returns a presigned download URL for an attachment.</summary>
     [HttpGet("{id:guid}/download")]
-    [ProducesResponseType(typeof(AttachmentDownloadUrlResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<AttachmentDownloadUrlResponse>> Download(
         ProjectId projectId,
         TestRunId runId,

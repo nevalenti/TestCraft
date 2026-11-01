@@ -1,141 +1,84 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestRuns;
 
 public static class GetTestRuns
 {
-    /// <summary>Lists the test runs in a project.</summary>
-    public sealed record Query : IRequest<Paginated<TestRunResponse>>, IProjectScopedRequest
+    public enum SortField
     {
-        /// <summary>The project to list runs for.</summary>
-        public ProjectId ProjectId { get; init; }
-
-        /// <summary>Filters runs whose name contains this text.</summary>
-        public string? Search { get; init; }
-
-        /// <summary>The page number to return, starting at 1.</summary>
-        public int? Page { get; init; }
-
-        /// <summary>The number of runs per page.</summary>
-        public int? PageSize { get; init; }
+        Name,
+        Environment,
+        Status,
+        CreatedAt,
+        UpdatedAt,
     }
 
-    public sealed class Handler(IApplicationDbContext context, IStorageService storage)
+    /// <summary>Lists the test runs in a project; search matches the run name.</summary>
+    public sealed record Query
+        : SearchPageQuery,
+            IRequest<Paginated<TestRunResponse>>,
+            IProjectScopedRequest
+    {
+        /// <summary>The project to list runs for.</summary>
+        [RouteValue]
+        public ProjectId ProjectId { get; init; }
+
+        /// <summary>Only runs with this status.</summary>
+        public TestRunStatus? Status { get; init; }
+
+        public SortField SortBy { get; init; } = SortField.CreatedAt;
+
+        public SortDirection SortDir { get; init; } = SortDirection.Desc;
+    }
+
+    public sealed class Handler(IApplicationDbContext context)
         : IRequestHandler<Query, Paginated<TestRunResponse>>
     {
-        public async Task<Paginated<TestRunResponse>> Handle(
+        public Task<Paginated<TestRunResponse>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
             var query = context.TestRuns.Where(run => run.ProjectId == request.ProjectId);
 
-            if (!string.IsNullOrWhiteSpace(request.Search))
+            query = query.WhereContainsIgnoringCase(run => run.Name, request.Search);
+
+            if (request.Status is { } status)
             {
-                // ToLowerInvariant() and Contains(string, StringComparison) don't translate
-                // against the Npgsql provider; ToLower() + EF.Functions.Like is the portable,
-                // provider-agnostic equivalent of the old EF.Functions.ILike.
-#pragma warning disable CA1304, CA1311
-                var pattern = $"%{request.Search.ToLower()}%";
-                query = query.Where(run => EF.Functions.Like(run.Name.ToLower(), pattern));
-#pragma warning restore CA1304, CA1311
+                query = query.Where(run => run.Status == status);
             }
 
-            var pagination = PaginationParams.Create(request.Page, request.PageSize);
-
-            var total = await query.CountAsync(cancellationToken);
-
-            var items = await query
-                .OrderByDescending(run => run.CreatedAt)
-                .Skip(pagination.Skip)
-                .Take(pagination.Take)
-                .Select(run => new TestRunResponse
-                {
-                    Id = run.Id,
-                    ProjectId = run.ProjectId,
-                    Name = run.Name,
-                    Environment = run.Environment,
-                    Status = run.Status,
-                    Source = run.Source,
-                    ExecutedById = run.ExecutedById,
-                    ExecutedByName = run.ExecutedByName,
-                    CreatedAt = run.CreatedAt,
-                    UpdatedAt = run.UpdatedAt,
-                })
-                .ToListAsync(cancellationToken);
-
-            await PopulateAvatarUrlsAsync(items, context, storage, cancellationToken);
-
-            return new Paginated<TestRunResponse>
+            var sorted = request.SortBy switch
             {
-                Items = items,
-                Total = total,
-                Page = pagination.Page,
-                PageSize = pagination.PageSize,
+                SortField.Name => query.SortedBy(run => run.Name, request.SortDir, run => run.Id),
+                SortField.Environment => query.SortedBy(
+                    run => run.Environment,
+                    request.SortDir,
+                    run => run.Id
+                ),
+                SortField.Status => query.SortedBy(
+                    run => run.Status,
+                    request.SortDir,
+                    run => run.Id
+                ),
+                SortField.UpdatedAt => query.SortedBy(
+                    run => run.UpdatedAt,
+                    request.SortDir,
+                    run => run.Id
+                ),
+                _ => query.SortedBy(run => run.CreatedAt, request.SortDir, run => run.Id),
             };
-        }
-    }
 
-    internal static async Task PopulateAvatarUrlsAsync(
-        IList<TestRunResponse> items,
-        IApplicationDbContext context,
-        IStorageService storage,
-        CancellationToken cancellationToken
-    )
-    {
-        var executorIds = items
-            .Where(item => item.ExecutedById is not null)
-            .Select(item => item.ExecutedById!.Value)
-            .Distinct()
-            .ToList();
-
-        if (executorIds.Count == 0)
-            return;
-
-        var avatarKeys = await context
-            .UserProfiles.AsNoTracking()
-            .Where(profile => executorIds.Contains(profile.UserId) && profile.AvatarKey != null)
-            .ToDictionaryAsync(
-                profile => profile.UserId,
-                profile => profile.AvatarKey!,
-                cancellationToken
-            );
-
-        if (avatarKeys.Count == 0)
-            return;
-
-        var distinctKeys = avatarKeys.Values.Distinct().ToList();
-        var urlsByKey = (
-            await Task.WhenAll(
-                distinctKeys.Select(async avatarKey =>
-                    (
-                        AvatarKey: avatarKey,
-                        Url: await storage.GetPresignedUrlAsync(
-                            avatarKey,
-                            TimeSpan.FromMinutes(60),
-                            cancellationToken
-                        )
-                    )
-                )
-            )
-        ).ToDictionary(result => result.AvatarKey, result => result.Url);
-
-        for (var i = 0; i < items.Count; i++)
-        {
-            if (
-                items[i].ExecutedById is { } executedById
-                && avatarKeys.TryGetValue(executedById, out var avatarKey)
-                && urlsByKey.TryGetValue(avatarKey, out var url)
-            )
-            {
-                items[i] = items[i] with { ExecutedByAvatarUrl = url };
-            }
+            return sorted
+                .Select(TestRunResponse.Projection)
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
         }
     }
 }

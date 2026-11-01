@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Application.Features.Projects;
 using TestCraft.Application.UnitTests.Common.Fakes;
 using TestCraft.Domain.Entities;
@@ -26,7 +25,10 @@ public class GetProjectsHandlerTests
         );
 
         result.Items.Should().HaveCount(2);
-        result.Items.Select(item => item.Name).Should().BeEquivalentTo("Checkout Flow", "Login Flow");
+        result
+            .Items.Select(item => item.Name)
+            .Should()
+            .BeEquivalentTo("Checkout Flow", "Login Flow");
     }
 
     [Fact]

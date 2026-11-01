@@ -1,17 +1,18 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Features.ApiTokens;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Features.ApiTokens;
 
+[ProjectRoles(Read = ProjectRole.Admin, Write = ProjectRole.Admin)]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/tokens")]
 public class ApiTokensController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists API tokens for a project.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<ApiTokenResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<ApiTokenResponse>>> GetAll(
         ProjectId projectId,
         CancellationToken cancellationToken
@@ -26,7 +27,7 @@ public class ApiTokensController(ISender sender) : ApiControllerBase
 
     /// <summary>Creates a new API token. The raw token is returned once — store it securely.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(CreateApiTokenResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<CreateApiTokenResponse>> Create(
         ProjectId projectId,
         CreateApiToken.Command command,

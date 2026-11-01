@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - 'packages/ci-reporter/**'
-      - '.changeset/**'
-      - '.github/workflows/release-changesets.yml'
+      - "packages/ci-reporter/**"
+      - ".changeset/**"
+      - ".github/workflows/release-changesets.yml"
 
 concurrency:
   group: changesets-${{ github.ref }}
@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 # zizmor: ignore[artipacked]
         with:
           fetch-depth: 0
 
@@ -51,8 +51,8 @@ jobs:
         uses: changesets/action@a45c4d594aa4e2c509dc14a9f2b3b67ba3780d0d # v1.9.0
         with:
           publish: pnpm exec changeset publish
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+          title: "chore: version packages"
+          commit: "chore: version packages"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

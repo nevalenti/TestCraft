@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class WebhookSubscriptionConfiguration : IEntityTypeConfiguration<Webhook
     public void Configure(EntityTypeBuilder<WebhookSubscription> builder)
     {
         builder.ToTable("webhook_subscriptions");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(webhookSubscription => webhookSubscription.Id);
 

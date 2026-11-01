@@ -1,7 +1,6 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -20,7 +19,7 @@ public record TrendPoint
     /// <summary>When the run was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
 
-    /// <summary>Total number of results recorded for the run.</summary>
+    /// <summary>Number of test cases with a current outcome in the run.</summary>
     public required int Total { get; init; }
 
     /// <summary>Number of passed results.</summary>
@@ -34,6 +33,9 @@ public record TrendPoint
 
     /// <summary>Number of skipped results.</summary>
     public required int Skipped { get; init; }
+
+    /// <summary>Number of planned cases awaiting execution.</summary>
+    public required int Untested { get; init; }
 
     /// <summary>Percentage of results that passed.</summary>
     public required double PassRate { get; init; }
@@ -72,24 +74,44 @@ public static class GetRunTrend
                     testRun.Name,
                     testRun.CreatedAt,
                     testRun.Source,
-                    Passed = testRun.TestResults.Count(tr => tr.Status == TestResultStatus.Passed),
-                    Failed = testRun.TestResults.Count(tr => tr.Status == TestResultStatus.Failed),
-                    Blocked = testRun.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Blocked
-                    ),
-                    Skipped = testRun.TestResults.Count(tr =>
-                        tr.Status == TestResultStatus.Skipped
-                    ),
                 })
                 .ToListAsync(cancellationToken);
+
+            var runIds = runs.Select(run => run.Id).ToArray();
+            if (runIds.Length == 0)
+            {
+                return [];
+            }
+
+            var statusCounts = await context
+                .TestResults.Where(result => runIds.Contains(result.TestRunId))
+                .CurrentOutcomes()
+                .GroupBy(result => new { result.TestRunId, result.Status })
+                .Select(group => new
+                {
+                    group.Key.TestRunId,
+                    group.Key.Status,
+                    Count = group.Count(),
+                })
+                .ToListAsync(cancellationToken);
+            var counts = statusCounts.ToDictionary(
+                item => (item.TestRunId, item.Status),
+                item => item.Count
+            );
 
             return runs.AsEnumerable()
                 .Reverse()
                 .Select(run =>
                 {
-                    var total = run.Passed + run.Failed + run.Blocked + run.Skipped;
+                    var passed = counts.GetValueOrDefault((run.Id, TestResultStatus.Passed));
+                    var failed = counts.GetValueOrDefault((run.Id, TestResultStatus.Failed));
+                    var blocked = counts.GetValueOrDefault((run.Id, TestResultStatus.Blocked));
+                    var skipped = counts.GetValueOrDefault((run.Id, TestResultStatus.Skipped));
+                    var untested = counts.GetValueOrDefault((run.Id, TestResultStatus.Untested));
+                    var executed = passed + failed + blocked + skipped;
+                    var total = executed + untested;
                     var passRate =
-                        total > 0 ? Math.Round((double)run.Passed / total * 100, 1) : 0.0;
+                        executed > 0 ? Math.Round((double)passed / executed * 100, 1) : 0.0;
 
                     return new TrendPoint
                     {
@@ -97,10 +119,11 @@ public static class GetRunTrend
                         RunName = run.Name,
                         CreatedAt = run.CreatedAt,
                         Total = total,
-                        Passed = run.Passed,
-                        Failed = run.Failed,
-                        Blocked = run.Blocked,
-                        Skipped = run.Skipped,
+                        Passed = passed,
+                        Failed = failed,
+                        Blocked = blocked,
+                        Skipped = skipped,
+                        Untested = untested,
                         PassRate = passRate,
                         Source = run.Source,
                     };

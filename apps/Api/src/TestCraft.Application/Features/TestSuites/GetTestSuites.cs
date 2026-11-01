@@ -1,29 +1,34 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Features.TestSuites;
 
 public static class GetTestSuites
 {
-    /// <summary>Lists the test suites in a project.</summary>
-    public sealed record Query : IRequest<Paginated<TestSuiteResponse>>, IProjectScopedRequest
+    public enum SortField
+    {
+        Name,
+        CreatedAt,
+    }
+
+    /// <summary>Lists the test suites in a project; search matches the suite name.</summary>
+    public sealed record Query
+        : SearchPageQuery,
+            IRequest<Paginated<TestSuiteResponse>>,
+            IProjectScopedRequest
     {
         /// <summary>The project to list suites for.</summary>
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>Filters suites whose name contains this text.</summary>
-        public string? Search { get; init; }
+        public SortField SortBy { get; init; } = SortField.CreatedAt;
 
-        /// <summary>The page number to return, starting at 1.</summary>
-        public int? Page { get; init; }
-
-        /// <summary>The number of suites per page.</summary>
-        public int? PageSize { get; init; }
+        public SortDirection SortDir { get; init; } = SortDirection.Asc;
     }
 
     public sealed class Handler(IApplicationDbContext context)
@@ -36,41 +41,16 @@ public static class GetTestSuites
         {
             var query = context.TestSuites.Where(suite => suite.ProjectId == request.ProjectId);
 
-            if (!string.IsNullOrWhiteSpace(request.Search))
-            {
-#pragma warning disable CA1304, CA1311
-                var pattern = $"%{request.Search.ToLower()}%";
-                query = query.Where(suite => EF.Functions.Like(suite.Name.ToLower(), pattern));
-#pragma warning restore CA1304, CA1311
-            }
+            query = query.WhereContainsIgnoringCase(suite => suite.Name, request.Search);
 
-            var pagination = PaginationParams.Create(request.Page, request.PageSize);
+            var sorted =
+                request.SortBy == SortField.Name
+                    ? query.SortedBy(suite => suite.Name, request.SortDir, suite => suite.Id)
+                    : query.SortedBy(suite => suite.CreatedAt, request.SortDir, suite => suite.Id);
 
-            var total = await query.CountAsync(cancellationToken);
-
-            var items = await query
-                .OrderBy(suite => suite.CreatedAt)
-                .Skip(pagination.Skip)
-                .Take(pagination.Take)
-                .Select(suite => new TestSuiteResponse
-                {
-                    Id = suite.Id,
-                    ProjectId = suite.ProjectId,
-                    Name = suite.Name,
-                    Description = suite.Description,
-                    Source = suite.Source,
-                    CreatedAt = suite.CreatedAt,
-                    UpdatedAt = suite.UpdatedAt,
-                })
-                .ToListAsync(cancellationToken);
-
-            return new Paginated<TestSuiteResponse>
-            {
-                Items = items,
-                Total = total,
-                Page = pagination.Page,
-                PageSize = pagination.PageSize,
-            };
+            return await sorted
+                .Select(TestSuiteResponse.Projection)
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
         }
     }
 }

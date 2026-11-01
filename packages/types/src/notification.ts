@@ -1,19 +1,19 @@
-import type { components } from './generated/schema.js';
+import type { components } from "./generated/schema.js";
 
 export type WebhookSubscription =
-  components['schemas']['TestCraft.Application.Notifications.WebhookSubscriptionResponse'];
+  components["schemas"]["WebhookSubscriptionResponse"];
 export type EmailSubscription =
-  components['schemas']['TestCraft.Application.Notifications.EmailSubscriptionResponse'];
+  components["schemas"]["EmailSubscriptionResponse"];
 
 export type CreateWebhookSubscription = Omit<
-  components['schemas']['TestCraft.Application.Notifications.CreateWebhookSubscription.Command'],
-  'projectId'
+  components["schemas"]["CreateWebhookSubscriptionRequest"],
+  "projectId"
 >;
 export type UpdateWebhookSubscription = Omit<
-  components['schemas']['TestCraft.Application.Notifications.UpdateWebhookSubscription.Command'],
-  'projectId'
+  components["schemas"]["UpdateWebhookSubscriptionRequest"],
+  "projectId"
 >;
 export type CreateEmailSubscription =
-  components['schemas']['TestCraft.Application.Notifications.CreateEmailSubscription.Command'];
+  components["schemas"]["CreateEmailSubscriptionRequest"];
 export type UpdateEmailSubscription =
-  components['schemas']['TestCraft.Application.Notifications.UpdateEmailSubscription.Command'];
+  components["schemas"]["UpdateEmailSubscriptionRequest"];

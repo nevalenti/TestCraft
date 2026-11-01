@@ -1,68 +1,91 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listProjects: vi.fn(),
+  getProject: vi.fn(),
+  createProject: vi.fn(),
+  updateProject: vi.fn(),
+  deleteProject: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { projectsApi } from '@/features/projects/api';
-import { PAGE_SIZE } from '@/lib/constants';
+import * as sdk from "@/api/sdk";
+import { projectsApi } from "@/features/projects/api";
+import { PAGE_SIZE } from "@/lib/constants";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('projectsApi', () => {
-  it('getAll omits the search param when none is given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+describe("projectsApi", () => {
+  it("getAll omits the search param when none is given", async () => {
+    vi.mocked(sdk.listProjects).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
     await projectsApi.getAll();
 
-    expect(client.get).toHaveBeenCalledWith('projects', {
-      params: { pageSize: PAGE_SIZE },
+    expect(sdk.listProjects).toHaveBeenCalledWith({
+      query: { page: 1, page_size: PAGE_SIZE },
     });
   });
 
-  it('getAll includes the search param when given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+  it("getAll includes the search param when given", async () => {
+    vi.mocked(sdk.listProjects).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await projectsApi.getAll('alpha');
+    await projectsApi.getAll("alpha");
 
-    expect(client.get).toHaveBeenCalledWith('projects', {
-      params: { pageSize: PAGE_SIZE, search: 'alpha' },
+    expect(sdk.listProjects).toHaveBeenCalledWith({
+      query: { page: 1, page_size: PAGE_SIZE, search: "alpha" },
     });
   });
 
-  it('getById fetches a single project', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { id: 'p1' } });
+  it("getById fetches a single project", async () => {
+    vi.mocked(sdk.getProject).mockResolvedValue({
+      data: { id: "p1" },
+    } as never);
 
-    await projectsApi.getById('p1');
+    await projectsApi.getById("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1');
-  });
-
-  it('create posts the new project', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: { id: 'p1' } });
-
-    await projectsApi.create({ name: 'New' } as any);
-
-    expect(client.post).toHaveBeenCalledWith('projects', { name: 'New' });
-  });
-
-  it('update puts the changes including the id', async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: { id: 'p1' } });
-
-    await projectsApi.update('p1', { name: 'Renamed' } as any);
-
-    expect(client.put).toHaveBeenCalledWith('projects/p1', {
-      name: 'Renamed',
-      id: 'p1',
+    expect(sdk.getProject).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
     });
   });
 
-  it('delete removes the project by id', () => {
-    projectsApi.delete('p1');
+  it("create posts the new project", async () => {
+    vi.mocked(sdk.createProject).mockResolvedValue({
+      data: { id: "p1" },
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith('projects/p1');
+    await projectsApi.create({ name: "New" } as any);
+
+    expect(sdk.createProject).toHaveBeenCalledWith({
+      body: { name: "New" },
+    });
+  });
+
+  it("update puts the changes including the id", async () => {
+    vi.mocked(sdk.updateProject).mockResolvedValue({
+      data: { id: "p1" },
+    } as never);
+
+    await projectsApi.update("p1", { name: "Renamed" } as any, 1);
+
+    expect(sdk.updateProject).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      body: {
+        name: "Renamed",
+      },
+      headers: { "if-match": '"1"' },
+    });
+  });
+
+  it("delete removes the project by id", () => {
+    projectsApi.delete("p1");
+
+    expect(sdk.deleteProject).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+    });
   });
 });

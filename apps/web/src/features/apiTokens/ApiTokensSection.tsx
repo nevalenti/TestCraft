@@ -1,137 +1,195 @@
-import { EyeIcon } from '@heroicons/react/24/solid';
-import type { CreateApiTokenResponse } from '@testcraft/types';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import {
+  EyeIcon,
+  EyeSlashIcon,
+  KeyIcon,
+  PlusIcon,
+} from "@heroicons/react/24/solid";
+import type { CreateApiTokenResponse } from "@testcraft/types";
+import { useRef, useState } from "react";
 
-import { ErrorState } from '@/components/ErrorState';
-import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
+import { Modal } from "@/components/ui/Modal";
+import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
+import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
+import { StatusPill } from "@/components/ui/StatusPill";
 import {
   useApiTokens,
   useCreateApiToken,
   useRevokeApiToken,
-} from '@/features/apiTokens/hooks';
-import { formatDate, todayLocalDate } from '@/lib/format';
+} from "@/features/apiTokens/hooks";
+import { type TokenAccess, toScopes } from "@/features/apiTokens/scopes";
+import { TokenForm } from "@/features/apiTokens/TokenForm";
+import { useDebounce } from "@/hooks/useDebounce";
+import { formatDate } from "@/lib/format";
+import { notify } from "@/lib/notify";
+
+const tokenStatus = (token: {
+  is_revoked: boolean;
+  expires_at?: string | null;
+}) => {
+  if (token.is_revoked)
+    return {
+      label: "Revoked",
+      className: "border-border text-fg-muted",
+    };
+  if (token.expires_at && new Date(token.expires_at) < new Date())
+    return { label: "Expired", className: "border-warning/30 text-warning" };
+  return { label: "Active", className: "border-success/30 text-success" };
+};
 
 export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
   const { data: tokens, isError, error, refetch } = useApiTokens(projectId);
   const createToken = useCreateApiToken(projectId);
   const revokeToken = useRevokeApiToken(projectId);
-  const { register, handleSubmit, reset } = useForm<{
-    name: string;
-    expiresAt: string;
-  }>({
-    defaultValues: { name: '', expiresAt: '' },
-  });
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
   const [newToken, setNewToken] = useState<CreateApiTokenResponse | null>(null);
   const [revealed, setRevealed] = useState(false);
+  const tokenInputRef = useRef<HTMLInputElement>(null);
 
-  const onSubmit = (data: { name: string; expiresAt: string }) => {
+  const handleCreate = (data: {
+    name: string;
+    expiresAt: string;
+    access: TokenAccess;
+  }) => {
     createToken.mutate(
-      { name: data.name, expiresAt: data.expiresAt || undefined },
+      {
+        name: data.name,
+        expires_at: data.expiresAt || undefined,
+        scopes: toScopes(data.access),
+      },
       {
         onSuccess: (response) => {
           setNewToken(response);
           setRevealed(false);
-          reset();
+          setIsCreateOpen(false);
         },
       },
     );
   };
 
+  const handleReveal = () => {
+    setRevealed((previous) => !previous);
+    requestAnimationFrame(() => tokenInputRef.current?.select());
+  };
+
+  const handleCopy = () => {
+    if (!newToken) return;
+    navigator.clipboard.writeText(newToken.token);
+    notify("Token copied to clipboard");
+  };
+
+  const visibleTokens = debouncedSearch
+    ? (tokens ?? []).filter((token) =>
+        token.name.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+    : tokens;
+
   return (
-    <div className="space-y-5">
-      {newToken && (
-        <div className="card-bg-warning rounded-xl border p-4">
-          <p className="mb-1 text-sm font-semibold text-warning">
-            Copy your token — it won{"'"}t be shown again
-          </p>
-          <div className="flex gap-2">
-            <input
-              readOnly
-              type={revealed ? 'text' : 'password'}
-              value={newToken.token}
-              className="input-bordered input input-sm w-full font-mono text-xs"
-            />
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => setRevealed((previous) => !previous)}
-            >
-              <EyeIcon className="size-4" />
-            </button>
-            <button
-              className="btn btn-ghost btn-sm"
-              onClick={() => navigator.clipboard.writeText(newToken.token)}
-            >
-              Copy
-            </button>
+    <SettingsSectionCard
+      icon={KeyIcon}
+      title="API Tokens"
+      description="Authenticate CI pipelines and scripts against the TestCraft API."
+    >
+      <div className="space-y-4">
+        {newToken && (
+          <div className="card-bg-warning rounded-xl border p-4">
+            <p className="mb-2 text-sm font-semibold text-warning">
+              Copy your token — it won{"'"}t be shown again
+            </p>
+            <div className="flex gap-2">
+              <input
+                ref={tokenInputRef}
+                readOnly
+                type={revealed ? "text" : "password"}
+                value={newToken.token}
+                className="input-bordered input input-sm w-full font-mono text-xs"
+              />
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleReveal}
+                aria-label={revealed ? "Hide token" : "Reveal token"}
+              >
+                {revealed ? (
+                  <EyeSlashIcon className="size-4" />
+                ) : (
+                  <EyeIcon className="size-4" />
+                )}
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={handleCopy}
+              >
+                Copy
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex items-end gap-2">
-        <div className="flex-1">
-          <label htmlFor="token-name" className="label-text label text-xs">
-            Token name
-          </label>
-          <input
-            id="token-name"
-            className="input-bordered input input-sm w-full"
-            placeholder="e.g. CI pipeline"
-            {...register('name', { required: true })}
-          />
-        </div>
-        <div className="w-36">
-          <label htmlFor="token-expires" className="label-text label text-xs">
-            Expires (optional)
-          </label>
-          <input
-            id="token-expires"
-            type="date"
-            className="input-bordered input input-sm w-full"
-            min={todayLocalDate()}
-            {...register('expiresAt')}
-          />
-        </div>
-        <button
-          type="submit"
-          className="btn btn-sm btn-primary"
-          disabled={createToken.isPending}
+        <ListToolbar
+          search={search}
+          onSearch={setSearch}
+          placeholder="Search tokens…"
         >
-          {createToken.isPending ? (
-            <span className="loading loading-xs loading-spinner" />
-          ) : (
-            'Create'
-          )}
-        </button>
-      </form>
+          <button
+            className="btn btn-sm btn-primary"
+            onClick={() => setIsCreateOpen(true)}
+          >
+            <PlusIcon className="size-4" aria-hidden="true" />
+            New Token
+          </button>
+        </ListToolbar>
 
-      {isError ? (
-        <ErrorState
-          title="Failed to load API tokens"
-          error={error}
-          onRetry={refetch}
+        {isError ? (
+          <ErrorState
+            title="Failed to load API tokens"
+            error={error}
+            onRetry={refetch}
+          />
+        ) : (
+          <SettingsEntityList
+            items={visibleTokens ?? []}
+            getKey={(t) => t.id}
+            renderPrimary={(t) => (
+              <span className="inline-flex items-center gap-2">
+                <span>{t.name}</span>
+                <StatusPill {...tokenStatus(t)} />
+              </span>
+            )}
+            renderSecondary={(t) => (
+              <>
+                Created {formatDate(t.created_at)}
+                {t.last_used_at && ` · last used ${formatDate(t.last_used_at)}`}
+                {t.expires_at && ` · expires ${formatDate(t.expires_at)}`}
+                {` · ${t.scopes.join(", ")}`}
+              </>
+            )}
+            onRemove={(t) => revokeToken.mutate(t.id)}
+            removeAriaLabel={() => "Revoke token"}
+            removeLabel="Revoke"
+            isRemoveHidden={(t) => t.is_revoked}
+            emptyTitle="No API tokens yet"
+            emptyDescription="Create a token to authenticate CI pipelines and scripts."
+          />
+        )}
+      </div>
+
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="New API Token"
+        size="lg"
+      >
+        <TokenForm
+          onSubmit={handleCreate}
+          onCancel={() => setIsCreateOpen(false)}
+          isLoading={createToken.isPending}
         />
-      ) : (
-        <SettingsEntityList
-          items={tokens ?? []}
-          getKey={(t) => t.id}
-          renderPrimary={(t) => t.name}
-          renderSecondary={(t) => (
-            <>
-              Created {formatDate(t.createdAt)}
-              {t.lastUsedAt && ` · last used ${formatDate(t.lastUsedAt)}`}
-              {t.expiresAt && ` · expires ${formatDate(t.expiresAt)}`}
-              {t.isRevoked && ' · revoked'}
-            </>
-          )}
-          onRemove={(t) => revokeToken.mutate(t.id)}
-          removeAriaLabel={() => 'Revoke token'}
-          removeLabel="Revoke"
-          isRemoveHidden={(t) => t.isRevoked}
-          emptyTitle="No API tokens yet"
-          emptyDescription="Create a token to authenticate CI pipelines and scripts."
-        />
-      )}
-    </div>
+      </Modal>
+    </SettingsSectionCard>
   );
 };

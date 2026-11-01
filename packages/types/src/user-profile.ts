@@ -1,4 +1,3 @@
-import type { components } from './generated/schema.js';
+import type { components } from "./generated/schema.js";
 
-export type AvatarUrl =
-  components['schemas']['TestCraft.Application.Users.AvatarUrlResponse'];
+export type AvatarUrl = components["schemas"]["AvatarUrlResponse"];

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Entities;
@@ -19,55 +18,55 @@ internal static class ImportRunWriter
         UserId userId,
         string? userName,
         string? source,
-        ImportJob job,
+        ImportJobId jobId,
+        DateTimeOffset now,
         CancellationToken cancellationToken
     )
     {
-        var strategy = context.Database.CreateExecutionStrategy();
+        return await context.ExecuteInTransactionAsync(
+            async _ =>
+            {
+                var run = TestRun.Create(
+                    projectId,
+                    name,
+                    environment,
+                    source: source,
+                    executedById: userId,
+                    executedByName: userName
+                );
 
-        return await strategy.ExecuteAsync(async () =>
-        {
-            await using var transaction = await context.Database.BeginTransactionAsync(
-                cancellationToken
-            );
+                if (status != TestRunStatus.Active)
+                {
+                    run.TransitionTo(status);
+                }
 
-            var now = DateTimeOffset.UtcNow;
+                context.TestRuns.Add(run);
 
-            var run = TestRun.Create(
-                projectId,
-                name,
-                environment,
-                source: source,
-                executedById: userId,
-                executedByName: userName
-            );
+                await context.SaveChangesAsync(cancellationToken);
 
-            if (status != TestRunStatus.Active)
-                run.TransitionTo(status);
+                await InsertResultsAsync(
+                    context,
+                    projectId,
+                    run.Id,
+                    cases,
+                    now,
+                    userId,
+                    source,
+                    cancellationToken
+                );
 
-            context.TestRuns.Add(run);
+                var job = await context.ImportJobs.FirstAsync(
+                    importJob => importJob.Id == jobId,
+                    cancellationToken
+                );
+                job.MarkCompleted(run.Id);
 
-            await context.SaveChangesAsync(cancellationToken);
+                await context.SaveChangesAsync(cancellationToken);
 
-            await InsertResultsAsync(
-                context,
-                projectId,
-                run.Id,
-                cases,
-                now,
-                userId,
-                source,
-                cancellationToken
-            );
-
-            job.MarkCompleted(run.Id);
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            await transaction.CommitAsync(cancellationToken);
-
-            return TestRunResponse.FromEntity(run);
-        });
+                return TestRunResponse.FromEntity(run);
+            },
+            cancellationToken
+        );
     }
 
     public static async Task<TestRunResponse> AppendResultsToRunAsync(
@@ -77,49 +76,64 @@ internal static class ImportRunWriter
         IReadOnlyList<ParsedTestCase> cases,
         UserId userId,
         string? source,
-        ImportJob job,
+        ImportJobId jobId,
+        DateTimeOffset now,
         CancellationToken cancellationToken
     )
     {
-        var strategy = context.Database.CreateExecutionStrategy();
+        return await context.ExecuteInTransactionAsync(
+            async _ =>
+            {
+                var run =
+                    await context.TestRuns.FirstOrDefaultAsync(
+                        testRun => testRun.Id == runId && testRun.ProjectId == projectId,
+                        cancellationToken
+                    )
+                    ?? throw new InvalidOperationException(
+                        $"Run {runId} not found in project {projectId}"
+                    );
 
-        return await strategy.ExecuteAsync(async () =>
-        {
-            await using var transaction = await context.Database.BeginTransactionAsync(
-                cancellationToken
-            );
-
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    testRun => testRun.Id == runId && testRun.ProjectId == projectId,
+                await InsertResultsAsync(
+                    context,
+                    projectId,
+                    run.Id,
+                    cases,
+                    now,
+                    userId,
+                    source,
                     cancellationToken
-                )
-                ?? throw new InvalidOperationException(
-                    $"Run {runId} not found in project {projectId}"
                 );
 
-            var now = DateTimeOffset.UtcNow;
+                run.TransitionTo(TestRunStatus.Completed);
+                var job = await context.ImportJobs.FirstAsync(
+                    importJob => importJob.Id == jobId,
+                    cancellationToken
+                );
+                job.MarkCompleted(run.Id);
 
-            await InsertResultsAsync(
-                context,
-                projectId,
-                run.Id,
-                cases,
-                now,
-                userId,
-                source,
-                cancellationToken
-            );
+                await context.SaveChangesAsync(cancellationToken);
 
-            run.TransitionTo(TestRunStatus.Completed);
-            job.MarkCompleted(run.Id);
+                return TestRunResponse.FromEntity(run);
+            },
+            cancellationToken
+        );
+    }
 
-            await context.SaveChangesAsync(cancellationToken);
+    public static async Task MarkJobFailedAsync(
+        IApplicationDbContext context,
+        ImportJobId jobId,
+        string error,
+        CancellationToken cancellationToken
+    )
+    {
+        var job = await context.ImportJobs.FirstAsync(
+            importJob => importJob.Id == jobId,
+            cancellationToken
+        );
 
-            await transaction.CommitAsync(cancellationToken);
+        job.MarkFailed(error);
 
-            return TestRunResponse.FromEntity(run);
-        });
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     private static async Task InsertResultsAsync(
@@ -252,7 +266,12 @@ internal static class ImportRunWriter
                 foreach (var step in parsedCase.Steps)
                 {
                     testCase.Steps.Add(
-                        TestCaseStep.Create(testCase.Id, step.Order, step.Action, step.ExpectedResult)
+                        TestCaseStep.Create(
+                            testCase.Id,
+                            step.Order,
+                            step.Action,
+                            step.ExpectedResult
+                        )
                     );
                 }
             }

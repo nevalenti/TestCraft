@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-
 using Serilog.Context;
 
 namespace TestCraft.Common.Http;

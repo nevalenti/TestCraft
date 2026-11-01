@@ -1,8 +1,5 @@
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-
+using Microsoft.Extensions.Options;
 using Prometheus;
-
 using TestCraft.Api.Configuration.Authentication;
 using TestCraft.Api.Configuration.Controllers;
 using TestCraft.Api.Configuration.Cors;
@@ -10,11 +7,13 @@ using TestCraft.Api.Configuration.Database;
 using TestCraft.Api.Configuration.Hangfire;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Api.Configuration.OutputCaching;
+using TestCraft.Api.Configuration.Proxy;
 using TestCraft.Api.Configuration.RateLimiting;
 using TestCraft.Api.Configuration.Swagger;
 using TestCraft.Api.Errors;
-using TestCraft.Api.Hubs;
+using TestCraft.Api.Idempotency;
 using TestCraft.Api.Middleware;
+using TestCraft.Api.Realtime;
 using TestCraft.Application;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Common.Http;
@@ -33,77 +32,80 @@ public static class HostingExtensions
             options.ValidateOnBuild = true;
             options.ValidateScopes = true;
         });
+        builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
-        var infrastructureOptions = InfrastructureOptions.Bind(builder.Configuration);
-        var keycloakAuthOptions = KeycloakAuthOptions.Bind(builder.Configuration);
-        var corsOptions = CorsOptions.Bind(builder.Configuration);
-        var loggingOptions = ApiLoggingOptions.Bind(builder.Configuration);
-        var migrationOptions = DatabaseMigrationOptions.Bind(builder.Configuration);
-        var metricsOptions = MetricsOptions.Bind(builder.Configuration);
-        var swaggerBasicAuthOptions = SwaggerBasicAuthOptions.Bind(builder.Configuration);
-        var hangfireBasicAuthOptions = HangfireBasicAuthOptions.Bind(builder.Configuration);
-
-        builder.Services.AddStartupOptions(keycloakAuthOptions);
-        builder.Services.AddStartupOptions(corsOptions);
-        builder.Services.AddStartupOptions(loggingOptions);
-        builder.Services.AddStartupOptions(migrationOptions);
-        builder.Services.AddStartupOptions(metricsOptions);
-        builder.Services.AddStartupOptions(swaggerBasicAuthOptions);
-        builder.Services.AddStartupOptions(hangfireBasicAuthOptions);
-
-        builder.Services.AddPersistence(
-            ConnectionStringHelpers.ToNpgsqlConnectionString(infrastructureOptions.DatabaseUrl)
+        var infrastructureOptions = builder.Services.AddStartupOptions<InfrastructureOptions>(
+            builder.Configuration
         );
-        builder.Services.AddInfrastructure(infrastructureOptions);
-        builder.Services.AddApplication();
-
-        builder.Services.AddResponseCompression(options => options.EnableForHttps = true);
-
-        builder.Services.Configure<KestrelServerOptions>(options =>
-            options.Limits.MaxRequestBodySize = 100_000
+        var loggingOptions = builder.Services.AddStartupOptions<ApiLoggingOptions>(
+            builder.Configuration
         );
+        builder.Services.AddStartupOptions<DatabaseMigrationOptions>(builder.Configuration);
+        builder.Services.AddStartupOptions<MetricsOptions>(builder.Configuration);
 
-        builder.Services.Configure<ForwardedHeadersOptions>(options =>
-        {
-            options.ForwardedHeaders =
-                ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-
-            options.KnownIPNetworks.Clear();
-            options.KnownProxies.Clear();
-        });
-
-        builder.Services.AddSignalR();
-        builder.Services.AddScoped<ITestRunNotifier, SignalRTestRunNotifier>();
+        builder
+            .Services.AddPersistence(
+                ConnectionStringHelpers.ToNpgsqlConnectionString(
+                    infrastructureOptions.DatabaseUrl,
+                    infrastructureOptions.DbPoolTimeoutSeconds,
+                    infrastructureOptions.DbStatementTimeoutMs
+                )
+            )
+            .AddInfrastructure<AppDbContext>(infrastructureOptions)
+            .AddApplication()
+            .AddResponseCompression(options => options.EnableForHttps = true);
 
         builder
             .AddSerilogLogging(loggingOptions)
             .AddOpenTelemetryTracing(loggingOptions)
             .AddObservabilityHealthChecks(infrastructureOptions)
-            .AddKeycloakAuthentication(keycloakAuthOptions)
+            .AddTrustedProxies()
+            .AddMaxBodySize()
+            .AddRealtime(infrastructureOptions)
+            .AddKeycloakAuthentication(infrastructureOptions.KeycloakVerifyTls)
             .AddApiControllers()
             .AddApiVersioningSupport()
             .AddErrorHandling()
-            .AddCorsPolicy(corsOptions)
-            .AddApiRateLimiting()
+            .AddCorsPolicy()
+            .AddApiRateLimiting(infrastructureOptions)
             .AddSwaggerDocs()
             .AddHangfireJobs(infrastructureOptions)
             .AddOutputCaching();
+    }
+
+    public static void LogStartupConfiguration(this WebApplication app)
+    {
+        var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+        loggerFactory
+            .CreateLogger(typeof(StartupConfigurationLogging))
+            .LogStartupConfiguration(app.Services);
+        loggerFactory
+            .CreateLogger(typeof(InfrastructureFallbackLogging))
+            .LogInfrastructureFallbacks(
+                app.Services.GetRequiredService<IOptions<InfrastructureOptions>>().Value
+            );
     }
 
     public static void ConfigurePipeline(this WebApplication app)
     {
         app.UseForwardedHeaders();
 
-        app.UseExceptionHandler();
-
         app.UseRequestId();
         app.UsePageId();
         app.UseSecurityHeaders();
+        app.UseCacheControl();
+        app.UseIpRateLimit();
         app.UseResponseCompression();
 
         app.UseRequestLogging();
 
+        app.UseExceptionHandler();
+
         app.UseRouting();
+
+        app.UseMaxBodySize();
+
+        app.UseWebSockets();
 
         app.UseHttpMetrics();
         app.UseObservabilityHealthChecks();
@@ -118,7 +120,9 @@ public static class HostingExtensions
         app.UseAuthentication();
         app.UseAuthorization();
 
-        app.UseRateLimiter();
+        app.UseMiddleware<IdempotencyMiddleware>();
+
+        app.UsePrincipalRateLimit();
 
         app.UseOutputCache();
 
@@ -128,7 +132,7 @@ public static class HostingExtensions
         app.UseHangfireJobs();
 
         app.MapControllers();
-        app.MapHub<TestRunHub>("/hubs/test-run");
+        app.MapRealtime();
 
         app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
     }

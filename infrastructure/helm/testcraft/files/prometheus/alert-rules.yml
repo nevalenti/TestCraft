@@ -1,54 +1,122 @@
 groups:
   - name: testcraft.api.rules
     rules:
-      - alert: ApiHighErrorRate
+      - record: testcraft:api_error_ratio:rate5m
+        expr: sum(rate(http_requests_received_total{job="testcraft-api", code=~"5.."}[5m])) / sum(rate(http_requests_received_total{job="testcraft-api"}[5m]))
+      - record: testcraft:api_error_ratio:rate30m
+        expr: sum(rate(http_requests_received_total{job="testcraft-api", code=~"5.."}[30m])) / sum(rate(http_requests_received_total{job="testcraft-api"}[30m]))
+      - record: testcraft:api_error_ratio:rate1h
+        expr: sum(rate(http_requests_received_total{job="testcraft-api", code=~"5.."}[1h])) / sum(rate(http_requests_received_total{job="testcraft-api"}[1h]))
+      - record: testcraft:api_error_ratio:rate6h
+        expr: sum(rate(http_requests_received_total{job="testcraft-api", code=~"5.."}[6h])) / sum(rate(http_requests_received_total{job="testcraft-api"}[6h]))
+
+      - alert: ApiErrorBudgetFastBurn
         expr: |
-          sum(rate(http_requests_total{job="testcraft-api", status_code=~"5.."}[5m]))
-          /
-          sum(rate(http_requests_total{job="testcraft-api"}[5m]))
-          > 0.05
-        for: 5m
+          testcraft:api_error_ratio:rate1h > (14.4 * 0.005)
+          and testcraft:api_error_ratio:rate5m > (14.4 * 0.005)
+          and sum(increase(http_requests_received_total{job="testcraft-api"}[1h])) > 30
+        for: 2m
         labels:
           severity: critical
         annotations:
-          summary: "API 5xx error rate above 5%"
-          description: "{{ $value | humanizePercentage }} of testcraft-api requests have returned a 5xx status over the last 5 minutes."
+          summary: "API is burning its error budget fast"
+          description: "{{ $value | humanizePercentage }} of testcraft-api requests returned a 5xx over the last hour (budget: 0.5%) - at least 14x the rate the monthly budget can sustain."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apierrorbudgetfastburn
+
+      - alert: ApiErrorBudgetSlowBurn
+        expr: |
+          testcraft:api_error_ratio:rate6h > (6 * 0.005)
+          and testcraft:api_error_ratio:rate30m > (6 * 0.005)
+          and sum(increase(http_requests_received_total{job="testcraft-api"}[6h])) > 60
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API is steadily burning its error budget"
+          description: "{{ $value | humanizePercentage }} of testcraft-api requests returned a 5xx over the last 6 hours (budget: 0.5%)."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apierrorbudgetslowburn
 
       - alert: ApiHighLatencyP95
         expr: |
           histogram_quantile(0.95, sum by (le) (rate(http_request_duration_seconds_bucket{job="testcraft-api"}[5m])))
           > 1
+          and sum(rate(http_request_duration_seconds_count{job="testcraft-api"}[5m])) > 0.05
         for: 10m
         labels:
           severity: warning
         annotations:
           summary: "API p95 latency above 1s"
           description: "p95 request latency for testcraft-api has been above 1 second for 10 minutes: {{ $value }}s."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apihighlatencyp95
 
-      - alert: ApiRateLimitRejectionsHigh
-        expr: sum(rate(http_requests_total{job="testcraft-api", status_code="429"}[5m])) > 1
+      - alert: ApiThreadPoolStarved
+        expr: max by (instance) (system_runtime_dotnet_thread_pool_queue_length{job="testcraft-api"}) > 50
         for: 10m
         labels:
           severity: warning
         annotations:
-          summary: "API is rejecting a sustained volume of requests via rate limiting"
-          description: "testcraft-api has returned 429 responses at a sustained rate of {{ $value | printf \"%.2f\" }}/s for 10 minutes - check for an abusive client or an undersized rate limit."
+          summary: "API thread pool on {{ $labels.instance }} is starved"
+          description: "{{ $value }} work items have been waiting for a thread-pool thread on {{ $labels.instance }} for 10 minutes. Something is blocking threads (sync-over-async, a slow lock), stalling every request on that pod."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apithreadpoolstarved
+
+      - alert: ApiMemoryGrowing
+        expr: |
+          deriv(process_working_set_bytes{job="testcraft-api"}[6h]) * 3600 > 20 * 1024 * 1024
+          and process_working_set_bytes{job="testcraft-api"} > 256 * 1024 * 1024
+        for: 1h
+        labels:
+          severity: warning
+        annotations:
+          summary: "API memory on {{ $labels.instance }} keeps growing"
+          description: "The working set on {{ $labels.instance }} has grown by {{ $value | humanize1024 }}B/h for the last 6 hours and is above 256MiB (the limit is 512MiB)."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apimemorygrowing
+
+      - alert: ApiRequestsPilingUp
+        expr: sum by (instance) (http_requests_in_progress{job="testcraft-api"}) > 50
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Requests are piling up on {{ $labels.instance }}"
+          description: "{{ $value }} requests have been in flight on {{ $labels.instance }} for 5 minutes - the API is not keeping up (slow database, starved thread pool, or a slow dependency)."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apirequestspilingup
+
+      - alert: ApiRateLimitRejectionsHigh
+        expr: sum by (limit) (rate(testcraft_rate_limited_requests_total{job="testcraft-api"}[5m])) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "API is rejecting a sustained volume of requests via the {{ $labels.limit }} rate limit"
+          description: "testcraft-api has rejected requests on the {{ $labels.limit }} rate limit at {{ $value | printf \"%.2f\" }}/s for 10 minutes - check for an abusive client or an undersized rate limit."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apiratelimitrejectionshigh
 
       - alert: NotificationDeliveryAbandoned
-        expr: increase(notification_deliveries_abandoned_total{job="testcraft-api"}[15m]) > 0
+        expr: sum by (channel) (increase(notification_deliveries_abandoned_total{job="testcraft-api"}[15m])) > 0
         labels:
           severity: warning
         annotations:
           summary: "Notification deliveries are being abandoned on {{ $labels.channel }}"
           description: "{{ $value }} {{ $labels.channel }} notification deliveries were abandoned after exhausting retries in the last 15 minutes. Check the target endpoint/SMTP relay for outages."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#notificationdeliveryabandoned
 
       - alert: HangfireJobFailed
-        expr: increase(hangfire_jobs_failed_total{job="testcraft-api"}[15m]) > 0
+        expr: sum by (job_name) (increase(hangfire_jobs_failed_total{job="testcraft-api"}[15m])) > 0
         labels:
           severity: warning
         annotations:
           summary: "Hangfire job {{ $labels.job_name }} failed"
-          description: "{{ $labels.job_name }} has failed {{ $value }} time(s) in the last 15 minutes. Check the Hangfire dashboard for the failure details."
+          description: "{{ $labels.job_name }} has failed {{ $value }} time(s) in the last 15 minutes. The exception is on the /hangfire dashboard; logs in Grafana (service_name=testcraft-api)."
+          dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+          runbook_url: https://testcraft.pro/docs/runbooks/alerts/#hangfirejobfailed
 
   - name: testcraft.rules
     rules:

@@ -1,13 +1,32 @@
-import { useState } from 'react';
+import { PlusIcon, UsersIcon } from "@heroicons/react/24/solid";
+import type { AssignableRole } from "@testcraft/types";
+import { useState } from "react";
 
-import { ErrorState } from '@/components/ErrorState';
-import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
+import { Modal } from "@/components/ui/Modal";
+import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
+import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import {
   useAddProjectMember,
   useProjectMembers,
   useRemoveProjectMember,
-} from '@/features/projectMembers/hooks';
-import { formatDate } from '@/lib/format';
+  useUpdateProjectMemberRole,
+} from "@/features/projectMembers/hooks";
+import { MemberForm } from "@/features/projectMembers/MemberForm";
+import {
+  assignableRoles,
+  canManageMember,
+  MEMBER_ROLE_LABELS,
+} from "@/features/projectMembers/roles";
+import { useProjectPermissions } from "@/features/projects/permissions";
+import { useDebounce } from "@/hooks/useDebounce";
+import { formatDate, getInitials } from "@/lib/format";
+
+const memberLabel = (member: {
+  display_name?: string | null;
+  email?: string | null;
+}): string => member.display_name ?? member.email ?? "Member";
 
 export const MembersSection = ({ projectId }: { projectId: string }) => {
   const {
@@ -18,46 +37,44 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
   } = useProjectMembers(projectId);
   const addMember = useAddProjectMember(projectId);
   const removeMember = useRemoveProjectMember(projectId);
-  const [email, setEmail] = useState('');
+  const updateRole = useUpdateProjectMemberRole(projectId);
+  const { role: myRole } = useProjectPermissions(projectId);
+  const roles = assignableRoles(myRole);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
 
-  const handleAdd = () => {
-    if (!email) return;
-    addMember.mutate(
-      { email },
-      {
-        onSuccess: () => setEmail(''),
-      },
-    );
+  const handleAdd = (data: { email: string; role: AssignableRole }) => {
+    addMember.mutate(data, { onSuccess: () => setIsCreateOpen(false) });
   };
 
+  const visibleMembers = debouncedSearch
+    ? (members ?? []).filter((member) =>
+        memberLabel(member)
+          .toLowerCase()
+          .includes(debouncedSearch.toLowerCase()),
+      )
+    : members;
+
   return (
-    <div className="space-y-5">
-      <div className="flex items-end gap-2">
-        <div className="flex-1">
-          <label htmlFor="member-email" className="label-text label text-xs">
-            Add member by email
-          </label>
-          <input
-            id="member-email"
-            type="email"
-            className="input-bordered input input-sm w-full"
-            placeholder="teammate@example.com"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
+    <SettingsSectionCard
+      icon={UsersIcon}
+      title="Members"
+      description="Invite teammates to collaborate on this project."
+    >
+      <ListToolbar
+        search={search}
+        onSearch={setSearch}
+        placeholder="Search members…"
+      >
         <button
           className="btn btn-sm btn-primary"
-          onClick={handleAdd}
-          disabled={!email || addMember.isPending}
+          onClick={() => setIsCreateOpen(true)}
         >
-          {addMember.isPending ? (
-            <span className="loading loading-xs loading-spinner" />
-          ) : (
-            'Add'
-          )}
+          <PlusIcon className="size-4" aria-hidden="true" />
+          Add Member
         </button>
-      </div>
+      </ListToolbar>
 
       {isError ? (
         <ErrorState
@@ -67,18 +84,67 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
         />
       ) : (
         <SettingsEntityList
-          items={members ?? []}
+          items={visibleMembers ?? []}
           getKey={(member) => member.id}
-          renderPrimary={(member) => member.displayName ?? member.email}
+          renderLeading={(member) => (
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content">
+              {getInitials(memberLabel(member))}
+            </span>
+          )}
+          renderPrimary={memberLabel}
           renderSecondary={(member) =>
-            `${member.email} · added ${formatDate(member.createdAt)}`
+            member.email
+              ? `${member.email} · added ${formatDate(member.created_at)}`
+              : `added ${formatDate(member.created_at)}`
           }
+          renderTrailing={(member) =>
+            canManageMember(myRole, member.role) ? (
+              <select
+                className="select-bordered select select-xs"
+                value={member.role}
+                aria-label={`Role of ${member.email ?? memberLabel(member)}`}
+                disabled={updateRole.isPending}
+                onChange={(event) =>
+                  updateRole.mutate({
+                    id: member.id,
+                    role: event.target.value as AssignableRole,
+                  })
+                }
+              >
+                {roles.map((role) => (
+                  <option key={role} value={role}>
+                    {MEMBER_ROLE_LABELS[role]}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <span className="badge badge-ghost badge-sm">
+                {MEMBER_ROLE_LABELS[member.role]}
+              </span>
+            )
+          }
+          isRemoveHidden={(member) => !canManageMember(myRole, member.role)}
           onRemove={(member) => removeMember.mutate(member.id)}
-          removeAriaLabel={(member) => `Remove ${member.email}`}
+          removeAriaLabel={(member) =>
+            `Remove ${member.email ?? memberLabel(member)}`
+          }
           emptyTitle="No members yet"
           emptyDescription="Invite teammates to collaborate on this project."
         />
       )}
-    </div>
+
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="Add Member"
+      >
+        <MemberForm
+          onSubmit={handleAdd}
+          onCancel={() => setIsCreateOpen(false)}
+          isLoading={addMember.isPending}
+          roles={roles}
+        />
+      </Modal>
+    </SettingsSectionCard>
   );
 };

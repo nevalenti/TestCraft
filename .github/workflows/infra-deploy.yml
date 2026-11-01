@@ -4,13 +4,16 @@ on:
   push:
     branches: [main]
     paths:
-      - 'infrastructure/helm/**'
-      - '.github/workflows/infra-deploy.yml'
+      - "infrastructure/helm/**"
+      - ".github/workflows/infra-deploy.yml"
   workflow_dispatch:
 
 concurrency:
   group: deploy-production
   cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   deploy:
@@ -18,13 +21,12 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     runs-on: [self-hosted, testcraft-production]
     timeout-minutes: 15
-    # Declaring the environment lets required-reviewer/wait-timer rules be configured in repo
-    # settings (Settings > Environments > production) — this YAML alone doesn't enforce them.
     environment: production
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
           ref: main
 
       - name: Restore production secrets

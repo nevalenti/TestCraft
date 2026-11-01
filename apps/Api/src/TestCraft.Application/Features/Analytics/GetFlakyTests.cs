@@ -1,7 +1,7 @@
+using FluentValidation;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -27,7 +27,7 @@ public record FlakyTestStat
     public required int FailCount { get; init; }
 
     /// <summary>Percentage of runs that failed.</summary>
-    public required double FlakRate { get; init; }
+    public required double FlakyRate { get; init; }
 }
 
 public static class GetFlakyTests
@@ -38,8 +38,20 @@ public static class GetFlakyTests
         /// <summary>The project to scan.</summary>
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>Minimum number of runs a test must have to be considered.</summary>
+        /// <summary>Minimum executed results a test case needs to be considered.</summary>
         public int MinRuns { get; init; } = 3;
+
+        /// <summary>How many of the project's most recent runs to examine.</summary>
+        public int RecentRuns { get; init; } = 200;
+    }
+
+    public sealed class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(query => query.MinRuns).GreaterThanOrEqualTo(1);
+            RuleFor(query => query.RecentRuns).InclusiveBetween(1, 1000);
+        }
     }
 
     public sealed class Handler(IApplicationDbContext context)
@@ -50,10 +62,19 @@ public static class GetFlakyTests
             CancellationToken cancellationToken
         )
         {
+            var recentRunIds = context
+                .TestRuns.Where(run => run.ProjectId == request.ProjectId)
+                .OrderByDescending(run => run.CreatedAt)
+                .ThenByDescending(run => run.Id)
+                .Take(request.RecentRuns)
+                .Select(run => run.Id);
+
             var rows = await context
                 .TestResults.Where(testResult =>
-                    testResult.TestRun != null && testResult.TestRun.ProjectId == request.ProjectId
+                    recentRunIds.Contains(testResult.TestRunId)
+                    && testResult.Status != TestResultStatus.Untested
                 )
+                .CurrentOutcomes()
                 .GroupBy(testResult => new
                 {
                     testResult.TestCaseId,
@@ -82,7 +103,7 @@ public static class GetFlakyTests
                     TotalRuns = row.TotalRuns,
                     PassCount = row.PassCount,
                     FailCount = row.FailCount,
-                    FlakRate = Math.Round((double)row.FailCount / row.TotalRuns * 100, 1),
+                    FlakyRate = Math.Round((double)row.FailCount / row.TotalRuns * 100, 1),
                 })
                 .ToList();
         }

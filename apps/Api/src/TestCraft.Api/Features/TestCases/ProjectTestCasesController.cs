@@ -1,18 +1,18 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestCases;
 
 namespace TestCraft.Api.Features.TestCases;
 
+[ApiTokenScope("cases")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/cases")]
 public class ProjectTestCasesController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test cases across all suites in a project, optionally filtered by name.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(Paginated<TestCaseResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestCaseResponse>>> GetAll(
         ProjectId projectId,
         [FromQuery] GetTestCasesByProject.Query query,

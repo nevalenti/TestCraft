@@ -1,10 +1,9 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.ProjectMembers;
 
@@ -19,20 +18,16 @@ public static class RemoveProjectMember
 
         /// <summary>The membership to remove.</summary>
         public required ProjectMemberId Id { get; init; }
+
+        /// <summary>The caller's own role, which limits the members they can remove.</summary>
+        [JsonIgnore]
+        public ProjectRole ActorRole { get; init; }
     }
 
-    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
-        : IRequestHandler<Command>
+    public sealed class Handler(IApplicationDbContext context) : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            await ProjectOwnershipGuard.EnsureOwnerAsync(
-                context,
-                request.ProjectId,
-                currentUser.UserId,
-                cancellationToken
-            );
-
             var member =
                 await context.ProjectMembers.FirstOrDefaultAsync(
                     existingMember =>
@@ -40,6 +35,8 @@ public static class RemoveProjectMember
                         && existingMember.ProjectId == request.ProjectId,
                     cancellationToken
                 ) ?? throw new NotFoundException();
+
+            MemberManagement.EnsureCanManage(request.ActorRole, member.Role);
 
             context.ProjectMembers.Remove(member);
 

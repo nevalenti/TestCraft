@@ -1,5 +1,4 @@
 using FluentValidation.TestHelper;
-
 using TestCraft.Application.Features.Attachments;
 
 namespace TestCraft.Application.UnitTests.Attachments;
@@ -31,6 +30,8 @@ public class UploadAttachmentValidatorTests
     [InlineData("text/html")]
     [InlineData("application/xhtml+xml")]
     [InlineData("image/svg+xml")]
+    [InlineData("Text/HTML")]
+    [InlineData("text/html; charset=utf-8")]
     public void ScriptCapableContentType_FailsValidation(string contentType)
     {
         var result = _validator.TestValidate(ValidCommand() with { ContentType = contentType });

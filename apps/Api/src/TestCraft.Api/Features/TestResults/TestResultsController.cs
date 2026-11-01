@@ -1,18 +1,20 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TestCraft.Api.Authorization;
+using TestCraft.Api.Idempotency;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestResults;
 
 namespace TestCraft.Api.Features.TestResults;
 
+[ApiTokenScope("results")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/runs/{runId:guid}/results")]
 public class TestResultsController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists results for a test run.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(Paginated<TestResultResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestResultResponse>>> GetAll(
         ProjectId projectId,
         TestRunId runId,
@@ -29,7 +31,7 @@ public class TestResultsController(ISender sender) : ApiControllerBase
 
     /// <summary>Gets a test result by ID.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<TestResultResponse>> GetById(
         ProjectId projectId,
         TestRunId runId,
@@ -46,12 +48,15 @@ public class TestResultsController(ISender sender) : ApiControllerBase
 
         var result = await sender.Send(query, cancellationToken);
 
+        SetETag(result.Version);
+
         return Ok(result);
     }
 
     /// <summary>Records a test result for a run.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> Create(
         ProjectId projectId,
         TestRunId runId,
@@ -77,7 +82,8 @@ public class TestResultsController(ISender sender) : ApiControllerBase
 
     /// <summary>Records a test result by suite and test case name, creating them if they don't exist.</summary>
     [HttpPost("by-name")]
-    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status201Created)]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestResultResponse>> CreateByName(
         ProjectId projectId,
         TestRunId runId,
@@ -103,18 +109,28 @@ public class TestResultsController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates a test result.</summary>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(TestResultResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<TestResultResponse>> Update(
         ProjectId projectId,
         TestRunId runId,
         TestResultId id,
         UpdateTestResult.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, RunId = runId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            RunId = runId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }

@@ -9,24 +9,16 @@ public sealed class SwaggerBasicAuthOptions : IStartupOptions, IBasicAuthCredent
     public string Realm => "TestCraft API Docs";
 
     [NotSensitive]
-    public string? SwaggerBasicAuthUsername { get; init; }
+    [ConfigurationKeyName("SWAGGER_BASIC_AUTH_USERNAME")]
+    public string? SwaggerBasicAuthUsername { get; set; }
 
     [Sensitive]
-    public string? SwaggerBasicAuthPassword { get; init; }
+    [ConfigurationKeyName("SWAGGER_BASIC_AUTH_PASSWORD")]
+    public string? SwaggerBasicAuthPassword { get; set; }
 
     [NotSensitive]
     public string? Username => SwaggerBasicAuthUsername;
 
     [Sensitive]
     public string? Password => SwaggerBasicAuthPassword;
-
-    public static SwaggerBasicAuthOptions Bind(IConfiguration configuration) =>
-        OptionsValidator.ValidateAndThrow(
-            new SwaggerBasicAuthOptions
-            {
-                SwaggerBasicAuthUsername = configuration["SWAGGER_BASIC_AUTH_USERNAME"],
-                SwaggerBasicAuthPassword = configuration["SWAGGER_BASIC_AUTH_PASSWORD"],
-            },
-            "Swagger basic-auth"
-        );
 }

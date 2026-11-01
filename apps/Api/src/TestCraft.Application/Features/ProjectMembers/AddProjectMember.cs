@@ -1,43 +1,34 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Application.Features.ProjectMembers;
 
-/// <summary>A user with collaborator access to a project.</summary>
-public record ProjectMemberResponse
-{
-    /// <summary>The membership's identifier.</summary>
-    public required ProjectMemberId Id { get; init; }
-
-    /// <summary>The member's email address.</summary>
-    public required string Email { get; init; }
-
-    /// <summary>The member's display name, if set.</summary>
-    public string? DisplayName { get; init; }
-
-    /// <summary>When the member was added to the project.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-}
-
 public static class AddProjectMember
 {
-    /// <summary>Adds a user to a project by email. Owner-only.</summary>
+    /// <summary>Adds a user to a project by email, with a role.</summary>
     public sealed record Command : IRequest<ProjectMemberResponse>, IProjectScopedRequest
     {
         /// <summary>The project to add the member to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
+        /// <summary>The caller's own role, which limits the roles they can hand out.</summary>
+        [JsonIgnore]
+        public ProjectRole ActorRole { get; init; }
+
         /// <summary>The email address of the user to add.</summary>
         public required string Email { get; init; }
+
+        /// <summary>The role to give the new member.</summary>
+        public AssignableRole Role { get; init; } = AssignableRole.Editor;
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -45,12 +36,12 @@ public static class AddProjectMember
         public Validator()
         {
             RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Role).IsInEnum();
         }
     }
 
     public sealed class Handler(
         IApplicationDbContext context,
-        ICurrentUser currentUser,
         IKeycloakUserDirectory keycloakUsers,
         IDbExceptionClassifier dbExceptionClassifier
     ) : IRequestHandler<Command, ProjectMemberResponse>
@@ -60,12 +51,7 @@ public static class AddProjectMember
             CancellationToken cancellationToken
         )
         {
-            await ProjectOwnershipGuard.EnsureOwnerAsync(
-                context,
-                request.ProjectId,
-                currentUser.UserId,
-                cancellationToken
-            );
+            MemberManagement.EnsureCanManage(request.ActorRole, request.Role);
 
             var keycloakUser =
                 await keycloakUsers.FindByEmailAsync(request.Email, cancellationToken)
@@ -74,40 +60,46 @@ public static class AddProjectMember
                     ErrorCode = DomainErrorCodes.UserNotFound,
                 };
 
-            if (keycloakUser.Id == currentUser.UserId)
-                throw new DomainException("You already own this project")
+            if (!keycloakUser.EmailVerified)
+            {
+                throw new DomainException("That user has not verified their email address yet")
+                {
+                    ErrorCode = DomainErrorCodes.EmailNotVerified,
+                };
+            }
+
+            var isOwner = await context.Projects.AnyAsync(
+                project => project.Id == request.ProjectId && project.UserId == keycloakUser.Id,
+                cancellationToken
+            );
+            if (isOwner)
+            {
+                throw new DomainException("That user already owns this project")
                 {
                     ErrorCode = DomainErrorCodes.AlreadyProjectOwner,
                 };
+            }
 
             var member = ProjectMember.Create(
                 request.ProjectId,
                 keycloakUser.Id,
                 keycloakUser.Email,
-                keycloakUser.DisplayName
+                keycloakUser.DisplayName,
+                request.Role
             );
 
             context.ProjectMembers.Add(member);
 
-            try
-            {
-                await context.SaveChangesAsync(cancellationToken);
-            }
-            catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
-            {
-                throw new DomainException("This user is already a member of the project")
-                {
-                    ErrorCode = DomainErrorCodes.MemberAlreadyExists,
-                };
-            }
+            await context.SaveOrConflictAsync(
+                dbExceptionClassifier,
+                new ConflictException(
+                    "This user is already a member of the project",
+                    DomainErrorCodes.MemberAlreadyExists
+                ),
+                cancellationToken
+            );
 
-            return new ProjectMemberResponse
-            {
-                Id = member.Id,
-                Email = member.Email,
-                DisplayName = member.DisplayName,
-                CreatedAt = member.CreatedAt,
-            };
+            return ProjectMemberResponse.FromEntity(member);
         }
     }
 }

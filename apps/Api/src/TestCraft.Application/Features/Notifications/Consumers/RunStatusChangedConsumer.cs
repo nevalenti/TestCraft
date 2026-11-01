@@ -1,5 +1,4 @@
 using MassTransit;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Notifications.Contracts;
 

@@ -1,65 +1,81 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  getRunTrend: vi.fn(),
+  getSuiteBreakdown: vi.fn(),
+  getFlakyTests: vi.fn(),
+  getRunComparison: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { analyticsApi } from '@/features/analytics/api';
+import * as sdk from "@/api/sdk";
+import { analyticsApi } from "@/features/analytics/api";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('analyticsApi', () => {
-  it('getTrend defaults limit to 20 when not provided', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+describe("analyticsApi", () => {
+  it("getTrend defaults limit to 20 when not provided", async () => {
+    vi.mocked(sdk.getRunTrend).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await analyticsApi.getTrend('p1');
+    await analyticsApi.getTrend("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/analytics/trend', {
-      params: { limit: 20 },
+    expect(sdk.getRunTrend).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { limit: 20 },
     });
   });
 
-  it('getTrend passes an explicit limit through', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+  it("getTrend passes an explicit limit through", async () => {
+    vi.mocked(sdk.getRunTrend).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await analyticsApi.getTrend('p1', 50);
+    await analyticsApi.getTrend("p1", 50);
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/analytics/trend', {
-      params: { limit: 50 },
+    expect(sdk.getRunTrend).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { limit: 50 },
     });
   });
 
-  it('getSuiteBreakdown fetches breakdown for a specific run', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+  it("getSuiteBreakdown fetches breakdown for a specific run", async () => {
+    vi.mocked(sdk.getSuiteBreakdown).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await analyticsApi.getSuiteBreakdown('p1', 'r1');
+    await analyticsApi.getSuiteBreakdown("p1", "r1");
 
-    expect(client.get).toHaveBeenCalledWith(
-      'projects/p1/analytics/runs/r1/suite-breakdown',
-    );
-  });
-
-  it('getFlakyTests defaults minRuns to 3', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
-
-    await analyticsApi.getFlakyTests('p1');
-
-    expect(client.get).toHaveBeenCalledWith('projects/p1/analytics/flaky', {
-      params: { minRuns: 3 },
+    expect(sdk.getSuiteBreakdown).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
     });
   });
 
-  it('getRunComparison passes both run ids as query params', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: {} });
+  it("getFlakyTests defaults minRuns to 3", async () => {
+    vi.mocked(sdk.getFlakyTests).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await analyticsApi.getRunComparison('p1', 'rA', 'rB');
+    await analyticsApi.getFlakyTests("p1");
 
-    expect(client.get).toHaveBeenCalledWith(
-      'projects/p1/analytics/runs/compare',
-      { params: { runAId: 'rA', runBId: 'rB' } },
-    );
+    expect(sdk.getFlakyTests).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { min_runs: 3 },
+    });
+  });
+
+  it("getRunComparison passes both run ids as query params", async () => {
+    vi.mocked(sdk.getRunComparison).mockResolvedValue({
+      data: {},
+    } as never);
+
+    await analyticsApi.getRunComparison("p1", "rA", "rB");
+
+    expect(sdk.getRunComparison).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { run_a_id: "rA", run_b_id: "rB" },
+    });
   });
 });

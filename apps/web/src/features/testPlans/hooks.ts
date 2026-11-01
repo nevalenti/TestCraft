@@ -1,16 +1,22 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
   CreateTestPlan,
   TestPlan,
+  TestPlanCase,
   UpdateTestPlan,
-} from '@testcraft/types';
+} from "@testcraft/types";
 
-import { queryKeys } from '@/api/queryKeys';
-import { testPlanQueries, testPlansApi } from '@/features/testPlans/api';
-import { notify } from '@/lib/notify';
+import { queryKeys } from "@/api/queryKeys";
+import { testPlanQueries, testPlansApi } from "@/features/testPlans/api";
+import { notify } from "@/lib/notify";
 
-export const useTestPlans = (projectId: string) =>
-  useQuery(testPlanQueries.all(projectId));
+export const useTestPlansPage = (
+  projectId: string,
+  page: number,
+  search: string,
+  sortBy: "name" | "created_at",
+  sortDir: "asc" | "desc",
+) => useQuery(testPlanQueries.page(projectId, page, search, sortBy, sortDir));
 
 export const useTestPlan = (projectId: string, planId: string) =>
   useQuery(testPlanQueries.detail(projectId, planId));
@@ -37,15 +43,18 @@ export const useUpdateTestPlan = (projectId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: UpdateTestPlan & { id: string }) =>
-      testPlansApi.update(projectId, id, input),
-    onSuccess: (_, { id, name }) => {
+    mutationFn: ({
+      id,
+      version,
+      ...input
+    }: UpdateTestPlan & {
+      id: string;
+      version: number;
+    }) => testPlansApi.update(projectId, id, input, version),
+    onSuccess: (_, { name }) => {
       notify(`Test plan "${name}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.detail(projectId, id),
       });
     },
   });
@@ -60,7 +69,7 @@ export const useDeleteTestPlan = (projectId: string) => {
       const name = queryClient
         .getQueryData<TestPlan[]>(queryKeys.testPlans.all(projectId))
         ?.find((plan) => plan.id === id)?.name;
-      notify(name ? `Test plan "${name}" deleted` : 'Test plan deleted');
+      notify(name ? `Test plan "${name}" deleted` : "Test plan deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
       });
@@ -79,10 +88,7 @@ export const useAddCaseToPlan = (projectId: string, planId: string) => {
       testPlansApi.addCase(projectId, planId, caseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.cases(projectId, planId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.detail(projectId, planId),
+        queryKey: queryKeys.testPlans.all(projectId),
       });
     },
   });
@@ -96,10 +102,7 @@ export const useRemoveCaseFromPlan = (projectId: string, planId: string) => {
       testPlansApi.removeCase(projectId, planId, caseId),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.cases(projectId, planId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.detail(projectId, planId),
+        queryKey: queryKeys.testPlans.all(projectId),
       });
     },
   });
@@ -107,15 +110,34 @@ export const useRemoveCaseFromPlan = (projectId: string, planId: string) => {
 
 export const useReorderPlanCases = (projectId: string, planId: string) => {
   const queryClient = useQueryClient();
+  const queryKey = queryKeys.testPlans.cases(projectId, planId);
 
   return useMutation({
-    mutationFn: (cases: { testCaseId: string; order: number }[]) =>
+    mutationFn: (cases: { test_case_id: string; order: number }[]) =>
       testPlansApi.reorderCases(projectId, planId, cases),
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testPlans.cases(projectId, planId),
-      });
+    onMutate: async (cases) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previous = queryClient.getQueryData<TestPlanCase[]>(queryKey);
+      const orderMap = new Map(
+        cases.map((planCase) => [planCase.test_case_id, planCase.order]),
+      );
+
+      queryClient.setQueryData<TestPlanCase[]>(queryKey, (current) =>
+        current?.map((planCase) => ({
+          ...planCase,
+          order: orderMap.get(planCase.test_case_id) ?? planCase.order,
+        })),
+      );
+
+      return { previous };
     },
+    onError: (_error, _cases, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 };
 
@@ -136,6 +158,10 @@ export const useCreateRunFromPlan = (projectId: string) => {
       notify(`Test run "${name}" created from plan`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });

@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -36,16 +34,7 @@ public static class GetTestCaseStepById
                     && step.TestCaseId == request.CaseId
                     && step.TestCase!.Suite!.ProjectId == request.ProjectId
                 )
-                .Select(step => new TestCaseStepResponse
-                {
-                    Id = step.Id,
-                    TestCaseId = step.TestCaseId,
-                    Order = step.Order,
-                    Action = step.Action,
-                    ExpectedResult = step.ExpectedResult,
-                    CreatedAt = step.CreatedAt,
-                    UpdatedAt = step.UpdatedAt,
-                })
+                .Select(TestCaseStepResponse.Projection)
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

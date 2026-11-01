@@ -1,6 +1,5 @@
 using System.Security.Cryptography;
 using System.Text;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Common.Security;
 

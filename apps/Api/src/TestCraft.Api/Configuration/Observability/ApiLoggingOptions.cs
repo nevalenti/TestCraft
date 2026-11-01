@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration.Observability;
@@ -5,13 +6,16 @@ namespace TestCraft.Api.Configuration.Observability;
 public sealed class ApiLoggingOptions : IStartupOptions
 {
     [NotSensitive]
-    public string? LokiUrl { get; init; }
+    [ConfigurationKeyName("LOKI_URL")]
+    public string? LokiUrl { get; set; }
 
     [NotSensitive]
-    public string OtelServiceName { get; init; } = "testcraft-api";
+    [ConfigurationKeyName("OTEL_SERVICE_NAME")]
+    public string OtelServiceName { get; set; } = "testcraft-api";
 
     [NotSensitive]
-    public string? OtelExporterEndpoint { get; init; }
+    [ConfigurationKeyName("OTEL_EXPORTER_OTLP_ENDPOINT")]
+    public string? OtelExporterEndpoint { get; set; }
 
     public static ApiLoggingOptions Bind(IConfiguration configuration) =>
         OptionsValidator.ValidateAndThrow(

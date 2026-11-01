@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
-
+using TestCraft.Api.Authorization;
 using TestCraft.Api.Errors;
 using TestCraft.Infrastructure.Auth;
+using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Api.Configuration.Authentication;
 
@@ -15,9 +17,12 @@ public static class AuthenticationExtensions
 
     public static WebApplicationBuilder AddKeycloakAuthentication(
         this WebApplicationBuilder builder,
-        KeycloakAuthOptions keycloakOptions
+        bool verifyTls
     )
     {
+        var keycloakOptions = builder.Services.AddStartupOptions<KeycloakAuthOptions>(
+            builder.Configuration
+        );
         builder
             .Services.AddAuthentication(options =>
             {
@@ -37,7 +42,9 @@ public static class AuthenticationExtensions
                             header.StartsWith(prefix, StringComparison.Ordinal)
                             && !header[prefix.Length..].Contains('.')
                         )
+                        {
                             return ApiTokenAuthenticationDefaults.AuthenticationScheme;
+                        }
 
                         return JwtBearerDefaults.AuthenticationScheme;
                     };
@@ -52,29 +59,32 @@ public static class AuthenticationExtensions
                 options.Authority = keycloakOptions.KeycloakAuthority;
                 options.Audience = keycloakOptions.KeycloakAudience;
                 options.RequireHttpsMetadata = keycloakOptions.KeycloakRequireHttpsMetadata;
+                var keycloakHttp = new HttpClient(KeycloakHttp.CreateHandler(verifyTls));
 
                 options.ConfigurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                     $"{keycloakOptions.KeycloakAuthority}/protocol/openid-connect/certs",
                     new JwksOnlyConfigurationRetriever(),
-                    new HttpDocumentRetriever
+                    new HttpDocumentRetriever(keycloakHttp)
                     {
                         RequireHttps = keycloakOptions.KeycloakRequireHttpsMetadata,
                     }
                 );
-                options.TokenValidationParameters.ValidIssuer =
-                    keycloakOptions.KeycloakIssuer ?? keycloakOptions.KeycloakAuthority;
+                options.TokenValidationParameters.ValidIssuer = keycloakOptions.ValidIssuer;
 
+                var authorizedParties = keycloakOptions.AuthorizedParties;
                 options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived = context =>
+                    OnTokenValidated = context =>
                     {
-                        var accessToken = context.Request.Query["access_token"];
-
                         if (
-                            !string.IsNullOrEmpty(accessToken)
-                            && context.HttpContext.Request.Path.StartsWithSegments("/hubs")
+                            authorizedParties.Count > 0
+                            && !authorizedParties.Contains(
+                                context.Principal?.FindFirst("azp")?.Value
+                            )
                         )
-                            context.Token = accessToken;
+                        {
+                            context.Fail("Token was not issued to an authorized party");
+                        }
 
                         return Task.CompletedTask;
                     },
@@ -91,7 +101,20 @@ public static class AuthenticationExtensions
                 };
             });
 
-        builder.Services.AddAuthorization();
+        builder.Services.AddScoped<IAuthorizationHandler, ApiTokenScopeHandler>();
+        builder.Services.AddScoped<IAuthorizationHandler, ProjectRoleHandler>();
+        builder.Services.AddSingleton<
+            IAuthorizationMiddlewareResultHandler,
+            ProblemAuthorizationResultHandler
+        >();
+        builder
+            .Services.AddAuthorizationBuilder()
+            .SetDefaultPolicy(
+                new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .AddRequirements(new ApiTokenScopeRequirement(), new ProjectRoleRequirement())
+                    .Build()
+            );
 
         return builder;
     }

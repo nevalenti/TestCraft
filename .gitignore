@@ -1,4 +1,5 @@
 !.env.example
+.venv/
 !.github/actions/*/dist/
 **/.terraform/
 *.log

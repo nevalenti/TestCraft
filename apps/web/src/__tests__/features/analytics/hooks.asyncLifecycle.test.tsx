@@ -1,14 +1,15 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  getRunTrend: vi.fn(),
+  getFlakyTests: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { useFlakyTests, useRunTrend } from '@/features/analytics/hooks';
+import * as sdk from "@/api/sdk";
+import { useFlakyTests, useRunTrend } from "@/features/analytics/hooks";
 
 const makeWrapper = () => {
   const queryClient = new QueryClient({
@@ -24,14 +25,16 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useRunTrend', () => {
-  describe('given a request that resolves — transitions through the real lifecycle', () => {
-    it('goes from isPending to isSuccess with the resolved data', async () => {
-      const trendData = [{ runId: 'run-1', passRate: 0.9 }];
-      vi.mocked(client.get).mockResolvedValue({ data: trendData });
+describe("useRunTrend", () => {
+  describe("given a request that resolves — transitions through the real lifecycle", () => {
+    it("goes from isPending to isSuccess with the resolved data", async () => {
+      const trendData = [{ runId: "run-1", pass_rate: 0.9 }];
+      vi.mocked(sdk.getRunTrend).mockResolvedValue({
+        data: trendData,
+      } as never);
 
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useRunTrend('proj-1', 20), {
+      const { result } = renderHook(() => useRunTrend("proj-1", 20), {
         wrapper,
       });
 
@@ -40,22 +43,20 @@ describe('useRunTrend', () => {
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
       expect(result.current.data).toEqual(trendData);
-      expect(client.get).toHaveBeenCalledWith(
-        'projects/proj-1/analytics/trend',
-        {
-          params: { limit: 20 },
-        },
-      );
+      expect(sdk.getRunTrend).toHaveBeenCalledWith({
+        path: { project_id: "proj-1" },
+        query: { limit: 20 },
+      });
     });
   });
 
-  describe('given a request that rejects — transitions through the real lifecycle', () => {
-    it('goes from isPending to isError with the underlying error', async () => {
-      const requestError = new Error('Network error');
-      vi.mocked(client.get).mockRejectedValue(requestError);
+  describe("given a request that rejects — transitions through the real lifecycle", () => {
+    it("goes from isPending to isError with the underlying error", async () => {
+      const requestError = new Error("Network error");
+      vi.mocked(sdk.getRunTrend).mockRejectedValue(requestError);
 
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useRunTrend('proj-1', 20), {
+      const { result } = renderHook(() => useRunTrend("proj-1", 20), {
         wrapper,
       });
 
@@ -69,14 +70,16 @@ describe('useRunTrend', () => {
   });
 });
 
-describe('useFlakyTests', () => {
-  describe('given a request that resolves — transitions through the real lifecycle', () => {
-    it('goes from isPending to isSuccess with the resolved data', async () => {
-      const flakyData = [{ testCaseId: 'case-1', flakeRate: 0.4 }];
-      vi.mocked(client.get).mockResolvedValue({ data: flakyData });
+describe("useFlakyTests", () => {
+  describe("given a request that resolves — transitions through the real lifecycle", () => {
+    it("goes from isPending to isSuccess with the resolved data", async () => {
+      const flakyData = [{ test_case_id: "case-1", flakeRate: 0.4 }];
+      vi.mocked(sdk.getFlakyTests).mockResolvedValue({
+        data: flakyData,
+      } as never);
 
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useFlakyTests('proj-1', 3), {
+      const { result } = renderHook(() => useFlakyTests("proj-1", 3), {
         wrapper,
       });
 
@@ -88,12 +91,12 @@ describe('useFlakyTests', () => {
     });
   });
 
-  describe('given a request that rejects — transitions through the real lifecycle', () => {
-    it('goes from isPending to isError', async () => {
-      vi.mocked(client.get).mockRejectedValue(new Error('Server error'));
+  describe("given a request that rejects — transitions through the real lifecycle", () => {
+    it("goes from isPending to isError", async () => {
+      vi.mocked(sdk.getFlakyTests).mockRejectedValue(new Error("Server error"));
 
       const { wrapper } = makeWrapper();
-      const { result } = renderHook(() => useFlakyTests('proj-1', 3), {
+      const { result } = renderHook(() => useFlakyTests("proj-1", 3), {
         wrapper,
       });
 

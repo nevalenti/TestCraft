@@ -1,7 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
-
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Domain.ValueObjects;
 using TestCraft.Persistence.Seeding;
 

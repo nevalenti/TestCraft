@@ -1,15 +1,15 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Extensions.Options;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
+using TestCraft.Infrastructure.Configuration;
 using TestCraft.Infrastructure.FeatureToggles;
 
 namespace TestCraft.Infrastructure.Notifications;
@@ -20,6 +20,7 @@ public partial class NotificationDispatcher(
     IEmailService email,
     IHttpClientFactory httpClientFactory,
     [FromKeyedServices(FeatureToggleNames.NotificationDeliveryRetry)] IFeatureToggle retryToggle,
+    IOptions<InfrastructureOptions> options,
     ILogger<NotificationDispatcher> logger,
     TimeProvider timeProvider
 ) : INotificationDispatcher
@@ -47,17 +48,19 @@ public partial class NotificationDispatcher(
     {
         var payload = new
         {
+            event_id = Guid.NewGuid(),
             event_type = "run.completed",
             run_id = runId,
             run_name = runName,
             project_id = projectId,
         };
         await DispatchWebhooksAsync(projectId, "run.completed", payload, cancellationToken);
+        var runUrl = $"{options.Value.WebBaseUrl.TrimEnd('/')}/projects/{projectId}/runs/{runId}";
         await DispatchEmailsAsync(
             projectId,
             "run.completed",
-            runName,
-            $"Test run <b>{runName}</b> has completed.",
+            RunCompletedEmail.Subject(runName),
+            RunCompletedEmail.Body(runName, runUrl),
             cancellationToken
         );
 
@@ -184,7 +187,7 @@ public partial class NotificationDispatcher(
     private async Task DispatchEmailsAsync(
         ProjectId projectId,
         string eventType,
-        string runName,
+        string subject,
         string body,
         CancellationToken cancellationToken
     )
@@ -197,8 +200,6 @@ public partial class NotificationDispatcher(
             )
             .Select(emailSubscription => emailSubscription.Email)
             .ToListAsync(cancellationToken);
-
-        var subject = $"[TestCraft] {runName} — {eventType}";
 
         foreach (var recipient in recipients)
         {
@@ -245,6 +246,7 @@ public partial class NotificationDispatcher(
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json"),
             };
+            request.Headers.Add("X-TestCraft-Delivery-Id", DeliveryId(url, json));
 
             if (!string.IsNullOrEmpty(secret))
             {
@@ -257,9 +259,17 @@ public partial class NotificationDispatcher(
                 ? DeliveryAttemptResult.Ok
                 : DeliveryAttemptResult.Fail($"HTTP {(int)response.StatusCode}");
         }
-        catch (Exception ex)
+        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
         {
-            return DeliveryAttemptResult.Fail(ex.Message, ex);
+            return DeliveryAttemptResult.Fail("webhook timeout", ex);
+        }
+        catch (HttpRequestException ex) when (ex.InnerException is InvalidOperationException)
+        {
+            return DeliveryAttemptResult.Fail("webhook address resolution failed", ex);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            return DeliveryAttemptResult.Fail("webhook transport failed", ex);
         }
     }
 
@@ -275,9 +285,9 @@ public partial class NotificationDispatcher(
             await email.SendAsync(recipient, subject, htmlBody, cancellationToken);
             return DeliveryAttemptResult.Ok;
         }
-        catch (Exception ex)
+        catch (Exception ex) when (ex is not OperationCanceledException)
         {
-            return DeliveryAttemptResult.Fail(ex.Message, ex);
+            return DeliveryAttemptResult.Fail("email delivery failed", ex);
         }
     }
 
@@ -294,6 +304,11 @@ public partial class NotificationDispatcher(
             cancellationToken
         );
     }
+
+    private static string DeliveryId(string url, string json) =>
+        Convert
+            .ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{url}\n{json}")))
+            .ToLowerInvariant()[..32];
 
     private static string ComputeHmac(string secret, string payload)
     {

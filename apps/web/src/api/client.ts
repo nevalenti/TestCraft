@@ -1,29 +1,32 @@
-import axios from 'axios';
+import axios from "axios";
 
-import keycloak from '@/auth/keycloak';
-import { env } from '@/lib/env';
-import { useNotificationsStore } from '@/stores/notifications';
+import { keycloak } from "@/auth/keycloak";
+import { env } from "@/lib/env";
+import { reportApiError } from "@/lib/errorReporting";
+import { pageId } from "@/lib/pageId";
 
-const pageId = crypto.randomUUID();
-
-const client = axios.create({
+export const apiClient = axios.create({
   baseURL: `${env.VITE_API_URL}/api/v1`,
   headers: {
-    'Content-Type': 'application/json',
-    'X-Page-Id': pageId,
+    "X-Page-Id": pageId,
   },
 });
 
 class AuthRedirectError extends Error {}
 
+const loginRedirect = { isStarted: false };
+
 // eslint-disable-next-line unicorn/no-top-level-side-effects
-client.interceptors.request.use(async (config) => {
+apiClient.interceptors.request.use(async (config) => {
   if (keycloak.authenticated) {
     try {
       await keycloak.updateToken(30);
     } catch {
-      keycloak.login();
-      throw new AuthRedirectError('Session expired — redirecting to login');
+      if (!loginRedirect.isStarted) {
+        loginRedirect.isStarted = true;
+        keycloak.login();
+      }
+      throw new AuthRedirectError("Session expired — redirecting to login");
     }
     config.headers.Authorization = `Bearer ${keycloak.token}`;
   }
@@ -32,32 +35,19 @@ client.interceptors.request.use(async (config) => {
 });
 
 // eslint-disable-next-line unicorn/no-top-level-side-effects
-client.interceptors.response.use(
+apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error instanceof AuthRedirectError) {
-      return Promise.reject(error);
-    }
-
-    if (error.config?.method !== 'get') {
-      const message =
-        error.response?.data?.detail ??
-        error.response?.data?.title ??
-        error.message ??
-        'An unexpected error occurred.';
-
-      const requestId = error.response?.headers?.['x-request-id'];
-      const displayMessage = requestId
-        ? `${message} (ref: ${requestId})`
-        : message;
-
-      useNotificationsStore
-        .getState()
-        .add({ type: 'error', message: displayMessage, timeout: 10_000 });
+    const status: number | undefined = error.response?.status;
+    if (status !== undefined && status >= 500) {
+      reportApiError(error, {
+        status,
+        method: error.config?.method,
+        url: error.config?.url,
+        requestId: error.response?.headers?.["x-request-id"],
+      });
     }
 
     return Promise.reject(error);
   },
 );
-
-export default client;

@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MassTransit;
-
 using MediatR;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -39,15 +36,6 @@ public static class ImportAllure
 
     public sealed class Validator : AbstractValidator<Command>
     {
-        private static readonly string[] ValidStatuses =
-        [
-            "passed",
-            "failed",
-            "broken",
-            "skipped",
-            "unknown",
-        ];
-
         public Validator()
         {
             RuleFor(command => command.Results)
@@ -72,10 +60,7 @@ public static class ImportAllure
             RuleForEach(command => command.Results)
                 .ChildRules(result =>
                 {
-                    result
-                        .RuleFor(item => item.Status)
-                        .Must(status => ValidStatuses.Contains(status))
-                        .When(item => item.Status is not null);
+                    result.RuleFor(item => item.Status).IsInEnum();
 
                     result
                         .RuleFor(item => item.StatusDetails!.Message)
@@ -105,8 +90,6 @@ public static class ImportAllure
 
             context.ImportJobs.Add(job);
 
-            await context.SaveChangesAsync(cancellationToken);
-
             var message = new ImportAllureRequested
             {
                 JobId = job.Id,
@@ -120,6 +103,8 @@ public static class ImportAllure
             };
 
             await publishEndpoint.Publish(message, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
 
             return new ImportJobResponse
             {

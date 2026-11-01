@@ -1,9 +1,8 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -25,7 +24,7 @@ public static class GetTestRunSummary
     /// <summary>Aggregated result counts for a run.</summary>
     public sealed record Response
     {
-        /// <summary>The total number of results.</summary>
+        /// <summary>The number of test cases with a current outcome in the run.</summary>
         public required int Total { get; init; }
 
         /// <summary>The number of passed results.</summary>
@@ -40,8 +39,11 @@ public static class GetTestRunSummary
         /// <summary>The number of skipped results.</summary>
         public required int Skipped { get; init; }
 
+        /// <summary>The number of planned cases awaiting execution.</summary>
+        public required int Untested { get; init; }
+
         /// <summary>The pass rate, as a whole-number percentage.</summary>
-        public required int PassRate { get; init; }
+        public required double PassRate { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context, ICacheService cache)
@@ -67,6 +69,7 @@ public static class GetTestRunSummary
 
             var counts = await context
                 .TestResults.Where(result => result.TestRunId == request.Id)
+                .CurrentOutcomes()
                 .GroupBy(result => result.Status)
                 .Select(group => new { Status = group.Key, Count = group.Count() })
                 .ToListAsync(cancellationToken);
@@ -81,8 +84,12 @@ public static class GetTestRunSummary
             var skipped =
                 counts.FirstOrDefault(count => count.Status == TestResultStatus.Skipped)?.Count
                 ?? 0;
-            var total = passed + failed + blocked + skipped;
-            var passRate = total > 0 ? (int)Math.Round(passed * 100.0 / total) : 0;
+            var untested =
+                counts.FirstOrDefault(count => count.Status == TestResultStatus.Untested)?.Count
+                ?? 0;
+            var executed = passed + failed + blocked + skipped;
+            var total = executed + untested;
+            var passRate = executed > 0 ? Math.Round(passed * 100.0 / executed, 1) : 0.0;
 
             var summary = new Response
             {
@@ -91,6 +98,7 @@ public static class GetTestRunSummary
                 Failed = failed,
                 Blocked = blocked,
                 Skipped = skipped,
+                Untested = untested,
                 PassRate = passRate,
             };
 

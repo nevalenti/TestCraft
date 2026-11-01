@@ -1,13 +1,13 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
+using TestCraft.Application.Features.TestPlans;
 
 namespace TestCraft.Application.Features.TestSuites;
 
@@ -29,6 +29,9 @@ public static class UpdateTestSuite
 
         /// <summary>The suite's new description.</summary>
         public string? Description { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -40,8 +43,11 @@ public static class UpdateTestSuite
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Command, TestSuiteResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier,
+        TimeProvider timeProvider
+    ) : IRequestHandler<Command, TestSuiteResponse>
     {
         public async Task<TestSuiteResponse> Handle(
             Command request,
@@ -56,20 +62,25 @@ public static class UpdateTestSuite
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(suite, request.ExpectedVersion);
+            var renamed = suite.Name != request.Name;
             suite.Update(request.Name, request.Description);
 
-            await context.SaveChangesAsync(cancellationToken);
-
-            return new TestSuiteResponse
+            await context.SaveOrConflictAsync(
+                dbExceptionClassifier,
+                CatalogConflicts.SuiteNameTaken(),
+                cancellationToken
+            );
+            if (renamed)
             {
-                Id = suite.Id,
-                ProjectId = suite.ProjectId,
-                Name = suite.Name,
-                Description = suite.Description,
-                Source = suite.Source,
-                CreatedAt = suite.CreatedAt,
-                UpdatedAt = suite.UpdatedAt,
-            };
+                await context.TouchPlansForSuiteAsync(
+                    suite.Id,
+                    timeProvider.GetStoredUtcNow(),
+                    cancellationToken
+                );
+            }
+
+            return TestSuiteResponse.FromEntity(suite);
         }
     }
 }

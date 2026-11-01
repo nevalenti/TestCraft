@@ -1,7 +1,8 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Errors;
+using TestCraft.Api.Middleware;
 using TestCraft.Application.Features.Users;
 
 namespace TestCraft.Api.Features.Users;
@@ -11,30 +12,33 @@ public class UsersController(ISender sender) : ApiControllerBase
 {
     /// <summary>Returns a presigned URL for the current user's avatar.</summary>
     [HttpGet("avatar")]
-    [ProducesResponseType(typeof(AvatarUrlResponse), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<AvatarUrlResponse>> GetAvatarUrl(
         CancellationToken cancellationToken
     )
     {
         var query = new GetAvatarUrl.Query();
 
-        var result = await sender.Send(query, cancellationToken);
-        if (result is null)
-            return NoContent();
-
-        return Ok(result);
+        return Ok(await sender.Send(query, cancellationToken));
     }
 
     /// <summary>Uploads a new avatar for the current user.</summary>
     [HttpPut("avatar")]
-    [RequestSizeLimit(5_242_880)]
-    [ProducesResponseType(typeof(AvatarUrlResponse), StatusCodes.Status200OK)]
+    [RequestSizeLimit(
+        Application.Features.Users.UploadAvatar.MaxSizeBytes
+            + MaxBodySizeMiddleware.MultipartOverheadBytes
+    )]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<AvatarUrlResponse>> UploadAvatar(
-        IFormFile file,
+        [Required] IFormFile file,
         CancellationToken cancellationToken
     )
     {
+        if (file.Length > Application.Features.Users.UploadAvatar.MaxSizeBytes)
+        {
+            return new ProblemResult(Problems.ContentTooLarge());
+        }
+
         await using var stream = file.OpenReadStream();
 
         var command = new UploadAvatar.Command

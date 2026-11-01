@@ -1,15 +1,15 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 
-import { FileDropZone } from '@/features/testRuns/resultImport/FileDropZone';
+import { FileDropZone } from "@/features/testRuns/resultImport/FileDropZone";
 
-const xmlFile = new File(['<xml/>'], 'report.xml', { type: 'text/xml' });
-const jsonFile = new File(['{}'], 'result.json', { type: 'application/json' });
+const xmlFile = new File(["<xml/>"], "report.xml", { type: "text/xml" });
+const jsonFile = new File(["{}"], "result.json", { type: "application/json" });
 
-describe('FileDropZone', () => {
-  describe('given no files — shows the upload prompt', () => {
-    it('renders the hint text', () => {
+describe("FileDropZone", () => {
+  describe("given no files — shows the upload prompt", () => {
+    it("renders the hint text", () => {
       render(
         <FileDropZone
           id="files"
@@ -19,13 +19,13 @@ describe('FileDropZone', () => {
           hint="Drop a .xml or .json file"
         />,
       );
-      expect(screen.getByText('Drop a .xml or .json file')).toBeInTheDocument();
+      expect(screen.getByText("Drop a .xml or .json file")).toBeInTheDocument();
       expect(screen.getByText(/click to upload/i)).toBeInTheDocument();
     });
   });
 
-  describe('given files are selected via the native picker', () => {
-    it('reports the selected files through onFilesChange', async () => {
+  describe("given files are selected via the native picker", () => {
+    it("reports the selected files through onFilesChange", async () => {
       const onFilesChange = vi.fn();
       const { container } = render(
         <FileDropZone
@@ -45,8 +45,8 @@ describe('FileDropZone', () => {
     });
   });
 
-  describe('given a click on the drop zone — opens the native file picker', () => {
-    it('delegates to the hidden input', async () => {
+  describe("given a click on the drop zone — opens the native file picker", () => {
+    it("delegates to the hidden input", async () => {
       const { container } = render(
         <FileDropZone
           id="files"
@@ -59,18 +59,18 @@ describe('FileDropZone', () => {
       const input = container.querySelector(
         'input[type="file"]',
       ) as HTMLInputElement;
-      const clickSpy = vi.spyOn(input, 'click');
+      const clickSpy = vi.spyOn(input, "click");
 
       await userEvent.click(
-        screen.getByRole('button', { name: /file upload area/i }),
+        screen.getByRole("button", { name: /file upload area/i }),
       );
 
       expect(clickSpy).toHaveBeenCalled();
     });
   });
 
-  describe('given files dropped that match the accept filter', () => {
-    it('reports only the accepted files', () => {
+  describe("given files dropped that match the accept filter", () => {
+    it("reports only the accepted files", () => {
       const onFilesChange = vi.fn();
       render(
         <FileDropZone
@@ -81,13 +81,13 @@ describe('FileDropZone', () => {
         />,
       );
 
-      const zone = screen.getByRole('button', { name: /file upload area/i });
+      const zone = screen.getByRole("button", { name: /file upload area/i });
       fireEvent.drop(zone, { dataTransfer: { files: [xmlFile, jsonFile] } });
 
       expect(onFilesChange).toHaveBeenCalledWith([xmlFile]);
     });
 
-    it('does not call onFilesChange when nothing dropped matches', () => {
+    it("does not call onFilesChange when nothing dropped matches", () => {
       const onFilesChange = vi.fn();
       render(
         <FileDropZone
@@ -98,15 +98,15 @@ describe('FileDropZone', () => {
         />,
       );
 
-      const zone = screen.getByRole('button', { name: /file upload area/i });
+      const zone = screen.getByRole("button", { name: /file upload area/i });
       fireEvent.drop(zone, { dataTransfer: { files: [jsonFile] } });
 
       expect(onFilesChange).not.toHaveBeenCalled();
     });
   });
 
-  describe('given already-selected files — lists them', () => {
-    it('shows each file name and formatted size', () => {
+  describe("given already-selected files — lists them", () => {
+    it("shows each file name and formatted size", () => {
       render(
         <FileDropZone
           id="files"
@@ -116,11 +116,11 @@ describe('FileDropZone', () => {
         />,
       );
 
-      expect(screen.getByText('report.xml')).toBeInTheDocument();
-      expect(screen.getByText('result.json')).toBeInTheDocument();
+      expect(screen.getByText("report.xml")).toBeInTheDocument();
+      expect(screen.getByText("result.json")).toBeInTheDocument();
     });
 
-    it('removes a file when its remove button is clicked', async () => {
+    it("removes a file when its remove button is clicked", async () => {
       const onFilesChange = vi.fn();
       render(
         <FileDropZone
@@ -132,10 +132,38 @@ describe('FileDropZone', () => {
       );
 
       await userEvent.click(
-        screen.getByRole('button', { name: /remove report\.xml/i }),
+        screen.getByRole("button", { name: /remove report\.xml/i }),
       );
 
       expect(onFilesChange).toHaveBeenCalledWith([jsonFile]);
     });
   });
+});
+
+it("opens the picker from the keyboard without scrolling or intercepting nested buttons", () => {
+  const onFilesChange = vi.fn();
+  const { container } = render(
+    <FileDropZone
+      id="files"
+      accept=".xml"
+      files={[new File(["xml"], "report.xml")]}
+      onFilesChange={onFilesChange}
+    />,
+  );
+  const input = container.querySelector("input")!;
+  const click = vi.spyOn(input, "click");
+  const zone = screen.getByRole("button", { name: "File upload area" });
+  const space = new KeyboardEvent("keydown", {
+    key: " ",
+    bubbles: true,
+    cancelable: true,
+  });
+  fireEvent(zone, space);
+  expect(space.defaultPrevented).toBe(true);
+  expect(click).toHaveBeenCalledOnce();
+  click.mockClear();
+  fireEvent.keyDown(screen.getByRole("button", { name: "Remove report.xml" }), {
+    key: "Enter",
+  });
+  expect(click).not.toHaveBeenCalled();
 });

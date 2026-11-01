@@ -1,30 +1,60 @@
-import { queryOptions } from '@tanstack/react-query';
-import type { CreateLabel, Label, UpdateLabel } from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateLabel, UpdateLabel } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string) => `projects/${projectId}/labels`;
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const labelsApi = {
   getAll: async (projectId: string) => {
-    const { data } = await client.get<Label[]>(BASE(projectId));
+    const { items } = await fetchAllPages(async (page) => {
+      const { data } = await sdk.listLabels({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE },
+      });
+      return data;
+    });
+    return items;
+  },
+  getPage: async (projectId: string, page: number, search: string) => {
+    const { data } = await sdk.listLabels({
+      path: { project_id: projectId },
+      query: { page, page_size: 20, search: search || undefined },
+    });
     return data;
   },
   create: async (projectId: string, input: CreateLabel) => {
-    const { data } = await client.post<Label>(BASE(projectId), input);
+    const { data } = await sdk.createLabel({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
-  update: async (projectId: string, id: string, input: UpdateLabel) => {
-    const { data } = await client.put<Label>(`${BASE(projectId)}/${id}`, input);
+  update: async (
+    projectId: string,
+    id: string,
+    input: UpdateLabel,
+    version: number,
+  ) => {
+    const { data } = await sdk.updateLabel({
+      path: { project_id: projectId, label_id: id },
+      body: input,
+      headers: ifMatch(version),
+    });
     return data;
   },
   delete: (projectId: string, id: string) =>
-    client.delete(`${BASE(projectId)}/${id}`),
+    sdk.deleteLabel({ path: { project_id: projectId, label_id: id } }),
   addToCase: (projectId: string, caseId: string, labelId: string) =>
-    client.post(`projects/${projectId}/cases/${caseId}/labels/${labelId}`),
+    sdk.addTestCaseLabel({
+      path: { project_id: projectId, case_id: caseId, label_id: labelId },
+    }),
   removeFromCase: (projectId: string, caseId: string, labelId: string) =>
-    client.delete(`projects/${projectId}/cases/${caseId}/labels/${labelId}`),
+    sdk.removeTestCaseLabel({
+      path: { project_id: projectId, case_id: caseId, label_id: labelId },
+    }),
 };
 
 export const labelQueries = {
@@ -32,6 +62,12 @@ export const labelQueries = {
     queryOptions({
       queryKey: queryKeys.labels.all(projectId),
       queryFn: () => labelsApi.getAll(projectId),
+      enabled: !!projectId,
+    }),
+  page: (projectId: string, page: number, search: string) =>
+    queryOptions({
+      queryKey: [...queryKeys.labels.all(projectId), "page", page, search],
+      queryFn: () => labelsApi.getPage(projectId, page, search),
       enabled: !!projectId,
     }),
 };

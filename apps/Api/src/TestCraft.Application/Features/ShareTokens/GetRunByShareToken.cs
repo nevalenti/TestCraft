@@ -1,8 +1,8 @@
+using FluentValidation;
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Enums;
 
@@ -18,12 +18,12 @@ public record SharedRunResponse
     public required string Environment { get; init; }
 
     /// <summary>The run's status.</summary>
-    public required string Status { get; init; }
+    public required TestRunStatus Status { get; init; }
 
     /// <summary>When the run was created.</summary>
     public required DateTimeOffset CreatedAt { get; init; }
 
-    /// <summary>Total number of results recorded.</summary>
+    /// <summary>Number of test cases with a current outcome in the run.</summary>
     public required int Total { get; init; }
 
     /// <summary>Number of passed results.</summary>
@@ -38,11 +38,23 @@ public record SharedRunResponse
     /// <summary>Number of skipped results.</summary>
     public required int Skipped { get; init; }
 
+    /// <summary>Number of planned cases awaiting execution.</summary>
+    public required int Untested { get; init; }
+
     /// <summary>Percentage of results that passed.</summary>
     public required double PassRate { get; init; }
 
     /// <summary>The run's individual test results.</summary>
     public required IReadOnlyList<SharedResultItem> Results { get; init; }
+
+    /// <summary>Total number of current outcomes across all pages.</summary>
+    public required int ResultsTotal { get; init; }
+
+    /// <summary>Current page number, starting at one.</summary>
+    public required int Page { get; init; }
+
+    /// <summary>Maximum number of results in a page.</summary>
+    public required int PageSize { get; init; }
 }
 
 /// <summary>A single test result within a publicly shared run.</summary>
@@ -52,7 +64,7 @@ public record SharedResultItem
     public required string TestCaseName { get; init; }
 
     /// <summary>The result's status.</summary>
-    public required string Status { get; init; }
+    public required TestResultStatus Status { get; init; }
 
     /// <summary>Free-form notes, e.g. a failure message.</summary>
     public string? Notes { get; init; }
@@ -61,29 +73,48 @@ public record SharedResultItem
     public long? DurationMs { get; init; }
 
     /// <summary>When the result was recorded.</summary>
-    public required DateTimeOffset ExecutedAt { get; init; }
+    public required DateTimeOffset? ExecutedAt { get; init; }
 }
 
 public static class GetRunByShareToken
 {
     /// <summary>Requests a run's results by its public share token.</summary>
-    public sealed record Query(string Token) : IRequest<SharedRunResponse>;
+    public sealed record Query(string Token, int Page = 1, int PageSize = 50)
+        : IRequest<SharedRunResponse>;
 
-    public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Query, SharedRunResponse>
+    public sealed class Validator : AbstractValidator<Query>
+    {
+        public Validator()
+        {
+            RuleFor(query => query.Page).InclusiveBetween(1, 10_000);
+            RuleFor(query => query.PageSize).InclusiveBetween(1, 500);
+            RuleFor(query => query)
+                .Must(query => (query.Page - 1) * query.PageSize <= 100_000)
+                .WithMessage("Pages beyond the first 100,000 results are unavailable");
+        }
+    }
+
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IApiTokenHasher hasher,
+        TimeProvider timeProvider
+    ) : IRequestHandler<Query, SharedRunResponse>
     {
         public async Task<SharedRunResponse> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
+            var tokenHash = hasher.Hash(request.Token);
             var shareToken = await context
                 .ShareTokens.AsNoTracking()
-                .FirstOrDefaultAsync(st => st.Token == request.Token, cancellationToken);
+                .FirstOrDefaultAsync(st => st.TokenHash == tokenHash, cancellationToken);
 
             if (
                 shareToken is null
-                || (shareToken.ExpiresAt.HasValue && shareToken.ExpiresAt < DateTimeOffset.UtcNow)
+                || (
+                    shareToken.ExpiresAt.HasValue && shareToken.ExpiresAt < timeProvider.GetUtcNow()
+                )
             )
             {
                 throw new NotFoundException();
@@ -98,42 +129,56 @@ public static class GetRunByShareToken
                     )
                 ?? throw new NotFoundException();
 
-            var results = await context
+            var resultsQuery = context
                 .TestResults.Where(result => result.TestRunId == run.Id)
+                .CurrentOutcomes();
+            var statusCounts = await resultsQuery
+                .GroupBy(result => result.Status)
+                .Select(group => new { Status = group.Key, Count = group.Count() })
+                .ToListAsync(cancellationToken);
+
+            var counts = statusCounts.ToDictionary(count => count.Status, count => count.Count);
+            var passed = counts.GetValueOrDefault(TestResultStatus.Passed);
+            var failed = counts.GetValueOrDefault(TestResultStatus.Failed);
+            var blocked = counts.GetValueOrDefault(TestResultStatus.Blocked);
+            var skipped = counts.GetValueOrDefault(TestResultStatus.Skipped);
+            var untested = counts.GetValueOrDefault(TestResultStatus.Untested);
+            var executed = passed + failed + blocked + skipped;
+            var total = executed + untested;
+            var passRate = executed > 0 ? Math.Round(passed * 100.0 / executed, 1) : 0;
+
+            var results = await resultsQuery
+                .OrderBy(result => result.CreatedAt)
+                .ThenBy(result => result.Id)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(result => new SharedResultItem
                 {
                     TestCaseName = result.TestCase!.Name,
-                    Status = result.Status.ToString(),
+                    Status = result.Status,
                     Notes = result.Notes,
                     DurationMs = result.DurationMs,
                     ExecutedAt = result.ExecutedAt,
                 })
                 .ToListAsync(cancellationToken);
 
-            var counts = results
-                .GroupBy(result => result.Status)
-                .ToDictionary(group => group.Key, group => group.Count());
-
-            var passed = counts.GetValueOrDefault(nameof(TestResultStatus.Passed), 0);
-            var failed = counts.GetValueOrDefault(nameof(TestResultStatus.Failed), 0);
-            var blocked = counts.GetValueOrDefault(nameof(TestResultStatus.Blocked), 0);
-            var skipped = counts.GetValueOrDefault(nameof(TestResultStatus.Skipped), 0);
-            var total = passed + failed + blocked + skipped;
-            var passRate = total > 0 ? Math.Round(passed * 100.0 / total, 1) : 0;
-
             return new SharedRunResponse
             {
                 RunName = run.Name,
                 Environment = run.Environment,
-                Status = run.Status.ToString(),
+                Status = run.Status,
                 CreatedAt = run.CreatedAt,
                 Total = total,
                 Passed = passed,
                 Failed = failed,
                 Blocked = blocked,
                 Skipped = skipped,
+                Untested = untested,
                 PassRate = passRate,
                 Results = results,
+                ResultsTotal = total,
+                Page = request.Page,
+                PageSize = request.PageSize,
             };
         }
     }

@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestCaseSteps;
@@ -120,7 +118,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
             )
         ).Content.ReadFromJsonAsync<TestCaseStepResponse>();
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{created!.Id}",
             new UpdateTestCaseStep.Command
             {
@@ -285,7 +283,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
         var (projectId, suiteId, caseId) = await CreateProjectSuiteCaseAsync(client);
         var stepId = TestCaseStepId.New();
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/suites/{suiteId}/cases/{caseId}/steps/{stepId}",
             new UpdateTestCaseStep.Command
             {
@@ -316,7 +314,7 @@ public class TestCaseStepsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 

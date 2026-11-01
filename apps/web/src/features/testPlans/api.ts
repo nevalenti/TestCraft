@@ -1,62 +1,105 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  CreateTestPlan,
-  TestPlan,
-  TestPlanCase,
-  UpdateTestPlan,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateTestPlan, UpdateTestPlan } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string) => `projects/${projectId}/plans`;
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const testPlansApi = {
   getAll: async (projectId: string) => {
-    const { data } = await client.get<TestPlan[]>(BASE(projectId));
+    const { items } = await fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestPlans({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE },
+      });
+      return data;
+    });
+    return items;
+  },
+  getPage: async (
+    projectId: string,
+    page: number,
+    search: string,
+    sortBy: "name" | "created_at",
+    sortDir: "asc" | "desc",
+  ) => {
+    const { data } = await sdk.listTestPlans({
+      path: { project_id: projectId },
+      query: {
+        page,
+        page_size: 20,
+        search: search || undefined,
+        sort_by: sortBy,
+        sort_dir: sortDir,
+      },
+    });
     return data;
   },
   getById: async (projectId: string, planId: string) => {
-    const { data } = await client.get<TestPlan>(`${BASE(projectId)}/${planId}`);
+    const { data } = await sdk.getTestPlan({
+      path: { project_id: projectId, plan_id: planId },
+    });
     return data;
   },
   getCases: async (projectId: string, planId: string) => {
-    const { data } = await client.get<TestPlanCase[]>(
-      `${BASE(projectId)}/${planId}/cases`,
-    );
+    const { data } = await sdk.getTestPlanCases({
+      path: { project_id: projectId, plan_id: planId },
+    });
     return data;
   },
   create: async (projectId: string, input: CreateTestPlan) => {
-    const { data } = await client.post<TestPlan>(BASE(projectId), input);
+    const { data } = await sdk.createTestPlan({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
-  update: async (projectId: string, planId: string, input: UpdateTestPlan) => {
-    const { data } = await client.put<TestPlan>(
-      `${BASE(projectId)}/${planId}`,
-      input,
-    );
+  update: async (
+    projectId: string,
+    planId: string,
+    input: UpdateTestPlan,
+    version: number,
+  ) => {
+    const { data } = await sdk.updateTestPlan({
+      path: { project_id: projectId, plan_id: planId },
+      body: input,
+      headers: ifMatch(version),
+    });
     return data;
   },
   delete: (projectId: string, planId: string) =>
-    client.delete(`${BASE(projectId)}/${planId}`),
+    sdk.deleteTestPlan({
+      path: { project_id: projectId, plan_id: planId },
+    }),
   addCase: (projectId: string, planId: string, caseId: string) =>
-    client.post(`${BASE(projectId)}/${planId}/cases`, { testCaseId: caseId }),
+    sdk.addCaseToPlan({
+      path: { project_id: projectId, plan_id: planId },
+      body: { test_case_id: caseId },
+    }),
   removeCase: (projectId: string, planId: string, caseId: string) =>
-    client.delete(`${BASE(projectId)}/${planId}/cases/${caseId}`),
+    sdk.removeCaseFromPlan({
+      path: { project_id: projectId, plan_id: planId, case_id: caseId },
+    }),
   reorderCases: (
     projectId: string,
     planId: string,
-    cases: { testCaseId: string; order: number }[],
-  ) => client.put(`${BASE(projectId)}/${planId}/cases/order`, { cases }),
+    cases: { test_case_id: string; order: number }[],
+  ) =>
+    sdk.reorderPlanCases({
+      path: { project_id: projectId, plan_id: planId },
+      body: { cases },
+    }),
   createRun: async (
     projectId: string,
     planId: string,
     input: { name: string; environment: string },
   ) => {
-    const { data } = await client.post(
-      `${BASE(projectId)}/${planId}/run`,
-      input,
-    );
+    const { data } = await sdk.createRunFromPlan({
+      path: { project_id: projectId, plan_id: planId },
+      body: input,
+    });
     return data;
   },
 };
@@ -66,6 +109,26 @@ export const testPlanQueries = {
     queryOptions({
       queryKey: queryKeys.testPlans.all(projectId),
       queryFn: () => testPlansApi.getAll(projectId),
+      enabled: !!projectId,
+    }),
+  page: (
+    projectId: string,
+    page: number,
+    search: string,
+    sortBy: "name" | "created_at",
+    sortDir: "asc" | "desc",
+  ) =>
+    queryOptions({
+      queryKey: [
+        ...queryKeys.testPlans.all(projectId),
+        "page",
+        page,
+        search,
+        sortBy,
+        sortDir,
+      ],
+      queryFn: () =>
+        testPlansApi.getPage(projectId, page, search, sortBy, sortDir),
       enabled: !!projectId,
     }),
   detail: (projectId: string, planId: string) =>

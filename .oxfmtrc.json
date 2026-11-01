@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "printWidth": 80,
+  "tabWidth": 2,
+  "useTabs": false,
+  "semi": true,
+  "singleQuote": false,
+  "quoteProps": "as-needed",
+  "jsxSingleQuote": false,
+  "trailingComma": "all",
+  "bracketSpacing": true,
+  "bracketSameLine": false,
+  "arrowParens": "always",
+  "endOfLine": "lf",
+  "sortPackageJson": false,
+  "ignorePatterns": [
+    "packages/types/src/generated/",
+    "dist/",
+    "helm/",
+    "node_modules/",
+    "**/.venv/",
+    "pnpm-lock.yaml",
+    "apps/web/src/api/generated/",
+    "apps/web/src/routeTree.gen.ts",
+    "apps/Api/src/TestCraft.Infrastructure/Notifications/Templates/",
+    "apps/Api/openapi/.redocly.lint-ignore.yaml"
+  ]
+}

@@ -1,11 +1,11 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-
+using Microsoft.Extensions.Hosting;
+using TestCraft.Api.Errors;
 using TestCraft.Api.Features.System;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 
@@ -81,9 +81,21 @@ public class SystemApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task GetMetrics_NoTokenConfigured_ReturnsPrometheusText()
+    public async Task GetMetrics_NoTokenConfiguredOutsideDevelopment_ReturnsUnauthorized()
     {
         var client = factory.CreateClient();
+
+        var response = await client.GetAsync("/api/metrics");
+
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+    }
+
+    [Fact]
+    public async Task GetMetrics_NoTokenConfiguredInDevelopment_ReturnsPrometheusText()
+    {
+        var client = factory
+            .WithWebHostBuilder(builder => builder.UseEnvironment(Environments.Development))
+            .CreateClient();
 
         var response = await client.GetAsync("/api/metrics");
 
@@ -113,6 +125,10 @@ public class SystemApiTests(ApiFactory factory)
         var response = await client.GetAsync("/api/metrics");
 
         response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
+        response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
+        (await response.Content.ReadFromJsonAsync<ProblemResponse>())!
+            .Type.Should()
+            .Be("about:blank");
     }
 
     [Fact]

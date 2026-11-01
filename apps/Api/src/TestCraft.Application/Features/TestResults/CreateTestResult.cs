@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -53,6 +50,7 @@ public static class CreateTestResult
         {
             RuleFor(command => command.TestCaseId).NotEmptyId();
             RuleFor(command => command.Status).IsInEnum();
+            RuleFor(command => command.Status).NotEqual(TestResultStatus.Untested);
             RuleFor(command => command.Notes).MaximumLength(5000);
         }
     }
@@ -90,29 +88,64 @@ public static class CreateTestResult
                 throw new NotFoundException();
             }
 
-            var result = TestResult.Create(
-                request.RunId,
-                request.TestCaseId,
-                request.Status,
-                request.Notes,
-                request.DefectType,
-                request.DurationMs,
-                request.ExecutedAt,
-                currentUser.UserId
+            var result = await context.TestResults.FirstOrDefaultAsync(
+                existingResult =>
+                    existingResult.TestRunId == request.RunId
+                    && existingResult.TestCaseId == request.TestCaseId
+                    && existingResult.Status == TestResultStatus.Untested,
+                cancellationToken
             );
-
-            context.TestResults.Add(result);
+            var replacedPlaceholder = result is not null;
+            if (result is not null)
+            {
+                result.Record(
+                    request.Status,
+                    request.Notes,
+                    request.DefectType,
+                    request.DurationMs,
+                    request.ExecutedAt,
+                    currentUser.UserId
+                );
+            }
+            else
+            {
+                result = TestResult.Create(
+                    request.RunId,
+                    request.TestCaseId,
+                    request.Status,
+                    request.Notes,
+                    request.DefectType,
+                    request.DurationMs,
+                    request.ExecutedAt,
+                    currentUser.UserId
+                );
+                context.TestResults.Add(result);
+            }
 
             await context.SaveChangesAsync(cancellationToken);
 
             var summary = await context
-                .TestResults.Where(createdResult => createdResult.Id == result.Id)
-                .ToTestResultResponse()
+                .LiveResults()
+                .Where(createdResult => createdResult.Id == result.Id)
+                .Select(TestResultResponse.Projection)
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
-            await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
+            if (replacedPlaceholder)
+            {
+                await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
+            }
+            else
+            {
+                await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
+            }
+
+            await notifier.DashboardChangedAsync(
+                request.ProjectId,
+                request.RunId,
+                cancellationToken
+            );
 
             return summary;
         }

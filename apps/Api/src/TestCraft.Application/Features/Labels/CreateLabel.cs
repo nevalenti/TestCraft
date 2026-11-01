@@ -1,28 +1,10 @@
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.Labels;
-
-/// <summary>A label that can be attached to test cases within a project.</summary>
-public record LabelResponse
-{
-    /// <summary>The label's identifier.</summary>
-    public required LabelId Id { get; init; }
-
-    /// <summary>The label's display name.</summary>
-    public required string Name { get; init; }
-
-    /// <summary>The label's color, as a "#RRGGBB" hex string.</summary>
-    public required string Color { get; init; }
-
-    /// <summary>The project the label belongs to.</summary>
-    public required ProjectId ProjectId { get; init; }
-}
 
 public static class CreateLabel
 {
@@ -72,13 +54,7 @@ public static class CreateLabel
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new LabelResponse
-            {
-                Id = label.Id,
-                Name = label.Name,
-                Color = label.Color,
-                ProjectId = label.ProjectId,
-            };
+            return LabelResponse.FromEntity(label);
         }
     }
 }

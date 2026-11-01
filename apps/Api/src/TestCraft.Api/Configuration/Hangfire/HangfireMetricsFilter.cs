@@ -1,6 +1,5 @@
 using Hangfire.States;
 using Hangfire.Storage;
-
 using Prometheus;
 
 namespace TestCraft.Api.Configuration.Hangfire;

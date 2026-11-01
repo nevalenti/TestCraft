@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;
@@ -22,11 +21,17 @@ public class FakeStorageService : IStorageService
         return key;
     }
 
+    public Task<byte[]> DownloadAsync(string key, CancellationToken cancellationToken = default) =>
+        Task.FromResult(_store[key].Content);
+
     public Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
         _store.TryRemove(key, out _);
         return Task.CompletedTask;
     }
+
+    public bool HasObjectsUnder(string prefix) =>
+        _store.Keys.Any(key => key.StartsWith(prefix, StringComparison.Ordinal));
 
     public Task<string> GetPresignedUrlAsync(
         string key,

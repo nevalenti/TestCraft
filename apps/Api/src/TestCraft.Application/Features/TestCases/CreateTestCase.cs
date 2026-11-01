@@ -1,10 +1,8 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -13,37 +11,6 @@ using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestCases;
-
-/// <summary>A test case within a suite.</summary>
-public record TestCaseResponse
-{
-    /// <summary>The test case's identifier.</summary>
-    public required TestCaseId Id { get; init; }
-
-    /// <summary>The suite the test case belongs to.</summary>
-    public required TestSuiteId SuiteId { get; init; }
-
-    /// <summary>The test case's display name.</summary>
-    public required string Name { get; init; }
-
-    /// <summary>The test case's description, if set.</summary>
-    public string? Description { get; init; }
-
-    /// <summary>The test case's priority.</summary>
-    public required TestCasePriority Priority { get; init; }
-
-    /// <summary>The number of non-deleted steps in the test case.</summary>
-    public required int StepCount { get; init; }
-
-    /// <summary>When the test case was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-
-    /// <summary>When the test case was last updated.</summary>
-    public required DateTimeOffset UpdatedAt { get; init; }
-
-    /// <summary>The labels attached to the test case.</summary>
-    public IReadOnlyList<LabelResponse> Labels { get; init; } = [];
-}
 
 public static class CreateTestCase
 {
@@ -80,8 +47,10 @@ public static class CreateTestCase
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Command, TestCaseResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier
+    ) : IRequestHandler<Command, TestCaseResponse>
     {
         public async Task<TestCaseResponse> Handle(
             Command request,
@@ -106,20 +75,16 @@ public static class CreateTestCase
 
             context.TestCases.Add(testCase);
 
-            await context.SaveChangesAsync(cancellationToken);
+            await context.SaveOrConflictAsync(
+                dbExceptionClassifier,
+                CatalogConflicts.CaseNameTaken(),
+                cancellationToken
+            );
 
-            return new TestCaseResponse
-            {
-                Id = testCase.Id,
-                SuiteId = testCase.SuiteId,
-                Name = testCase.Name,
-                Description = testCase.Description,
-                Priority = testCase.Priority,
-                StepCount = 0,
-                CreatedAt = testCase.CreatedAt,
-                UpdatedAt = testCase.UpdatedAt,
-                Labels = [],
-            };
+            return await context
+                .TestCases.Where(created => created.Id == testCase.Id)
+                .Select(TestCaseResponse.Projection)
+                .FirstAsync(cancellationToken);
         }
     }
 }

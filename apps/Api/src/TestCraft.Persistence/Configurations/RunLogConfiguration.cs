@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -15,6 +14,8 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
 
         builder.Property(runLog => runLog.RunId).HasColumnName("run_id");
 
+        builder.Property(runLog => runLog.Seq).HasColumnName("seq").UseIdentityAlwaysColumn();
+
         builder.Property(runLog => runLog.Message).HasColumnName("message").IsRequired();
 
         builder
@@ -22,7 +23,7 @@ public class RunLogConfiguration : IEntityTypeConfiguration<RunLog>
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()");
 
-        builder.HasIndex(runLog => new { runLog.RunId, runLog.CreatedAt });
+        builder.HasIndex(runLog => new { runLog.RunId, runLog.Seq });
 
         builder
             .HasOne(runLog => runLog.Run)

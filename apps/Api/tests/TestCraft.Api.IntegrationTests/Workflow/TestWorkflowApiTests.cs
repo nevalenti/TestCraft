@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Features.Import;
 using TestCraft.Application.Features.Projects;
@@ -113,7 +111,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
         summary.Passed.Should().Be(1);
         summary.PassRate.Should().Be(100);
 
-        var completeResponse = await client.PutAsJsonAsync(
+        var completeResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
             new UpdateTestRun.Command
             {
@@ -130,7 +128,7 @@ public class TestWorkflowApiTests(ApiFactory factory)
         );
         completed!.Status.Should().Be(TestRunStatus.Completed);
 
-        var revertResponse = await client.PutAsJsonAsync(
+        var revertResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/runs/{run.Id}",
             new UpdateTestRun.Command
             {
@@ -138,7 +136,8 @@ public class TestWorkflowApiTests(ApiFactory factory)
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Active,
-            }
+            },
+            version: 2
         );
 
         revertResponse.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
@@ -226,13 +225,13 @@ public class TestWorkflowApiTests(ApiFactory factory)
                     new AllureResultItem
                     {
                         Name = "checkout flow works",
-                        Status = "passed",
+                        Status = AllureStatus.Passed,
                         Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },
                     new AllureResultItem
                     {
                         Name = "checkout fails on bad card",
-                        Status = "broken",
+                        Status = AllureStatus.Broken,
                         StatusDetails = new AllureStatusDetails { Message = "card declined" },
                         Labels = [new AllureLabel { Name = "suite", Value = "Checkout" }],
                     },

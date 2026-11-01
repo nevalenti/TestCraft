@@ -1,38 +1,13 @@
 using FluentValidation;
-
 using MediatR;
-
+using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestSuites;
-
-/// <summary>A suite grouping related test cases within a project.</summary>
-public record TestSuiteResponse
-{
-    /// <summary>The suite's identifier.</summary>
-    public required TestSuiteId Id { get; init; }
-
-    /// <summary>The project the suite belongs to.</summary>
-    public required ProjectId ProjectId { get; init; }
-
-    /// <summary>The suite's display name.</summary>
-    public required string Name { get; init; }
-
-    /// <summary>The suite's description, if set.</summary>
-    public string? Description { get; init; }
-
-    /// <summary>Identifies the CI system or import source that created the suite, if any.</summary>
-    public string? Source { get; init; }
-
-    /// <summary>When the suite was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-
-    /// <summary>When the suite was last updated.</summary>
-    public required DateTimeOffset UpdatedAt { get; init; }
-}
 
 public static class CreateTestSuite
 {
@@ -59,8 +34,10 @@ public static class CreateTestSuite
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Command, TestSuiteResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier
+    ) : IRequestHandler<Command, TestSuiteResponse>
     {
         public async Task<TestSuiteResponse> Handle(
             Command request,
@@ -71,18 +48,13 @@ public static class CreateTestSuite
 
             context.TestSuites.Add(suite);
 
-            await context.SaveChangesAsync(cancellationToken);
+            await context.SaveOrConflictAsync(
+                dbExceptionClassifier,
+                CatalogConflicts.SuiteNameTaken(),
+                cancellationToken
+            );
 
-            return new TestSuiteResponse
-            {
-                Id = suite.Id,
-                ProjectId = suite.ProjectId,
-                Name = suite.Name,
-                Description = suite.Description,
-                Source = suite.Source,
-                CreatedAt = suite.CreatedAt,
-                UpdatedAt = suite.UpdatedAt,
-            };
+            return TestSuiteResponse.FromEntity(suite);
         }
     }
 }

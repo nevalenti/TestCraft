@@ -1,0 +1,27 @@
+---
+title: API token scopes
+description: Limit what each project API token can read or change.
+---
+
+An API token belongs to one project and can only call that project's endpoints, at most with
+editor rights. Its scopes narrow that further, per area:
+
+| Area      | Scopes                          | Covers                                      |
+| --------- | ------------------------------- | ------------------------------------------- |
+| Runs      | `runs_read`, `runs_write`       | Runs and their logs                         |
+| Results   | `results_read`, `results_write` | Results and their attachments               |
+| Imports   | `imports_read`, `imports_write` | JUnit and Allure imports and their jobs     |
+| Suites    | `suites_read`, `suites_write`   | Test suites                                 |
+| Cases     | `cases_read`, `cases_write`     | Test cases, their steps and assigned labels |
+| Labels    | `labels_read`, `labels_write`   | The project's labels                        |
+| Plans     | `plans_read`, `plans_write`     | Test plans                                  |
+| Notes     | `notes_read`, `notes_write`     | Project notes                               |
+| Analytics | `analytics_read`                | Trends, flaky tests and run comparison      |
+
+A `_write` scope includes reading the same area. A request outside the token's scopes is
+refused with `403` and names the missing scope. Members, other tokens, share links,
+notification settings and the project itself always need a signed-in user.
+
+For the CI reporter, create a token with `runs_write`, `results_write` and `imports_write`;
+this is the default selection in **Project settings → API Tokens → New Token**. Tokens
+created before scopes existed keep access to every area.

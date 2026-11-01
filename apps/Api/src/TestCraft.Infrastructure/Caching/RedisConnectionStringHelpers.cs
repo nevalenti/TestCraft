@@ -13,6 +13,11 @@ public static class RedisConnectionStringHelpers
             Ssl = string.Equals(uri.Scheme, "rediss", StringComparison.OrdinalIgnoreCase),
         };
 
+        if (int.TryParse(uri.AbsolutePath.Trim('/'), out var database))
+        {
+            options.DefaultDatabase = database;
+        }
+
         if (!string.IsNullOrEmpty(uri.UserInfo))
         {
             var password = uri.UserInfo.Split(':', 2) is [_, var pwd] ? pwd : uri.UserInfo;

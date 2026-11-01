@@ -1,48 +1,42 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  CreateTestCase,
-  Paginated,
-  TestCase,
-  UpdateTestCase,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateTestCase, UpdateTestCase } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-import { PAGE_SIZE } from '@/lib/constants';
-
-const BASE = (projectId: string, suiteId: string) =>
-  `projects/${projectId}/suites/${suiteId}/cases`;
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const testCasesApi = {
   getAllByProject: async (projectId: string) => {
-    const { data } = await client.get<Paginated<TestCase>>(
-      `projects/${projectId}/cases`,
-      {
-        params: { pageSize: PAGE_SIZE },
-      },
-    );
-    return data;
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestCasesByProject({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE },
+      });
+      return data;
+    });
   },
   getAll: async (projectId: string, suiteId: string, search?: string) => {
-    const { data } = await client.get<Paginated<TestCase>>(
-      BASE(projectId, suiteId),
-      {
-        params: { pageSize: PAGE_SIZE, ...(search && { search }) },
-      },
-    );
-    return data;
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestCases({
+        path: { project_id: projectId, suite_id: suiteId },
+        query: { page, page_size: PAGE_SIZE, ...(search && { search }) },
+      });
+      return data;
+    });
   },
   getById: async (projectId: string, suiteId: string, id: string) => {
-    const { data } = await client.get<TestCase>(
-      `${BASE(projectId, suiteId)}/${id}`,
-    );
+    const { data } = await sdk.getTestCase({
+      path: { project_id: projectId, suite_id: suiteId, case_id: id },
+    });
     return data;
   },
   create: async (projectId: string, suiteId: string, input: CreateTestCase) => {
-    const { data } = await client.post<TestCase>(
-      BASE(projectId, suiteId),
-      input,
-    );
+    const { data } = await sdk.createTestCase({
+      path: { project_id: projectId, suite_id: suiteId },
+      body: input,
+    });
     return data;
   },
   update: async (
@@ -50,15 +44,19 @@ export const testCasesApi = {
     suiteId: string,
     id: string,
     input: UpdateTestCase,
+    version: number,
   ) => {
-    const { data } = await client.put<TestCase>(
-      `${BASE(projectId, suiteId)}/${id}`,
-      { ...input, id },
-    );
+    const { data } = await sdk.updateTestCase({
+      path: { project_id: projectId, suite_id: suiteId, case_id: id },
+      body: input,
+      headers: ifMatch(version),
+    });
     return data;
   },
   delete: (projectId: string, suiteId: string, id: string) =>
-    client.delete(`${BASE(projectId, suiteId)}/${id}`),
+    sdk.deleteTestCase({
+      path: { project_id: projectId, suite_id: suiteId, case_id: id },
+    }),
 };
 
 export const testCaseQueries = {

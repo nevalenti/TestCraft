@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestCases;
@@ -64,6 +62,46 @@ public class TestCasesApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Names_AreUniqueAmongActiveCasesInOneSuite()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var otherSuite = await client.CreateSuiteAsync(project.Id, "Other Suite");
+        var first = await client.CreateCaseAsync(project.Id, suite.Id, "Login");
+        var second = await client.CreateCaseAsync(project.Id, suite.Id, "Checkout");
+        var path = $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases";
+
+        (await client.PostAsJsonAsync(path, new CreateTestCase.Command { Name = "Login" }))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Conflict);
+        (
+            await client.UpdateAsJsonAsync(
+                $"{path}/{second.Id}",
+                new UpdateTestCase.Command { Name = "Login", Priority = TestCasePriority.Medium }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Conflict);
+
+        (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/suites/{otherSuite.Id}/cases",
+                new CreateTestCase.Command { Name = "Login" }
+            )
+        )
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+
+        (await client.DeleteAsync($"{path}/{first.Id}"))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.NoContent);
+        (await client.PostAsJsonAsync(path, new CreateTestCase.Command { Name = "Login" }))
+            .StatusCode.Should()
+            .Be(HttpStatusCode.Created);
+    }
+
+    [Fact]
     public async Task Create_WithoutPriority_DefaultsToMedium()
     {
         var client = CreateClient(Guid.NewGuid());
@@ -118,7 +156,7 @@ public class TestCasesApiTests(ApiFactory factory)
             TestCasePriority.Low
         );
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase.Id}",
             new UpdateTestCase.Command
             {
@@ -152,7 +190,7 @@ public class TestCasesApiTests(ApiFactory factory)
 
         await Task.Delay(TimeSpan.FromMilliseconds(50));
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{testCase.Id}",
             new UpdateTestCase.Command
             {
@@ -179,7 +217,7 @@ public class TestCasesApiTests(ApiFactory factory)
         var suite = await client.CreateSuiteAsync(project.Id);
         var caseId = TestCaseId.New();
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/suites/{suite.Id}/cases/{caseId}",
             new UpdateTestCase.Command
             {
@@ -237,7 +275,7 @@ public class TestCasesApiTests(ApiFactory factory)
             new CreateTestCase.Command { Name = "" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

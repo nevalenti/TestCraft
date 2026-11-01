@@ -1,0 +1,78 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: smoke
+      POSTGRES_PASSWORD: smoke-local-only
+      POSTGRES_DB: smoke
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U smoke -d smoke"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  rabbitmq:
+    image: rabbitmq:4-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: smoke
+      RABBITMQ_DEFAULT_PASS: smoke-local-only
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+  api:
+    image: testcraft-smoke-api:${SMOKE_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/Api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://smoke:smoke-local-only@postgres:5432/smoke
+      REDIS_URL: redis://redis:6379/1
+      RABBITMQ_URL: amqp://smoke:smoke-local-only@rabbitmq:5672
+      KEYCLOAK_AUTHORITY: http://keycloak.invalid/realms/testcraft
+      KEYCLOAK_ADMIN_CLIENT_ID: testcraft-api
+      KEYCLOAK_ADMIN_CLIENT_SECRET: smoke-local-only
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+  migrate:
+    image: testcraft-smoke-migrator:${SMOKE_IMAGE_TAG:-local}
+    build:
+      context: .
+      dockerfile: apps/Api/Migrator.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://smoke:smoke-local-only@postgres:5432/smoke
+    depends_on:
+      postgres:
+        condition: service_healthy
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: https://localhost
+        VITE_KEYCLOAK_URL: https://localhost
+        VITE_KEYCLOAK_REALM: testcraft
+        VITE_KEYCLOAK_CLIENT_ID: testcraft-web
+  gateway:
+    build:
+      context: .
+      dockerfile: apps/Gateway/Dockerfile
+    volumes:
+      - ${SMOKE_TLS_DIR:?Run scripts/container-smoke.sh}:/etc/gateway/tls:ro
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy

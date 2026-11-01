@@ -1,6 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Common.Interfaces;
@@ -27,7 +25,12 @@ public interface IApplicationDbContext
     DbSet<RunLog> RunLogs { get; }
     DbSet<ProjectMember> ProjectMembers { get; }
     DbSet<NotificationDelivery> NotificationDeliveries { get; }
-    DatabaseFacade Database { get; }
+    DbSet<Note> Notes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    Task<T> ExecuteInTransactionAsync<T>(
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken
+    );
 }

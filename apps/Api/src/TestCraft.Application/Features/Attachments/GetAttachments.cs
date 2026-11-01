@@ -1,41 +1,61 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Features.Attachments;
 
 public static class GetAttachments
 {
-    /// <summary>Lists the attachments on a test result.</summary>
-    public sealed record Query : IRequest<IReadOnlyList<AttachmentResponse>>, IProjectScopedRequest
+    /// <summary>Lists the attachments on a test result, oldest first.</summary>
+    public sealed record Query
+        : PageQuery,
+            IRequest<Paginated<AttachmentResponse>>,
+            IProjectScopedRequest
     {
         /// <summary>The project the test result belongs to.</summary>
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run the test result belongs to.</summary>
-        public required TestRunId RunId { get; init; }
+        [RouteValue]
+        public TestRunId RunId { get; init; }
 
         /// <summary>The test result to list attachments for.</summary>
-        public required TestResultId ResultId { get; init; }
+        [RouteValue]
+        public TestResultId ResultId { get; init; }
     }
 
     public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Query, IReadOnlyList<AttachmentResponse>>
+        : IRequestHandler<Query, Paginated<AttachmentResponse>>
     {
-        public async Task<IReadOnlyList<AttachmentResponse>> Handle(
+        public async Task<Paginated<AttachmentResponse>> Handle(
             Query request,
             CancellationToken cancellationToken
-        ) =>
-            await context
-                .Attachments.Where(attachment =>
-                    attachment.TestResultId == request.ResultId
-                    && attachment.TestResult!.TestRunId == request.RunId
-                    && attachment.TestResult.TestRun!.ProjectId == request.ProjectId
-                )
+        )
+        {
+            var resultExists = await context
+                .LiveResults()
+                .AnyAsync(
+                    result =>
+                        result.Id == request.ResultId
+                        && result.TestRunId == request.RunId
+                        && result.TestRun!.ProjectId == request.ProjectId,
+                    cancellationToken
+                );
+            if (!resultExists)
+            {
+                throw new NotFoundException();
+            }
+
+            return await context
+                .Attachments.Where(attachment => attachment.TestResultId == request.ResultId)
                 .OrderBy(attachment => attachment.CreatedAt)
+                .ThenBy(attachment => attachment.Id)
                 .Select(attachment => new AttachmentResponse
                 {
                     Id = attachment.Id,
@@ -45,6 +65,7 @@ public static class GetAttachments
                     SizeBytes = attachment.SizeBytes,
                     CreatedAt = attachment.CreatedAt,
                 })
-                .ToListAsync(cancellationToken);
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
+        }
     }
 }

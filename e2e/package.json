@@ -7,13 +7,14 @@
     "e2e": "playwright test",
     "e2e:ui": "playwright test --ui",
     "e2e:debug": "playwright test --debug",
-    "lint": "eslint ."
+    "lint": "oxlint .",
+    "test:reporter": "playwright test -c reporter.config.ts",
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@playwright/test": "^1.61.0",
-    "testcraft-ci-reporter": "workspace:*",
     "@types/node": "^26.0.0",
-    "eslint": "^10.5.0",
+    "testcraft-ci-reporter": "workspace:*",
     "typescript": "~6.0.3"
   }
 }

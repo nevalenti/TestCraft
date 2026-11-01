@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class TestCaseStepConfiguration : IEntityTypeConfiguration<TestCaseStep>
     public void Configure(EntityTypeBuilder<TestCaseStep> builder)
     {
         builder.ToTable("test_case_steps");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(step => step.Id);
 

@@ -1,5 +1,5 @@
-import { cn } from '@/lib/cn';
-import { getInitials } from '@/lib/format';
+import { cn } from "@/lib/cn";
+import { getInitials } from "@/lib/format";
 
 const getRunAvatarLabel = (
   executedByName?: string | null,
@@ -7,23 +7,25 @@ const getRunAvatarLabel = (
 ) => {
   if (executedByName) return getInitials(executedByName);
   if (source) return source.slice(0, 2).toUpperCase();
-  return '?';
+  return "?";
 };
 
-export const RunAvatar = ({
-  executedByName,
-  executedByAvatarUrl,
-  source,
-  size = 'size-6',
-  className,
-}: {
+interface RunAvatarProps {
   executedByName?: string | null;
   executedByAvatarUrl?: string | null;
   source?: string | null;
   size?: string;
   className?: string;
-}) => {
-  const title = executedByName ?? source ?? 'Unknown';
+}
+
+export const RunAvatar = ({
+  executedByName,
+  executedByAvatarUrl,
+  source,
+  size = "size-6",
+  className,
+}: RunAvatarProps) => {
+  const title = executedByName ?? source ?? "Unknown";
 
   if (executedByAvatarUrl) {
     return (
@@ -31,7 +33,7 @@ export const RunAvatar = ({
         src={executedByAvatarUrl}
         alt={title}
         title={title}
-        className={cn(size, 'shrink-0 rounded-full object-cover', className)}
+        className={cn(size, "shrink-0 rounded-full object-cover", className)}
       />
     );
   }
@@ -39,7 +41,7 @@ export const RunAvatar = ({
   return (
     <span
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-xs font-bold text-base-content/70 tabular-nums',
+        "flex shrink-0 items-center justify-center rounded-full bg-base-content/8 text-xs font-bold text-fg-muted tabular-nums",
         size,
         className,
       )}
