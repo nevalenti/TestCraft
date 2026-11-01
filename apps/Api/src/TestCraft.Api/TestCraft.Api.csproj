@@ -41,11 +41,4 @@
     <ProjectReference Include="..\TestCraft.Persistence\TestCraft.Persistence.csproj" />
     <ProjectReference Include="..\TestCraft.Infrastructure\TestCraft.Infrastructure.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource
-      Include="..\..\openapi\contract\v1.json"
-      LogicalName="openapi-contract.json"
-    />
-  </ItemGroup>
 </Project>

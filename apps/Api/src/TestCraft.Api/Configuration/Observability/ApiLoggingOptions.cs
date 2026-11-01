@@ -13,12 +13,6 @@ public sealed class ApiLoggingOptions : IStartupOptions
     [NotSensitive]
     public string? OtelExporterEndpoint { get; init; }
 
-    [NotSensitive]
-    public string? SeqUrl { get; init; }
-
-    [Sensitive]
-    public string? SeqApiKey { get; init; }
-
     public static ApiLoggingOptions Bind(IConfiguration configuration) =>
         OptionsValidator.ValidateAndThrow(
             new ApiLoggingOptions
@@ -26,8 +20,6 @@ public sealed class ApiLoggingOptions : IStartupOptions
                 LokiUrl = configuration["LOKI_URL"],
                 OtelServiceName = configuration["OTEL_SERVICE_NAME"] ?? "testcraft-api",
                 OtelExporterEndpoint = configuration["OTEL_EXPORTER_OTLP_ENDPOINT"],
-                SeqUrl = configuration["SEQ_URL"],
-                SeqApiKey = configuration["SEQ_API_KEY"],
             },
             "logging"
         );

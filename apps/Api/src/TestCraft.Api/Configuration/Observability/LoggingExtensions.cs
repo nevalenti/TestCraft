@@ -57,14 +57,6 @@ public static class LoggingExtensions
                     );
                 }
 
-                if (!string.IsNullOrEmpty(loggingOptions.SeqUrl))
-                {
-                    loggerConfig.WriteTo.Seq(
-                        loggingOptions.SeqUrl,
-                        apiKey: loggingOptions.SeqApiKey,
-                        formatProvider: CultureInfo.InvariantCulture
-                    );
-                }
             }
         );
 
