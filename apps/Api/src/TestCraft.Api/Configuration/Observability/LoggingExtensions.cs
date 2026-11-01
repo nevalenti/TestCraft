@@ -60,6 +60,7 @@ public static class LoggingExtensions
                         handleLogLevelAsLabel: true
                     );
                 }
+
             }
         );
 

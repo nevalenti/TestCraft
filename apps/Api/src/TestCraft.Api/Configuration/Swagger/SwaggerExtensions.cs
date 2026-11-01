@@ -3,7 +3,9 @@ using System.Text.Json.Nodes;
 using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
+
 using Scalar.AspNetCore;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 using TestCraft.Common.Security;
 using TestCraft.Infrastructure.Configuration;
@@ -86,62 +88,28 @@ public static class SwaggerExtensions
         {
             app.UseWhen(
                 context => context.Request.Path.StartsWithSegments(ApiPaths.DocsPrefix),
-                branch => branch.UseBasicAuth<SwaggerBasicAuthOptions>()
+                branch =>
+                {
+                    branch.UseBasicAuth<SwaggerBasicAuthOptions>();
+                    branch.UseSwaggerMiddleware();
+                }
             );
         }
+        else
+        {
+            app.UseSwaggerMiddleware();
+        }
 
-        var contract = LoadContract();
-        app.Map(
-            ContractPath,
-            branch =>
-                branch.Run(context =>
-                {
-                    context.Response.ContentType = "application/json";
-
-                    return context.Response.Body.WriteAsync(contract).AsTask();
-                })
-        );
-
-        app.UseSwagger(options =>
-            options.RouteTemplate =
-                $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
-        );
-
-        app.MapGet(
-                $"{ApiPaths.DocsPrefix}/index.html",
-                () => Results.Redirect($"{ApiPaths.DocsPrefix}/", permanent: true)
-            )
-            .ExcludeFromDescription();
-
-        var apiVersionDescriptionProvider =
-            app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
         app.MapScalarApiReference(
             ApiPaths.DocsPrefix,
             options =>
             {
-                options
-                    .WithTitle("TestCraft API")
-                    .WithOpenApiRoutePattern(
-                        $"{ApiPaths.DocsPrefix}/{{documentName}}/contract.json"
-                    )
-                    .AddDocument("v1", "TestCraft API v1", isDefault: true)
-                    .DisableDefaultFonts()
-                    .HideDeveloperTools()
-                    .DisableAgent()
-                    .DisableMcp()
-                    .DisableTelemetry();
-
-                foreach (
-                    var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Select(
-                        description => description.GroupName
-                    )
-                )
+                options.WithOpenApiRoutePattern(
+                    $"{ApiPaths.DocsPrefix}/{{documentName}}/swagger.json"
+                );
+                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
                 {
-                    options.AddDocument(
-                        $"{groupName}-generated",
-                        $"TestCraft API {groupName} (generated)",
-                        $"{ApiPaths.DocsPrefix}/{groupName}/swagger.json"
-                    );
+                    options.AddDocument(description.GroupName);
                 }
             }
         );
@@ -149,18 +117,14 @@ public static class SwaggerExtensions
         return app;
     }
 
-    private static byte[] LoadContract()
+    private static void UseSwaggerMiddleware(
+        this IApplicationBuilder app
+    )
     {
-        using var stream = typeof(SwaggerExtensions).Assembly.GetManifestResourceStream(
-            "openapi-contract.json"
-        )!;
-        var contract = JsonNode.Parse(stream)!;
-
-        contract["servers"] = new JsonArray(
-            new JsonObject { ["url"] = "/", ["description"] = "Same origin as this API reference." }
+        app.UseSwagger(options =>
+            options.RouteTemplate =
+                $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
         );
-
-        return JsonSerializer.SerializeToUtf8Bytes(contract);
     }
 }
 
