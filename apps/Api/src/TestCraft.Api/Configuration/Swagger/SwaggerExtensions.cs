@@ -3,6 +3,8 @@ using Asp.Versioning.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 
+using Scalar.AspNetCore;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 using TestCraft.Common.Security;
@@ -74,44 +76,40 @@ public static class SwaggerExtensions
                 branch =>
                 {
                     branch.UseBasicAuth<SwaggerBasicAuthOptions>();
-                    branch.UseSwaggerMiddleware(apiVersionDescriptionProvider);
+                    branch.UseSwaggerMiddleware();
                 }
             );
         }
         else
         {
-            app.UseSwaggerMiddleware(apiVersionDescriptionProvider);
+            app.UseSwaggerMiddleware();
         }
+
+        app.MapScalarApiReference(
+            ApiPaths.DocsPrefix,
+            options =>
+            {
+                options.WithOpenApiRoutePattern(
+                    $"{ApiPaths.DocsPrefix}/{{documentName}}/swagger.json"
+                );
+                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                {
+                    options.AddDocument(description.GroupName);
+                }
+            }
+        );
 
         return app;
     }
 
     private static void UseSwaggerMiddleware(
-        this IApplicationBuilder app,
-        IApiVersionDescriptionProvider apiVersionDescriptionProvider
+        this IApplicationBuilder app
     )
     {
         app.UseSwagger(options =>
             options.RouteTemplate =
                 $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
         );
-        app.UseSwaggerUI(options =>
-        {
-            foreach (
-                var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Select(
-                    description => description.GroupName
-                )
-            )
-            {
-                options.SwaggerEndpoint(
-                    $"{ApiPaths.DocsPrefix}/{groupName}/swagger.json",
-                    $"TestCraft API {groupName}"
-                );
-            }
-
-            options.RoutePrefix = ApiPaths.DocsPrefix.TrimStart('/');
-            options.DocumentTitle = "TestCraft API";
-        });
     }
 }
 
