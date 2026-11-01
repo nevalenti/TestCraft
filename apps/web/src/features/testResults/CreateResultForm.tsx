@@ -43,7 +43,8 @@ const schema = z.object({
   executedAt: z.string().min(1, "Executed at is required"),
 });
 
-type FormValues = z.infer<typeof schema>;
+type FormInputValues = z.input<typeof schema>;
+type FormValues = z.output<typeof schema>;
 
 interface CreateResultFormProps {
   projectId: string;
@@ -65,7 +66,7 @@ export const CreateResultForm = ({
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<FormInputValues, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       testCaseId: "",

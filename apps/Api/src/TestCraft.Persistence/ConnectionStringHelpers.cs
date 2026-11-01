@@ -19,6 +19,7 @@ public static class ConnectionStringHelpers
             Port = uri.Port > 0 ? uri.Port : 5432,
             Database = uri.AbsolutePath.TrimStart('/'),
             Username = Uri.UnescapeDataString(userInfo[0]),
+            GssEncryptionMode = GssEncryptionMode.Disable,
         };
 
         if (userInfo.Length > 1)

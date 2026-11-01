@@ -22,5 +22,6 @@ public class ConnectionStringHelpersTests
         builder.Password.Should().Be("p@ss");
         builder.Timeout.Should().Be(7);
         builder.Options.Should().Be("-c statement_timeout=1500");
+        builder.GssEncryptionMode.Should().Be(GssEncryptionMode.Disable);
     }
 }

@@ -3,6 +3,8 @@ from pathlib import Path
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 
 
 email = os.environ["DJANGO_SUPERUSER_EMAIL"]
@@ -14,6 +16,11 @@ user, _ = User.objects.get_or_create(email=email)
 user.is_active = True
 user.is_staff = True
 user.is_superuser = True
+try:
+    validate_password(password, user)
+except ValidationError:
+    if domain != "http://localhost:8001" or password != "admin":
+        raise
 user.set_password(password)
 user.save()
 

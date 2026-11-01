@@ -40,28 +40,30 @@ const givenFeed = (
   } as ReturnType<typeof useResultFeed>);
 };
 
-const elementSize = {
-  offsetHeight: Object.getOwnPropertyDescriptor(
-    HTMLElement.prototype,
-    "offsetHeight",
-  ),
-  offsetWidth: Object.getOwnPropertyDescriptor(
-    HTMLElement.prototype,
-    "offsetWidth",
-  ),
-};
+const offsetHeight = Object.getOwnPropertyDescriptor(
+  HTMLElement.prototype,
+  "offsetHeight",
+);
+const offsetWidth = Object.getOwnPropertyDescriptor(
+  HTMLElement.prototype,
+  "offsetWidth",
+);
 
 beforeAll(() => {
   Object.defineProperties(HTMLElement.prototype, {
-    offsetHeight: { configurable: true, get: () => 490 },
+    clientHeight: { configurable: true, get: () => 490 },
+    clientWidth: { configurable: true, get: () => 800 },
+    offsetHeight: { configurable: true, get: () => 49 },
     offsetWidth: { configurable: true, get: () => 800 },
   });
 });
 
 afterAll(() => {
+  Reflect.deleteProperty(HTMLElement.prototype, "clientHeight");
+  Reflect.deleteProperty(HTMLElement.prototype, "clientWidth");
   Object.defineProperties(HTMLElement.prototype, {
-    offsetHeight: elementSize.offsetHeight!,
-    offsetWidth: elementSize.offsetWidth!,
+    offsetHeight: offsetHeight!,
+    offsetWidth: offsetWidth!,
   });
 });
 
@@ -100,7 +102,9 @@ describe("LiveLogFeed", () => {
     expect(screen.getByText("500 results")).toBeInTheDocument();
     expect(screen.getByText("Case 0")).toBeInTheDocument();
     expect(screen.queryByText("Case 499")).not.toBeInTheDocument();
-    expect(screen.getAllByText(/^Case \d+$/).length).toBeLessThan(50);
+    const visibleCases = screen.getAllByText(/^Case \d+$/);
+    expect(visibleCases.length).toBeGreaterThan(0);
+    expect(visibleCases.length).toBeLessThan(50);
   });
 
   it("renders no feed while the first page is loading", () => {

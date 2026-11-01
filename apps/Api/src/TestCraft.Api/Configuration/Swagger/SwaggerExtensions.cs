@@ -86,8 +86,16 @@ public static class SwaggerExtensions
         {
             app.UseWhen(
                 context => context.Request.Path.StartsWithSegments(ApiPaths.DocsPrefix),
-                branch => branch.UseBasicAuth<SwaggerBasicAuthOptions>()
+                branch =>
+                {
+                    branch.UseBasicAuth<SwaggerBasicAuthOptions>();
+                    branch.UseSwaggerMiddleware();
+                }
             );
+        }
+        else
+        {
+            app.UseSwaggerMiddleware();
         }
 
         var contract = LoadContract();
@@ -102,17 +110,6 @@ public static class SwaggerExtensions
                 })
         );
 
-        app.UseSwagger(options =>
-            options.RouteTemplate =
-                $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
-        );
-
-        app.MapGet(
-                $"{ApiPaths.DocsPrefix}/index.html",
-                () => Results.Redirect($"{ApiPaths.DocsPrefix}/", permanent: true)
-            )
-            .ExcludeFromDescription();
-
         var apiVersionDescriptionProvider =
             app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
         app.MapScalarApiReference(
@@ -120,16 +117,10 @@ public static class SwaggerExtensions
             options =>
             {
                 options
-                    .WithTitle("TestCraft API")
                     .WithOpenApiRoutePattern(
                         $"{ApiPaths.DocsPrefix}/{{documentName}}/contract.json"
                     )
-                    .AddDocument("v1", "TestCraft API v1", isDefault: true)
-                    .DisableDefaultFonts()
-                    .HideDeveloperTools()
-                    .DisableAgent()
-                    .DisableMcp()
-                    .DisableTelemetry();
+                    .AddDocument("v1", "TestCraft API v1", isDefault: true);
 
                 foreach (
                     var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Select(
@@ -147,6 +138,14 @@ public static class SwaggerExtensions
         );
 
         return app;
+    }
+
+    private static void UseSwaggerMiddleware(this IApplicationBuilder app)
+    {
+        app.UseSwagger(options =>
+            options.RouteTemplate =
+                $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
+        );
     }
 
     private static byte[] LoadContract()

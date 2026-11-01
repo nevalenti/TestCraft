@@ -13,12 +13,12 @@
     "format:check": "oxfmt --check . '!apps/Api/openapi/v1.json'"
   },
   "devDependencies": {
-    "@changesets/cli": "^2.31.0",
-    "@redocly/cli": "^2.62.1",
+    "@changesets/cli": "^2.31.1",
+    "@redocly/cli": "^2.72.1",
     "eslint-plugin-simple-import-sort": "^13.0.0",
-    "eslint-plugin-sonarjs": "^4.1.0",
+    "eslint-plugin-sonarjs": "^4.2.2",
     "oxfmt": "^0.75.0",
     "oxlint": "^1.90.0",
-    "turbo": "^2.9.18"
+    "turbo": "^2.11.10"
   }
 }
