@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+from urllib.parse import urlparse
 
 from django.apps import apps
 from django.contrib.auth import get_user_model
@@ -10,6 +10,9 @@ from django.core.exceptions import ValidationError
 email = os.environ["DJANGO_SUPERUSER_EMAIL"]
 password = os.environ["DJANGO_SUPERUSER_PASSWORD"]
 domain = os.environ["GLITCHTIP_DOMAIN"].rstrip("/")
+dsn = urlparse(os.environ["GLITCHTIP_DSN"])
+public_key = dsn.username
+project_id = int(dsn.path.lstrip("/"))
 
 User = get_user_model()
 user, _ = User.objects.get_or_create(email=email)
@@ -43,15 +46,12 @@ team, _ = Team.objects.get_or_create(
 project, _ = Project.objects.get_or_create(
     organization=organization,
     slug="testcraft",
-    defaults={"name": "TestCraft"},
+    defaults={"id": project_id, "name": "TestCraft"},
 )
+if project.id != project_id:
+    raise SystemExit(
+        f"GLITCHTIP_DSN points at project {project_id}, but the testcraft project is {project.id}"
+    )
 team.projects.add(project)
 
-key = ProjectKey.objects.filter(project=project).first()
-if key is None:
-    key = ProjectKey.objects.create(project=project)
-
-dsn = f"http://{key.public_key}@{domain.removeprefix('http://').removeprefix('https://')}/{project.id}"
-output = Path("/output/dsn")
-output.parent.mkdir(parents=True, exist_ok=True)
-output.write_text(dsn + "\n")
+ProjectKey.objects.get_or_create(public_key=public_key, defaults={"project": project})
