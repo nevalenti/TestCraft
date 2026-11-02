@@ -23,7 +23,7 @@ public static class DependencyInjection
             .AddMessageBus<TDbContext>(options)
             .AddStorage(options)
             .AddEmail(options)
-            .AddNotifications(options)
+            .AddNotifications()
             .AddAuth(options);
 
         return services;
