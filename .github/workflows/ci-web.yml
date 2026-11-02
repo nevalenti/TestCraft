@@ -241,7 +241,7 @@ jobs:
   deploy:
     name: deploy to production
     needs: docker
-    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && vars.AUTO_DEPLOY_PRODUCTION == 'true'))
     runs-on: [self-hosted, testcraft-production]
     timeout-minutes: 10
     concurrency:

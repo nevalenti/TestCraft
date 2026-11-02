@@ -18,7 +18,7 @@ permissions:
 jobs:
   deploy:
     name: apply chart changes to production
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && vars.AUTO_DEPLOY_PRODUCTION == 'true'))
     runs-on: [self-hosted, testcraft-production]
     timeout-minutes: 15
     environment: production
