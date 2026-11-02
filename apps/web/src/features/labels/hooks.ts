@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
 
+import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import { labelQueries, labelsApi } from "@/features/labels/api";
 import { notify } from "@/lib/notify";
@@ -61,9 +62,11 @@ export const useDeleteLabel = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => labelsApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      const name = queryClient
-        .getQueryData<Label[]>(queryKeys.labels.all(projectId))
-        ?.find((label) => label.id === id)?.name;
+      const name = findCached<Label>(
+        queryClient,
+        queryKeys.labels.all(projectId),
+        id,
+      )?.name;
       notify(name ? `Label "${name}" deleted` : "Label deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.labels.all(projectId),
@@ -89,9 +92,11 @@ export const useAddTestCaseLabel = (
     mutationFn: (labelId: string) =>
       labelsApi.addToCase(projectId, caseId, labelId),
     onSuccess: (_, labelId) => {
-      const name = queryClient
-        .getQueryData<Label[]>(queryKeys.labels.all(projectId))
-        ?.find((label) => label.id === labelId)?.name;
+      const name = findCached<Label>(
+        queryClient,
+        queryKeys.labels.all(projectId),
+        labelId,
+      )?.name;
       notify(name ? `Label "${name}" added` : "Label added");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.all(projectId, suiteId),
@@ -114,9 +119,11 @@ export const useRemoveTestCaseLabel = (
     mutationFn: (labelId: string) =>
       labelsApi.removeFromCase(projectId, caseId, labelId),
     onSuccess: (_, labelId) => {
-      const name = queryClient
-        .getQueryData<Label[]>(queryKeys.labels.all(projectId))
-        ?.find((label) => label.id === labelId)?.name;
+      const name = findCached<Label>(
+        queryClient,
+        queryKeys.labels.all(projectId),
+        labelId,
+      )?.name;
       notify(name ? `Label "${name}" removed` : "Label removed");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.all(projectId, suiteId),

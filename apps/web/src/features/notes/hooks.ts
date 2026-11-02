@@ -51,6 +51,31 @@ const storeSavedNote = (
   queryClient.invalidateQueries({ queryKey: listsKey, refetchType: "none" });
 };
 
+const storeCreatedNote = (
+  queryClient: QueryClient,
+  detailKey: QueryKey,
+  allKey: QueryKey,
+  note: Note,
+  input: { content?: string },
+) => {
+  queryClient.setQueryData<NoteDetail>(detailKey, {
+    ...note,
+    content: input.content ?? "",
+  });
+  notify("Note created");
+  queryClient.invalidateQueries({ queryKey: allKey });
+};
+
+const dropDeletedNote = (
+  queryClient: QueryClient,
+  detailKey: QueryKey,
+  allKey: QueryKey,
+) => {
+  notify("Note deleted");
+  queryClient.invalidateQueries({ queryKey: allKey });
+  queryClient.removeQueries({ queryKey: detailKey });
+};
+
 export const usePersonalNotes = (search?: string) =>
   useQuery({
     ...personalNoteQueries.all(search),
@@ -67,14 +92,13 @@ export const useCreatePersonalNote = () => {
   return useMutation({
     mutationFn: (input: CreatePersonalNote) => personalNotesApi.create(input),
     onSuccess: (note, input) => {
-      queryClient.setQueryData<NoteDetail>(
+      storeCreatedNote(
+        queryClient,
         queryKeys.notes.personal.detail(note.id),
-        { ...note, content: input.content ?? "" },
+        queryKeys.notes.personal.all(),
+        note,
+        input,
       );
-      notify("Note created");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.personal.all(),
-      });
     },
   });
 };
@@ -110,13 +134,11 @@ export const useDeletePersonalNote = () => {
   return useMutation({
     mutationFn: (id: string) => personalNotesApi.delete(id),
     onSuccess: (_, id) => {
-      notify("Note deleted");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.personal.all(),
-      });
-      queryClient.removeQueries({
-        queryKey: queryKeys.notes.personal.detail(id),
-      });
+      dropDeletedNote(
+        queryClient,
+        queryKeys.notes.personal.detail(id),
+        queryKeys.notes.personal.all(),
+      );
     },
   });
 };
@@ -138,14 +160,13 @@ export const useCreateProjectNote = (projectId: string) => {
     mutationFn: (input: CreateProjectNote) =>
       projectNotesApi.create(projectId, input),
     onSuccess: (note, input) => {
-      queryClient.setQueryData<NoteDetail>(
+      storeCreatedNote(
+        queryClient,
         queryKeys.notes.project.detail(projectId, note.id),
-        { ...note, content: input.content ?? "" },
+        queryKeys.notes.project.all(projectId),
+        note,
+        input,
       );
-      notify("Note created");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.project.all(projectId),
-      });
     },
   });
 };
@@ -181,13 +202,11 @@ export const useDeleteProjectNote = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => projectNotesApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      notify("Note deleted");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.notes.project.all(projectId),
-      });
-      queryClient.removeQueries({
-        queryKey: queryKeys.notes.project.detail(projectId, id),
-      });
+      dropDeletedNote(
+        queryClient,
+        queryKeys.notes.project.detail(projectId, id),
+        queryKeys.notes.project.all(projectId),
+      );
     },
   });
 };

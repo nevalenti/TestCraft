@@ -5,6 +5,7 @@ import type {
   ProjectMember,
 } from "@testcraft/types";
 
+import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import {
   projectMemberQueries,
@@ -53,9 +54,11 @@ export const useRemoveProjectMember = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => projectMembersApi.remove(projectId, id),
     onSuccess: (_, id) => {
-      const email = queryClient
-        .getQueryData<ProjectMember[]>(queryKeys.projectMembers.all(projectId))
-        ?.find((member) => member.id === id)?.email;
+      const email = findCached<ProjectMember>(
+        queryClient,
+        queryKeys.projectMembers.all(projectId),
+        id,
+      )?.email;
       notify(email ? `${email} removed from project` : "Member removed");
       queryClient.invalidateQueries({
         queryKey: queryKeys.projectMembers.all(projectId),
