@@ -23,9 +23,10 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     [ConfigurationKeyName("DB_STATEMENT_TIMEOUT_MS")]
     public int DbStatementTimeoutMs { get; set; } = 30_000;
 
+    [Required]
     [Sensitive]
     [ConfigurationKeyName("REDIS_URL")]
-    public string? RedisUrl { get; set; }
+    public string RedisUrl { get; set; } = string.Empty;
 
     [Range(0.001, double.MaxValue)]
     [NotSensitive]
@@ -139,9 +140,6 @@ public sealed class InfrastructureOptions : IStartupOptions, IValidatableObject
     [NotSensitive]
     [ConfigurationKeyName("KEYCLOAK_VERIFY_TLS")]
     public bool KeycloakVerifyTls { get; set; } = true;
-
-    [MemberNotNullWhen(true, nameof(RedisUrl))]
-    internal bool IsRedisConfigured => !string.IsNullOrEmpty(RedisUrl);
 
     [MemberNotNullWhen(true, nameof(RabbitMqUrl))]
     internal bool IsRabbitMqConfigured => !string.IsNullOrEmpty(RabbitMqUrl);

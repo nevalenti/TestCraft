@@ -23,17 +23,6 @@ public static class RealtimeExtensions
         services.AddSingleton<RealtimeSocketServer>();
         services.AddSingleton<ITestRunNotifier, BrokerTestRunNotifier>();
 
-        if (string.IsNullOrEmpty(options.RedisUrl))
-        {
-            services.AddSingleton<ISocketTicketStore, InMemorySocketTicketStore>();
-            services.AddSingleton<IConnectionSlots>(
-                new InMemoryConnectionSlots(maxConnectionsPerUser)
-            );
-            services.AddSingleton<IRunEventPublisher, LocalRunEventPublisher>();
-
-            return builder;
-        }
-
         var redisOptions = RedisConnectionStringHelpers.ToRedisConfigurationOptions(
             options.RedisUrl
         );

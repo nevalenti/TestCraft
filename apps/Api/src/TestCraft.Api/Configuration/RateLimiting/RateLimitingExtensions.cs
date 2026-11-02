@@ -12,21 +12,11 @@ public static class RateLimitingExtensions
         "Testing",
     ];
 
-    public static WebApplicationBuilder AddApiRateLimiting(
-        this WebApplicationBuilder builder,
-        InfrastructureOptions infrastructureOptions
-    )
+    public static WebApplicationBuilder AddApiRateLimiting(this WebApplicationBuilder builder)
     {
         builder.Services.AddStartupOptions<RateLimitOptions>(builder.Configuration);
 
-        if (string.IsNullOrEmpty(infrastructureOptions.RedisUrl))
-        {
-            builder.Services.AddSingleton<IRateLimitCounter, InMemoryRateLimitCounter>();
-        }
-        else
-        {
-            builder.Services.AddSingleton<IRateLimitCounter, RedisRateLimitCounter>();
-        }
+        builder.Services.AddSingleton<IRateLimitCounter, RedisRateLimitCounter>();
 
         return builder;
     }

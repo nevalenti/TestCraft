@@ -67,7 +67,7 @@ public static class HostingExtensions
             .AddApiVersioningSupport()
             .AddErrorHandling()
             .AddCorsPolicy()
-            .AddApiRateLimiting(infrastructureOptions)
+            .AddApiRateLimiting()
             .AddSwaggerDocs()
             .AddHangfireJobs(infrastructureOptions)
             .AddOutputCaching();
