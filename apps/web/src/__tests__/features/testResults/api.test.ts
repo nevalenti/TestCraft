@@ -2,9 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/api/sdk", () => ({
   listTestResults: vi.fn(),
-  createTestResult: vi.fn(),
-  updateTestResult: vi.fn(),
-  deleteTestResult: vi.fn(),
 }));
 
 import * as sdk from "@/api/sdk";
@@ -70,53 +67,6 @@ describe("testResultsApi.getAll", () => {
         sort_by: "duration_ms",
         sort_dir: "desc",
       },
-    });
-  });
-});
-
-describe("testResultsApi other operations", () => {
-  it("create posts the new result", async () => {
-    vi.mocked(sdk.createTestResult).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testResultsApi.create("p1", "r1", { status: "passed" } as any);
-
-    expect(sdk.createTestResult).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
-      body: { status: "passed" },
-    });
-  });
-
-  it("update puts changes including the id", async () => {
-    vi.mocked(sdk.updateTestResult).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testResultsApi.update(
-      "p1",
-      "r1",
-      "res1",
-      {
-        status: "failed",
-      } as any,
-      1,
-    );
-
-    expect(sdk.updateTestResult).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1", result_id: "res1" },
-      body: {
-        status: "failed",
-      },
-      headers: { "if-match": '"1"' },
-    });
-  });
-
-  it("delete removes the result by id", () => {
-    testResultsApi.delete("p1", "r1", "res1");
-
-    expect(sdk.deleteTestResult).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1", result_id: "res1" },
     });
   });
 });

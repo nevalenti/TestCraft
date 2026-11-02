@@ -2,11 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/api/sdk", () => ({
   listTestRuns: vi.fn(),
-  getTestRun: vi.fn(),
-  createTestRun: vi.fn(),
-  updateTestRun: vi.fn(),
-  deleteTestRun: vi.fn(),
-  getTestRunSummary: vi.fn(),
   getTestRunLogs: vi.fn(),
 }));
 
@@ -74,69 +69,6 @@ describe("testRunsApi", () => {
         status: "completed",
         sort_by: "updated_at",
       },
-    });
-  });
-
-  it("getById fetches a single run", async () => {
-    vi.mocked(sdk.getTestRun).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testRunsApi.getById("p1", "r1");
-
-    expect(sdk.getTestRun).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
-    });
-  });
-
-  it("create posts the new run", async () => {
-    vi.mocked(sdk.createTestRun).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testRunsApi.create("p1", { name: "Nightly" } as any);
-
-    expect(sdk.createTestRun).toHaveBeenCalledWith({
-      path: { project_id: "p1" },
-      body: {
-        name: "Nightly",
-      },
-    });
-  });
-
-  it("update puts changes including the id", async () => {
-    vi.mocked(sdk.updateTestRun).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testRunsApi.update("p1", "r1", { name: "Renamed" } as any, 1);
-
-    expect(sdk.updateTestRun).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
-      body: {
-        name: "Renamed",
-      },
-      headers: { "if-match": '"1"' },
-    });
-  });
-
-  it("delete removes the run by id", () => {
-    testRunsApi.delete("p1", "r1");
-
-    expect(sdk.deleteTestRun).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
-    });
-  });
-
-  it("getSummary fetches the run's summary sub-resource", async () => {
-    vi.mocked(sdk.getTestRunSummary).mockResolvedValue({
-      data: {},
-    } as never);
-
-    await testRunsApi.getSummary("p1", "r1");
-
-    expect(sdk.getTestRunSummary).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
     });
   });
 

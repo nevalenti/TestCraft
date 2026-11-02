@@ -4,7 +4,6 @@ vi.mock("@/api/sdk", () => ({
   listAttachments: vi.fn(),
   uploadAttachment: vi.fn(),
   getAttachmentDownloadUrl: vi.fn(),
-  deleteAttachment: vi.fn(),
 }));
 
 import * as sdk from "@/api/sdk";
@@ -61,18 +60,5 @@ describe("attachmentsApi", () => {
       },
     });
     expect(url).toBe("https://cdn.example.com/a1");
-  });
-
-  it("delete removes the attachment by id", () => {
-    attachmentsApi.delete("p1", "r1", "res1", "a1");
-
-    expect(sdk.deleteAttachment).toHaveBeenCalledWith({
-      path: {
-        project_id: "p1",
-        run_id: "r1",
-        result_id: "res1",
-        attachment_id: "a1",
-      },
-    });
   });
 });

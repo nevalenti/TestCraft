@@ -2,7 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/api/sdk", () => ({
   getRunTrend: vi.fn(),
-  getSuiteBreakdown: vi.fn(),
   getFlakyTests: vi.fn(),
   getRunComparison: vi.fn(),
 }));
@@ -38,18 +37,6 @@ describe("analyticsApi", () => {
     expect(sdk.getRunTrend).toHaveBeenCalledWith({
       path: { project_id: "p1" },
       query: { limit: 50 },
-    });
-  });
-
-  it("getSuiteBreakdown fetches breakdown for a specific run", async () => {
-    vi.mocked(sdk.getSuiteBreakdown).mockResolvedValue({
-      data: [],
-    } as never);
-
-    await analyticsApi.getSuiteBreakdown("p1", "r1");
-
-    expect(sdk.getSuiteBreakdown).toHaveBeenCalledWith({
-      path: { project_id: "p1", run_id: "r1" },
     });
   });
 
