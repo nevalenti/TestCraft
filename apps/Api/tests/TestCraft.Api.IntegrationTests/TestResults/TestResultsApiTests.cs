@@ -5,7 +5,9 @@ using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Features.TestPlans;
 using TestCraft.Application.Features.TestResults;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
@@ -81,6 +83,74 @@ public class TestResultsApiTests(ApiFactory factory)
             .Should()
             .Be(1);
         (await context.TestResults.CountAsync(result => result.TestRunId == run.Id)).Should().Be(6);
+    }
+
+    [Fact]
+    public async Task Create_OnPlanRun_FillsUntestedPlaceholderInsteadOfAddingRow()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var byId = await client.CreateCaseAsync(project.Id, suite.Id, "By id");
+        var byName = await client.CreateCaseAsync(project.Id, suite.Id, "By name");
+        var plan = await client.CreatePlanAsync(project.Id);
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, byId.Id);
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, byName.Id);
+        var run = await client.CreateRunFromPlanAsync(project.Id, plan.Id);
+        var resultsPath = $"/api/v1/projects/{project.Id}/runs/{run.Id}/results";
+
+        var idResponse = await client.PostAsJsonAsync(
+            resultsPath,
+            new CreateTestResult.Command
+            {
+                TestCaseId = byId.Id,
+                Status = TestResultStatus.Passed,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+        var nameResponse = await client.PostAsJsonAsync(
+            $"{resultsPath}/by-name",
+            new CreateTestResultByName.Command
+            {
+                SuiteName = suite.Name,
+                TestCaseName = byName.Name,
+                Status = TestResultStatus.Failed,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+
+        idResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        nameResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var summary = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
+        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(ApiTestHelpers.JsonOptions);
+        summary!.Total.Should().Be(2);
+        summary.Untested.Should().Be(0);
+        summary.Passed.Should().Be(1);
+        summary.Failed.Should().Be(1);
+        factory
+            .Services.GetRequiredService<FakeTestRunNotifier>()
+            .ResultEventsFor(run.Id)
+            .Should()
+            .Equal(
+                nameof(ITestRunNotifier.ResultUpdatedAsync),
+                nameof(ITestRunNotifier.ResultUpdatedAsync)
+            );
+    }
+
+    [Fact]
+    public async Task Create_OnRunWithoutPlaceholder_NotifiesResultAdded()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, testCaseId) = await CreateProjectRunCaseAsync(client);
+
+        await client.CreateResultAsync(projectId, runId, testCaseId);
+
+        factory
+            .Services.GetRequiredService<FakeTestRunNotifier>()
+            .ResultEventsFor(runId)
+            .Should()
+            .Equal(nameof(ITestRunNotifier.ResultAddedAsync));
     }
 
     private static async Task<(
