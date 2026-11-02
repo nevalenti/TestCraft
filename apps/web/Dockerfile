@@ -40,7 +40,7 @@ RUN --mount=type=secret,id=glitchtip_auth_token,required=false \
     pnpm --filter testcraft-web run build \
     && find apps/web/dist -name '*.map' -delete
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginx:1.29-alpine AS runtime
 
 ARG APK_CACHE_BUST=0
 RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
