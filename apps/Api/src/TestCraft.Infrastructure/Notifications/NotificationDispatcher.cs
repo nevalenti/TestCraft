@@ -10,7 +10,6 @@ using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Infrastructure.Configuration;
-using TestCraft.Infrastructure.FeatureToggles;
 
 namespace TestCraft.Infrastructure.Notifications;
 
@@ -19,7 +18,6 @@ public partial class NotificationDispatcher(
     IApplicationDbContext context,
     IEmailService email,
     IHttpClientFactory httpClientFactory,
-    [FromKeyedServices(FeatureToggleNames.NotificationDeliveryRetry)] IFeatureToggle retryToggle,
     IOptions<InfrastructureOptions> options,
     ILogger<NotificationDispatcher> logger,
     TimeProvider timeProvider
@@ -69,7 +67,7 @@ public partial class NotificationDispatcher(
 
     public async Task RetryPendingDeliveriesAsync(CancellationToken cancellationToken = default)
     {
-        if (!retryToggle.IsEnabled)
+        if (!options.Value.NotificationDeliveryRetryEnabled)
         {
             LogRetryDisabled(logger);
             return;
