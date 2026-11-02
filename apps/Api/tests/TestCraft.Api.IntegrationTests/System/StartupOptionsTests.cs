@@ -32,6 +32,22 @@ public class StartupOptionsTests
     }
 
     [Fact]
+    public void MissingRedisUrl_FailsValidation()
+    {
+        var act = () =>
+            new ServiceCollection().AddStartupOptions<InfrastructureOptions>(
+                Configuration(
+                    ("DATABASE_URL", "postgresql://app@db/testcraft"),
+                    ("KEYCLOAK_AUTHORITY", "http://keycloak/realms/testcraft"),
+                    ("KEYCLOAK_ADMIN_CLIENT_ID", "admin"),
+                    ("KEYCLOAK_ADMIN_CLIENT_SECRET", "secret")
+                )
+            );
+
+        act.Should().Throw<OptionsValidationException>().WithMessage("*RedisUrl*");
+    }
+
+    [Fact]
     public void KnownProxyNetworks_AreParsedAsCidrs()
     {
         var options = new ServiceCollection().AddStartupOptions<ProxyOptions>(
@@ -66,6 +82,7 @@ public class StartupOptionsTests
         new ServiceCollection().AddStartupOptions<InfrastructureOptions>(
             Configuration([
                 ("DATABASE_URL", "postgresql://app@db/testcraft"),
+                ("REDIS_URL", "redis://redis:6379/1"),
                 ("KEYCLOAK_AUTHORITY", "http://keycloak/realms/testcraft"),
                 ("KEYCLOAK_ADMIN_CLIENT_ID", "admin"),
                 ("KEYCLOAK_ADMIN_CLIENT_SECRET", "secret"),

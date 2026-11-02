@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using Testcontainers.Redis;
 using TestCraft.Api.Realtime;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Persistence;
@@ -17,7 +18,6 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
     private static readonly string[] ExternalServiceSettings =
     [
         "RABBITMQ_URL",
-        "REDIS_URL",
         "SMTP_HOST",
         "LOKI_URL",
         "OTEL_EXPORTER_OTLP_ENDPOINT",
@@ -27,14 +27,17 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         "postgres:16-alpine"
     ).Build();
 
+    private readonly RedisContainer _redis = new RedisBuilder("redis:7-alpine").Build();
+
     public async Task InitializeAsync()
     {
-        await _postgres.StartAsync();
+        await Task.WhenAll(_postgres.StartAsync(), _redis.StartAsync());
 
         Environment.SetEnvironmentVariable(
             "DATABASE_URL",
             ToDatabaseUrl(_postgres.GetConnectionString())
         );
+        Environment.SetEnvironmentVariable("REDIS_URL", $"redis://{_redis.GetConnectionString()}");
         Environment.SetEnvironmentVariable(
             "KEYCLOAK_AUTHORITY",
             "https://keycloak.invalid/realms/testcraft"
@@ -115,6 +118,7 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public new async Task DisposeAsync()
     {
+        await _redis.DisposeAsync();
         await _postgres.DisposeAsync();
         await base.DisposeAsync();
     }

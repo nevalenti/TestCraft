@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using StackExchange.Redis;
 
 namespace TestCraft.Api.Configuration.RateLimiting;
@@ -11,46 +10,6 @@ public interface IRateLimitCounter
 internal static class RateLimitWindow
 {
     public static readonly TimeSpan Length = TimeSpan.FromMinutes(15);
-}
-
-public sealed class InMemoryRateLimitCounter(TimeProvider timeProvider) : IRateLimitCounter
-{
-    private readonly ConcurrentDictionary<string, Window> _windows = new();
-
-    public Task<int?> HitAsync(string key, int limit)
-    {
-        var now = timeProvider.GetUtcNow();
-        var window = _windows.AddOrUpdate(
-            key,
-            _ => new Window(1, now + RateLimitWindow.Length),
-            (_, current) =>
-                current.EndsAt <= now
-                    ? new Window(1, now + RateLimitWindow.Length)
-                    : current with
-                    {
-                        Count = current.Count + 1,
-                    }
-        );
-
-        if (_windows.Count > 100_000)
-        {
-            foreach (var (staleKey, stale) in _windows)
-            {
-                if (stale.EndsAt <= now)
-                {
-                    _windows.TryRemove(staleKey, out _);
-                }
-            }
-        }
-
-        return Task.FromResult(
-            window.Count > limit
-                ? (int?)Math.Max(1, (int)Math.Ceiling((window.EndsAt - now).TotalSeconds))
-                : null
-        );
-    }
-
-    private sealed record Window(int Count, DateTimeOffset EndsAt);
 }
 
 public sealed partial class RedisRateLimitCounter(

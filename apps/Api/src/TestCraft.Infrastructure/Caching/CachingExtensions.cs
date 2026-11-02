@@ -11,18 +11,11 @@ public static class CachingExtensions
         InfrastructureOptions options
     )
     {
-        if (options.IsRedisConfigured)
-        {
-            services.AddStackExchangeRedisCache(cacheOptions =>
-                cacheOptions.ConfigurationOptions =
-                    RedisConnectionStringHelpers.ToRedisConfigurationOptions(options.RedisUrl)
-            );
-            services.AddSingleton<ICacheService, DistributedCacheService>();
-        }
-        else
-        {
-            services.AddSingleton<ICacheService, NoOpCacheService>();
-        }
+        services.AddStackExchangeRedisCache(cacheOptions =>
+            cacheOptions.ConfigurationOptions =
+                RedisConnectionStringHelpers.ToRedisConfigurationOptions(options.RedisUrl)
+        );
+        services.AddSingleton<ICacheService, DistributedCacheService>();
 
         return services;
     }

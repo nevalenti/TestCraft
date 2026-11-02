@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text.Json;
@@ -42,42 +41,6 @@ public interface ISocketTicketStore
     Task SaveAsync(string ticket, SocketTickets.Grant grant, TimeSpan lifetime);
 
     Task<SocketTickets.Grant?> TakeAsync(string ticket);
-}
-
-public sealed class InMemorySocketTicketStore(TimeProvider timeProvider) : ISocketTicketStore
-{
-    private const int SweepThreshold = 1_000;
-
-    private readonly ConcurrentDictionary<
-        string,
-        (SocketTickets.Grant Grant, DateTimeOffset RedeemBy)
-    > _grants = new(StringComparer.Ordinal);
-
-    public Task SaveAsync(string ticket, SocketTickets.Grant grant, TimeSpan lifetime)
-    {
-        var now = timeProvider.GetUtcNow();
-        if (_grants.Count > SweepThreshold)
-        {
-            foreach (var (stale, entry) in _grants)
-            {
-                if (entry.RedeemBy <= now)
-                {
-                    _grants.TryRemove(stale, out _);
-                }
-            }
-        }
-
-        _grants[ticket] = (grant, now + lifetime);
-
-        return Task.CompletedTask;
-    }
-
-    public Task<SocketTickets.Grant?> TakeAsync(string ticket) =>
-        Task.FromResult(
-            _grants.TryRemove(ticket, out var entry) && entry.RedeemBy > timeProvider.GetUtcNow()
-                ? entry.Grant
-                : null
-        );
 }
 
 public sealed class RedisSocketTicketStore(IConnectionMultiplexer redis) : ISocketTicketStore
