@@ -21,7 +21,6 @@ env-sync:
 [group('stack')]
 up: env-sync render
     {{ compose }} up -d
-    bash scripts/glitchtip-bootstrap.sh
 
 [group('stack')]
 down:
