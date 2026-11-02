@@ -132,20 +132,7 @@ public static class GetRunByShareToken
             var resultsQuery = context
                 .TestResults.Where(result => result.TestRunId == run.Id)
                 .CurrentOutcomes();
-            var statusCounts = await resultsQuery
-                .GroupBy(result => result.Status)
-                .Select(group => new { Status = group.Key, Count = group.Count() })
-                .ToListAsync(cancellationToken);
-
-            var counts = statusCounts.ToDictionary(count => count.Status, count => count.Count);
-            var passed = counts.GetValueOrDefault(TestResultStatus.Passed);
-            var failed = counts.GetValueOrDefault(TestResultStatus.Failed);
-            var blocked = counts.GetValueOrDefault(TestResultStatus.Blocked);
-            var skipped = counts.GetValueOrDefault(TestResultStatus.Skipped);
-            var untested = counts.GetValueOrDefault(TestResultStatus.Untested);
-            var executed = passed + failed + blocked + skipped;
-            var total = executed + untested;
-            var passRate = executed > 0 ? Math.Round(passed * 100.0 / executed, 1) : 0;
+            var counts = await StatusCounts.CountByStatusAsync(resultsQuery, cancellationToken);
 
             var results = await resultsQuery
                 .OrderBy(result => result.CreatedAt)
@@ -168,15 +155,15 @@ public static class GetRunByShareToken
                 Environment = run.Environment,
                 Status = run.Status,
                 CreatedAt = run.CreatedAt,
-                Total = total,
-                Passed = passed,
-                Failed = failed,
-                Blocked = blocked,
-                Skipped = skipped,
-                Untested = untested,
-                PassRate = passRate,
+                Total = counts.Total,
+                Passed = counts.Passed,
+                Failed = counts.Failed,
+                Blocked = counts.Blocked,
+                Skipped = counts.Skipped,
+                Untested = counts.Untested,
+                PassRate = counts.PassRate ?? 0,
                 Results = results,
-                ResultsTotal = total,
+                ResultsTotal = counts.Total,
                 Page = request.Page,
                 PageSize = request.PageSize,
             };

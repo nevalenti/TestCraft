@@ -94,37 +94,34 @@ public static class GetRunTrend
                     Count = group.Count(),
                 })
                 .ToListAsync(cancellationToken);
-            var counts = statusCounts.ToDictionary(
-                item => (item.TestRunId, item.Status),
-                item => item.Count
-            );
+            var countsByRun = statusCounts
+                .GroupBy(item => item.TestRunId)
+                .ToDictionary(
+                    group => group.Key,
+                    group =>
+                        StatusCounts.From(
+                            group.ToDictionary(item => item.Status, item => item.Count)
+                        )
+                );
 
             return runs.AsEnumerable()
                 .Reverse()
                 .Select(run =>
                 {
-                    var passed = counts.GetValueOrDefault((run.Id, TestResultStatus.Passed));
-                    var failed = counts.GetValueOrDefault((run.Id, TestResultStatus.Failed));
-                    var blocked = counts.GetValueOrDefault((run.Id, TestResultStatus.Blocked));
-                    var skipped = counts.GetValueOrDefault((run.Id, TestResultStatus.Skipped));
-                    var untested = counts.GetValueOrDefault((run.Id, TestResultStatus.Untested));
-                    var executed = passed + failed + blocked + skipped;
-                    var total = executed + untested;
-                    var passRate =
-                        executed > 0 ? Math.Round((double)passed / executed * 100, 1) : 0.0;
+                    var counts = countsByRun.GetValueOrDefault(run.Id);
 
                     return new TrendPoint
                     {
                         RunId = run.Id,
                         RunName = run.Name,
                         CreatedAt = run.CreatedAt,
-                        Total = total,
-                        Passed = passed,
-                        Failed = failed,
-                        Blocked = blocked,
-                        Skipped = skipped,
-                        Untested = untested,
-                        PassRate = passRate,
+                        Total = counts.Total,
+                        Passed = counts.Passed,
+                        Failed = counts.Failed,
+                        Blocked = counts.Blocked,
+                        Skipped = counts.Skipped,
+                        Untested = counts.Untested,
+                        PassRate = counts.PassRate ?? 0,
                         Source = run.Source,
                     };
                 })
