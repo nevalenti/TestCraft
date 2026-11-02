@@ -6,6 +6,7 @@ import type {
   WebhookSubscription,
 } from "@testcraft/types";
 
+import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import {
   notificationQueries,
@@ -37,11 +38,11 @@ export const useDeleteWebhook = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteWebhook(projectId, id),
     onSuccess: (_, id) => {
-      const url = queryClient
-        .getQueryData<WebhookSubscription[]>(
-          queryKeys.notifications.webhooks(projectId),
-        )
-        ?.find((webhook) => webhook.id === id)?.url;
+      const url = findCached<WebhookSubscription>(
+        queryClient,
+        queryKeys.notifications.webhooks(projectId),
+        id,
+      )?.url;
       notify(url ? `Webhook "${url}" removed` : "Webhook removed");
       queryClient.invalidateQueries({
         queryKey: queryKeys.notifications.webhooks(projectId),
@@ -74,11 +75,11 @@ export const useDeleteEmail = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => notificationsApi.deleteEmail(projectId, id),
     onSuccess: (_, id) => {
-      const email = queryClient
-        .getQueryData<EmailSubscription[]>(
-          queryKeys.notifications.emails(projectId),
-        )
-        ?.find((subscription) => subscription.id === id)?.email;
+      const email = findCached<EmailSubscription>(
+        queryClient,
+        queryKeys.notifications.emails(projectId),
+        id,
+      )?.email;
       notify(
         email
           ? `Email subscription removed for ${email}`

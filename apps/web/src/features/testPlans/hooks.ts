@@ -6,6 +6,7 @@ import type {
   UpdateTestPlan,
 } from "@testcraft/types";
 
+import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import { testPlanQueries, testPlansApi } from "@/features/testPlans/api";
 import { notify } from "@/lib/notify";
@@ -66,9 +67,11 @@ export const useDeleteTestPlan = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testPlansApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      const name = queryClient
-        .getQueryData<TestPlan[]>(queryKeys.testPlans.all(projectId))
-        ?.find((plan) => plan.id === id)?.name;
+      const name = findCached<TestPlan>(
+        queryClient,
+        queryKeys.testPlans.all(projectId),
+        id,
+      )?.name;
       notify(name ? `Test plan "${name}" deleted` : "Test plan deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { ApiTokenResponse, CreateApiToken } from "@testcraft/types";
 
+import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import { apiTokenQueries, apiTokensApi } from "@/features/apiTokens/api";
 import { notify } from "@/lib/notify";
@@ -28,9 +29,11 @@ export const useRevokeApiToken = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => apiTokensApi.revoke(projectId, id),
     onSuccess: (_, id) => {
-      const name = queryClient
-        .getQueryData<ApiTokenResponse[]>(queryKeys.apiTokens.all(projectId))
-        ?.find((token) => token.id === id)?.name;
+      const name = findCached<ApiTokenResponse>(
+        queryClient,
+        queryKeys.apiTokens.all(projectId),
+        id,
+      )?.name;
       notify(name ? `Token "${name}" revoked` : "Token revoked");
       queryClient.invalidateQueries({
         queryKey: queryKeys.apiTokens.all(projectId),
