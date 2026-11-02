@@ -123,6 +123,36 @@ internal static class ApiTestHelpers
             return (await response.Content.ReadFromJsonAsync<TestPlanResponse>(JsonOptions))!;
         }
 
+        public Task<HttpResponseMessage> AddCaseToPlanAsync(
+            ProjectId projectId,
+            TestPlanId planId,
+            TestCaseId testCaseId
+        ) =>
+            client.PostAsJsonAsync(
+                $"/api/v1/projects/{projectId}/plans/{planId}/cases",
+                new AddCaseToPlan.Command { TestPlanId = planId, TestCaseId = testCaseId }
+            );
+
+        public async Task<TestRunResponse> CreateRunFromPlanAsync(
+            ProjectId projectId,
+            TestPlanId planId,
+            string name = "Plan run",
+            string environment = "staging"
+        )
+        {
+            var response = await client.PostAsJsonAsync(
+                $"/api/v1/projects/{projectId}/plans/{planId}/runs",
+                new CreateRunFromPlan.Command
+                {
+                    TestPlanId = planId,
+                    Name = name,
+                    Environment = environment,
+                }
+            );
+
+            return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
+        }
+
         public async Task<TestPlanDetailResponse> GetPlanAsync(
             ProjectId projectId,
             TestPlanId planId

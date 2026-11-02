@@ -146,66 +146,21 @@ public static class CreateTestResultByName
                 }
             }
 
-            var result = await context.TestResults.FirstOrDefaultAsync(
-                existingResult =>
-                    existingResult.TestRunId == request.RunId
-                    && existingResult.TestCaseId == testCase.Id
-                    && existingResult.Status == TestResultStatus.Untested,
-                cancellationToken
-            );
-            var replacedPlaceholder = result is not null;
-            if (result is not null)
-            {
-                result.Record(
-                    request.Status,
-                    request.Notes,
-                    null,
-                    request.DurationMs,
-                    request.ExecutedAt,
-                    currentUser.UserId
-                );
-            }
-            else
-            {
-                result = TestResult.Create(
-                    request.RunId,
-                    testCase.Id,
-                    request.Status,
-                    request.Notes,
-                    defectType: null,
-                    request.DurationMs,
-                    request.ExecutedAt,
-                    currentUser.UserId
-                );
-                context.TestResults.Add(result);
-            }
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            var summary = await context
-                .LiveResults()
-                .Where(createdResult => createdResult.Id == result.Id)
-                .Select(TestResultResponse.Projection)
-                .FirstAsync(cancellationToken);
-
-            await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
-
-            if (replacedPlaceholder)
-            {
-                await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
-            }
-            else
-            {
-                await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
-            }
-
-            await notifier.DashboardChangedAsync(
+            return await TestResultRecording.RecordAsync(
+                context,
+                cache,
+                notifier,
+                currentUser.UserId,
                 request.ProjectId,
                 request.RunId,
+                testCase.Id,
+                request.Status,
+                request.Notes,
+                defectType: null,
+                request.DurationMs,
+                request.ExecutedAt,
                 cancellationToken
             );
-
-            return summary;
         }
     }
 }

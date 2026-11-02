@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Testcontainers.PostgreSql;
+using TestCraft.Api.Realtime;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Persistence;
 
@@ -82,6 +83,12 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
             services.AddSingleton<FakeEmailService>();
             services.AddSingleton<IEmailService>(provider =>
                 provider.GetRequiredService<FakeEmailService>()
+            );
+            services.AddSingleton<FakeTestRunNotifier>(provider => new FakeTestRunNotifier(
+                ActivatorUtilities.CreateInstance<BrokerTestRunNotifier>(provider)
+            ));
+            services.AddSingleton<ITestRunNotifier>(provider =>
+                provider.GetRequiredService<FakeTestRunNotifier>()
             );
         });
     }

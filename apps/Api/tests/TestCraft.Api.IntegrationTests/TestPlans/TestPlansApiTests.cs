@@ -68,10 +68,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Login Test");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
 
         var getResponse = await client.GetAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases"
@@ -93,10 +90,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Login Test");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        var addResponse = await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        var addResponse = await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
         addResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var getResponse = await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}");
@@ -115,14 +109,8 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id);
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
 
         var detail = await (
             await client.GetAsync($"/api/v1/projects/{project.Id}/plans/{plan.Id}")
@@ -140,10 +128,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id);
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
 
         var removeResponse = await client.DeleteAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/{testCase.Id}"
@@ -167,14 +152,8 @@ public class TestPlansApiTests(ApiFactory factory)
         var case2 = await client.CreateCaseAsync(project.Id, suite.Id, "Case 2");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case1.Id }
-        );
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case2.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, case1.Id);
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, case2.Id);
 
         var runResponse = await client.PostAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/runs",
@@ -360,14 +339,8 @@ public class TestPlansApiTests(ApiFactory factory)
         var case2 = await client.CreateCaseAsync(project.Id, suite.Id, "Case 2");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case1.Id }
-        );
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = case2.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, case1.Id);
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, case2.Id);
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
@@ -401,10 +374,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Case 1");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
@@ -428,10 +398,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var testCase = await client.CreateCaseAsync(project.Id, suite.Id, "Case 1");
         var plan = await client.CreatePlanAsync(project.Id);
 
-        await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases",
-            new AddCaseToPlan.Command { TestPlanId = TestPlanId.New(), TestCaseId = testCase.Id }
-        );
+        await client.AddCaseToPlanAsync(project.Id, plan.Id, testCase.Id);
 
         var reorderResponse = await client.PutAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}/cases/order",
