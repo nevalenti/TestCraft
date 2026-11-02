@@ -1,9 +1,7 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -25,6 +23,9 @@ public static class UpdateTestRun
         [JsonIgnore]
         public TestRunId Id { get; init; }
 
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
+
         /// <summary>The run's new display name.</summary>
         public required string Name { get; init; }
 
@@ -45,7 +46,7 @@ public static class UpdateTestRun
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
+    public sealed class Handler(IApplicationDbContext context, ITestRunNotifier notifier)
         : IRequestHandler<Command, TestRunResponse>
     {
         public async Task<TestRunResponse> Handle(
@@ -60,26 +61,19 @@ public static class UpdateTestRun
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(run, request.ExpectedVersion);
+
+            var statusChanged = run.Status != request.Status;
             run.Update(request.Name, request.Environment);
             run.TransitionTo(request.Status);
 
             await context.SaveChangesAsync(cancellationToken);
+            if (!statusChanged)
+            {
+                await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
+            }
 
-            return await context
-                .TestRuns.Where(updatedRun => updatedRun.Id == run.Id)
-                .Select(updatedRun => new TestRunResponse
-                {
-                    Id = updatedRun.Id,
-                    ProjectId = updatedRun.ProjectId,
-                    Name = updatedRun.Name,
-                    Environment = updatedRun.Environment,
-                    Status = updatedRun.Status,
-                    Source = updatedRun.Source,
-                    ExecutedById = updatedRun.ExecutedById,
-                    CreatedAt = updatedRun.CreatedAt,
-                    UpdatedAt = updatedRun.UpdatedAt,
-                })
-                .FirstAsync(cancellationToken);
+            return TestRunResponse.FromEntity(run);
         }
     }
 }

@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.Projects;
@@ -86,7 +84,7 @@ public class ProjectsApiTests(ApiFactory factory)
             )
         ).Content.ReadFromJsonAsync<ProjectResponse>();
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{created!.Id}",
             new UpdateProject.Command { Id = created.Id, Name = "New Name" }
         );
@@ -157,7 +155,7 @@ public class ProjectsApiTests(ApiFactory factory)
             new CreateProject.Command { Name = "" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

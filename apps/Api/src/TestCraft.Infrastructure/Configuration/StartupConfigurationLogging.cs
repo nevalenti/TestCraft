@@ -1,5 +1,4 @@
 using System.Reflection;
-
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,6 +18,7 @@ public static partial class StartupConfigurationLogging
                 var type = configuration.GetType();
                 foreach (
                     var property in type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                        .Where(property => property.SetMethod?.IsPublic == true)
                 )
                 {
                     var isSensitive = property.GetCustomAttribute<NotSensitiveAttribute>() is null;
@@ -37,16 +37,7 @@ public static partial class StartupConfigurationLogging
             return NotSetValue;
         }
 
-        if (!isSensitive)
-        {
-            return value switch
-            {
-                string[] values => string.Join(", ", values),
-                _ => value?.ToString() ?? NotSetValue,
-            };
-        }
-
-        return RedactedValue;
+        return isSensitive ? RedactedValue : value!.ToString()!;
     }
 
     private static bool IsEmpty(object? value) =>
@@ -54,7 +45,6 @@ public static partial class StartupConfigurationLogging
         {
             null => true,
             string stringValue => string.IsNullOrEmpty(stringValue),
-            string[] { Length: 0 } => true,
             _ => false,
         };
 

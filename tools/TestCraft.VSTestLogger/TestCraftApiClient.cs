@@ -5,7 +5,10 @@ using System.Text.Json;
 
 namespace TestCraft.VSTestLogger;
 
-internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions options)
+internal sealed class TestCraftApiClient(
+    HttpClient http,
+    TestCraftLoggerOptions options
+)
 {
     private const int MaxSendAttempts = 3;
     private static readonly TimeSpan RetryDelay = TimeSpan.FromSeconds(1);
@@ -18,7 +21,9 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
             Environment.GetEnvironmentVariable("NODE_TLS_REJECT_UNAUTHORIZED")
             != "0"
         )
+        {
             return new HttpClient();
+        }
 
         var handler = new HttpClientHandler
         {
@@ -34,7 +39,10 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
             .GetResult();
         response.EnsureSuccessStatusCode();
 
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
 
         return document.RootElement.GetProperty("authority").GetString()!;
@@ -65,7 +73,10 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
             .GetResult();
         response.EnsureSuccessStatusCode();
 
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
 
         return document.RootElement.GetProperty("access_token").GetString()!;
@@ -79,7 +90,7 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
     )
     {
         var url =
-            $"{apiUrl}/api/v1/projects?search={Uri.EscapeDataString(projectName)}&pageSize=500";
+            $"{apiUrl}/api/v1/projects?search={Uri.EscapeDataString(projectName)}&page_size=500";
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Authorization = new AuthenticationHeaderValue(
             "Bearer",
@@ -89,7 +100,10 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
         var response = http.SendAsync(request).GetAwaiter().GetResult();
         response.EnsureSuccessStatusCode();
 
-        var body = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
+        var body = response
+            .Content.ReadAsStringAsync()
+            .GetAwaiter()
+            .GetResult();
         using var document = JsonDocument.Parse(body);
 
         var match = document
@@ -100,9 +114,11 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
             );
 
         if (match.ValueKind == JsonValueKind.Undefined)
+        {
             throw new InvalidOperationException(
                 $"Project \"{projectName}\" not found"
             );
+        }
 
         return match.GetProperty("id").GetString()!;
     }
@@ -145,14 +161,17 @@ internal sealed class TestCraftApiClient(HttpClient http, TestCraftLoggerOptions
             }
             catch (Exception ex)
             {
-                await LogFailureAsync(lines.Count, ex.Message).ConfigureAwait(false);
+                await LogFailureAsync(lines.Count, ex.Message)
+                    .ConfigureAwait(false);
                 return;
             }
 
             using (response)
             {
                 if (response.IsSuccessStatusCode)
+                {
                     return;
+                }
 
                 var body = await response
                     .Content.ReadAsStringAsync()

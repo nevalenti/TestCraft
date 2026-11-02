@@ -1,21 +1,21 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page } from "@playwright/test";
 
 export class AccountPage {
   constructor(private page: Page) {}
 
   async goto() {
-    await this.page.goto('/account');
+    await this.page.goto("/account");
     await expect(
-      this.page.getByRole('heading', { name: 'Account' }),
+      this.page.getByRole("button", { name: "Change avatar" }),
     ).toBeVisible();
   }
 
   get signOutTrigger() {
-    return this.page.getByRole('button', { name: 'Sign out' }).first();
+    return this.page.getByRole("button", { name: "Sign out" }).first();
   }
 
   get signOutDialog() {
-    return this.page.locator('dialog[open]');
+    return this.page.locator("dialog[open]");
   }
 
   async openSignOutDialog() {
@@ -24,7 +24,7 @@ export class AccountPage {
   }
 
   async cancelSignOut() {
-    await this.signOutDialog.getByRole('button', { name: 'Cancel' }).click();
+    await this.signOutDialog.getByRole("button", { name: "Cancel" }).click();
     await expect(this.signOutDialog).not.toBeVisible();
   }
 }

@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import { TABLE_PAGE_SIZE } from '@/lib/constants';
+import { TABLE_PAGE_SIZE } from "@/lib/constants";
 
 export const usePagination = <T>(
   items: T[],

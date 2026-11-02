@@ -17,12 +17,19 @@ public static class TracingExtensions
 
         builder
             .Services.AddOpenTelemetry()
-            .ConfigureResource(resource => resource.AddService(loggingOptions.OtelServiceName))
+            .ConfigureResource(resource =>
+                resource.AddService(
+                    loggingOptions.OtelServiceName,
+                    serviceVersion: loggingOptions.Release
+                )
+            )
             .WithTracing(tracing =>
                 tracing
+                    .SetSampler(new TraceIdRatioBasedSampler(loggingOptions.TraceSampleRatio))
                     .AddAspNetCoreInstrumentation(options =>
                         options.Filter = context =>
                             context.Request.Path.Value is not ("/api/health" or "/api/metrics")
+                            && !ApiPaths.IsPublicShare(context.Request.Path)
                     )
                     .AddHttpClientInstrumentation()
                     .AddSource("MassTransit")

@@ -1,8 +1,7 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -32,10 +31,10 @@ public record ComparisonRow
     public required string TestCaseName { get; init; }
 
     /// <summary>The result status in run A, if the test case was executed there.</summary>
-    public string? StatusInA { get; init; }
+    public TestResultStatus? StatusInA { get; init; }
 
     /// <summary>The result status in run B, if the test case was executed there.</summary>
-    public string? StatusInB { get; init; }
+    public TestResultStatus? StatusInB { get; init; }
 
     /// <summary>Whether the test case passed in run A but failed in run B.</summary>
     public required bool IsRegression { get; init; }
@@ -86,11 +85,13 @@ public static class GetRunComparison
 
             var resultsA = await context
                 .TestResults.Where(result => result.TestRunId == request.RunAId)
+                .CurrentOutcomes()
                 .Select(result => new { result.TestCaseId, result.Status })
                 .ToListAsync(cancellationToken);
 
             var resultsB = await context
                 .TestResults.Where(result => result.TestRunId == request.RunBId)
+                .CurrentOutcomes()
                 .Select(result => new { result.TestCaseId, result.Status })
                 .ToListAsync(cancellationToken);
 
@@ -124,8 +125,8 @@ public static class GetRunComparison
                     {
                         TestCaseId = caseId,
                         TestCaseName = caseName ?? caseId.ToString(),
-                        StatusInA = mapA.ContainsKey(caseId) ? statusA.ToString() : null,
-                        StatusInB = mapB.ContainsKey(caseId) ? statusB.ToString() : null,
+                        StatusInA = mapA.ContainsKey(caseId) ? statusA : null,
+                        StatusInB = mapB.ContainsKey(caseId) ? statusB : null,
                         IsRegression = isRegression,
                         IsFix = isFix,
                     };

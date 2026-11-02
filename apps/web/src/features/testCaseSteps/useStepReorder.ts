@@ -7,10 +7,10 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
-import { arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import type { TestCaseStep } from '@testcraft/types';
-import { useRef, useState } from 'react';
+} from "@dnd-kit/core";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import type { TestCaseStep } from "@testcraft/types";
+import { useRef, useState } from "react";
 
 export const useStepReorder = (
   sortedSteps: TestCaseStep[],
@@ -72,6 +72,12 @@ export const useStepReorder = (
     }
   };
 
+  const handleDragCancel = () => {
+    localStepsRef.current = sortedSteps;
+    setLocalSteps(sortedSteps);
+    setActiveId(null);
+  };
+
   return {
     sensors,
     collisionDetection: closestCenter,
@@ -80,5 +86,6 @@ export const useStepReorder = (
     handleDragStart,
     handleDragOver,
     handleDragEnd,
+    handleDragCancel,
   };
 };

@@ -1,4 +1,4 @@
-import { cn } from '@/lib/cn';
+import { cn } from "@/lib/cn";
 
 interface StatusPillProps {
   label: string;
@@ -15,8 +15,8 @@ export const StatusPill = ({
 }: StatusPillProps) => (
   <span
     className={cn(
-      'inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold whitespace-nowrap',
-      uppercase && 'tracking-wide uppercase',
+      "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-semibold whitespace-nowrap",
+      uppercase && "tracking-wide uppercase",
       className,
     )}
   >

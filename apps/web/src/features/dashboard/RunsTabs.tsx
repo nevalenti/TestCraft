@@ -1,56 +1,56 @@
-import { BoltIcon, CheckCircleIcon } from '@heroicons/react/24/solid';
+import { BoltIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 
-import { cn } from '@/lib/cn';
+import { SECTION_TAB, SECTION_TAB_ACTIVE } from "@/components/ui/subNavStyles";
+import { cn } from "@/lib/cn";
+import type { DashboardRunsTab } from "@/stores/dashboardTab";
 
-export type RunsTab = 'active' | 'completed';
+const TabCount = ({ count }: { count: number }) => (
+  <span className="rounded-full bg-base-content/10 px-1.5 py-0.5 text-xs font-semibold text-fg-muted tabular-nums">
+    {count}
+  </span>
+);
+
+interface RunsTabsProps {
+  tab: DashboardRunsTab;
+  onChange: (tab: DashboardRunsTab) => void;
+  activeCount: number;
+  completedCount: number;
+}
 
 export const RunsTabs = ({
   tab,
   onChange,
   activeCount,
   completedCount,
-}: {
-  tab: RunsTab;
-  onChange: (tab: RunsTab) => void;
-  activeCount: number;
-  completedCount: number;
-}) => (
-  <div className="flex items-center gap-6 border-b border-border px-4">
+}: RunsTabsProps) => (
+  <div className="flex items-center overflow-x-auto border-b border-border px-2 pt-1.5">
     <button
       type="button"
-      onClick={() => onChange('active')}
-      aria-pressed={tab === 'active'}
+      onClick={() => onChange("active")}
+      aria-pressed={tab === "active"}
       className={cn(
-        'relative flex items-center gap-2 py-3 text-xs font-bold whitespace-nowrap transition-colors',
-        tab === 'active'
-          ? 'text-warning'
-          : 'text-base-content/50 hover:text-base-content/75',
+        SECTION_TAB,
+        "cursor-pointer max-sm:px-2 max-sm:text-[13px]",
+        tab === "active" && SECTION_TAB_ACTIVE,
       )}
     >
-      <BoltIcon className="size-3.5" />
+      <BoltIcon className="size-4 text-warning" aria-hidden="true" />
       Active Runs
-      <span className="opacity-70">{activeCount}</span>
-      {tab === 'active' && (
-        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-warning" />
-      )}
+      <TabCount count={activeCount} />
     </button>
     <button
       type="button"
-      onClick={() => onChange('completed')}
-      aria-pressed={tab === 'completed'}
+      onClick={() => onChange("completed")}
+      aria-pressed={tab === "completed"}
       className={cn(
-        'relative flex items-center gap-2 py-3 text-xs font-bold whitespace-nowrap transition-colors',
-        tab === 'completed'
-          ? 'text-success'
-          : 'text-base-content/50 hover:text-base-content/75',
+        SECTION_TAB,
+        "cursor-pointer max-sm:px-2 max-sm:text-[13px]",
+        tab === "completed" && SECTION_TAB_ACTIVE,
       )}
     >
-      <CheckCircleIcon className="size-3.5" />
+      <CheckCircleIcon className="size-4 text-success" aria-hidden="true" />
       Recently Completed
-      <span className="opacity-70">{completedCount}</span>
-      {tab === 'completed' && (
-        <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-success" />
-      )}
+      <TabCount count={completedCount} />
     </button>
   </div>
 );

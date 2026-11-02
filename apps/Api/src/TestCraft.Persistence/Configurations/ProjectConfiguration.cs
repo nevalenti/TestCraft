@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.ToTable("projects");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(project => project.Id);
 
@@ -29,7 +30,10 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.HasIndex(project => project.UserId);
 
-        builder.HasIndex(project => new { project.UserId, project.Name }).IsUnique();
+        builder
+            .HasIndex(project => new { project.UserId, project.Name })
+            .IsUnique()
+            .HasFilter("NOT is_deleted");
 
         builder
             .HasMany(project => project.TestSuites)

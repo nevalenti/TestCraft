@@ -2,20 +2,20 @@ import {
   CheckCircleIcon,
   ClockIcon,
   XCircleIcon,
-} from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
-import type { Project, TestRun, TestRunSummary } from '@testcraft/types';
+} from "@heroicons/react/24/solid";
+import { Link } from "@tanstack/react-router";
+import type { Project, TestRun, TestRunSummary } from "@testcraft/types";
 
-import { MetaPill } from '@/components/ui/MetaPill';
-import { formatCiRunName } from '@/features/dashboard/format';
+import { MetaPill } from "@/components/ui/MetaPill";
+import { RelativeTime } from "@/components/ui/RelativeTime";
+import { formatCiRunName } from "@/features/dashboard/format";
+import { RunAvatarBubble } from "@/features/testRuns/RunAvatarBubble";
 import {
   ResultsBadgesSkeleton,
-  RunAvatarBubble,
   RunMiniBadges,
-} from '@/features/testRuns/RunListItemParts';
-import { useIsLoadingVisible } from '@/hooks/useIsLoadingVisible';
-import { cn } from '@/lib/cn';
-import { formatDateTime } from '@/lib/format';
+} from "@/features/testRuns/RunMiniBadges";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
+import { cn } from "@/lib/cn";
 
 interface CompletedRunTableRowProps {
   run: TestRun;
@@ -26,19 +26,19 @@ interface CompletedRunTableRowProps {
 const getAvatarBadge = (isLoading: boolean, hasFailed: boolean) => {
   if (isLoading) {
     return {
-      className: 'bg-base-300 text-base-content/70',
-      icon: <ClockIcon className="size-2.5" />,
+      className: "bg-base-content/8 text-fg-muted",
+      icon: <ClockIcon className="size-4" />,
     };
   }
   if (hasFailed) {
     return {
-      className: 'bg-error text-error-content',
-      icon: <XCircleIcon className="size-2.5" />,
+      className: "bg-error/15 text-error",
+      icon: <XCircleIcon className="size-4" />,
     };
   }
   return {
-    className: 'bg-success text-success-content',
-    icon: <CheckCircleIcon className="size-2.5" />,
+    className: "bg-success/15 text-success",
+    icon: <CheckCircleIcon className="size-4" />,
   };
 };
 
@@ -51,12 +51,12 @@ const getPassRateBadge = (
   return (
     <span
       className={cn(
-        'inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-sm tabular-nums',
-        passRate === 100 && 'border-success/20 bg-success/10 text-success',
+        "inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 font-mono text-sm tabular-nums",
+        passRate === 100 && "border-success/20 bg-success/10 text-success",
         passRate < 100 &&
           passRate >= 80 &&
-          'border-warning/20 bg-warning/10 text-warning',
-        passRate < 80 && 'border-error/20 bg-error/10 text-error',
+          "border-warning/20 bg-warning/10 text-warning",
+        passRate < 80 && "border-error/20 bg-error/10 text-error",
       )}
     >
       {hasFailed ? (
@@ -104,7 +104,7 @@ export const CompletedRunTableRow = ({
     );
   } else {
     resultContent = (
-      <span className="text-xs text-base-content/55">No results logged</span>
+      <span className="text-xs text-fg-subtle">No results logged</span>
     );
   }
 
@@ -116,14 +116,13 @@ export const CompletedRunTableRow = ({
       <td>
         <Link
           to="/projects/$projectId/runs/$runId"
-          params={{ projectId: run.projectId, runId: run.id }}
+          params={{ projectId: run.project_id, runId: run.id }}
           className="flex min-w-56 items-center gap-2.5"
         >
           <RunAvatarBubble
             badgeClass={avatarBadge.className}
             badgeIcon={avatarBadge.icon}
-            executedByName={run.executedByName}
-            executedByAvatarUrl={run.executedByAvatarUrl}
+            executedByName={run.executed_by_name}
             source={run.source}
           />
           <span className="flex min-w-0 flex-col">
@@ -133,7 +132,7 @@ export const CompletedRunTableRow = ({
             >
               {formatCiRunName(run.name)}
             </span>
-            <span className="truncate text-xs text-base-content/55">
+            <span className="truncate text-xs text-fg-subtle">
               {run.environment}
               {run.source && ` · ${run.source}`}
             </span>
@@ -152,12 +151,14 @@ export const CompletedRunTableRow = ({
             </MetaPill>
           </Link>
         ) : (
-          <span className="text-xs text-base-content/40">—</span>
+          <span data-empty className="text-xs text-fg-subtle">
+            —
+          </span>
         )}
       </td>
       <td>{resultContent}</td>
-      <td className="text-xs whitespace-nowrap text-base-content/65 tabular-nums">
-        {formatDateTime(run.updatedAt ?? run.createdAt)}
+      <td className="text-xs text-fg-muted">
+        <RelativeTime value={run.updated_at ?? run.created_at} />
       </td>
     </tr>
   );

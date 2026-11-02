@@ -1,12 +1,8 @@
 using FluentValidation;
-
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
-
 using Serilog.Context;
-
 using StackExchange.Redis;
-
 using TestCraft.Api.Configuration.Controllers;
 using TestCraft.Api.Configuration.Observability;
 using TestCraft.Api.Middleware;

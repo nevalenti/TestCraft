@@ -1,6 +1,6 @@
 using FluentValidation.TestHelper;
-
 using TestCraft.Application.Features.Notifications;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.UnitTests.Notifications;
 
@@ -13,7 +13,7 @@ public class CreateEmailSubscriptionValidatorTests
         {
             ProjectId = ProjectId.New(),
             Email = "notify@example.com",
-            Events = ["run.completed"],
+            Events = [NotificationEvent.RunCompleted],
         };
 
     [Fact]

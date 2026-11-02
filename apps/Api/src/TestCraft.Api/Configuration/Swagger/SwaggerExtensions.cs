@@ -1,20 +1,23 @@
+using System.Text.Json;
+using System.Text.Json.Nodes;
 using Asp.Versioning.ApiExplorer;
-
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
-
 using Scalar.AspNetCore;
-
 using Swashbuckle.AspNetCore.SwaggerGen;
-
 using TestCraft.Common.Security;
+using TestCraft.Infrastructure.Configuration;
+using TestCraft.Persistence.Vogen;
 
 namespace TestCraft.Api.Configuration.Swagger;
 
 public static class SwaggerExtensions
 {
+    private const string ContractPath = $"{ApiPaths.DocsPrefix}/v1/contract.json";
+
     public static WebApplicationBuilder AddSwaggerDocs(this WebApplicationBuilder builder)
     {
+        builder.Services.AddStartupOptions<SwaggerBasicAuthOptions>(builder.Configuration);
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.ConfigureOptions<ConfigureSwaggerOptions>();
         builder.Services.AddSwaggerGen(options =>
@@ -40,7 +43,9 @@ public static class SwaggerExtensions
 
             options.OperationFilter<AnonymousEndpointsOperationFilter>();
             options.OperationFilter<ProblemResponsesOperationFilter>();
-            options.SchemaFilter<VogenSchemaFilter>();
+            options.OperationFilter<IdempotencyKeyOperationFilter>();
+            options.UseAllOfToExtendReferenceSchemas();
+            MapIdsToUuids(options);
 
             options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "TestCraft.Api.xml"));
             options.IncludeXmlComments(
@@ -49,6 +54,17 @@ public static class SwaggerExtensions
         });
 
         return builder;
+    }
+
+    private static void MapIdsToUuids(SwaggerGenOptions options)
+    {
+        foreach (var idType in VogenGuidValueObjects.AllIn(typeof(ProjectId).Assembly))
+        {
+            options.MapType(
+                idType,
+                () => new OpenApiSchema { Type = JsonSchemaType.String, Format = "uuid" }
+            );
+        }
     }
 
     private static string GetSchemaId(Type type)
@@ -66,9 +82,6 @@ public static class SwaggerExtensions
 
     public static WebApplication UseSwaggerDocs(this WebApplication app)
     {
-        var apiVersionDescriptionProvider =
-            app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-
         if (app.Environment.IsProduction())
         {
             app.UseWhen(
@@ -85,16 +98,41 @@ public static class SwaggerExtensions
             app.UseSwaggerMiddleware();
         }
 
+        var contract = LoadContract();
+        app.Map(
+            ContractPath,
+            branch =>
+                branch.Run(context =>
+                {
+                    context.Response.ContentType = "application/json";
+
+                    return context.Response.Body.WriteAsync(contract).AsTask();
+                })
+        );
+
+        var apiVersionDescriptionProvider =
+            app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
         app.MapScalarApiReference(
             ApiPaths.DocsPrefix,
             options =>
             {
-                options.WithOpenApiRoutePattern(
-                    $"{ApiPaths.DocsPrefix}/{{documentName}}/swagger.json"
-                );
-                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                options
+                    .WithOpenApiRoutePattern(
+                        $"{ApiPaths.DocsPrefix}/{{documentName}}/contract.json"
+                    )
+                    .AddDocument("v1", "TestCraft API v1", isDefault: true);
+
+                foreach (
+                    var groupName in apiVersionDescriptionProvider.ApiVersionDescriptions.Select(
+                        description => description.GroupName
+                    )
+                )
                 {
-                    options.AddDocument(description.GroupName);
+                    options.AddDocument(
+                        $"{groupName}-generated",
+                        $"TestCraft API {groupName} (generated)",
+                        $"{ApiPaths.DocsPrefix}/{groupName}/swagger.json"
+                    );
                 }
             }
         );
@@ -102,14 +140,26 @@ public static class SwaggerExtensions
         return app;
     }
 
-    private static void UseSwaggerMiddleware(
-        this IApplicationBuilder app
-    )
+    private static void UseSwaggerMiddleware(this IApplicationBuilder app)
     {
         app.UseSwagger(options =>
             options.RouteTemplate =
                 $"{ApiPaths.DocsPrefix.TrimStart('/')}/{{documentName}}/swagger.json"
         );
+    }
+
+    private static byte[] LoadContract()
+    {
+        using var stream = typeof(SwaggerExtensions).Assembly.GetManifestResourceStream(
+            "openapi-contract.json"
+        )!;
+        var contract = JsonNode.Parse(stream)!;
+
+        contract["servers"] = new JsonArray(
+            new JsonObject { ["url"] = "/", ["description"] = "Same origin as this API reference." }
+        );
+
+        return JsonSerializer.SerializeToUtf8Bytes(contract);
     }
 }
 

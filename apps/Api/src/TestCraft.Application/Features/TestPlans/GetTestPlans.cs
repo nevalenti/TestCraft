@@ -1,44 +1,56 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Features.TestPlans;
 
 public static class GetTestPlans
 {
-    /// <summary>Lists the test plans in a project.</summary>
-    public sealed record Query : IRequest<IReadOnlyList<TestPlanResponse>>, IProjectScopedRequest
+    public enum SortField
+    {
+        Name,
+        CreatedAt,
+    }
+
+    /// <summary>Lists the test plans in a project; search matches the plan name.</summary>
+    public sealed record Query
+        : SearchPageQuery,
+            IRequest<Paginated<TestPlanResponse>>,
+            IProjectScopedRequest
     {
         /// <summary>The project to list plans for.</summary>
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
+
+        public SortField SortBy { get; init; } = SortField.CreatedAt;
+
+        public SortDirection SortDir { get; init; } = SortDirection.Desc;
     }
 
     public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Query, IReadOnlyList<TestPlanResponse>>
+        : IRequestHandler<Query, Paginated<TestPlanResponse>>
     {
-        public async Task<IReadOnlyList<TestPlanResponse>> Handle(
+        public Task<Paginated<TestPlanResponse>> Handle(
             Query request,
             CancellationToken cancellationToken
         )
         {
-            return await context
-                .TestPlans.Where(plan => plan.ProjectId == request.ProjectId)
-                .OrderByDescending(plan => plan.CreatedAt)
-                .Select(plan => new TestPlanResponse
-                {
-                    Id = plan.Id,
-                    Name = plan.Name,
-                    Description = plan.Description,
-                    ProjectId = plan.ProjectId,
-                    CaseCount = plan.TestPlanCases.Count(tpc =>
-                        tpc.TestCase != null && !tpc.TestCase.IsDeleted
-                    ),
-                    CreatedAt = plan.CreatedAt,
-                })
-                .ToListAsync(cancellationToken);
+            var query = context.TestPlans.Where(plan => plan.ProjectId == request.ProjectId);
+
+            query = query.WhereContainsIgnoringCase(plan => plan.Name, request.Search);
+
+            var sorted =
+                request.SortBy == SortField.Name
+                    ? query.SortedBy(plan => plan.Name, request.SortDir, plan => plan.Id)
+                    : query.SortedBy(plan => plan.CreatedAt, request.SortDir, plan => plan.Id);
+
+            return sorted
+                .Select(TestPlanResponse.Projection)
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
         }
     }
 }

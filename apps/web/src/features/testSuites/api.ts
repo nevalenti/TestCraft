@@ -1,41 +1,52 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  CreateTestSuite,
-  Paginated,
-  TestSuite,
-  UpdateTestSuite,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-import { PAGE_SIZE } from '@/lib/constants';
-
-const BASE = (projectId: string) => `projects/${projectId}/suites`;
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const testSuitesApi = {
   getAll: async (projectId: string, search?: string) => {
-    const { data } = await client.get<Paginated<TestSuite>>(BASE(projectId), {
-      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listTestSuites({
+        path: { project_id: projectId },
+        query: { page, page_size: PAGE_SIZE, ...(search && { search }) },
+      });
+      return data;
+    });
+  },
+  getById: async (projectId: string, id: string) => {
+    const { data } = await sdk.getTestSuite({
+      path: { project_id: projectId, suite_id: id },
     });
     return data;
   },
-  getById: async (projectId: string, id: string) => {
-    const { data } = await client.get<TestSuite>(`${BASE(projectId)}/${id}`);
-    return data;
-  },
   create: async (projectId: string, input: CreateTestSuite) => {
-    const { data } = await client.post<TestSuite>(BASE(projectId), input);
+    const { data } = await sdk.createTestSuite({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
-  update: async (projectId: string, id: string, input: UpdateTestSuite) => {
-    const { data } = await client.put<TestSuite>(`${BASE(projectId)}/${id}`, {
-      ...input,
-      id,
+  update: async (
+    projectId: string,
+    id: string,
+    input: UpdateTestSuite,
+    version: number,
+  ) => {
+    const { data } = await sdk.updateTestSuite({
+      path: { project_id: projectId, suite_id: id },
+      body: input,
+      headers: ifMatch(version),
     });
     return data;
   },
   delete: (projectId: string, id: string) =>
-    client.delete(`${BASE(projectId)}/${id}`),
+    sdk.deleteTestSuite({
+      path: { project_id: projectId, suite_id: id },
+    }),
 };
 
 export const testSuiteQueries = {

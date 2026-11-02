@@ -1,10 +1,8 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -38,6 +36,9 @@ public static class UpdateTestResult
 
         /// <summary>The category of defect, when the result failed.</summary>
         public DefectType? DefectType { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -52,8 +53,8 @@ public static class UpdateTestResult
     public sealed class Handler(
         IApplicationDbContext context,
         ICacheService cache,
-        ITestRunNotifier notifier,
         ICurrentUser currentUser,
+        ITestRunNotifier notifier,
         TimeProvider timeProvider
     ) : IRequestHandler<Command, TestResultResponse>
     {
@@ -80,17 +81,30 @@ public static class UpdateTestResult
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
-            result.Update(request.Status, request.Notes, request.DefectType, timeProvider.GetStoredUtcNow(), currentUser.UserId);
+            VersionCheck.Ensure(result, request.ExpectedVersion);
+            result.Update(
+                request.Status,
+                request.Notes,
+                request.DefectType,
+                timeProvider.GetStoredUtcNow(),
+                currentUser.UserId
+            );
 
             await context.SaveChangesAsync(cancellationToken);
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
             var summary = await context
-                .TestResults.Where(updatedResult => updatedResult.Id == result.Id)
-                .ToTestResultResponse()
+                .LiveResults()
+                .Where(updatedResult => updatedResult.Id == result.Id)
+                .Select(TestResultResponse.Projection)
                 .FirstAsync(cancellationToken);
 
             await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
+            await notifier.DashboardChangedAsync(
+                request.ProjectId,
+                request.RunId,
+                cancellationToken
+            );
 
             return summary;
         }

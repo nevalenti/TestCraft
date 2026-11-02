@@ -1,9 +1,9 @@
-import { Link, useMatchRoute } from '@tanstack/react-router';
+import { Link, type LinkProps, useMatchRoute } from "@tanstack/react-router";
 
-import { cn } from '@/lib/cn';
+import { cn } from "@/lib/cn";
 
 type NavItemProps = {
-  to: string;
+  to: LinkProps["to"];
   label: React.ReactNode;
   OutlineIcon: React.ComponentType<{ className?: string }>;
   SolidIcon: React.ComponentType<{ className?: string }>;
@@ -22,17 +22,17 @@ export const NavItem = ({
   onClick,
 }: NavItemProps) => {
   const matchRoute = useMatchRoute();
-  const isActive = !!matchRoute({ to: to as never, fuzzy });
+  const isActive = !!matchRoute({ to, fuzzy });
 
   return (
     <Link
-      to={to as never}
+      to={to}
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors',
+        "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
         isActive
-          ? 'bg-primary/12 font-semibold text-primary'
-          : 'font-medium text-base-content/85 hover:bg-base-content/6 hover:text-base-content',
+          ? "bg-primary/12 font-semibold text-primary"
+          : "font-medium text-fg-secondary hover:bg-base-content/6 hover:text-base-content",
       )}
     >
       {!hideIcon &&

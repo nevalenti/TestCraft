@@ -10,7 +10,8 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
 {
     private const int BatchSize = 50;
 
-    private static readonly HttpClient Client = TestCraftApiClient.CreateHttpClient();
+    private static readonly HttpClient Client =
+        TestCraftApiClient.CreateHttpClient();
 
     private readonly LogLineBuffer _buffer = new(BatchSize);
     private TestCraftApiClient? _apiClient;
@@ -25,7 +26,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     {
         var options = TestCraftLoggerOptions.Resolve(Client);
         if (options is null)
+        {
             return;
+        }
 
         _apiClient = new TestCraftApiClient(Client, options);
 
@@ -42,7 +45,9 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     private void OnTestResult(object? sender, TestResultEventArgs eventArgs)
     {
         foreach (var line in TestEventFormatter.FormatResult(eventArgs))
+        {
             PostLog(line);
+        }
     }
 
     private void OnTestRunComplete(
@@ -59,6 +64,8 @@ public sealed class TestCraftLogger : ITestLoggerWithParameters
     private void PostBatch(IReadOnlyList<string>? batch)
     {
         if (batch is not null)
+        {
             _apiClient?.EnqueueLogs(batch);
+        }
     }
 }

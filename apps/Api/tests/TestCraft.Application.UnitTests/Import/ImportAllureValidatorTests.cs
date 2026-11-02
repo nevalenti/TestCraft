@@ -1,5 +1,4 @@
 using FluentValidation.TestHelper;
-
 using TestCraft.Application.Features.Import;
 
 namespace TestCraft.Application.UnitTests.Import;
@@ -8,7 +7,8 @@ public class ImportAllureValidatorTests
 {
     private readonly ImportAllure.Validator _validator = new();
 
-    private static AllureResultItem PassingResult() => new() { Name = "case", Status = "passed" };
+    private static AllureResultItem PassingResult() =>
+        new() { Name = "case", Status = AllureStatus.Passed };
 
     private static ImportAllure.Command ValidCommand() =>
         new()
@@ -62,7 +62,7 @@ public class ImportAllureValidatorTests
     {
         var command = ValidCommand() with
         {
-            Results = [new AllureResultItem { Name = "case", Status = "not-a-real-status" }],
+            Results = [new AllureResultItem { Name = "case", Status = (AllureStatus)99 }],
         };
 
         var result = _validator.TestValidate(command);
@@ -91,7 +91,7 @@ public class ImportAllureValidatorTests
                 new AllureResultItem
                 {
                     Name = "case",
-                    Status = "failed",
+                    Status = AllureStatus.Failed,
                     StatusDetails = new AllureStatusDetails { Message = new string('a', 5001) },
                 },
             ],

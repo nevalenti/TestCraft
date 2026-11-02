@@ -1,8 +1,6 @@
 using Bogus;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
@@ -154,12 +152,14 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
         var memberCount = random.Next(1, 3);
         var members = Enumerable
             .Range(0, memberCount)
-            .Select(_ => ProjectMember.Create(
-                project.Id,
-                UserId.New(),
-                faker.Internet.Email(),
-                faker.Name.FullName()
-            ))
+            .Select(_ =>
+                ProjectMember.Create(
+                    project.Id,
+                    UserId.New(),
+                    faker.Internet.Email(),
+                    faker.Name.FullName()
+                )
+            )
             .ToList();
         context.ProjectMembers.AddRange(members);
 
@@ -185,9 +185,7 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
                     var labelCount = random.Next(1, 3);
                     foreach (var label in labels.OrderBy(_ => random.Next()).Take(labelCount))
                     {
-                        testCase.TestCaseLabels.Add(
-                            TestCaseLabel.Create(testCase.Id, label.Id)
-                        );
+                        testCase.TestCaseLabels.Add(TestCaseLabel.Create(testCase.Id, label.Id));
                     }
                 }
 

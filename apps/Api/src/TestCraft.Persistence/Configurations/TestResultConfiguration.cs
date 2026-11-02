@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
     public void Configure(EntityTypeBuilder<TestResult> builder)
     {
         builder.ToTable("test_results");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(testResult => testResult.Id);
 
@@ -42,6 +43,8 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
         builder.ConfigureSoftDelete();
 
         builder.HasIndex(testResult => testResult.TestRunId);
+
+        builder.HasIndex(testResult => new { testResult.TestRunId, testResult.TestCaseId });
 
         builder.HasIndex(testResult => testResult.Status);
 

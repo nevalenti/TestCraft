@@ -1,74 +1,89 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listWebhookSubscriptions: vi.fn(),
+  createWebhookSubscription: vi.fn(),
+  deleteWebhookSubscription: vi.fn(),
+  listEmailSubscriptions: vi.fn(),
+  createEmailSubscription: vi.fn(),
+  deleteEmailSubscription: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { notificationsApi } from '@/features/notifications/api';
+import * as sdk from "@/api/sdk";
+import { notificationsApi } from "@/features/notifications/api";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('notificationsApi webhooks', () => {
-  it('getWebhooks fetches the webhook list', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+describe("notificationsApi webhooks", () => {
+  it("getWebhooks fetches the webhook list", async () => {
+    vi.mocked(sdk.listWebhookSubscriptions).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await notificationsApi.getWebhooks('p1');
+    await notificationsApi.getWebhooks("p1");
 
-    expect(client.get).toHaveBeenCalledWith(
-      'projects/p1/notifications/webhooks',
-    );
+    expect(sdk.listWebhookSubscriptions).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+    });
   });
 
-  it('createWebhook posts under the webhooks path, not the emails path', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: { id: 'w1' } });
+  it("createWebhook posts under the webhooks path, not the emails path", async () => {
+    vi.mocked(sdk.createWebhookSubscription).mockResolvedValue({
+      data: { id: "w1" },
+    } as never);
 
-    await notificationsApi.createWebhook('p1', { url: 'https://x' } as any);
+    await notificationsApi.createWebhook("p1", { url: "https://x" } as any);
 
-    expect(client.post).toHaveBeenCalledWith(
-      'projects/p1/notifications/webhooks',
-      { url: 'https://x' },
-    );
+    expect(sdk.createWebhookSubscription).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      body: { url: "https://x" },
+    });
   });
 
-  it('deleteWebhook removes the webhook by id', () => {
-    notificationsApi.deleteWebhook('p1', 'w1');
+  it("deleteWebhook removes the webhook by id", () => {
+    notificationsApi.deleteWebhook("p1", "w1");
 
-    expect(client.delete).toHaveBeenCalledWith(
-      'projects/p1/notifications/webhooks/w1',
-    );
+    expect(sdk.deleteWebhookSubscription).toHaveBeenCalledWith({
+      path: { project_id: "p1", subscription_id: "w1" },
+    });
   });
 });
 
-describe('notificationsApi emails', () => {
-  it('getEmails fetches the email subscription list', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+describe("notificationsApi emails", () => {
+  it("getEmails fetches the email subscription list", async () => {
+    vi.mocked(sdk.listEmailSubscriptions).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await notificationsApi.getEmails('p1');
+    await notificationsApi.getEmails("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/notifications/emails');
+    expect(sdk.listEmailSubscriptions).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+    });
   });
 
-  it('createEmail posts under the emails path, not the webhooks path', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: { id: 'e1' } });
+  it("createEmail posts under the emails path, not the webhooks path", async () => {
+    vi.mocked(sdk.createEmailSubscription).mockResolvedValue({
+      data: { id: "e1" },
+    } as never);
 
-    await notificationsApi.createEmail('p1', {
-      email: 'a@b.com',
+    await notificationsApi.createEmail("p1", {
+      email: "a@b.com",
     } as any);
 
-    expect(client.post).toHaveBeenCalledWith(
-      'projects/p1/notifications/emails',
-      { email: 'a@b.com' },
-    );
+    expect(sdk.createEmailSubscription).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      body: { email: "a@b.com" },
+    });
   });
 
-  it('deleteEmail removes the email subscription by id', () => {
-    notificationsApi.deleteEmail('p1', 'e1');
+  it("deleteEmail removes the email subscription by id", () => {
+    notificationsApi.deleteEmail("p1", "e1");
 
-    expect(client.delete).toHaveBeenCalledWith(
-      'projects/p1/notifications/emails/e1',
-    );
+    expect(sdk.deleteEmailSubscription).toHaveBeenCalledWith({
+      path: { project_id: "p1", subscription_id: "e1" },
+    });
   });
 });

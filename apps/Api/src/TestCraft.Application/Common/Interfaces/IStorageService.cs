@@ -9,6 +9,8 @@ public interface IStorageService
         CancellationToken cancellationToken = default
     );
 
+    Task<byte[]> DownloadAsync(string key, CancellationToken cancellationToken = default);
+
     Task DeleteAsync(string key, CancellationToken cancellationToken = default);
 
     Task<string> GetPresignedUrlAsync(

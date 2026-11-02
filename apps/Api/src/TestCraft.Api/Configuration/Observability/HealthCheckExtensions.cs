@@ -1,12 +1,8 @@
 using System.Text.Json;
-
 using HealthChecks.NpgSql;
-
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-
 using RabbitMQ.Client;
-
 using TestCraft.Infrastructure.Caching;
 using TestCraft.Infrastructure.Configuration;
 using TestCraft.Persistence;
@@ -15,6 +11,8 @@ namespace TestCraft.Api.Configuration.Observability;
 
 public static class HealthCheckExtensions
 {
+    public const string DatabaseCheckName = "postgres";
+
     private const string ReadyTag = "ready";
 
     public static WebApplicationBuilder AddObservabilityHealthChecks(
@@ -26,7 +24,7 @@ public static class HealthCheckExtensions
             .Services.AddHealthChecks()
             .AddNpgSql(
                 ConnectionStringHelpers.ToNpgsqlConnectionString(options.DatabaseUrl),
-                name: "postgres",
+                name: DatabaseCheckName,
                 tags: [ReadyTag]
             )
             .AddHangfire(

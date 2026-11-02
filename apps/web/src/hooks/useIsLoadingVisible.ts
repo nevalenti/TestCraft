@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 // eslint-disable-next-line unicorn/consistent-boolean-name
 export const useIsLoadingVisible = (
@@ -7,34 +7,26 @@ export const useIsLoadingVisible = (
   minVisibleMs = 400,
 ): boolean => {
   const [visible, setVisible] = useState(false);
-  const shownAtRef = useRef(0);
+  const shownAtRef = useRef<number | null>(null);
 
   useEffect(() => {
-    let showTimer: ReturnType<typeof setTimeout> | undefined;
-    let hideTimer: ReturnType<typeof setTimeout> | undefined;
-
     if (isLoading) {
-      showTimer = setTimeout(() => {
+      const showTimer = setTimeout(() => {
         shownAtRef.current = Date.now();
         setVisible(true);
       }, delayMs);
-    } else {
-      setVisible((wasVisible) => {
-        if (!wasVisible) return false;
-
-        const remaining = minVisibleMs - (Date.now() - shownAtRef.current);
-        if (remaining > 0) {
-          hideTimer = setTimeout(() => setVisible(false), remaining);
-          return true;
-        }
-        return false;
-      });
+      return () => clearTimeout(showTimer);
     }
 
-    return () => {
-      clearTimeout(showTimer);
-      clearTimeout(hideTimer);
-    };
+    const shownAt = shownAtRef.current;
+    if (shownAt === null) return;
+
+    const remaining = Math.max(minVisibleMs - (Date.now() - shownAt), 0);
+    const hideTimer = setTimeout(() => {
+      shownAtRef.current = null;
+      setVisible(false);
+    }, remaining);
+    return () => clearTimeout(hideTimer);
   }, [isLoading, delayMs, minVisibleMs]);
 
   return visible;

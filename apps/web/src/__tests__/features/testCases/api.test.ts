@@ -1,88 +1,122 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listTestCasesByProject: vi.fn(),
+  listTestCases: vi.fn(),
+  getTestCase: vi.fn(),
+  createTestCase: vi.fn(),
+  updateTestCase: vi.fn(),
+  deleteTestCase: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { testCasesApi } from '@/features/testCases/api';
-import { PAGE_SIZE } from '@/lib/constants';
+import * as sdk from "@/api/sdk";
+import { testCasesApi } from "@/features/testCases/api";
+import { PAGE_SIZE } from "@/lib/constants";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('testCasesApi.getAllByProject', () => {
-  it('fetches all project-wide cases, not scoped to a suite', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+describe("testCasesApi.getAllByProject", () => {
+  it("fetches all project-wide cases, not scoped to a suite", async () => {
+    vi.mocked(sdk.listTestCasesByProject).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testCasesApi.getAllByProject('p1');
+    await testCasesApi.getAllByProject("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/cases', {
-      params: { pageSize: PAGE_SIZE },
+    expect(sdk.listTestCasesByProject).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      query: { page: 1, page_size: PAGE_SIZE },
     });
   });
 });
 
-describe('testCasesApi.getAll', () => {
-  it('scopes to the suite and omits search when not given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+describe("testCasesApi.getAll", () => {
+  it("scopes to the suite and omits search when not given", async () => {
+    vi.mocked(sdk.listTestCases).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testCasesApi.getAll('p1', 's1');
+    await testCasesApi.getAll("p1", "s1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites/s1/cases', {
-      params: { pageSize: PAGE_SIZE },
+    expect(sdk.listTestCases).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
+      query: { page: 1, page_size: PAGE_SIZE },
     });
   });
 
-  it('includes search when given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+  it("includes search when given", async () => {
+    vi.mocked(sdk.listTestCases).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testCasesApi.getAll('p1', 's1', 'login');
+    await testCasesApi.getAll("p1", "s1", "login");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites/s1/cases', {
-      params: { pageSize: PAGE_SIZE, search: 'login' },
+    expect(sdk.listTestCases).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
+      query: { page: 1, page_size: PAGE_SIZE, search: "login" },
     });
   });
 });
 
-describe('testCasesApi other operations', () => {
-  it('getById fetches a single case scoped to the suite', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: {} });
+describe("testCasesApi other operations", () => {
+  it("getById fetches a single case scoped to the suite", async () => {
+    vi.mocked(sdk.getTestCase).mockResolvedValue({
+      data: {},
+    } as never);
 
-    await testCasesApi.getById('p1', 's1', 'c1');
+    await testCasesApi.getById("p1", "s1", "c1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/suites/s1/cases/c1');
-  });
-
-  it('create posts the new case scoped to the suite', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: {} });
-
-    await testCasesApi.create('p1', 's1', { title: 'Login works' } as any);
-
-    expect(client.post).toHaveBeenCalledWith('projects/p1/suites/s1/cases', {
-      title: 'Login works',
+    expect(sdk.getTestCase).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1", case_id: "c1" },
     });
   });
 
-  it('update puts changes including the id', async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: {} });
+  it("create posts the new case scoped to the suite", async () => {
+    vi.mocked(sdk.createTestCase).mockResolvedValue({
+      data: {},
+    } as never);
 
-    await testCasesApi.update('p1', 's1', 'c1', {
-      title: 'Renamed',
-    } as any);
+    await testCasesApi.create("p1", "s1", { title: "Login works" } as any);
 
-    expect(client.put).toHaveBeenCalledWith('projects/p1/suites/s1/cases/c1', {
-      title: 'Renamed',
-      id: 'c1',
+    expect(sdk.createTestCase).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1" },
+      body: {
+        title: "Login works",
+      },
     });
   });
 
-  it('delete removes the case by id', () => {
-    testCasesApi.delete('p1', 's1', 'c1');
+  it("update puts changes including the id", async () => {
+    vi.mocked(sdk.updateTestCase).mockResolvedValue({
+      data: {},
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith(
-      'projects/p1/suites/s1/cases/c1',
+    await testCasesApi.update(
+      "p1",
+      "s1",
+      "c1",
+      {
+        title: "Renamed",
+      } as any,
+      1,
     );
+
+    expect(sdk.updateTestCase).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1", case_id: "c1" },
+      body: {
+        title: "Renamed",
+      },
+      headers: { "if-match": '"1"' },
+    });
+  });
+
+  it("delete removes the case by id", () => {
+    testCasesApi.delete("p1", "s1", "c1");
+
+    expect(sdk.deleteTestCase).toHaveBeenCalledWith({
+      path: { project_id: "p1", suite_id: "s1", case_id: "c1" },
+    });
   });
 });

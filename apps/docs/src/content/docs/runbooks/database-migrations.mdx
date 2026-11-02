@@ -1,0 +1,28 @@
+---
+title: Database migrations
+description: Safely change the production PostgreSQL schema.
+---
+
+EF Core owns the schema. `TestCraft.Migrator` applies pending migrations as a Helm
+pre-upgrade job, before the new API pods start. Existing pods keep using the database
+while a migration runs, so every migration must work with both the old and new
+application versions.
+
+Create a migration with `just api-migration AddSomething`, read the generated file
+before committing it, and apply it locally with `just api-migrate`. Do not edit
+migrations that have already been applied; add a new one.
+
+For a new required column, add it as nullable, deploy code that tolerates both
+states, backfill existing rows in batches outside the migration, and only then
+add the `NOT NULL` constraint. Remove columns after all running code has stopped
+referencing them. Keep backfills out of the pre-upgrade job.
+
+Build indexes on tables that can be large or busy with `CREATE INDEX CONCURRENTLY`
+through `migrationBuilder.Sql(..., suppressTransaction: true)`, because PostgreSQL
+refuses to run it inside a transaction. A blocking schema change waits behind long
+transactions and then holds up API traffic; for risky operations set a short
+`lock_timeout` in the same migration so it fails instead.
+
+Before merging a schema change, run the integration tests (they migrate a fresh
+Postgres) and check that the old code still works against the new schema if the
+rollout can overlap the migration.

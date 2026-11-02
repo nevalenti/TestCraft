@@ -1,5 +1,4 @@
 using FluentAssertions;
-
 using TestCraft.Application.Features.Import;
 using TestCraft.Domain.Enums;
 
@@ -8,13 +7,13 @@ namespace TestCraft.Application.UnitTests.Import;
 public class AllureParserTests
 {
     [Theory]
-    [InlineData("passed", TestResultStatus.Passed)]
-    [InlineData("failed", TestResultStatus.Failed)]
-    [InlineData("broken", TestResultStatus.Failed)]
-    [InlineData("skipped", TestResultStatus.Skipped)]
-    [InlineData("unknown", TestResultStatus.Blocked)]
+    [InlineData(AllureStatus.Passed, TestResultStatus.Passed)]
+    [InlineData(AllureStatus.Failed, TestResultStatus.Failed)]
+    [InlineData(AllureStatus.Broken, TestResultStatus.Failed)]
+    [InlineData(AllureStatus.Skipped, TestResultStatus.Skipped)]
+    [InlineData(AllureStatus.Unknown, TestResultStatus.Blocked)]
     [InlineData(null, TestResultStatus.Blocked)]
-    public void Parse_MapsAllureStatusStrings(string? allureStatus, TestResultStatus expected)
+    public void Parse_MapsAllureStatuses(AllureStatus? allureStatus, TestResultStatus expected)
     {
         var results = new List<AllureResultItem>
         {
@@ -107,7 +106,7 @@ public class AllureParserTests
             new()
             {
                 Name = "Case",
-                Status = "failed",
+                Status = AllureStatus.Failed,
                 StatusDetails = new AllureStatusDetails { Message = "expected true, got false" },
             },
         };

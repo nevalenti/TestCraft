@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { queryKeys } from '@/api/queryKeys';
-import { shareTokenQueries, shareTokensApi } from '@/features/shareTokens/api';
-import { notify } from '@/lib/notify';
+import { queryKeys } from "@/api/queryKeys";
+import { shareTokenQueries, shareTokensApi } from "@/features/shareTokens/api";
+import { notify } from "@/lib/notify";
 
 export const useShareTokens = (projectId: string, runId: string) =>
   useQuery(shareTokenQueries.all(projectId, runId));
@@ -11,7 +11,7 @@ export const useCreateShareToken = (projectId: string, runId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (input: { expiresAt?: string }) =>
+    mutationFn: (input: { expires_at?: string }) =>
       shareTokensApi.create(projectId, runId, input),
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -27,7 +27,7 @@ export const useRevokeShareToken = (projectId: string, runId: string) => {
   return useMutation({
     mutationFn: (id: string) => shareTokensApi.revoke(projectId, runId, id),
     onSuccess: () => {
-      notify('Share link revoked');
+      notify("Share link revoked");
       queryClient.invalidateQueries({
         queryKey: queryKeys.shareTokens.all(projectId, runId),
       });
@@ -35,5 +35,5 @@ export const useRevokeShareToken = (projectId: string, runId: string) => {
   });
 };
 
-export const useSharedRun = (token: string) =>
-  useQuery(shareTokenQueries.byToken(token));
+export const useSharedRun = (token: string, page: number = 0) =>
+  useQuery(shareTokenQueries.byToken(token, page));

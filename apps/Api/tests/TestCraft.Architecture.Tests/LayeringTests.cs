@@ -1,7 +1,5 @@
 using System.Reflection;
-
 using FluentAssertions;
-
 using NetArchTest.Rules;
 
 namespace TestCraft.Architecture.Tests;
@@ -84,6 +82,18 @@ public class LayeringTests
             .InAssembly(InfrastructureAssembly)
             .Should()
             .NotHaveDependencyOnAny(PersistenceAssembly.GetName().Name)
+            .GetResult();
+
+        result.IsSuccessful.Should().BeTrue(FailureMessage(result));
+    }
+
+    [Fact]
+    public void OnlyApi_ShouldSendRequests()
+    {
+        var result = Types
+            .InAssemblies([ApplicationAssembly, PersistenceAssembly, InfrastructureAssembly])
+            .Should()
+            .NotHaveDependencyOnAny("MediatR.ISender", "MediatR.IMediator")
             .GetResult();
 
         result.IsSuccessful.Should().BeTrue(FailureMessage(result));

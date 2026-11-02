@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class EmailSubscriptionConfiguration : IEntityTypeConfiguration<EmailSubs
     public void Configure(EntityTypeBuilder<EmailSubscription> builder)
     {
         builder.ToTable("email_subscriptions");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(emailSubscription => emailSubscription.Id);
 

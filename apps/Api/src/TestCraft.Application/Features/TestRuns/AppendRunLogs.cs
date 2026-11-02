@@ -1,13 +1,9 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
-using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestRuns;
 
@@ -39,31 +35,41 @@ public static class AppendRunLogs
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context, ITestRunNotifier notifier)
-        : IRequestHandler<Command>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IRunLogWriter runLogs,
+        ITestRunNotifier notifier
+    ) : IRequestHandler<Command>
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var exists = await context.TestRuns.AnyAsync(
-                run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
+            var run =
+                await context.TestRuns.FirstOrDefaultAsync(
+                    existingRun =>
+                        existingRun.Id == request.RunId
+                        && existingRun.ProjectId == request.ProjectId,
+                    cancellationToken
+                ) ?? throw new NotFoundException();
+
+            if (request.Lines.Count == 0)
+            {
+                return;
+            }
+
+            run.EnsureCanAddResult();
+
+            var lastSeq = await runLogs.AppendAsync(
+                request.RunId,
+                request.Lines,
                 cancellationToken
             );
 
-            if (!exists)
-                throw new NotFoundException();
-
-            if (request.Lines.Count == 0)
-                return;
-
-            var entries = request
-                .Lines.Select(line => RunLog.Create(request.RunId, line))
-                .ToList();
-
-            context.RunLogs.AddRange(entries);
-
-            await context.SaveChangesAsync(cancellationToken);
-
-            await notifier.LogsAppendedAsync(request.RunId, request.Lines, cancellationToken);
+            await notifier.LogsAppendedAsync(
+                request.RunId,
+                request.Lines,
+                lastSeq,
+                cancellationToken
+            );
         }
     }
 }

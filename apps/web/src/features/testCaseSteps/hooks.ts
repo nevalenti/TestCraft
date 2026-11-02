@@ -1,20 +1,20 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
-  BulkReorderSteps,
   CreateTestCaseStep,
   Paginated,
+  ReorderTestCaseSteps,
   TestCaseStep,
   UpdateTestCaseStep,
-} from '@testcraft/types';
-import { produce } from 'immer';
+} from "@testcraft/types";
+import { produce } from "immer";
 
-import { queryKeys } from '@/api/queryKeys';
+import { queryKeys } from "@/api/queryKeys";
 import {
   testCaseStepQueries,
   testCaseStepsApi,
-} from '@/features/testCaseSteps/api';
-import { truncate } from '@/lib/format';
-import { notify } from '@/lib/notify';
+} from "@/features/testCaseSteps/api";
+import { truncate } from "@/lib/format";
+import { notify } from "@/lib/notify";
 
 export const useTestCaseSteps = (
   projectId: string,
@@ -25,13 +25,6 @@ export const useTestCaseSteps = (
     ...testCaseStepQueries.all(projectId, suiteId, caseId),
     select: (data) => data.items,
   });
-
-export const useTestCaseStep = (
-  projectId: string,
-  suiteId: string,
-  caseId: string,
-  id: string,
-) => useQuery(testCaseStepQueries.detail(projectId, suiteId, caseId, id));
 
 export const useCreateTestCaseStep = (
   projectId: string,
@@ -46,7 +39,10 @@ export const useCreateTestCaseStep = (
     onSuccess: (_, input) => {
       notify(`Step "${truncate(input.action, 40)}" added`);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
+        queryKey: queryKeys.testCases.all(projectId, suiteId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.byProject(projectId),
       });
     },
   });
@@ -60,26 +56,25 @@ export const useUpdateTestCaseStep = (
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: UpdateTestCaseStep & { id: string }) =>
-      testCaseStepsApi.update(projectId, suiteId, caseId, id, input),
-    onSuccess: (_, { id, action }) => {
+    mutationFn: ({
+      id,
+      version,
+      ...input
+    }: UpdateTestCaseStep & {
+      id: string;
+      version: number;
+    }) =>
+      testCaseStepsApi.update(projectId, suiteId, caseId, id, input, version),
+    onSuccess: (_, { action }) => {
       notify(`Step "${truncate(action, 40)}" updated`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCaseSteps.detail(
-          projectId,
-          suiteId,
-          caseId,
-          id,
-        ),
       });
     },
   });
 };
 
-export const useBulkReorderSteps = (
+export const useReorderTestCaseSteps = (
   projectId: string,
   suiteId: string,
   caseId: string,
@@ -88,8 +83,8 @@ export const useBulkReorderSteps = (
   const queryKey = queryKeys.testCaseSteps.all(projectId, suiteId, caseId);
 
   return useMutation({
-    mutationFn: (input: BulkReorderSteps) =>
-      testCaseStepsApi.bulkReorder(projectId, suiteId, caseId, input),
+    mutationFn: (input: ReorderTestCaseSteps) =>
+      testCaseStepsApi.reorder(projectId, suiteId, caseId, input),
     onMutate: async (input) => {
       await queryClient.cancelQueries({ queryKey });
 
@@ -136,23 +131,18 @@ export const useDeleteTestCaseStep = (
       testCaseStepsApi.delete(projectId, suiteId, caseId, id),
     onSuccess: (_, id) => {
       const action = queryClient
-        .getQueryData<
-          Paginated<TestCaseStep>
-        >(queryKeys.testCaseSteps.all(projectId, suiteId, caseId))
+        .getQueryData<Paginated<TestCaseStep>>(
+          queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
+        )
         ?.items.find((step) => step.id === id)?.action;
       notify(
-        action ? `Step "${truncate(action, 40)}" deleted` : 'Step deleted',
+        action ? `Step "${truncate(action, 40)}" deleted` : "Step deleted",
       );
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testCaseSteps.all(projectId, suiteId, caseId),
+        queryKey: queryKeys.testCases.all(projectId, suiteId),
       });
-      queryClient.removeQueries({
-        queryKey: queryKeys.testCaseSteps.detail(
-          projectId,
-          suiteId,
-          caseId,
-          id,
-        ),
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.byProject(projectId),
       });
     },
   });

@@ -5,17 +5,13 @@ namespace TestCraft.Api.Configuration.Cors;
 public sealed class CorsOptions : IStartupOptions
 {
     [NotSensitive]
-    public string[] CorsAllowedOrigins { get; init; } = [];
+    [ConfigurationKeyName("CORS_ALLOWED_ORIGINS")]
+    public string CorsAllowedOrigins { get; set; } = string.Empty;
 
-    public static CorsOptions Bind(IConfiguration configuration) =>
-        OptionsValidator.ValidateAndThrow(
-            new CorsOptions
-            {
-                CorsAllowedOrigins = (configuration["CORS_ALLOWED_ORIGINS"] ?? string.Empty).Split(
-                    ',',
-                    StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
-                ),
-            },
-            "CORS"
+    [NotSensitive]
+    public string[] AllowedOrigins =>
+        CorsAllowedOrigins.Split(
+            ',',
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
         );
 }

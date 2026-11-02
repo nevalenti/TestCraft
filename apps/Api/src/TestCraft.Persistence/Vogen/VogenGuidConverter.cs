@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using System.Reflection;
-
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace TestCraft.Persistence.Vogen;

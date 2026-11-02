@@ -1,37 +1,12 @@
-using System.Text.Json;
-
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Notifications;
-
-/// <summary>A webhook subscription that posts to a URL when project events occur.</summary>
-public record WebhookSubscriptionResponse
-{
-    /// <summary>The subscription's identifier.</summary>
-    public required WebhookSubscriptionId Id { get; init; }
-
-    /// <summary>The project the subscription belongs to.</summary>
-    public required ProjectId ProjectId { get; init; }
-
-    /// <summary>The URL event payloads are posted to.</summary>
-    public required string Url { get; init; }
-
-    /// <summary>Whether the subscription is currently active.</summary>
-    public required bool IsActive { get; init; }
-
-    /// <summary>The event types the subscription notifies on.</summary>
-    public required IReadOnlyList<string> Events { get; init; }
-
-    /// <summary>When the subscription was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-}
 
 public static class CreateWebhookSubscription
 {
@@ -49,7 +24,7 @@ public static class CreateWebhookSubscription
         public string? Secret { get; init; }
 
         /// <summary>The event types to notify on.</summary>
-        public required IReadOnlyList<string> Events { get; init; }
+        public required IReadOnlyList<NotificationEvent> Events { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -66,6 +41,7 @@ public static class CreateWebhookSubscription
                 );
             RuleFor(command => command.Secret).MaximumLength(200);
             RuleFor(command => command.Events).NotEmpty();
+            RuleForEach(command => command.Events).IsInEnum();
         }
     }
 
@@ -81,7 +57,7 @@ public static class CreateWebhookSubscription
                 request.ProjectId,
                 request.Url,
                 request.Secret,
-                JsonSerializer.Serialize(request.Events),
+                NotificationEvents.Serialize(request.Events),
                 timeProvider.GetStoredUtcNow()
             );
 
@@ -89,15 +65,7 @@ public static class CreateWebhookSubscription
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new WebhookSubscriptionResponse
-            {
-                Id = subscription.Id,
-                ProjectId = subscription.ProjectId,
-                Url = subscription.Url,
-                IsActive = subscription.IsActive,
-                Events = request.Events,
-                CreatedAt = subscription.CreatedAt,
-            };
+            return WebhookSubscriptionResponse.FromEntity(subscription);
         }
     }
 }

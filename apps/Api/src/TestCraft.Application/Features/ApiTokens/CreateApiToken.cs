@@ -1,10 +1,9 @@
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.ApiTokens;
 
@@ -19,6 +18,9 @@ public record ApiTokenResponse
 
     /// <summary>The project the token grants access to.</summary>
     public required ProjectId ProjectId { get; init; }
+
+    /// <summary>The project resources this token can read or write.</summary>
+    public required IReadOnlyList<ApiTokenScope> Scopes { get; init; }
 
     /// <summary>When the token was last used to authenticate, if ever.</summary>
     public DateTimeOffset? LastUsedAt { get; init; }
@@ -60,6 +62,9 @@ public static class CreateApiToken
 
         /// <summary>When the token should expire, if it should.</summary>
         public DateTimeOffset? ExpiresAt { get; init; }
+
+        /// <summary>The areas the token may read or write; at least one.</summary>
+        public required IReadOnlyList<ApiTokenScope> Scopes { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -67,6 +72,11 @@ public static class CreateApiToken
         public Validator()
         {
             RuleFor(command => command.Name).NotEmpty().MaximumLength(100);
+            RuleFor(command => command.Scopes).NotEmpty();
+            RuleForEach(command => command.Scopes).IsInEnum();
+            RuleFor(command => command.Scopes)
+                .Must(scopes => scopes.Distinct().Count() == scopes.Count)
+                .WithMessage("Duplicate scopes are not allowed");
         }
     }
 
@@ -89,7 +99,8 @@ public static class CreateApiToken
                 tokenHash,
                 request.ProjectId,
                 currentUser.UserId,
-                request.ExpiresAt
+                request.ExpiresAt,
+                request.Scopes
             );
 
             context.ApiTokens.Add(token);

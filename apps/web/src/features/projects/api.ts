@@ -1,40 +1,44 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  CreateProject,
-  Paginated,
-  Project,
-  UpdateProject,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateProject, UpdateProject } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-import { PAGE_SIZE } from '@/lib/constants';
-
-const BASE = 'projects';
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
+import { PAGE_SIZE } from "@/lib/constants";
 
 export const projectsApi = {
   getAll: async (search?: string) => {
-    const { data } = await client.get<Paginated<Project>>(BASE, {
-      params: { pageSize: PAGE_SIZE, ...(search && { search }) },
+    return fetchAllPages(async (page) => {
+      const { data } = await sdk.listProjects({
+        query: { page, page_size: PAGE_SIZE, ...(search && { search }) },
+      });
+      return data;
     });
-    return data;
   },
   getById: async (id: string) => {
-    const { data } = await client.get<Project>(`${BASE}/${id}`);
+    const { data } = await sdk.getProject({
+      path: { project_id: id },
+    });
     return data;
   },
   create: async (input: CreateProject) => {
-    const { data } = await client.post<Project>(BASE, input);
+    const { data } = await sdk.createProject({ body: input });
     return data;
   },
-  update: async (id: string, input: UpdateProject) => {
-    const { data } = await client.put<Project>(`${BASE}/${id}`, {
-      ...input,
-      id,
+  update: async (id: string, input: UpdateProject, version: number) => {
+    const { data } = await sdk.updateProject({
+      path: { project_id: id },
+      body: input,
+      headers: ifMatch(version),
     });
     return data;
   },
-  delete: (id: string) => client.delete(`${BASE}/${id}`),
+  delete: (id: string) => sdk.deleteProject({ path: { project_id: id } }),
+  createDashboardSocketTicket: async () => {
+    const { data } = await sdk.createDashboardSocketTicket();
+    return data.ticket;
+  },
 };
 
 export const projectQueries = {

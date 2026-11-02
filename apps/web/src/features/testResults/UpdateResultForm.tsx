@@ -1,28 +1,29 @@
-import { zodResolver } from '@hookform/resolvers/zod';
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   DefectType,
   TestResultStatus,
   type UpdateTestResult,
-} from '@testcraft/types';
-import { useForm, useWatch } from 'react-hook-form';
-import { z } from 'zod';
+} from "@testcraft/types";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
-import { FormActions } from '@/components/ui/FormActions';
-import { FormField } from '@/components/ui/FormField';
-import { FormTextarea } from '@/components/ui/FormTextarea';
-import { statusOptions } from '@/features/testResults/constants';
+import { FormActions } from "@/components/ui/form/FormActions";
+import { FormField } from "@/components/ui/form/FormField";
+import { FormSelect } from "@/components/ui/form/FormSelect";
+import { FormTextarea } from "@/components/ui/form/FormTextarea";
+import { STATUS_OPTIONS } from "@/features/testResults/resultStatus";
 
 const defectTypeOptions = [
-  { value: DefectType.ProductBug, label: 'Product Bug' },
-  { value: DefectType.AutomationBug, label: 'Automation Bug' },
-  { value: DefectType.EnvironmentIssue, label: 'Environment Issue' },
-  { value: DefectType.ToInvestigate, label: 'To Investigate' },
+  { value: DefectType.ProductBug, label: "Product Bug" },
+  { value: DefectType.AutomationBug, label: "Automation Bug" },
+  { value: DefectType.EnvironmentIssue, label: "Environment Issue" },
+  { value: DefectType.ToInvestigate, label: "To Investigate" },
 ];
 
 const schema = z.object({
   status: z.nativeEnum(TestResultStatus),
   notes: z.string(),
-  defectType: z.union([z.nativeEnum(DefectType), z.literal('')]).optional(),
+  defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -54,7 +55,7 @@ export const UpdateResultForm = ({
     defaultValues,
   });
 
-  const status = useWatch({ control, name: 'status' });
+  const status = useWatch({ control, name: "status" });
 
   return (
     <form
@@ -62,8 +63,8 @@ export const UpdateResultForm = ({
         onSubmit({
           status: data.status,
           notes: data.notes || undefined,
-          defectType:
-            data.status === TestResultStatus.Failed && data.defectType !== ''
+          defect_type:
+            data.status === TestResultStatus.Failed && data.defectType !== ""
               ? data.defectType
               : undefined,
         }),
@@ -75,18 +76,18 @@ export const UpdateResultForm = ({
         htmlFor="update-result-status"
         error={errors.status?.message}
       >
-        <select
+        <FormSelect
           id="update-result-status"
           className="select-bordered select w-full"
           autoFocus
-          {...register('status')}
+          {...register("status")}
         >
-          {statusOptions.map((option) => (
+          {STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
             </option>
           ))}
-        </select>
+        </FormSelect>
       </FormField>
       {status === TestResultStatus.Failed && (
         <FormField
@@ -94,10 +95,10 @@ export const UpdateResultForm = ({
           htmlFor="update-result-defect-type"
           error={errors.defectType?.message}
         >
-          <select
+          <FormSelect
             id="update-result-defect-type"
             className="select-bordered select w-full"
-            {...register('defectType')}
+            {...register("defectType")}
           >
             <option value="">Select defect type (optional)</option>
             {defectTypeOptions.map((option) => (
@@ -105,19 +106,20 @@ export const UpdateResultForm = ({
                 {option.label}
               </option>
             ))}
-          </select>
+          </FormSelect>
         </FormField>
       )}
       <FormField
         label="Notes"
         htmlFor="update-result-notes"
+        optional
         error={errors.notes?.message}
       >
         <FormTextarea
           id="update-result-notes"
-          placeholder="Optional"
+          placeholder="What happened, links to logs or tickets"
           rows={2}
-          {...register('notes')}
+          {...register("notes")}
         />
       </FormField>
       <FormActions onCancel={onCancel} isLoading={isLoading} />

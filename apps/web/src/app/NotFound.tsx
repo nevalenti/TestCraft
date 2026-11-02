@@ -1,36 +1,39 @@
-import { ArrowLeftIcon, HomeIcon } from '@heroicons/react/24/solid';
-import { Link } from '@tanstack/react-router';
+import { MapIcon } from "@heroicons/react/24/outline";
+import { ArrowLeftIcon, HomeIcon } from "@heroicons/react/24/solid";
+import { Link } from "@tanstack/react-router";
 
-import { useBreadcrumbs } from '@/hooks/useBreadcrumbs';
+import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 
 export const NotFound = () => {
-  useBreadcrumbs([]);
+  useBreadcrumbs([{ label: "Not found" }]);
 
   return (
-    <div className="flex h-screen items-center justify-center px-4">
-      <div className="text-center">
-        <div className="relative mb-8">
-          <h1 className="text-[160px] leading-none font-black text-base-content/30 select-none">
-            404
-          </h1>
-        </div>
-        <h2 className="mb-4 text-4xl font-bold text-base-content">
-          Page Not Found
-        </h2>
-        <p className="mx-auto mb-8 max-w-md text-lg text-base-content/90">
+    <div className="flex min-h-[60vh] w-full flex-1 items-center justify-center px-6 py-16">
+      <div className="flex max-w-sm flex-col items-center text-center">
+        <span className="card-bg-primary mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
+          <MapIcon className="size-6" aria-hidden="true" />
+        </span>
+        <p className="text-xs font-semibold tracking-wider text-fg-subtle uppercase">
+          Error 404
+        </p>
+        <h1 className="mt-1 font-display text-xl font-bold tracking-tight text-base-content">
+          Page not found
+        </h1>
+        <p className="mt-1.5 text-sm text-fg-muted">
           The page you&apos;re looking for doesn&apos;t exist or has been moved.
         </p>
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
-          <Link to="/" className="btn gap-1.5 btn-ghost btn-sm">
+        <div className="mt-6 flex flex-wrap justify-center gap-2">
+          <Link to="/" className="btn btn-sm btn-primary">
             <HomeIcon className="size-4" aria-hidden="true" />
-            Go Home
+            Go to dashboard
           </Link>
           <button
+            type="button"
             onClick={() => history.back()}
-            className="btn gap-1.5 btn-ghost btn-sm"
+            className="btn btn-ghost btn-sm"
           >
             <ArrowLeftIcon className="size-4" aria-hidden="true" />
-            Go Back
+            Go back
           </button>
         </div>
       </div>

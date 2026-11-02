@@ -1,33 +1,35 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TestCraft.Api.Authorization;
+using TestCraft.Api.Idempotency;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestPlans;
 using TestCraft.Application.Features.TestRuns;
 
 namespace TestCraft.Api.Features.TestPlans;
 
+[ApiTokenScope("plans")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/plans")]
 public class TestPlansController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test plans for a project.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(IReadOnlyList<TestPlanResponse>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IReadOnlyList<TestPlanResponse>>> GetAll(
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<ActionResult<Paginated<TestPlanResponse>>> GetAll(
         ProjectId projectId,
+        [FromQuery] GetTestPlans.Query query,
         CancellationToken cancellationToken
     )
     {
-        var query = new GetTestPlans.Query { ProjectId = projectId };
-
-        var result = await sender.Send(query, cancellationToken);
+        var result = await sender.Send(query with { ProjectId = projectId }, cancellationToken);
 
         return Ok(result);
     }
 
     /// <summary>Gets a test plan by ID.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(TestPlanDetailResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<TestPlanDetailResponse>> GetById(
         ProjectId projectId,
         TestPlanId id,
@@ -38,12 +40,14 @@ public class TestPlansController(ISender sender) : ApiControllerBase
 
         var result = await sender.Send(query, cancellationToken);
 
+        SetETag(result.Version);
+
         return Ok(result);
     }
 
     /// <summary>Creates a test plan.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(TestPlanResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestPlanResponse>> Create(
         ProjectId projectId,
         CreateTestPlan.Command command,
@@ -59,17 +63,26 @@ public class TestPlansController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates a test plan.</summary>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(TestPlanResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<TestPlanResponse>> Update(
         ProjectId projectId,
         TestPlanId id,
         UpdateTestPlan.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }
@@ -92,7 +105,7 @@ public class TestPlansController(ISender sender) : ApiControllerBase
 
     /// <summary>Lists the test cases in a plan, in order.</summary>
     [HttpGet("{id:guid}/cases")]
-    [ProducesResponseType(typeof(IReadOnlyList<TestPlanCaseResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<IReadOnlyList<TestPlanCaseResponse>>> GetCases(
         ProjectId projectId,
         TestPlanId id,
@@ -163,8 +176,9 @@ public class TestPlansController(ISender sender) : ApiControllerBase
     }
 
     /// <summary>Creates a test run from a plan.</summary>
-    [HttpPost("{id:guid}/run")]
-    [ProducesResponseType(typeof(TestRunResponse), StatusCodes.Status201Created)]
+    [HttpPost("{id:guid}/runs")]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestRunResponse>> CreateRun(
         ProjectId projectId,
         TestPlanId id,

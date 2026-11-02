@@ -1,7 +1,6 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
 
@@ -9,17 +8,18 @@ namespace TestCraft.Application.Features.Projects;
 
 public static class GetProjects
 {
-    /// <summary>Lists the projects the current user owns or is a member of.</summary>
-    public sealed record Query : IRequest<Paginated<ProjectResponse>>
+    public enum SortField
     {
-        /// <summary>Filters projects whose name contains this text.</summary>
-        public string? Search { get; init; }
+        Name,
+        CreatedAt,
+    }
 
-        /// <summary>The page number to return, starting at 1.</summary>
-        public int? Page { get; init; }
+    /// <summary>Lists the projects the current user owns or is a member of; search matches the name.</summary>
+    public sealed record Query : SearchPageQuery, IRequest<Paginated<ProjectResponse>>
+    {
+        public SortField SortBy { get; init; } = SortField.CreatedAt;
 
-        /// <summary>The number of projects per page.</summary>
-        public int? PageSize { get; init; }
+        public SortDirection SortDir { get; init; } = SortDirection.Desc;
     }
 
     public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
@@ -30,46 +30,33 @@ public static class GetProjects
             CancellationToken cancellationToken
         )
         {
+            var userId = currentUser.UserId;
             var query = context.Projects.Where(project =>
-                project.UserId == currentUser.UserId
-                || project.Members.Any(member => member.UserId == currentUser.UserId)
+                project.UserId == userId || project.Members.Any(member => member.UserId == userId)
             );
 
-            if (!string.IsNullOrWhiteSpace(request.Search))
+            query = query.WhereContainsIgnoringCase(project => project.Name, request.Search);
+
+            var sorted =
+                request.SortBy == SortField.Name
+                    ? query.SortedBy(
+                        project => project.Name,
+                        request.SortDir,
+                        project => project.Id
+                    )
+                    : query.SortedBy(
+                        project => project.CreatedAt,
+                        request.SortDir,
+                        project => project.Id
+                    );
+
+            var page = await sorted
+                .Select(ProjectResponse.For(userId))
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
+
+            return page with
             {
-#pragma warning disable CA1304, CA1311
-                var pattern = $"%{request.Search.ToLower()}%";
-                query = query.Where(project => EF.Functions.Like(project.Name.ToLower(), pattern));
-#pragma warning restore CA1304, CA1311
-            }
-
-            var pagination = PaginationParams.Create(request.Page, request.PageSize);
-
-            var total = await query.CountAsync(cancellationToken);
-
-            var items = await query
-                .OrderByDescending(project => project.CreatedAt)
-                .Skip(pagination.Skip)
-                .Take(pagination.Take)
-                .Select(project => new ProjectResponse
-                {
-                    Id = project.Id,
-                    Name = project.Name,
-                    Description = project.Description,
-                    CreatedAt = project.CreatedAt,
-                    UpdatedAt = project.UpdatedAt,
-                    SuiteCount = project.TestSuites.Count(suite => !suite.IsDeleted),
-                    RunCount = project.TestRuns.Count(run => !run.IsDeleted),
-                    IsOwner = project.UserId == currentUser.UserId,
-                })
-                .ToListAsync(cancellationToken);
-
-            return new Paginated<ProjectResponse>
-            {
-                Items = items,
-                Total = total,
-                Page = pagination.Page,
-                PageSize = pagination.PageSize,
+                Items = await page.Items.WithRecentPassRatesAsync(context, cancellationToken),
             };
         }
     }

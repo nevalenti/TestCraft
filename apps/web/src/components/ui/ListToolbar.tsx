@@ -1,10 +1,10 @@
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { SearchInput } from "@/components/ui/SearchInput";
 
 interface ListToolbarProps {
   search: string;
   onSearch: (value: string) => void;
   placeholder: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 export const ListToolbar = ({
@@ -13,17 +13,20 @@ export const ListToolbar = ({
   placeholder,
   children,
 }: ListToolbarProps) => (
-  <div className="sticky -top-5 z-10 -mt-5 mb-4 flex items-center gap-3 bg-base-300 pt-5 pb-2">
-    <div className="relative w-full max-w-sm">
-      <MagnifyingGlassIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-base-content/60" />
-      <input
-        type="search"
-        className="input-bordered input w-full bg-base-200/60 pl-8 text-sm"
-        placeholder={placeholder}
-        value={search}
-        onChange={(event) => onSearch(event.target.value)}
-      />
-    </div>
-    <div className="ml-auto flex shrink-0 items-center gap-2">{children}</div>
+  <div
+    data-list-toolbar
+    className="sticky -top-5 z-10 -mt-5 mb-4 flex flex-col gap-3 bg-base-300 pt-5 pb-2 sm:flex-row sm:items-center"
+  >
+    <SearchInput
+      value={search}
+      onChange={onSearch}
+      placeholder={placeholder}
+      className="w-full sm:max-w-sm"
+    />
+    {children && (
+      <div className="flex flex-wrap items-center justify-end gap-2 sm:ml-auto sm:shrink-0">
+        {children}
+      </div>
+    )}
   </div>
 );

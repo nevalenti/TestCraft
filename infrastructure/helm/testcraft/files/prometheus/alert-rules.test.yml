@@ -1,0 +1,40 @@
+rule_files:
+  - alert-rules.yml
+
+evaluation_interval: 1m
+
+tests:
+  - interval: 1m
+    input_series:
+      - series: 'http_requests_received_total{job="testcraft-api", endpoint="x", method="GET", code="200"}'
+        values: '0+0.1x120'
+      - series: 'http_requests_received_total{job="testcraft-api", endpoint="x", method="GET", code="500"}'
+        values: '0x30 1x90'
+    alert_rule_test:
+      - eval_time: 45m
+        alertname: ApiErrorBudgetFastBurn
+        exp_alerts: []
+      - eval_time: 115m
+        alertname: ApiErrorBudgetSlowBurn
+        exp_alerts: []
+
+  - interval: 1m
+    input_series:
+      - series: 'http_requests_received_total{job="testcraft-api", endpoint="x", method="GET", code="200"}'
+        values: '0+10x120'
+      - series: 'http_requests_received_total{job="testcraft-api", endpoint="x", method="GET", code="500"}'
+        values: '0x30 0+5x90'
+    alert_rule_test:
+      - eval_time: 28m
+        alertname: ApiErrorBudgetFastBurn
+        exp_alerts: []
+      - eval_time: 40m
+        alertname: ApiErrorBudgetFastBurn
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "API is burning its error budget fast"
+              description: "10.11% of testcraft-api requests returned a 5xx over the last hour (budget: 0.5%) - at least 14x the rate the monthly budget can sustain."
+              dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
+              runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apierrorbudgetfastburn

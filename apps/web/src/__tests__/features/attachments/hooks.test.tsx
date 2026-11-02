@@ -1,38 +1,61 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/features/attachments/api', () => ({
+vi.mock("@/features/attachments/api", () => ({
   attachmentQueries: {
     all: vi.fn((projectId: string, runId: string, resultId: string) => ({
       queryKey: [
-        'projects',
+        "projects",
         projectId,
-        'runs',
+        "runs",
         runId,
-        'results',
+        "results",
         resultId,
-        'attachments',
+        "attachments",
       ],
       queryFn: vi.fn().mockResolvedValue([]),
     })),
+    page: vi.fn(
+      (projectId: string, runId: string, resultId: string, page: number) => ({
+        queryKey: [
+          "projects",
+          projectId,
+          "runs",
+          runId,
+          "results",
+          resultId,
+          "attachments",
+          "page",
+          page,
+        ],
+        queryFn: vi.fn().mockResolvedValue({
+          items: [],
+          total: 0,
+          page,
+          page_size: 20,
+        }),
+      }),
+    ),
   },
   attachmentsApi: {
     upload: vi.fn(),
     delete: vi.fn(),
+    getDownloadUrl: vi.fn(),
   },
 }));
 
-vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
+vi.mock("@/lib/notify", () => ({ notify: vi.fn() }));
 
-import { attachmentQueries, attachmentsApi } from '@/features/attachments/api';
+import { attachmentQueries, attachmentsApi } from "@/features/attachments/api";
 import {
   useAttachments,
   useDeleteAttachment,
+  useDownloadAttachment,
   useUploadAttachment,
-} from '@/features/attachments/hooks';
-import { notify } from '@/lib/notify';
+} from "@/features/attachments/hooks";
+import { notify } from "@/lib/notify";
 
 const makeWrapper = () => {
   const queryClient = new QueryClient({
@@ -48,61 +71,62 @@ beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('useAttachments', () => {
-  describe('given projectId, runId, resultId — calls the query factory', () => {
-    it('calls attachmentQueries.all with all three ids', () => {
+describe("useAttachments", () => {
+  describe("given projectId, runId, resultId — calls the query factory", () => {
+    it("calls attachmentQueries.page with all three ids and the first page", () => {
       const { wrapper } = makeWrapper();
-      renderHook(() => useAttachments('proj-1', 'run-1', 'result-1'), {
+      renderHook(() => useAttachments("proj-1", "run-1", "result-1"), {
         wrapper,
       });
-      expect(attachmentQueries.all).toHaveBeenCalledWith(
-        'proj-1',
-        'run-1',
-        'result-1',
+      expect(attachmentQueries.page).toHaveBeenCalledWith(
+        "proj-1",
+        "run-1",
+        "result-1",
+        1,
       );
     });
   });
 });
 
-describe('useUploadAttachment', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls attachmentsApi.upload with projectId, runId, resultId, and file', async () => {
+describe("useUploadAttachment", () => {
+  describe("on mutate — calls API and notifies", () => {
+    it("calls attachmentsApi.upload with projectId, runId, resultId, and file", async () => {
       vi.mocked(attachmentsApi.upload).mockResolvedValue({
-        id: 'att-1',
-        fileName: 'screenshot.png',
+        id: "att-1",
+        file_name: "screenshot.png",
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useUploadAttachment('proj-1', 'run-1', 'result-1'),
+        () => useUploadAttachment("proj-1", "run-1", "result-1"),
         { wrapper },
       );
 
-      const file = new File(['data'], 'screenshot.png', {
-        type: 'image/png',
+      const file = new File(["data"], "screenshot.png", {
+        type: "image/png",
       });
       result.current.mutate(file);
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(attachmentsApi.upload).toHaveBeenCalledWith(
-        'proj-1',
-        'run-1',
-        'result-1',
+        "proj-1",
+        "run-1",
+        "result-1",
         file,
       );
     });
 
     it("notifies 'Attachment uploaded' on success", async () => {
       vi.mocked(attachmentsApi.upload).mockResolvedValue({
-        id: 'att-1',
+        id: "att-1",
       } as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useUploadAttachment('proj-1', 'run-1', 'result-1'),
+        () => useUploadAttachment("proj-1", "run-1", "result-1"),
         { wrapper },
       );
 
       result.current.mutate(
-        new File(['data'], 'log.txt', { type: 'text/plain' }),
+        new File(["data"], "log.txt", { type: "text/plain" }),
       );
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -111,24 +135,24 @@ describe('useUploadAttachment', () => {
   });
 });
 
-describe('useDeleteAttachment', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls attachmentsApi.delete with all ids', async () => {
+describe("useDeleteAttachment", () => {
+  describe("on mutate — calls API and notifies", () => {
+    it("calls attachmentsApi.delete with all ids", async () => {
       vi.mocked(attachmentsApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useDeleteAttachment('proj-1', 'run-1', 'result-1'),
+        () => useDeleteAttachment("proj-1", "run-1", "result-1"),
         { wrapper },
       );
 
-      result.current.mutate('att-1');
+      result.current.mutate("att-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(attachmentsApi.delete).toHaveBeenCalledWith(
-        'proj-1',
-        'run-1',
-        'result-1',
-        'att-1',
+        "proj-1",
+        "run-1",
+        "result-1",
+        "att-1",
       );
     });
 
@@ -136,14 +160,67 @@ describe('useDeleteAttachment', () => {
       vi.mocked(attachmentsApi.delete).mockResolvedValue(undefined as any);
       const { wrapper } = makeWrapper();
       const { result } = renderHook(
-        () => useDeleteAttachment('proj-1', 'run-1', 'result-1'),
+        () => useDeleteAttachment("proj-1", "run-1", "result-1"),
         { wrapper },
       );
 
-      result.current.mutate('att-1');
+      result.current.mutate("att-1");
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Attachment deleted');
+      expect(notify).toHaveBeenCalledWith("Attachment deleted");
     });
+  });
+});
+
+const fakeTab = () =>
+  ({ opener: {}, location: { href: "" }, close: vi.fn() }) as never as Window;
+
+describe("useDownloadAttachment", () => {
+  it("opens the tab during the click and points it at the URL once resolved", async () => {
+    const tab = fakeTab();
+    const open = vi.spyOn(globalThis, "open").mockReturnValue(tab);
+    vi.mocked(attachmentsApi.getDownloadUrl).mockResolvedValue(
+      "https://files/a1",
+    );
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(
+      () => useDownloadAttachment("p1", "r1", "res1"),
+      { wrapper },
+    );
+
+    result.current.download("a1");
+
+    expect(open).toHaveBeenCalledWith("", "_blank");
+    expect(tab.opener).toBeNull();
+    await waitFor(() => expect(tab.location.href).toBe("https://files/a1"));
+    expect(attachmentsApi.getDownloadUrl).toHaveBeenCalledWith(
+      "p1",
+      "r1",
+      "res1",
+      "a1",
+    );
+    open.mockRestore();
+  });
+
+  it("closes the blank tab and notifies when the URL request fails", async () => {
+    const tab = fakeTab();
+    const open = vi.spyOn(globalThis, "open").mockReturnValue(tab);
+    vi.mocked(attachmentsApi.getDownloadUrl).mockRejectedValue(
+      new Error("nope"),
+    );
+    const { wrapper } = makeWrapper();
+    const { result } = renderHook(
+      () => useDownloadAttachment("p1", "r1", "res1"),
+      { wrapper },
+    );
+
+    result.current.download("a1");
+
+    await waitFor(() => expect(tab.close).toHaveBeenCalled());
+    expect(notify).toHaveBeenCalledWith(
+      "Could not download attachment",
+      "error",
+    );
+    open.mockRestore();
   });
 });

@@ -1,0 +1,69 @@
+---
+title: Alerts
+description: What each production alert means and where to look first.
+---
+
+Every alert email links to the [overview dashboard](https://testcraft.pro/grafana/d/testcraft-overview) and to its section here.
+
+## From an alert to the root cause
+
+- **Grafana → trace.** In a latency panel, the dots on the graph are exemplars; click one to open that request's trace in Tempo.
+- **Log → trace.** API and Gateway log lines written during a request carry its trace id, so Loki links them to the trace in Tempo.
+- **User report → logs.** The `ref:` in an error toast is the request id, also returned as `x-request-id` and as `instance` in problem responses. Search Loki for `{service_name="testcraft-api"} |= "<ref>"`.
+- **Failed background job → details.** The Hangfire dashboard at `/hangfire` keeps the exception and arguments of every failed job.
+
+## ApiErrorBudgetFastBurn
+
+More than about 7% of API requests have been failing with a 5xx for the last hour, and for the last five minutes too. At that rate a month's error budget is gone within hours.
+
+1. Open the dashboard. In **5xx responses per second by route**, check whether one route or all of them are failing.
+2. Search the API logs for `level="error"` around the start of the burn. If it started with the latest deploy, roll back first, then investigate.
+3. If every route is failing, check the dependencies: the Postgres, Redis and RabbitMQ dashboards, and the `TargetDown` alert.
+
+## ApiErrorBudgetSlowBurn
+
+A steady 5xx rate of 3% or more for six hours. Something is failing constantly but quietly. Follow the same steps as above, but there's no need to roll back in a hurry.
+
+## ApiHighLatencyP95
+
+The slowest 5% of requests have taken over a second for 10 minutes.
+
+1. In **P95 latency by route**, find the slow route, then click an exemplar on it to open a slow trace.
+2. In the trace, a long Npgsql span points to a slow query or lock contention. A long HTTP client span points to a slow dependency (Keycloak, MinIO, a webhook). Long gaps with no span point to a starved thread pool (see below).
+
+## ApiThreadPoolStarved
+
+More than 50 work items have been waiting for a thread-pool thread for 10 minutes. Something is blocking threads, usually sync-over-async (`.Result`, `.Wait()`), a synchronous I/O call or a long lock, so every request on that pod waits.
+
+1. Check whether **Thread pool queue** lines up with a particular route's latency on the dashboard.
+2. Traces from that period show spans that took far longer than their child spans account for. The handler that owns them is the suspect.
+
+## ApiMemoryGrowing
+
+The working set has been growing steadily for six hours. That usually means a leak, such as an unbounded cache or a static collection that is only ever appended to. The pod is OOM-killed at 512MiB.
+
+1. Check whether growth tracks traffic (requests per second) or just time.
+2. Restarting the deployment buys time. Comparing memory before and after the last deploy usually narrows the cause to one change.
+
+## ApiRequestsPilingUp
+
+More than 50 requests have been in flight on one instance for five minutes. The API is accepting work faster than it finishes it. That usually comes from a slow database (check the Postgres dashboard for locks and connections), a starved thread pool, or a slow dependency. Traces from the period show which one.
+
+## ApiRateLimitRejectionsHigh
+
+A rate limit has been rejecting more than one request per second for 10 minutes. The `limit` label says which one:
+
+- `ip`: the per-IP ceiling. This is usually one abusive client, or many users behind one NAT. Search the Gateway logs for the client IP.
+- `principal`: one user's or API token's budget. Find the token in the API logs (`user_id`) and check whether its CI integration is retrying in a loop.
+- `share`: public share-link lookups from one IP, often a scraper guessing links.
+- `member_invite`: one user adding project members unusually fast.
+
+Each limit's budget per 15 minutes is set by its `RATE_LIMIT_*` variable.
+
+## NotificationDeliveryAbandoned
+
+A webhook or email delivery used up its retries and was dropped. The `channel` label says which. Check the target endpoint or the SMTP relay, then the API logs for the delivery's last error.
+
+## HangfireJobFailed
+
+A Hangfire job moved to the Failed state. The `job_name` label is the job type. Its exception and arguments are on the `/hangfire` dashboard, where it can be retried once the cause is fixed; the API logs are in Grafana under `service_name=testcraft-api`.

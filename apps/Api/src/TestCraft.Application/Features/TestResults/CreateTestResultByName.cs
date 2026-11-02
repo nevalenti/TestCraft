@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -59,6 +56,7 @@ public static class CreateTestResultByName
             RuleFor(command => command.SuiteName).NotEmpty().MaximumLength(500);
             RuleFor(command => command.TestCaseName).NotEmpty().MaximumLength(500);
             RuleFor(command => command.Status).IsInEnum();
+            RuleFor(command => command.Status).NotEqual(TestResultStatus.Untested);
             RuleFor(command => command.Notes).MaximumLength(5000);
         }
     }
@@ -67,6 +65,7 @@ public static class CreateTestResultByName
         IApplicationDbContext context,
         ICacheService cache,
         ICurrentUser currentUser,
+        IDbExceptionClassifier dbExceptionClassifier,
         ITestRunNotifier notifier
     ) : IRequestHandler<Command, TestResultResponse>
     {
@@ -94,11 +93,28 @@ public static class CreateTestResultByName
 
             if (suite is null)
             {
-                suite = TestSuite.Create(request.ProjectId, request.SuiteName, source: request.Source);
+                suite = TestSuite.Create(
+                    request.ProjectId,
+                    request.SuiteName,
+                    source: request.Source
+                );
 
                 context.TestSuites.Add(suite);
 
-                await context.SaveChangesAsync(cancellationToken);
+                try
+                {
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
+                {
+                    context.TestSuites.Remove(suite);
+                    suite = await context.TestSuites.SingleAsync(
+                        existingSuite =>
+                            existingSuite.ProjectId == request.ProjectId
+                            && existingSuite.Name == request.SuiteName,
+                        cancellationToken
+                    );
+                }
             }
 
             var testCase = await context.TestCases.FirstOrDefaultAsync(
@@ -114,32 +130,80 @@ public static class CreateTestResultByName
 
                 context.TestCases.Add(testCase);
 
-                await context.SaveChangesAsync(cancellationToken);
+                try
+                {
+                    await context.SaveChangesAsync(cancellationToken);
+                }
+                catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
+                {
+                    context.TestCases.Remove(testCase);
+                    testCase = await context.TestCases.SingleAsync(
+                        existingCase =>
+                            existingCase.SuiteId == suite.Id
+                            && existingCase.Name == request.TestCaseName,
+                        cancellationToken
+                    );
+                }
             }
 
-            var result = TestResult.Create(
-                request.RunId,
-                testCase.Id,
-                request.Status,
-                request.Notes,
-                defectType: null,
-                request.DurationMs,
-                request.ExecutedAt,
-                currentUser.UserId
+            var result = await context.TestResults.FirstOrDefaultAsync(
+                existingResult =>
+                    existingResult.TestRunId == request.RunId
+                    && existingResult.TestCaseId == testCase.Id
+                    && existingResult.Status == TestResultStatus.Untested,
+                cancellationToken
             );
-
-            context.TestResults.Add(result);
+            var replacedPlaceholder = result is not null;
+            if (result is not null)
+            {
+                result.Record(
+                    request.Status,
+                    request.Notes,
+                    null,
+                    request.DurationMs,
+                    request.ExecutedAt,
+                    currentUser.UserId
+                );
+            }
+            else
+            {
+                result = TestResult.Create(
+                    request.RunId,
+                    testCase.Id,
+                    request.Status,
+                    request.Notes,
+                    defectType: null,
+                    request.DurationMs,
+                    request.ExecutedAt,
+                    currentUser.UserId
+                );
+                context.TestResults.Add(result);
+            }
 
             await context.SaveChangesAsync(cancellationToken);
 
             var summary = await context
-                .TestResults.Where(createdResult => createdResult.Id == result.Id)
-                .ToTestResultResponse()
+                .LiveResults()
+                .Where(createdResult => createdResult.Id == result.Id)
+                .Select(TestResultResponse.Projection)
                 .FirstAsync(cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
-            await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
+            if (replacedPlaceholder)
+            {
+                await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
+            }
+            else
+            {
+                await notifier.ResultAddedAsync(request.RunId, summary, cancellationToken);
+            }
+
+            await notifier.DashboardChangedAsync(
+                request.ProjectId,
+                request.RunId,
+                cancellationToken
+            );
 
             return summary;
         }

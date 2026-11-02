@@ -1,37 +1,12 @@
-using System.Text.Json;
-
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Notifications;
-
-/// <summary>An email subscription that notifies an address when project events occur.</summary>
-public record EmailSubscriptionResponse
-{
-    /// <summary>The subscription's identifier.</summary>
-    public required EmailSubscriptionId Id { get; init; }
-
-    /// <summary>The project the subscription belongs to.</summary>
-    public required ProjectId ProjectId { get; init; }
-
-    /// <summary>The email address being notified.</summary>
-    public required string Email { get; init; }
-
-    /// <summary>Whether the subscription is currently active.</summary>
-    public required bool IsActive { get; init; }
-
-    /// <summary>The event types the subscription notifies on.</summary>
-    public required IReadOnlyList<string> Events { get; init; }
-
-    /// <summary>When the subscription was created.</summary>
-    public required DateTimeOffset CreatedAt { get; init; }
-}
 
 public static class CreateEmailSubscription
 {
@@ -46,7 +21,7 @@ public static class CreateEmailSubscription
         public required string Email { get; init; }
 
         /// <summary>The event types to notify on.</summary>
-        public required IReadOnlyList<string> Events { get; init; }
+        public required IReadOnlyList<NotificationEvent> Events { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -55,6 +30,7 @@ public static class CreateEmailSubscription
         {
             RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
             RuleFor(command => command.Events).NotEmpty();
+            RuleForEach(command => command.Events).IsInEnum();
         }
     }
 
@@ -69,7 +45,7 @@ public static class CreateEmailSubscription
             var subscription = EmailSubscription.Create(
                 request.ProjectId,
                 request.Email,
-                JsonSerializer.Serialize(request.Events),
+                NotificationEvents.Serialize(request.Events),
                 timeProvider.GetStoredUtcNow()
             );
 
@@ -77,15 +53,7 @@ public static class CreateEmailSubscription
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new EmailSubscriptionResponse
-            {
-                Id = subscription.Id,
-                ProjectId = subscription.ProjectId,
-                Email = subscription.Email,
-                IsActive = subscription.IsActive,
-                Events = request.Events,
-                CreatedAt = subscription.CreatedAt,
-            };
+            return EmailSubscriptionResponse.FromEntity(subscription);
         }
     }
 }

@@ -1,7 +1,5 @@
 using FluentValidation;
-
 using MediatR;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -41,8 +39,11 @@ public static class CreateTestRun
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
-        : IRequestHandler<Command, TestRunResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        ICurrentUser currentUser,
+        ITestRunNotifier notifier
+    ) : IRequestHandler<Command, TestRunResponse>
     {
         public async Task<TestRunResponse> Handle(
             Command request,
@@ -61,6 +62,7 @@ public static class CreateTestRun
             context.TestRuns.Add(run);
 
             await context.SaveChangesAsync(cancellationToken);
+            await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
 
             return TestRunResponse.FromEntity(run);
         }

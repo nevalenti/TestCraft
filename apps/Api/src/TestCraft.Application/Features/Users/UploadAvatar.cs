@@ -1,10 +1,7 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
@@ -14,8 +11,8 @@ namespace TestCraft.Application.Features.Users;
 /// <summary>A presigned URL for a user's avatar image.</summary>
 public record AvatarUrlResponse
 {
-    /// <summary>The presigned avatar URL.</summary>
-    public required string Url { get; init; }
+    /// <summary>A temporary URL for the avatar, valid for one hour; null when there is none.</summary>
+    public required string? Url { get; init; }
 }
 
 public static partial class UploadAvatar
@@ -44,10 +41,10 @@ public static partial class UploadAvatar
         "image/gif",
     ];
 
+    public const long MaxSizeBytes = 5_242_880;
+
     public sealed class Validator : AbstractValidator<Command>
     {
-        private const long MaxSizeBytes = 5_242_880;
-
         public Validator()
         {
             RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);

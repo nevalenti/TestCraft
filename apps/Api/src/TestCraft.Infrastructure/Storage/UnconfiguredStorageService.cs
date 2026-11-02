@@ -14,6 +14,9 @@ public class UnconfiguredStorageService : IStorageService
         CancellationToken cancellationToken = default
     ) => throw new InvalidOperationException(Message);
 
+    public Task<byte[]> DownloadAsync(string key, CancellationToken cancellationToken = default) =>
+        throw new InvalidOperationException(Message);
+
     public Task DeleteAsync(string key, CancellationToken cancellationToken = default) =>
         throw new InvalidOperationException(Message);
 

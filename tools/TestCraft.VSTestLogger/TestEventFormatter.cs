@@ -16,7 +16,9 @@ internal static class TestEventFormatter
         return $"{prefix} {eventArgs.Message}";
     }
 
-    public static IEnumerable<string> FormatResult(TestResultEventArgs eventArgs)
+    public static IEnumerable<string> FormatResult(
+        TestResultEventArgs eventArgs
+    )
     {
         var result = eventArgs.Result;
         var icon = result.Outcome switch
@@ -34,7 +36,9 @@ internal static class TestEventFormatter
             ? result.TestCase.DisplayName
             : result.DisplayName;
         if (string.IsNullOrWhiteSpace(testName))
+        {
             testName = result.TestCase.FullyQualifiedName;
+        }
 
         yield return $"{icon}  {testName} ({durationText})";
 
@@ -42,13 +46,17 @@ internal static class TestEventFormatter
             result.Outcome == TestOutcome.Failed
             && !string.IsNullOrWhiteSpace(result.ErrorMessage)
         )
+        {
             yield return $"    {result.ErrorMessage}";
+        }
 
         foreach (
             var message in result.Messages.Where(candidate =>
                 !string.IsNullOrWhiteSpace(candidate.Text)
             )
         )
+        {
             yield return message.Text!.TrimEnd();
+        }
     }
 }

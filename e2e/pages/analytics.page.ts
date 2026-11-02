@@ -1,4 +1,4 @@
-import { expect, type Page } from '@playwright/test';
+import { expect, type Page } from "@playwright/test";
 
 export class AnalyticsPage {
   constructor(private page: Page) {}
@@ -9,18 +9,26 @@ export class AnalyticsPage {
   }
 
   get trendTab() {
-    return this.page.getByRole('tab', { name: /Trend/ });
+    return this.page
+      .getByRole("navigation", { name: "Analytics views" })
+      .getByRole("link", { name: /Trend/ });
   }
 
   get flakyTab() {
-    return this.page.getByRole('tab', { name: /Flaky Tests/ });
+    return this.page
+      .getByRole("navigation", { name: "Analytics views" })
+      .getByRole("link", { name: /Flaky Tests/ });
   }
 
   get suiteTab() {
-    return this.page.getByRole('tab', { name: /Suite Breakdown/ });
+    return this.page
+      .getByRole("navigation", { name: "Analytics views" })
+      .getByRole("link", { name: /Suite Breakdown/ });
   }
 
   get comparisonTab() {
-    return this.page.getByRole('tab', { name: /Run Comparison/ });
+    return this.page
+      .getByRole("navigation", { name: "Analytics views" })
+      .getByRole("link", { name: /Run Comparison/ });
   }
 }

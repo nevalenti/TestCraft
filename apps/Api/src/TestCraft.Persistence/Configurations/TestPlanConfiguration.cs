@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class TestPlanConfiguration : IEntityTypeConfiguration<TestPlan>
     public void Configure(EntityTypeBuilder<TestPlan> builder)
     {
         builder.ToTable("test_plans");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(testPlan => testPlan.Id);
 

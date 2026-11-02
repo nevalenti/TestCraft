@@ -17,7 +17,9 @@ internal sealed class LogLineBuffer(int batchSize)
     public IReadOnlyList<string>? Flush()
     {
         lock (_lock)
+        {
             return _lines.Count > 0 ? Drain() : null;
+        }
     }
 
     private List<string> Drain()

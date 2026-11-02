@@ -1,10 +1,10 @@
 using MassTransit;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Import.Contracts;
+using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
 
@@ -13,7 +13,8 @@ namespace TestCraft.Application.Features.Import.Consumers;
 public partial class ImportAllureRequestedConsumer(
     IApplicationDbContext dbContext,
     ITestRunNotifier notifier,
-    ILogger<ImportAllureRequestedConsumer> logger
+    ILogger<ImportAllureRequestedConsumer> logger,
+    TimeProvider timeProvider
 ) : IConsumer<ImportAllureRequested>
 {
     public async Task Consume(ConsumeContext<ImportAllureRequested> context)
@@ -37,11 +38,12 @@ public partial class ImportAllureRequestedConsumer(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        TestRunResponse run;
         try
         {
             var cases = AllureParser.Parse(message.Results);
 
-            var run = await ImportRunWriter.CreateRunWithResultsAsync(
+            run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
                 message.ProjectId,
                 message.Name ?? ImportAllure.Command.DefaultRunName,
@@ -51,29 +53,58 @@ public partial class ImportAllureRequestedConsumer(
                 message.UserId,
                 message.UserName,
                 message.Source?.ToLowerInvariant(),
-                job,
+                job.Id,
+                timeProvider.GetStoredUtcNow(),
                 cancellationToken
             );
-
-            await notifier.RunStatusChangedAsync(run.Id, run.Status.ToString(), cancellationToken);
         }
         catch (DomainException ex)
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.MarkFailed(ex.Message);
+            await ImportRunWriter.MarkJobFailedAsync(
+                dbContext,
+                job.Id,
+                ex.Message,
+                cancellationToken
+            );
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            return;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.MarkFailed("Import failed due to an unexpected error");
+            await ImportRunWriter.MarkJobFailedAsync(
+                dbContext,
+                job.Id,
+                "Import failed due to an unexpected error",
+                cancellationToken
+            );
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        try
+        {
+            await notifier.RunStatusChangedAsync(run.Id, run.Status, cancellationToken);
+            await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogNotifyFailed(logger, ex, job.Id);
         }
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Import job {JobId} completed but its live update was not sent"
+    )]
+    private static partial void LogNotifyFailed(
+        ILogger logger,
+        Exception exception,
+        ImportJobId jobId
+    );
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Import job {JobId} not found")]
     private static partial void LogJobNotFound(ILogger logger, ImportJobId jobId);

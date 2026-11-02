@@ -1,8 +1,6 @@
 using System.Linq.Expressions;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -59,6 +57,20 @@ public static class EntityTypeBuilderExtensions
         builder.Property(entity => entity.DeletedAt).HasColumnName("deleted_at");
 
         builder.HasQueryFilter(entity => !entity.IsDeleted);
+
+        return builder;
+    }
+
+    public static EntityTypeBuilder<TEntity> ConfigureVersion<TEntity>(
+        this EntityTypeBuilder<TEntity> builder
+    )
+        where TEntity : class, IVersioned
+    {
+        builder
+            .Property(entity => entity.Version)
+            .HasColumnName("version")
+            .HasDefaultValue(1)
+            .IsConcurrencyToken();
 
         return builder;
     }

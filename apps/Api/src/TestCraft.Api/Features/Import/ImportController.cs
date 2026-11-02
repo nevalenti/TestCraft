@@ -1,18 +1,18 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
+using TestCraft.Api.Idempotency;
 using TestCraft.Application.Features.Import;
 
 namespace TestCraft.Api.Features.Import;
 
-[RequestSizeLimit(5_000_000)]
+[ApiTokenScope("imports")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/import")]
 public class ImportController(ISender sender) : ApiControllerBase
 {
     /// <summary>Gets the status of an import job.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<ImportJobResponse>> GetById(
         ProjectId projectId,
         ImportJobId id,
@@ -28,6 +28,8 @@ public class ImportController(ISender sender) : ApiControllerBase
 
     /// <summary>Queues an asynchronous import of JUnit XML test results.</summary>
     [HttpPost("junit")]
+    [Idempotent]
+    [RequestSizeLimit(5_000_000)]
     [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status202Accepted)]
     public async Task<ActionResult<ImportJobResponse>> ImportJUnit(
         ProjectId projectId,
@@ -44,6 +46,8 @@ public class ImportController(ISender sender) : ApiControllerBase
 
     /// <summary>Queues an asynchronous import of Allure test results.</summary>
     [HttpPost("allure")]
+    [Idempotent]
+    [RequestSizeLimit(5_000_000)]
     [ProducesResponseType(typeof(ImportJobResponse), StatusCodes.Status202Accepted)]
     public async Task<ActionResult<ImportJobResponse>> ImportAllure(
         ProjectId projectId,

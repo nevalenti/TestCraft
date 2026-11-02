@@ -1,5 +1,5 @@
 using System.Globalization;
-
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Debugging;
 using Serilog.Enrichers.Span;
@@ -7,7 +7,6 @@ using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
 using Serilog.Templates;
 using Serilog.Templates.Themes;
-
 using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Configuration.Observability;
@@ -36,6 +35,7 @@ public static class LoggingExtensions
                     .Enrich.FromLogContext()
                     .Enrich.WithSpan()
                     .Enrich.WithProperty("environment", environmentName)
+                    .Enrich.With(new RemovePropertiesEnricher(loggingOptions.ExcludedLogProperties))
                     .WriteTo.Console(
                         new ExpressionTemplate(
                             "{@t:HH:mm:ss} [{@l:u3}] {#if requestId is not null}rid={requestId} {#end}{#if pageId is not null}pid={pageId} {#end}{#if userId is not null}uid={userId} {#end}{@m}\n{@x}",
@@ -50,13 +50,16 @@ public static class LoggingExtensions
                         loggingOptions.LokiUrl,
                         labels:
                         [
-                            new LokiLabel { Key = "app", Value = loggingOptions.OtelServiceName },
+                            new LokiLabel
+                            {
+                                Key = "service_name",
+                                Value = loggingOptions.OtelServiceName,
+                            },
                             new LokiLabel { Key = "environment", Value = environmentName },
                         ],
                         handleLogLevelAsLabel: true
                     );
                 }
-
             }
         );
 
@@ -65,19 +68,32 @@ public static class LoggingExtensions
 
     public static WebApplication UseRequestLogging(this WebApplication app)
     {
-        app.UseSerilogRequestLogging(options =>
-        {
-            options.GetLevel = GetRequestLogLevel;
-            options.EnrichDiagnosticContext = EnrichRequestDiagnosticContext;
-        });
+        var logSuccessfulRequests =
+            app.Services.GetRequiredService<
+                IOptions<ApiLoggingOptions>
+            >().Value.LogSuccessfulRequests
+            ?? !app.Environment.IsDevelopment();
+
+        app.UseWhen(
+            context => !ApiPaths.IsPublicShare(context.Request.Path),
+            branch =>
+            {
+                branch.UseSerilogRequestLogging(options =>
+                {
+                    options.GetLevel = (httpContext, elapsedMilliseconds, exception) =>
+                        GetRequestLogLevel(httpContext, exception, logSuccessfulRequests);
+                    options.EnrichDiagnosticContext = EnrichRequestDiagnosticContext;
+                });
+            }
+        );
 
         return app;
     }
 
     private static LogEventLevel GetRequestLogLevel(
         HttpContext httpContext,
-        double elapsedMilliseconds,
-        Exception? exception
+        Exception? exception,
+        bool logSuccessfulRequests
     )
     {
         if (
@@ -88,7 +104,7 @@ public static class LoggingExtensions
             return LogEventLevel.Debug;
         }
 
-        if (exception is not null)
+        if (exception is not null || httpContext.Response.StatusCode >= 500)
         {
             return LogEventLevel.Error;
         }
@@ -99,6 +115,11 @@ public static class LoggingExtensions
         }
 
         if (HttpMethods.IsOptions(httpContext.Request.Method))
+        {
+            return LogEventLevel.Verbose;
+        }
+
+        if (!logSuccessfulRequests && httpContext.Response.StatusCode < 400)
         {
             return LogEventLevel.Verbose;
         }

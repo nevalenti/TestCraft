@@ -1,9 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-
+using Microsoft.Extensions.Options;
 using Minio;
 using Minio.DataModel.Args;
 using Minio.Exceptions;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Configuration;
 
@@ -17,7 +16,7 @@ public static class MinioStorageServiceKeys
 public class MinioStorageService(
     IMinioClient minio,
     [FromKeyedServices(MinioStorageServiceKeys.PresigningClient)] IMinioClient presigningClient,
-    InfrastructureOptions options
+    IOptions<InfrastructureOptions> options
 ) : IStorageService
 {
     private static readonly HashSet<string> InlineRenderableContentTypes = new(
@@ -42,7 +41,7 @@ public class MinioStorageService(
         await EnsureBucketAsync(cancellationToken);
 
         var putArgs = new PutObjectArgs()
-            .WithBucket(options.MinioBucket)
+            .WithBucket(options.Value.MinioBucket)
             .WithObject(key)
             .WithStreamData(content)
             .WithObjectSize(content.CanSeek ? content.Length : -1)
@@ -60,10 +59,27 @@ public class MinioStorageService(
         return key;
     }
 
+    public async Task<byte[]> DownloadAsync(
+        string key,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var buffer = new MemoryStream();
+        await minio.GetObjectAsync(
+            new GetObjectArgs()
+                .WithBucket(options.Value.MinioBucket)
+                .WithObject(key)
+                .WithCallbackStream((stream, token) => stream.CopyToAsync(buffer, token)),
+            cancellationToken
+        );
+
+        return buffer.ToArray();
+    }
+
     public async Task DeleteAsync(string key, CancellationToken cancellationToken = default)
     {
         await minio.RemoveObjectAsync(
-            new RemoveObjectArgs().WithBucket(options.MinioBucket).WithObject(key),
+            new RemoveObjectArgs().WithBucket(options.Value.MinioBucket).WithObject(key),
             cancellationToken
         );
     }
@@ -76,7 +92,7 @@ public class MinioStorageService(
     {
         return await presigningClient.PresignedGetObjectAsync(
             new PresignedGetObjectArgs()
-                .WithBucket(options.MinioBucket)
+                .WithBucket(options.Value.MinioBucket)
                 .WithObject(key)
                 .WithExpiry((int)expiry.TotalSeconds)
         );
@@ -85,17 +101,19 @@ public class MinioStorageService(
     private async Task EnsureBucketAsync(CancellationToken cancellationToken)
     {
         var exists = await minio.BucketExistsAsync(
-            new BucketExistsArgs().WithBucket(options.MinioBucket),
+            new BucketExistsArgs().WithBucket(options.Value.MinioBucket),
             cancellationToken
         );
 
         if (exists)
+        {
             return;
+        }
 
         try
         {
             await minio.MakeBucketAsync(
-                new MakeBucketArgs().WithBucket(options.MinioBucket),
+                new MakeBucketArgs().WithBucket(options.Value.MinioBucket),
                 cancellationToken
             );
         }
@@ -103,11 +121,13 @@ public class MinioStorageService(
         {
             if (
                 !await minio.BucketExistsAsync(
-                    new BucketExistsArgs().WithBucket(options.MinioBucket),
+                    new BucketExistsArgs().WithBucket(options.Value.MinioBucket),
                     cancellationToken
                 )
             )
+            {
                 throw;
+            }
         }
     }
 }

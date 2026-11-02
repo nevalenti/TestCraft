@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -37,7 +35,7 @@ public static class GetTestCaseById
                     && testCase.SuiteId == request.SuiteId
                     && testCase.Suite!.ProjectId == request.ProjectId
                 )
-                .ToTestCaseResponse()
+                .Select(TestCaseResponse.Projection)
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

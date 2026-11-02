@@ -1,35 +1,27 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  FlakyTestStat,
-  RunComparison,
-  SuiteBreakdown,
-  TrendPoint,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string) => `projects/${projectId}/analytics`;
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const analyticsApi = {
   getTrend: async (projectId: string, limit = 20) => {
-    const { data } = await client.get<TrendPoint[]>(
-      `${BASE(projectId)}/trend`,
-      { params: { limit } },
-    );
+    const { data } = await sdk.getRunTrend({
+      path: { project_id: projectId },
+      query: { limit },
+    });
     return data;
   },
   getSuiteBreakdown: async (projectId: string, runId: string) => {
-    const { data } = await client.get<SuiteBreakdown[]>(
-      `${BASE(projectId)}/runs/${runId}/suite-breakdown`,
-    );
+    const { data } = await sdk.getSuiteBreakdown({
+      path: { project_id: projectId, run_id: runId },
+    });
     return data;
   },
   getFlakyTests: async (projectId: string, minRuns = 3) => {
-    const { data } = await client.get<FlakyTestStat[]>(
-      `${BASE(projectId)}/flaky`,
-      { params: { minRuns } },
-    );
+    const { data } = await sdk.getFlakyTests({
+      path: { project_id: projectId },
+      query: { min_runs: minRuns },
+    });
     return data;
   },
   getRunComparison: async (
@@ -37,10 +29,10 @@ export const analyticsApi = {
     runAId: string,
     runBId: string,
   ) => {
-    const { data } = await client.get<RunComparison>(
-      `${BASE(projectId)}/runs/compare`,
-      { params: { runAId, runBId } },
-    );
+    const { data } = await sdk.getRunComparison({
+      path: { project_id: projectId },
+      query: { run_a_id: runAId, run_b_id: runBId },
+    });
     return data;
   },
 };

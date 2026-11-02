@@ -1,9 +1,5 @@
-using System.Text.Json;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -33,16 +29,7 @@ public static class GetWebhookSubscriptions
                 .Where(subscription => subscription.ProjectId == request.ProjectId)
                 .ToListAsync(cancellationToken);
 
-            return rows.Select(subscription => new WebhookSubscriptionResponse
-                {
-                    Id = subscription.Id,
-                    ProjectId = subscription.ProjectId,
-                    Url = subscription.Url,
-                    IsActive = subscription.IsActive,
-                    Events = JsonSerializer.Deserialize<List<string>>(subscription.Events) ?? [],
-                    CreatedAt = subscription.CreatedAt,
-                })
-                .ToList();
+            return rows.Select(WebhookSubscriptionResponse.FromEntity).ToList();
         }
     }
 }

@@ -1,11 +1,8 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.ProjectMembers;
@@ -65,7 +62,7 @@ public class ProjectMembersApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Add_SameEmailTwice_ReturnsUnprocessable()
+    public async Task Add_SameEmailTwice_ReturnsConflict()
     {
         var ownerClient = CreateClient(Guid.NewGuid());
         RegisterKeycloakUser("member@example.com", Guid.NewGuid());
@@ -74,11 +71,11 @@ public class ProjectMembersApiTests(ApiFactory factory)
         await ownerClient.AddMemberAsync(project.Id, "member@example.com");
         var second = await ownerClient.AddMemberAsync(project.Id, "member@example.com");
 
-        second.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+        second.StatusCode.Should().Be(HttpStatusCode.Conflict);
     }
 
     [Fact]
-    public async Task Add_ByNonOwnerMember_ReturnsNotFound()
+    public async Task Add_ByEditorMember_ReturnsForbidden()
     {
         var ownerClient = CreateClient(Guid.NewGuid());
         var memberId = Guid.NewGuid();
@@ -90,7 +87,7 @@ public class ProjectMembersApiTests(ApiFactory factory)
         RegisterKeycloakUser("someone-else@example.com", Guid.NewGuid());
         var response = await memberClient.AddMemberAsync(project.Id, "someone-else@example.com");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 
     [Fact]
@@ -152,7 +149,7 @@ public class ProjectMembersApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task Remove_ByNonOwnerMember_ReturnsNotFound()
+    public async Task Remove_ByEditorMember_ReturnsForbidden()
     {
         var ownerClient = CreateClient(Guid.NewGuid());
         var memberId = Guid.NewGuid();
@@ -167,6 +164,6 @@ public class ProjectMembersApiTests(ApiFactory factory)
             $"/api/v1/projects/{project.Id}/members/{added!.Id}"
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
+        response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
 }

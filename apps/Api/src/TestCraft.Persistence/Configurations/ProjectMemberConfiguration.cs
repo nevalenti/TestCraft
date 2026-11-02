@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -29,6 +28,12 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
             .HasMaxLength(255);
 
         builder
+            .Property(projectMember => projectMember.Role)
+            .HasColumnName("role")
+            .HasConversion<string>()
+            .HasMaxLength(20);
+
+        builder
             .Property(projectMember => projectMember.CreatedAt)
             .HasColumnName("created_at")
             .HasDefaultValueSql("now()");
@@ -36,6 +41,8 @@ public class ProjectMemberConfiguration : IEntityTypeConfiguration<ProjectMember
         builder
             .HasIndex(projectMember => new { projectMember.ProjectId, projectMember.UserId })
             .IsUnique();
+
+        builder.HasIndex(projectMember => projectMember.UserId);
 
         builder.HasQueryFilter(projectMember => !projectMember.Project!.IsDeleted);
     }

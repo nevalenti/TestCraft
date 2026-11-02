@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -31,16 +29,7 @@ public static class GetTestSuiteById
                 .TestSuites.Where(suite =>
                     suite.Id == request.Id && suite.ProjectId == request.ProjectId
                 )
-                .Select(suite => new TestSuiteResponse
-                {
-                    Id = suite.Id,
-                    ProjectId = suite.ProjectId,
-                    Name = suite.Name,
-                    Description = suite.Description,
-                    Source = suite.Source,
-                    CreatedAt = suite.CreatedAt,
-                    UpdatedAt = suite.UpdatedAt,
-                })
+                .Select(TestSuiteResponse.Projection)
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

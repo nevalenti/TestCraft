@@ -1,4 +1,4 @@
-import { Command } from 'commander';
+import { Command } from "commander";
 
 export interface Options {
   command: string;
@@ -7,6 +7,8 @@ export interface Options {
   password: string;
   clientId: string;
   clientSecret: string;
+  apiToken: string;
+  projectId: string;
   projectName: string;
   runName: string;
   junitXml?: string;
@@ -25,27 +27,29 @@ const opt = (flags: Flags, key: string, envVar: string): string | undefined =>
 
 const mergeOptions = (command: string, flags: Flags): Options => ({
   command,
-  apiUrl: opt(flags, 'apiUrl', 'TESTCRAFT_API_URL') ?? '',
-  username: opt(flags, 'username', 'TESTCRAFT_USERNAME') ?? '',
-  password: opt(flags, 'password', 'TESTCRAFT_PASSWORD') ?? '',
-  clientId: opt(flags, 'clientId', 'TESTCRAFT_CLIENT_ID') ?? '',
-  clientSecret: opt(flags, 'clientSecret', 'TESTCRAFT_CLIENT_SECRET') ?? '',
-  projectName: opt(flags, 'projectName', 'TESTCRAFT_PROJECT_NAME') ?? '',
+  apiUrl: opt(flags, "apiUrl", "TESTCRAFT_API_URL") ?? "",
+  username: opt(flags, "username", "TESTCRAFT_USERNAME") ?? "",
+  password: opt(flags, "password", "TESTCRAFT_PASSWORD") ?? "",
+  clientId: opt(flags, "clientId", "TESTCRAFT_CLIENT_ID") ?? "",
+  clientSecret: opt(flags, "clientSecret", "TESTCRAFT_CLIENT_SECRET") ?? "",
+  apiToken: opt(flags, "apiToken", "TESTCRAFT_API_TOKEN") ?? "",
+  projectId: opt(flags, "projectId", "TESTCRAFT_PROJECT_ID") ?? "",
+  projectName: opt(flags, "projectName", "TESTCRAFT_PROJECT_NAME") ?? "",
   runName:
-    opt(flags, 'runName', 'TESTCRAFT_RUN_NAME') ??
-    process.env['CI_JOB_NAME'] ??
-    '',
-  junitXml: opt(flags, 'junitXml', 'TESTCRAFT_JUNIT_XML'),
+    opt(flags, "runName", "TESTCRAFT_RUN_NAME") ??
+    process.env["CI_JOB_NAME"] ??
+    "",
+  junitXml: opt(flags, "junitXml", "TESTCRAFT_JUNIT_XML"),
   keycloakAuthority: opt(
     flags,
-    'keycloakAuthority',
-    'TESTCRAFT_KEYCLOAK_AUTHORITY',
+    "keycloakAuthority",
+    "TESTCRAFT_KEYCLOAK_AUTHORITY",
   ),
-  source: opt(flags, 'source', 'TESTCRAFT_SOURCE'),
-  screenshotsDir: opt(flags, 'screenshotsDir', 'TESTCRAFT_SCREENSHOTS_DIR'),
-  runId: opt(flags, 'runId', 'TESTCRAFT_RUN_ID'),
-  dotenvPath: opt(flags, 'dotenv', 'TESTCRAFT_DOTENV_PATH'),
-  file: opt(flags, 'file', 'TESTCRAFT_LOG_FILE'),
+  source: opt(flags, "source", "TESTCRAFT_SOURCE"),
+  screenshotsDir: opt(flags, "screenshotsDir", "TESTCRAFT_SCREENSHOTS_DIR"),
+  runId: opt(flags, "runId", "TESTCRAFT_RUN_ID"),
+  dotenvPath: opt(flags, "dotenv", "TESTCRAFT_DOTENV_PATH"),
+  file: opt(flags, "file", "TESTCRAFT_LOG_FILE"),
 });
 
 const configureCommand = (cmd: Command): Command =>
@@ -53,38 +57,40 @@ const configureCommand = (cmd: Command): Command =>
     .helpOption(false)
     .exitOverride()
     .allowExcessArguments(false)
-    .option('--api-url <url>')
-    .option('--username <username>')
-    .option('--password <password>')
-    .option('--client-id <id>')
-    .option('--client-secret <secret>')
-    .option('--project-name <name>')
-    .option('--run-name <name>')
-    .option('--keycloak-authority <url>')
-    .option('--source <source>');
+    .option("--api-url <url>")
+    .option("--username <username>")
+    .option("--password <password>")
+    .option("--client-id <id>")
+    .option("--client-secret <secret>")
+    .option("--api-token <token>")
+    .option("--project-id <id>")
+    .option("--project-name <name>")
+    .option("--run-name <name>")
+    .option("--keycloak-authority <url>")
+    .option("--source <source>");
 
 const buildProgram = (onParsed: (opts: Options) => void): Command => {
   const program = new Command()
-    .name('testcraft-ci-reporter')
+    .name("testcraft-ci-reporter")
     .helpOption(false)
     .exitOverride()
     .configureOutput({ writeErr: () => {} });
 
-  configureCommand(program.command('start'))
-    .option('--dotenv <path>')
-    .action((flags: Flags) => onParsed(mergeOptions('start', flags)));
+  configureCommand(program.command("start"))
+    .option("--dotenv <path>")
+    .action((flags: Flags) => onParsed(mergeOptions("start", flags)));
 
-  configureCommand(program.command('import', { isDefault: true }))
-    .option('--junit-xml <path>')
-    .option('--run-id <id>')
-    .option('--dotenv <path>')
-    .option('--screenshots-dir <dir>')
-    .action((flags: Flags) => onParsed(mergeOptions('import', flags)));
+  configureCommand(program.command("import", { isDefault: true }))
+    .option("--junit-xml <path>")
+    .option("--run-id <id>")
+    .option("--dotenv <path>")
+    .option("--screenshots-dir <dir>")
+    .action((flags: Flags) => onParsed(mergeOptions("import", flags)));
 
-  configureCommand(program.command('logs'))
-    .option('--run-id <id>')
-    .option('--file <path>')
-    .action((flags: Flags) => onParsed(mergeOptions('logs', flags)));
+  configureCommand(program.command("logs"))
+    .option("--run-id <id>")
+    .option("--file <path>")
+    .action((flags: Flags) => onParsed(mergeOptions("logs", flags)));
 
   return program;
 };
@@ -99,16 +105,16 @@ export const parseArgs = (argv: string[]): Options => {
   const commandNames = program.commands.map((cmd) => cmd.name());
   if (
     maybeCommand !== undefined &&
-    !maybeCommand.startsWith('-') &&
+    !maybeCommand.startsWith("-") &&
     !commandNames.includes(maybeCommand)
   ) {
     throw new Error(
-      `Unknown command "${maybeCommand}" — expected one of: ${commandNames.join(', ')}`,
+      `Unknown command "${maybeCommand}" — expected one of: ${commandNames.join(", ")}`,
     );
   }
 
-  program.parse(argv, { from: 'user' });
+  program.parse(argv, { from: "user" });
 
-  if (!opts) throw new Error(`Failed to parse arguments: ${argv.join(' ')}`);
+  if (!opts) throw new Error(`Failed to parse arguments: ${argv.join(" ")}`);
   return opts;
 };

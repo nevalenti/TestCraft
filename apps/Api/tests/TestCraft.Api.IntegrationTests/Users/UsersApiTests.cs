@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Features.Users;
 
@@ -38,13 +36,14 @@ public class UsersApiTests(ApiFactory factory)
     }
 
     [Fact]
-    public async Task GetAvatarUrl_NoAvatarSet_ReturnsNoContent()
+    public async Task GetAvatarUrl_NoAvatarSet_ReturnsNullUrl()
     {
         var client = CreateClient(Guid.NewGuid());
 
         var response = await client.GetAsync("/api/v1/account/avatar");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<AvatarUrlResponse>())!.Url.Should().BeNull();
     }
 
     [Fact]
@@ -123,7 +122,7 @@ public class UsersApiTests(ApiFactory factory)
             new MultipartFormDataContent()
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
     }
 
     [Fact]
@@ -136,6 +135,7 @@ public class UsersApiTests(ApiFactory factory)
 
         var response = await otherUser.GetAsync("/api/v1/account/avatar");
 
-        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        (await response.Content.ReadFromJsonAsync<AvatarUrlResponse>())!.Url.Should().BeNull();
     }
 }

@@ -1,9 +1,6 @@
 using System.Globalization;
-
 using Microsoft.OpenApi;
-
 using Swashbuckle.AspNetCore.SwaggerGen;
-
 using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Configuration.Swagger;
@@ -32,6 +29,13 @@ public sealed class ProblemResponsesOperationFilter : IOperationFilter
             );
         }
 
+        AddResponse<ValidationProblemResponse>(
+            operation,
+            context,
+            StatusCodes.Status422UnprocessableEntity,
+            "Validation Failed"
+        );
+
         var httpMethod = context.ApiDescription.HttpMethod ?? string.Empty;
 
         if (
@@ -40,12 +44,6 @@ public sealed class ProblemResponsesOperationFilter : IOperationFilter
             || HttpMethods.IsPatch(httpMethod)
         )
         {
-            AddResponse<ValidationProblemResponse>(
-                operation,
-                context,
-                StatusCodes.Status400BadRequest,
-                "Validation Failed"
-            );
             AddResponse(operation, context, StatusCodes.Status409Conflict, "Conflict");
         }
 

@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class LabelConfiguration : IEntityTypeConfiguration<Label>
     public void Configure(EntityTypeBuilder<Label> builder)
     {
         builder.ToTable("labels");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(label => label.Id);
 

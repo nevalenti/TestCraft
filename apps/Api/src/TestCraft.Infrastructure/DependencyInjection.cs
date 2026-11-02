@@ -1,5 +1,5 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Infrastructure.Auth;
 using TestCraft.Infrastructure.Caching;
 using TestCraft.Infrastructure.Configuration;
@@ -12,20 +12,19 @@ namespace TestCraft.Infrastructure;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddInfrastructure(
+    public static IServiceCollection AddInfrastructure<TDbContext>(
         this IServiceCollection services,
         InfrastructureOptions options
     )
+        where TDbContext : DbContext
     {
-        services.AddStartupOptions(options);
-
         services
             .AddCaching(options)
-            .AddMessageBus(options)
+            .AddMessageBus<TDbContext>(options)
             .AddStorage(options)
             .AddEmail(options)
             .AddNotifications(options)
-            .AddAuth();
+            .AddAuth(options);
 
         return services;
     }

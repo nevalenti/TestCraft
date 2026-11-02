@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -29,19 +27,7 @@ public static class GetTestRunById
         ) =>
             await context
                 .TestRuns.Where(run => run.Id == request.Id && run.ProjectId == request.ProjectId)
-                .Select(run => new TestRunResponse
-                {
-                    Id = run.Id,
-                    ProjectId = run.ProjectId,
-                    Name = run.Name,
-                    Environment = run.Environment,
-                    Status = run.Status,
-                    Source = run.Source,
-                    ExecutedById = run.ExecutedById,
-                    ExecutedByName = run.ExecutedByName,
-                    CreatedAt = run.CreatedAt,
-                    UpdatedAt = run.UpdatedAt,
-                })
+                .Select(TestRunResponse.Projection)
                 .FirstOrDefaultAsync(cancellationToken)
             ?? throw new NotFoundException();
     }

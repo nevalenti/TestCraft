@@ -125,22 +125,6 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: seq
-  namespace: {{ .Release.Namespace }}
-spec:
-  podSelector:
-    matchLabels:
-      app: seq
-  policyTypes: [Ingress]
-  ingress:
-    - from:
-        - podSelector: {matchLabels: {app: gateway}} # web UI (reverse-proxied) + gateway's own log shipping
-        - podSelector: {matchLabels: {app: api}} # api's own log shipping
-      ports: [{port: 80, protocol: TCP}]
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
   name: minio
   namespace: {{ .Release.Namespace }}
 spec:

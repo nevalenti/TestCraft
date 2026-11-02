@@ -1,7 +1,7 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { queryKeys } from '@/api/queryKeys';
-import { accountApi, accountQueries } from '@/features/account/api';
+import { queryKeys } from "@/api/queryKeys";
+import { accountApi, accountQueries } from "@/features/account/api";
 
 export const useAvatarUrl = () => useQuery(accountQueries.avatarUrl());
 

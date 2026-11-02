@@ -1,13 +1,17 @@
-import { AVAILABLE_EVENTS } from '@/features/notifications/notificationEvents';
+import type { NotificationEvent } from "@testcraft/types";
+
+import { AVAILABLE_EVENTS } from "@/features/notifications/notificationEvents";
+
+interface EventCheckboxesProps {
+  selected: NotificationEvent[];
+  onChange: (next: NotificationEvent[]) => void;
+}
 
 export const EventCheckboxes = ({
   selected,
   onChange,
-}: {
-  selected: string[];
-  onChange: (next: string[]) => void;
-}) => {
-  const toggle = (event: string) =>
+}: EventCheckboxesProps) => {
+  const toggle = (event: NotificationEvent) =>
     onChange(
       selected.includes(event)
         ? selected.filter((selectedEvent) => selectedEvent !== event)

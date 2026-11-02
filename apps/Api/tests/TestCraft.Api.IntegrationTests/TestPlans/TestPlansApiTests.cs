@@ -1,12 +1,16 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestPlans;
+using TestCraft.Application.Features.TestResults;
 using TestCraft.Application.Features.TestRuns;
+using TestCraft.Domain.Enums;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.TestPlans;
 
@@ -74,9 +78,9 @@ public class TestPlansApiTests(ApiFactory factory)
         );
         getResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var cases = await getResponse.Content.ReadFromJsonAsync<
-            List<TestPlanCaseResponse>
-        >(ApiTestHelpers.JsonOptions);
+        var cases = await getResponse.Content.ReadFromJsonAsync<List<TestPlanCaseResponse>>(
+            ApiTestHelpers.JsonOptions
+        );
         cases.Should().ContainSingle(planCase => planCase.TestCaseId == testCase.Id);
     }
 
@@ -173,7 +177,7 @@ public class TestPlansApiTests(ApiFactory factory)
         );
 
         var runResponse = await client.PostAsJsonAsync(
-            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/run",
+            $"/api/v1/projects/{project.Id}/plans/{plan.Id}/runs",
             new CreateRunFromPlan.Command
             {
                 TestPlanId = TestPlanId.New(),
@@ -194,6 +198,72 @@ public class TestPlansApiTests(ApiFactory factory)
         ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(ApiTestHelpers.JsonOptions);
 
         summary!.Total.Should().Be(2);
+        summary.Untested.Should().Be(2);
+        summary.Blocked.Should().Be(0);
+        summary.PassRate.Should().Be(0);
+
+        using var scope = factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var placeholders = await context
+            .TestResults.Where(result => result.TestRunId == run.Id)
+            .ToListAsync();
+        placeholders.Should().HaveCount(2);
+        placeholders
+            .Should()
+            .OnlyContain(result =>
+                result.Status == TestResultStatus.Untested
+                && result.ExecutedAt == null
+                && result.ExecutedById == null
+            );
+
+        var recordResponse = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/results",
+            new CreateTestResult.Command
+            {
+                TestCaseId = case1.Id,
+                Status = TestResultStatus.Passed,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+        recordResponse.StatusCode.Should().Be(HttpStatusCode.Created);
+        var recorded = await recordResponse.Content.ReadFromJsonAsync<TestResultResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        recorded!.Id.Should().Be(placeholders.Single(result => result.TestCaseId == case1.Id).Id);
+
+        var updatedSummary = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/runs/{run.Id}/summary")
+        ).Content.ReadFromJsonAsync<GetTestRunSummary.Response>(ApiTestHelpers.JsonOptions);
+        updatedSummary!.Total.Should().Be(2);
+        updatedSummary.Untested.Should().Be(1);
+        updatedSummary.Passed.Should().Be(1);
+        updatedSummary.PassRate.Should().Be(100);
+
+        var markBlocked = await client.UpdateAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/results/{placeholders.Single(result => result.TestCaseId == case2.Id).Id}",
+            new UpdateTestResult.Command
+            {
+                Id = placeholders.Single(result => result.TestCaseId == case2.Id).Id,
+                Status = TestResultStatus.Blocked,
+            }
+        );
+        markBlocked.StatusCode.Should().Be(HttpStatusCode.OK);
+        var blocked = await markBlocked.Content.ReadFromJsonAsync<TestResultResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        blocked!.ExecutedAt.Should().NotBeNull();
+
+        var reset = await client.UpdateAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/runs/{run.Id}/results/{recorded.Id}",
+            new UpdateTestResult.Command { Id = recorded.Id, Status = TestResultStatus.Untested },
+            version: recorded.Version
+        );
+        reset.StatusCode.Should().Be(HttpStatusCode.OK);
+        var untested = await reset.Content.ReadFromJsonAsync<TestResultResponse>(
+            ApiTestHelpers.JsonOptions
+        );
+        untested!.ExecutedAt.Should().BeNull();
+        untested.ExecutedById.Should().BeNull();
     }
 
     [Fact]
@@ -203,7 +273,7 @@ public class TestPlansApiTests(ApiFactory factory)
         var project = await client.CreateProjectAsync();
         var plan = await client.CreatePlanAsync(project.Id, "Original");
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/plans/{plan.Id}",
             new UpdateTestPlan.Command { Id = plan.Id, Name = "Renamed" }
         );
@@ -256,7 +326,7 @@ public class TestPlansApiTests(ApiFactory factory)
             new CreateTestPlan.Command { Name = "" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -272,12 +342,12 @@ public class TestPlansApiTests(ApiFactory factory)
         var response = await client.GetAsync($"/api/v1/projects/{project.Id}/plans");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var plans = await response.Content.ReadFromJsonAsync<IReadOnlyList<TestPlanResponse>>(
+        var plans = await response.Content.ReadFromJsonAsync<Paginated<TestPlanResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        plans.Should().HaveCountGreaterThanOrEqualTo(2);
-        plans.Should().Contain(plan => plan.Name == "Plan A");
-        plans.Should().Contain(plan => plan.Name == "Plan B");
+        plans!.Items.Should().HaveCountGreaterThanOrEqualTo(2);
+        plans!.Items.Should().Contain(plan => plan.Name == "Plan A");
+        plans!.Items.Should().Contain(plan => plan.Name == "Plan B");
     }
 
     [Fact]
@@ -306,8 +376,8 @@ public class TestPlansApiTests(ApiFactory factory)
                 TestPlanId = TestPlanId.New(),
                 Cases =
                 [
-                    new ReorderPlanCases.PlanCaseOrder(case2.Id, 0),
-                    new ReorderPlanCases.PlanCaseOrder(case1.Id, 1),
+                    new ReorderPlanCases.PlanCaseOrder { TestCaseId = case2.Id, Order = 0 },
+                    new ReorderPlanCases.PlanCaseOrder { TestCaseId = case1.Id, Order = 1 },
                 ],
             }
         );
@@ -368,7 +438,10 @@ public class TestPlansApiTests(ApiFactory factory)
             new ReorderPlanCases.Command
             {
                 TestPlanId = TestPlanId.New(),
-                Cases = [new ReorderPlanCases.PlanCaseOrder(TestCaseId.New(), 5)],
+                Cases =
+                [
+                    new ReorderPlanCases.PlanCaseOrder { TestCaseId = TestCaseId.New(), Order = 5 },
+                ],
             }
         );
         reorderResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);

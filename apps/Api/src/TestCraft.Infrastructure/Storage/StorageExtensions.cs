@@ -1,7 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-
 using Minio;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Infrastructure.Configuration;
 
@@ -28,7 +26,7 @@ public static class StorageExtensions
                 : new MinioClient()
                     .WithEndpoint(options.MinioPublicEndpoint)
                     .WithCredentials(options.MinioAccessKey, options.MinioSecretKey)
-                    .WithSSL(options.MinioPublicUseSsl)
+                    .WithSSL(options.MinioPublicUseSsl ?? options.MinioUseSsl)
                     .Build();
             services.AddKeyedSingleton<IMinioClient>(
                 MinioStorageServiceKeys.PresigningClient,

@@ -3,14 +3,14 @@ name: release-tag
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
-  contents: write
-  packages: write
+  contents: read
 
 env:
   API_IMAGE: ghcr.io/${{ github.repository_owner }}/testcraft-api
+  MIGRATOR_IMAGE: ghcr.io/${{ github.repository_owner }}/testcraft-migrator
   WEB_IMAGE: ghcr.io/${{ github.repository_owner }}/testcraft-web
   GATEWAY_IMAGE: ghcr.io/${{ github.repository_owner }}/testcraft-gateway
   DOCS_IMAGE: ghcr.io/${{ github.repository_owner }}/testcraft-docs
@@ -43,6 +43,9 @@ jobs:
           fi
 
   promote-images:
+    permissions:
+      contents: read
+      packages: write
     name: promote images to ${{ github.ref_name }}
     needs: verify-ci
     runs-on: ubuntu-latest
@@ -55,15 +58,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retag latest api/web/gateway/docs images as the release version
+      - name: Retag latest api/migrator/web/gateway/docs images as the release version
         run: |
           version="$GITHUB_REF_NAME"
-          for image in "$API_IMAGE" "$WEB_IMAGE" "$GATEWAY_IMAGE" "$DOCS_IMAGE"; do
+          for image in "$API_IMAGE" "$MIGRATOR_IMAGE" "$WEB_IMAGE" "$GATEWAY_IMAGE" "$DOCS_IMAGE"; do
             echo "Promoting $image:latest -> $image:$version"
             docker buildx imagetools create --tag "$image:$version" "$image:latest"
           done
 
   github-release:
+    permissions:
+      contents: write
     name: create GitHub release
     needs: promote-images
     runs-on: ubuntu-latest
@@ -72,6 +77,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          persist-credentials: false
           fetch-depth: 0
 
       - name: Create release

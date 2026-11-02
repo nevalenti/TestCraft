@@ -1,0 +1,33 @@
+---
+title: Updates and caching
+description: Strict request bodies, optimistic concurrency with ETag and If-Match, and Cache-Control.
+---
+
+Request bodies and list query parameters reject fields the endpoint does not define with
+`422`, so a misspelt field fails instead of being silently dropped.
+
+## Concurrent edits
+
+Projects, suites, cases, steps, plans, runs, results, labels, notes and notification
+subscriptions carry a `version` that increases with every change. Their `GET` and `PUT`
+responses return it as a strong `ETag`, for example `ETag: "3"`.
+
+Send that value back in `If-Match` on `PUT` to update only if nobody changed the record in
+the meantime:
+
+```http
+PUT /api/v1/projects/{project_id}/suites/{suite_id}
+If-Match: "3"
+Content-Type: application/json
+
+{"name": "Payments"}
+```
+
+The header is required for these updates. If the record has moved on, the API answers
+`412 Precondition Failed` and changes nothing; fetch it again and reapply your change.
+Missing headers return `422`. Wildcard, weak (`W/"3"`) and malformed tags return `412`.
+
+## Caching
+
+Responses that carry an `ETag` are sent with `Cache-Control: private, no-cache`; every other
+response is sent with `Cache-Control: no-store`.

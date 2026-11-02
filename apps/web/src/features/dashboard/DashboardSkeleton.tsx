@@ -1,4 +1,4 @@
-import { Skeleton as SkeletonBlock } from '@/components/ui/Skeleton';
+import { Skeleton as SkeletonBlock } from "@/components/ui/skeleton/Skeleton";
 
 const TabsSkeleton = () => (
   <div className="flex items-center gap-6 px-4 py-3">
@@ -19,7 +19,7 @@ const RunRowSkeleton = () => (
 );
 
 const RunsTableSkeleton = () => (
-  <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card [&>div+div]:border-t [&>div+div]:border-base-content/8">
+  <div className="overflow-hidden panel [&>div+div]:border-t [&>div+div]:border-base-content/8">
     <TabsSkeleton />
     {[0, 1, 2, 3].map((i) => (
       <RunRowSkeleton key={i} />
@@ -29,16 +29,6 @@ const RunsTableSkeleton = () => (
 
 export const DashboardSkeleton = () => (
   <div aria-hidden="true">
-    <header className="page-header">
-      <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-        <div>
-          <SkeletonBlock className="h-6 w-56" />
-          <SkeletonBlock className="mt-1.5 h-5 w-72" />
-        </div>
-        <SkeletonBlock className="h-5 w-32" />
-      </div>
-    </header>
-
     <section className="page-content flex flex-col gap-8">
       <RunsTableSkeleton />
     </section>

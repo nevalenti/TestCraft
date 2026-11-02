@@ -1,13 +1,15 @@
-import type { TestRun, TestRunSummary } from '@testcraft/types';
-import { useState } from 'react';
+import { type TestRun, TestRunStatus } from "@testcraft/types";
 
-import { SortableHeader } from '@/components/ui/SortableHeader';
-import { TablePager } from '@/components/ui/TablePager';
-import { RunTableRow } from '@/features/testRuns/RunTableRow';
-import { usePagination } from '@/hooks/usePagination';
-import { type SortState, toggleSort } from '@/lib/sort';
+import { SortableHeader } from "@/components/ui/SortableHeader";
+import { TablePager } from "@/components/ui/TablePager";
+import { useTestRunSummaries } from "@/features/testRuns/hooks";
+import { RunTableRow } from "@/features/testRuns/RunTableRow";
+import { usePagination } from "@/hooks/usePagination";
+import { usePersistentSort } from "@/hooks/usePersistentSort";
+import { type SortState, toggleSort } from "@/lib/sort";
 
-type RunSortKey = 'name' | 'environment' | 'status' | 'date';
+const SORT_KEYS = ["name", "environment", "status", "date"] as const;
+type RunSortKey = (typeof SORT_KEYS)[number];
 
 const sortRuns = (
   runs: TestRun[],
@@ -16,35 +18,36 @@ const sortRuns = (
   if (!sort) return runs;
 
   const { key, direction } = sort;
-  const sign = direction === 'asc' ? 1 : -1;
+  const sign = direction === "asc" ? 1 : -1;
 
   return runs.toSorted((runA, runB) => {
-    if (key === 'name') return sign * runA.name.localeCompare(runB.name);
-    if (key === 'environment')
+    if (key === "name") return sign * runA.name.localeCompare(runB.name);
+    if (key === "environment")
       return sign * runA.environment.localeCompare(runB.environment);
-    if (key === 'status') return sign * runA.status.localeCompare(runB.status);
-    return sign * runA.createdAt.localeCompare(runB.createdAt);
+    if (key === "status") return sign * runA.status.localeCompare(runB.status);
+    return sign * runA.created_at.localeCompare(runB.created_at);
   });
 };
 
 interface RunsTableProps {
   runs: TestRun[];
   projectId: string;
-  summaryMap: Map<string, TestRunSummary | undefined>;
-  onEdit: (run: TestRun) => void;
-  onDelete: (run: TestRun) => void;
+  onEdit?: (run: TestRun) => void;
+  onDelete?: (run: TestRun) => void;
 }
 
 export const RunsTable = ({
   runs,
   projectId,
-  summaryMap,
   onEdit,
   onDelete,
 }: RunsTableProps) => {
-  const [sort, setSort] = useState<SortState<RunSortKey> | null>(null);
+  const [sort, setSort] = usePersistentSort("runs", SORT_KEYS);
   const sortedRuns = sortRuns(runs, sort);
   const { page, setPage, pageCount, pageItems } = usePagination(sortedRuns);
+  const summaryMap = useTestRunSummaries(
+    pageItems.filter((run) => run.status === TestRunStatus.Completed),
+  );
 
   const handleSort = (key: RunSortKey) => {
     setSort((previous) => toggleSort(previous, key));
@@ -52,11 +55,11 @@ export const RunsTable = ({
   };
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-border bg-base-100 shadow-card">
+    <div className="table-shell">
       <div className="overflow-x-auto">
-        <table className="table table-sm">
+        <table className="table table-stack table-sm">
           <thead>
-            <tr className="border-b border-border text-xs font-semibold tracking-wider text-base-content/70 uppercase">
+            <tr className="border-b border-border text-xs font-semibold tracking-wider text-fg-muted uppercase">
               <SortableHeader
                 label="Run"
                 sortKey="name"
@@ -93,8 +96,8 @@ export const RunsTable = ({
                 run={run}
                 summary={summaryMap.get(run.id)}
                 projectId={projectId}
-                onEdit={() => onEdit(run)}
-                onDelete={() => onDelete(run)}
+                onEdit={onEdit && (() => onEdit(run))}
+                onDelete={onDelete && (() => onDelete(run))}
               />
             ))}
           </tbody>

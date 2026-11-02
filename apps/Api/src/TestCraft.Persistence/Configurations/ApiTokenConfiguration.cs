@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestCraft.Domain.Entities;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Persistence.Configurations;
 
@@ -26,6 +27,19 @@ public class ApiTokenConfiguration : IEntityTypeConfiguration<ApiToken>
             .IsRequired();
 
         builder.Property(apiToken => apiToken.ProjectId).HasColumnName("project_id");
+
+        builder
+            .PrimitiveCollection(apiToken => apiToken.Scopes)
+            .HasColumnName("scopes")
+            .HasColumnType("text[]")
+            .ElementType(scope =>
+                scope.HasConversion(
+                    new ValueConverter<ApiTokenScope, string>(
+                        value => value.Name(),
+                        name => ApiTokenScopes.Parse(name)
+                    )
+                )
+            );
 
         builder.Property(apiToken => apiToken.CreatedById).HasColumnName("created_by_id");
 

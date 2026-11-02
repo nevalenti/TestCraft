@@ -1,4 +1,4 @@
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 
 interface RunFromPlanFormProps {
   planName: string;
@@ -16,7 +16,7 @@ export const RunFromPlanForm = ({
   const { register, handleSubmit } = useForm<{
     name: string;
     environment: string;
-  }>({ defaultValues: { name: '', environment: '' } });
+  }>({ defaultValues: { name: "", environment: "" } });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -29,7 +29,7 @@ export const RunFromPlanForm = ({
           className="input-bordered input input-sm w-full"
           autoFocus
           placeholder={`${planName} – Run 1`}
-          {...register('name', { required: true })}
+          {...register("name", { required: true })}
         />
       </div>
       <div>
@@ -40,7 +40,7 @@ export const RunFromPlanForm = ({
           id="run-env"
           className="input-bordered input input-sm w-full"
           placeholder="e.g. staging"
-          {...register('environment')}
+          {...register("environment")}
         />
       </div>
       <div className="flex justify-end gap-2">

@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -28,13 +26,8 @@ public static class GetProjectMembers
             await context
                 .ProjectMembers.Where(member => member.ProjectId == request.ProjectId)
                 .OrderBy(member => member.CreatedAt)
-                .Select(member => new ProjectMemberResponse
-                {
-                    Id = member.Id,
-                    Email = member.Email,
-                    DisplayName = member.DisplayName,
-                    CreatedAt = member.CreatedAt,
-                })
+                .ThenBy(member => member.Id)
+                .Select(member => ProjectMemberResponse.FromEntity(member))
                 .ToListAsync(cancellationToken);
     }
 }

@@ -1,19 +1,13 @@
-import type { components } from './generated/schema.js';
+import type { components } from "./generated/schema.js";
 
-export type TrendPoint =
-  components['schemas']['TestCraft.Application.Analytics.TrendPoint'];
-export type SuiteBreakdown =
-  components['schemas']['TestCraft.Application.Analytics.SuiteBreakdown'];
-export type FlakyTestStat =
-  components['schemas']['TestCraft.Application.Analytics.FlakyTestStat'];
-export type RunComparison =
-  components['schemas']['TestCraft.Application.Analytics.RunComparison'];
-export type ComparisonRow =
-  components['schemas']['TestCraft.Application.Analytics.ComparisonRow'];
+export type TrendPoint = components["schemas"]["TrendPointResponse"];
+export type SuiteBreakdown = components["schemas"]["SuiteBreakdownResponse"];
+export type FlakyTestStat = components["schemas"]["FlakyTestStatResponse"];
+export type RunComparison = components["schemas"]["RunComparisonResponse"];
+export type ComparisonRow = components["schemas"]["ComparisonRowResponse"];
 
-export type ApiTokenResponse =
-  components['schemas']['TestCraft.Application.ApiTokens.ApiTokenResponse'];
+export type ApiTokenResponse = components["schemas"]["ApiTokenResponse"];
+export type ApiTokenScope = components["schemas"]["ApiTokenScope"];
 export type CreateApiTokenResponse =
-  components['schemas']['TestCraft.Application.ApiTokens.CreateApiTokenResponse'];
-export type CreateApiToken =
-  components['schemas']['TestCraft.Application.ApiTokens.CreateApiToken.Command'];
+  components["schemas"]["CreateApiTokenResponse"];
+export type CreateApiToken = components["schemas"]["CreateApiTokenRequest"];

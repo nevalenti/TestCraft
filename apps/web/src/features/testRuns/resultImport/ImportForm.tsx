@@ -1,22 +1,22 @@
-import { CheckCircleIcon } from '@heroicons/react/24/solid';
-import { zodResolver } from '@hookform/resolvers/zod';
-import type { AllureResultItem } from '@testcraft/types';
-import { Controller, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { zodResolver } from "@hookform/resolvers/zod";
+import type { AllureResultItem } from "@testcraft/types";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { FormActions } from '@/components/ui/FormActions';
-import { FormField } from '@/components/ui/FormField';
-import { FileDropZone } from '@/features/testRuns/resultImport/FileDropZone';
+import { FormActions } from "@/components/ui/form/FormActions";
+import { FormField } from "@/components/ui/form/FormField";
+import { FileDropZone } from "@/features/testRuns/resultImport/FileDropZone";
 import {
   detectFormat,
   parseAllureFiles,
-} from '@/features/testRuns/resultImport/importFormat';
-import { cn } from '@/lib/cn';
+} from "@/features/testRuns/resultImport/importFormat";
+import { cn } from "@/lib/cn";
 
 type ImportData =
-  | { type: 'junit'; xml: string; environment: string; name?: string }
+  | { type: "junit"; xml: string; environment: string; name?: string }
   | {
-      type: 'allure';
+      type: "allure";
       results: AllureResultItem[];
       environment: string;
       name?: string;
@@ -35,25 +35,25 @@ const schema = z.object({
     if (files.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'Please drop a file to import',
+        message: "Please drop a file to import",
       });
       return;
     }
 
     const format = detectFormat(files);
 
-    if (format === 'mixed') {
+    if (format === "mixed") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'All files must be the same type (.xml or .json)',
+        message: "All files must be the same type (.xml or .json)",
       });
       return;
     }
 
-    if (format === 'junit' && files.length > 1) {
+    if (format === "junit" && files.length > 1) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: 'JUnit import supports a single XML file',
+        message: "JUnit import supports a single XML file",
       });
       return;
     }
@@ -66,7 +66,7 @@ const schema = z.object({
       });
     }
   }),
-  environment: z.string().min(1, 'Environment is required'),
+  environment: z.string().min(1, "Environment is required"),
   name: z.string().optional(),
 });
 
@@ -86,33 +86,33 @@ export const ImportForm = ({
     formState: { errors },
   } = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { files: [], environment: '', name: '' },
+    defaultValues: { files: [], environment: "", name: "" },
   });
 
-  const detectedFormat = detectFormat(watch('files'));
+  const detectedFormat = detectFormat(watch("files"));
 
   const submit = handleSubmit(async (data) => {
     const format = detectFormat(data.files);
 
-    if (format === 'junit') {
+    if (format === "junit") {
       const xml = await data.files[0].text();
 
       onSubmit({
-        type: 'junit',
+        type: "junit",
         xml,
         environment: data.environment.trim(),
         name: data.name?.trim() || undefined,
       });
-    } else if (format === 'allure') {
+    } else if (format === "allure") {
       const allureData = await parseAllureFiles(data.files);
 
-      if ('fileError' in allureData) {
-        setError('files', { message: allureData.fileError });
+      if ("fileError" in allureData) {
+        setError("files", { message: allureData.fileError });
         return;
       }
 
       onSubmit({
-        type: 'allure',
+        type: "allure",
         results: allureData.results,
         environment: data.environment.trim(),
         name: data.name?.trim() || undefined,
@@ -143,12 +143,12 @@ export const ImportForm = ({
             />
           )}
         />
-        {detectedFormat && detectedFormat !== 'mixed' && (
+        {detectedFormat && detectedFormat !== "mixed" && (
           <span className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-success">
             <CheckCircleIcon className="size-3.5" aria-hidden="true" />
-            {detectedFormat === 'junit'
-              ? 'JUnit XML detected'
-              : 'Allure JSON detected'}
+            {detectedFormat === "junit"
+              ? "JUnit XML detected"
+              : "Allure JSON detected"}
           </span>
         )}
       </FormField>
@@ -161,11 +161,11 @@ export const ImportForm = ({
         <input
           id="import-environment"
           className={cn(
-            'input-bordered input w-full bg-base-200',
-            errors.environment && 'input-error',
+            "input-bordered input w-full bg-base-200",
+            errors.environment && "input-error",
           )}
           placeholder="staging"
-          {...register('environment')}
+          {...register("environment")}
         />
       </FormField>
 
@@ -178,16 +178,11 @@ export const ImportForm = ({
           id="import-name"
           className="input-bordered input w-full bg-base-200"
           placeholder="e.g. api-run-42"
-          {...register('name')}
+          {...register("name")}
         />
       </FormField>
 
-      <FormActions
-        onCancel={onCancel}
-        isLoading={isLoading}
-        label="Import"
-        variant="secondary"
-      />
+      <FormActions onCancel={onCancel} isLoading={isLoading} label="Import" />
     </form>
   );
 };

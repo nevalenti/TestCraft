@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MassTransit;
-
 using MediatR;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -76,8 +73,6 @@ public static class ImportJUnit
 
             context.ImportJobs.Add(job);
 
-            await context.SaveChangesAsync(cancellationToken);
-
             var message = new ImportJUnitRequested
             {
                 JobId = job.Id,
@@ -92,6 +87,8 @@ public static class ImportJUnit
             };
 
             await publishEndpoint.Publish(message, cancellationToken);
+
+            await context.SaveChangesAsync(cancellationToken);
 
             return new ImportJobResponse
             {

@@ -1,18 +1,19 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestSuites;
 
 namespace TestCraft.Api.Features.TestSuites;
 
+[ApiTokenScope("suites")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/suites")]
 public class TestSuitesController(ISender sender) : ApiControllerBase
 {
     /// <summary>Lists test suites for a project, optionally filtered by name.</summary>
     [HttpGet]
-    [ProducesResponseType(typeof(Paginated<TestSuiteResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<Paginated<TestSuiteResponse>>> GetAll(
         ProjectId projectId,
         [FromQuery] GetTestSuites.Query query,
@@ -28,7 +29,7 @@ public class TestSuitesController(ISender sender) : ApiControllerBase
 
     /// <summary>Gets a test suite by ID.</summary>
     [HttpGet("{id:guid}")]
-    [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<TestSuiteResponse>> GetById(
         ProjectId projectId,
         TestSuiteId id,
@@ -39,12 +40,14 @@ public class TestSuitesController(ISender sender) : ApiControllerBase
 
         var result = await sender.Send(query, cancellationToken);
 
+        SetETag(result.Version);
+
         return Ok(result);
     }
 
     /// <summary>Creates a new test suite.</summary>
     [HttpPost]
-    [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<TestSuiteResponse>> Create(
         ProjectId projectId,
         CreateTestSuite.Command command,
@@ -60,17 +63,26 @@ public class TestSuitesController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates a test suite's details.</summary>
     [HttpPut("{id:guid}")]
-    [ProducesResponseType(typeof(TestSuiteResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<TestSuiteResponse>> Update(
         ProjectId projectId,
         TestSuiteId id,
         UpdateTestSuite.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }

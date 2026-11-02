@@ -4,18 +4,23 @@ import {
   useQueries,
   useQuery,
   useQueryClient,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 import type {
   CreateTestRun,
   ImportJobResponse,
   TestRun,
   UpdateTestRun,
-} from '@testcraft/types';
+} from "@testcraft/types";
+import { isAxiosError } from "axios";
 
-import { queryKeys } from '@/api/queryKeys';
-import { testRunQueries, testRunsApi } from '@/features/testRuns/api';
-import { importsApi } from '@/features/testRuns/resultImport/importsApi';
-import { notify } from '@/lib/notify';
+import { queryKeys } from "@/api/queryKeys";
+import {
+  type RunLogs,
+  testRunQueries,
+  testRunsApi,
+} from "@/features/testRuns/api";
+import { importsApi } from "@/features/testRuns/resultImport/api";
+import { notify } from "@/lib/notify";
 
 export const useTestRuns = (projectId: string, search?: string) =>
   useQuery({
@@ -31,37 +36,12 @@ export const useTestRunSummary = (projectId: string, id: string) =>
   useQuery(testRunQueries.summary(projectId, id));
 
 export const useTestRunSummaries = (
-  runs: Pick<TestRun, 'id' | 'projectId'>[],
+  runs: Pick<TestRun, "id" | "project_id">[],
 ) =>
   useQueries({
-    queries: runs.map((run) => testRunQueries.summary(run.projectId, run.id)),
+    queries: runs.map((run) => testRunQueries.summary(run.project_id, run.id)),
     combine: (results) =>
       new Map(runs.map((run, index) => [run.id, results[index].data])),
-  });
-
-export const useProjectsTestRuns = (
-  projectIds: string[],
-  options?: {
-    refetchInterval?: number;
-    refetchIntervalInBackground?: boolean;
-    staleTime?: number;
-  },
-) =>
-  useQueries({
-    queries: projectIds.map((projectId) => ({
-      ...testRunQueries.all(projectId),
-      ...options,
-    })),
-    combine: (results) => ({
-      runs: results.flatMap((result) => result.data?.items ?? []),
-      total: results.reduce(
-        (sum, result) => sum + (result.data?.total ?? 0),
-        0,
-      ),
-      isPending:
-        results.length !== projectIds.length ||
-        results.some((result) => result.isPending),
-    }),
   });
 
 export const useCreateTestRun = (projectId: string) => {
@@ -85,15 +65,21 @@ export const useUpdateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, ...input }: UpdateTestRun & { id: string }) =>
-      testRunsApi.update(projectId, id, input),
-    onSuccess: (_, { id, name }) => {
+    mutationFn: ({
+      id,
+      version,
+      ...input
+    }: UpdateTestRun & {
+      id: string;
+      version: number;
+    }) => testRunsApi.update(projectId, id, input, version),
+    onSuccess: (_, { name }) => {
       notify(`Test run "${name}" updated`);
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.all(projectId),
+        queryKey: queryKeys.analytics.all(projectId),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.detail(projectId, id),
+        queryKey: queryKeys.testRuns.all(projectId),
       });
     },
   });
@@ -108,15 +94,21 @@ const pollImportJob = async (
 ): Promise<ImportJobResponse> => {
   let current = job;
   for (let attempt = 0; attempt < IMPORT_POLL_MAX_ATTEMPTS; attempt++) {
-    if (current.status === 'Completed') return current;
-    if (current.status === 'Failed')
-      throw new Error(current.error ?? 'Test run import failed');
+    if (current.status === "completed") return current;
+    if (current.status === "failed")
+      throw new Error(current.error ?? "Test run import failed");
     await new Promise((resolve) =>
       setTimeout(resolve, IMPORT_POLL_INTERVAL_MS),
     );
-    current = await importsApi.getJob(projectId, current.id);
+    try {
+      current = await importsApi.getJob(projectId, current.id);
+    } catch {
+      throw new Error(
+        "Could not check the import status. Refresh the runs list in a moment.",
+      );
+    }
   }
-  throw new Error('Test run import timed out');
+  throw new Error("Test run import timed out");
 };
 
 const useImportMutation = <T>(
@@ -141,7 +133,8 @@ const useImportMutation = <T>(
       });
     },
     onError: (error: Error) => {
-      notify(error.message || `${format} import failed`, 'error');
+      if (isAxiosError(error)) return;
+      notify(error.message || `${format} import failed`, "error");
     },
   });
 };
@@ -149,7 +142,7 @@ const useImportMutation = <T>(
 export const useImportAllure = (projectId: string) =>
   useImportMutation(
     projectId,
-    'Allure',
+    "Allure",
     (input: Parameters<typeof importsApi.allure>[1]) =>
       importsApi.allure(projectId, input),
   );
@@ -157,7 +150,7 @@ export const useImportAllure = (projectId: string) =>
 export const useImportJUnitXml = (projectId: string) =>
   useImportMutation(
     projectId,
-    'JUnit',
+    "JUnit",
     (input: Parameters<typeof importsApi.junit>[1]) =>
       importsApi.junit(projectId, input),
   );
@@ -168,19 +161,55 @@ export const useDeleteTestRun = (projectId: string) => {
   return useMutation({
     mutationFn: (id: string) => testRunsApi.delete(projectId, id),
     onSuccess: (_, id) => {
-      notify('Test run deleted');
+      notify("Test run deleted");
       queryClient.invalidateQueries({
         queryKey: queryKeys.testRuns.all(projectId),
       });
       queryClient.removeQueries({
         queryKey: queryKeys.testRuns.detail(projectId, id),
       });
-      queryClient.removeQueries({
-        queryKey: queryKeys.testRuns.summary(projectId, id),
-      });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
       });
     },
   });
+};
+
+const NO_LOG_LINES: string[] = [];
+
+export const useRunLogs = (projectId: string, runId: string) => {
+  const queryClient = useQueryClient();
+  const { data } = useQuery(testRunQueries.logs(projectId, runId));
+  const earliestSeq = data?.earliestSeq ?? null;
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: (beforeSeq: number) =>
+      testRunsApi.getLogs(projectId, runId, beforeSeq),
+    meta: { silentErrors: true },
+    onSuccess: (earlier, beforeSeq) => {
+      queryClient.setQueryData<RunLogs>(
+        queryKeys.testRuns.logs(projectId, runId),
+        (previous) =>
+          previous?.earliestSeq === beforeSeq
+            ? {
+                ...previous,
+                lines: [...earlier.lines, ...previous.lines],
+                earliestSeq: earlier.earliestSeq ?? beforeSeq,
+                hasMore: earlier.hasMore,
+              }
+            : previous,
+      );
+    },
+    onError: () => notify("Could not load earlier log lines", "error"),
+  });
+
+  return {
+    lines: data?.lines ?? NO_LOG_LINES,
+    earliestSeq,
+    hasMore: data?.hasMore ?? false,
+    isLoadingEarlier: isPending,
+    loadEarlier: () => {
+      if (earliestSeq !== null) mutate(earliestSeq);
+    },
+  };
 };

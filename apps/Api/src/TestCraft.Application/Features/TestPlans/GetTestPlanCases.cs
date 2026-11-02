@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -36,7 +34,9 @@ public static class GetTestPlanCases
             );
 
             if (!planExists)
+            {
                 throw new NotFoundException();
+            }
 
             return await context
                 .TestPlanCases.Where(tpc => tpc.TestPlanId == request.TestPlanId)

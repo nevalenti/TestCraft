@@ -1,7 +1,6 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-
 using TestCraft.Application.Features.Import;
 using TestCraft.Application.Features.Labels;
 using TestCraft.Application.Features.ProjectMembers;
@@ -19,10 +18,7 @@ internal static class ApiTestHelpers
 {
     public static readonly ProjectId AnyProjectId = ProjectId.From(Guid.Empty);
 
-    public static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
-    {
-        Converters = { new JsonStringEnumConverter() },
-    };
+    public static readonly JsonSerializerOptions JsonOptions = WireJson.Options;
 
     extension(HttpClient client)
     {
@@ -127,6 +123,16 @@ internal static class ApiTestHelpers
             return (await response.Content.ReadFromJsonAsync<TestPlanResponse>(JsonOptions))!;
         }
 
+        public async Task<TestPlanDetailResponse> GetPlanAsync(
+            ProjectId projectId,
+            TestPlanId planId
+        )
+        {
+            var response = await client.GetAsync($"/api/v1/projects/{projectId}/plans/{planId}");
+
+            return (await response.Content.ReadFromJsonAsync<TestPlanDetailResponse>(JsonOptions))!;
+        }
+
         public async Task<TestResultResponse> CreateResultAsync(
             ProjectId projectId,
             TestRunId runId,
@@ -146,6 +152,25 @@ internal static class ApiTestHelpers
             );
 
             return (await response.Content.ReadFromJsonAsync<TestResultResponse>(JsonOptions))!;
+        }
+
+        public async Task<TestRunResponse> CompleteRunAsync(
+            ProjectId projectId,
+            TestRunResponse run
+        )
+        {
+            var response = await client.UpdateAsJsonAsync(
+                $"/api/v1/projects/{projectId}/runs/{run.Id}",
+                new UpdateTestRun.Command
+                {
+                    Name = run.Name,
+                    Environment = run.Environment,
+                    Status = TestRunStatus.Completed,
+                },
+                version: run.Version
+            );
+
+            return (await response.Content.ReadFromJsonAsync<TestRunResponse>(JsonOptions))!;
         }
 
         public async Task<HttpResponseMessage> AddMemberAsync(ProjectId projectId, string email) =>

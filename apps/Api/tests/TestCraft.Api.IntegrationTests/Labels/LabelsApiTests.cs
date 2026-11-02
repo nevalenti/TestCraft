@@ -1,10 +1,9 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Api.IntegrationTests.Labels;
@@ -38,10 +37,10 @@ public class LabelsApiTests(ApiFactory factory)
         var response = await client.GetAsync($"/api/v1/projects/{project.Id}/labels");
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var labels = await response.Content.ReadFromJsonAsync<IReadOnlyList<LabelResponse>>(
+        var labels = await response.Content.ReadFromJsonAsync<Paginated<LabelResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        labels.Should().ContainSingle(label => label.Id == created.Id);
+        labels!.Items.Should().ContainSingle(label => label.Id == created.Id);
     }
 
     [Fact]
@@ -55,7 +54,7 @@ public class LabelsApiTests(ApiFactory factory)
             new CreateLabel.Command { Name = "Bug", Color = "not-a-color" }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -66,7 +65,7 @@ public class LabelsApiTests(ApiFactory factory)
         var project = await client.CreateProjectAsync();
         var label = await client.CreateLabelAsync(project.Id, "Bug", "#FF0000");
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/labels/{label.Id}",
             new UpdateLabel.Command
             {
@@ -98,10 +97,10 @@ public class LabelsApiTests(ApiFactory factory)
         deleteResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
 
         var listResponse = await client.GetAsync($"/api/v1/projects/{project.Id}/labels");
-        var labels = await listResponse.Content.ReadFromJsonAsync<IReadOnlyList<LabelResponse>>(
+        var labels = await listResponse.Content.ReadFromJsonAsync<Paginated<LabelResponse>>(
             ApiTestHelpers.JsonOptions
         );
-        labels.Should().NotContain(remainingLabel => remainingLabel.Id == label.Id);
+        labels!.Items.Should().NotContain(remainingLabel => remainingLabel.Id == label.Id);
     }
 
     [Fact]

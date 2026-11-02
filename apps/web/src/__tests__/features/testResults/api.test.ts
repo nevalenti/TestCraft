@@ -1,78 +1,122 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), put: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listTestResults: vi.fn(),
+  createTestResult: vi.fn(),
+  updateTestResult: vi.fn(),
+  deleteTestResult: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { RESULTS_PAGE_SIZE, testResultsApi } from '@/features/testResults/api';
+import * as sdk from "@/api/sdk";
+import { RESULTS_PAGE_SIZE, testResultsApi } from "@/features/testResults/api";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-const BASE = 'projects/p1/runs/r1/results';
+describe("testResultsApi.getAll", () => {
+  it("defaults page to 1 and pageSize to RESULTS_PAGE_SIZE, omitting status/search", async () => {
+    vi.mocked(sdk.listTestResults).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-describe('testResultsApi.getAll', () => {
-  it('defaults page to 1 and pageSize to RESULTS_PAGE_SIZE, omitting status/search', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+    await testResultsApi.getAll("p1", "r1");
 
-    await testResultsApi.getAll('p1', 'r1');
-
-    expect(client.get).toHaveBeenCalledWith(BASE, {
-      params: { page: 1, pageSize: RESULTS_PAGE_SIZE },
+    expect(sdk.listTestResults).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
+      query: { page: 1, page_size: RESULTS_PAGE_SIZE },
     });
   });
 
-  it('includes status and search and a custom page/pageSize when given', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: { items: [] } });
+  it("includes status and search and a custom page/pageSize when given", async () => {
+    vi.mocked(sdk.listTestResults).mockResolvedValue({
+      data: { items: [] },
+    } as never);
 
-    await testResultsApi.getAll('p1', 'r1', 'Failed', 'login', 2, 10);
+    await testResultsApi.getAll("p1", "r1", "failed", "login", 2, 10);
 
-    expect(client.get).toHaveBeenCalledWith(BASE, {
-      params: {
+    expect(sdk.listTestResults).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
+      query: {
         page: 2,
-        pageSize: 10,
-        status: 'Failed',
-        search: 'login',
+        page_size: 10,
+        status: "failed",
+        search: "login",
+      },
+    });
+  });
+
+  it("sends sort field and direction to the API", async () => {
+    vi.mocked(sdk.listTestResults).mockResolvedValue({
+      data: { items: [] },
+    } as never);
+
+    await testResultsApi.getAll(
+      "p1",
+      "r1",
+      undefined,
+      undefined,
+      2,
+      15,
+      "duration_ms",
+      "desc",
+    );
+
+    expect(sdk.listTestResults).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
+      query: {
+        page: 2,
+        page_size: 15,
+        sort_by: "duration_ms",
+        sort_dir: "desc",
       },
     });
   });
 });
 
-describe('testResultsApi other operations', () => {
-  it('getById fetches a single result', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: {} });
+describe("testResultsApi other operations", () => {
+  it("create posts the new result", async () => {
+    vi.mocked(sdk.createTestResult).mockResolvedValue({
+      data: {},
+    } as never);
 
-    await testResultsApi.getById('p1', 'r1', 'res1');
+    await testResultsApi.create("p1", "r1", { status: "passed" } as any);
 
-    expect(client.get).toHaveBeenCalledWith(`${BASE}/res1`);
-  });
-
-  it('create posts the new result', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: {} });
-
-    await testResultsApi.create('p1', 'r1', { status: 'Passed' } as any);
-
-    expect(client.post).toHaveBeenCalledWith(BASE, { status: 'Passed' });
-  });
-
-  it('update puts changes including the id', async () => {
-    vi.mocked(client.put).mockResolvedValue({ data: {} });
-
-    await testResultsApi.update('p1', 'r1', 'res1', {
-      status: 'Failed',
-    } as any);
-
-    expect(client.put).toHaveBeenCalledWith(`${BASE}/res1`, {
-      status: 'Failed',
-      id: 'res1',
+    expect(sdk.createTestResult).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1" },
+      body: { status: "passed" },
     });
   });
 
-  it('delete removes the result by id', () => {
-    testResultsApi.delete('p1', 'r1', 'res1');
+  it("update puts changes including the id", async () => {
+    vi.mocked(sdk.updateTestResult).mockResolvedValue({
+      data: {},
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith(`${BASE}/res1`);
+    await testResultsApi.update(
+      "p1",
+      "r1",
+      "res1",
+      {
+        status: "failed",
+      } as any,
+      1,
+    );
+
+    expect(sdk.updateTestResult).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1", result_id: "res1" },
+      body: {
+        status: "failed",
+      },
+      headers: { "if-match": '"1"' },
+    });
+  });
+
+  it("delete removes the result by id", () => {
+    testResultsApi.delete("p1", "r1", "res1");
+
+    expect(sdk.deleteTestResult).toHaveBeenCalledWith({
+      path: { project_id: "p1", run_id: "r1", result_id: "res1" },
+    });
   });
 });

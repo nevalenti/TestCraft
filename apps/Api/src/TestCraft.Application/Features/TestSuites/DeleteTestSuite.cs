@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -39,6 +37,11 @@ public static class DeleteTestSuite
             suite.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
+            await context.TouchPlansForSuiteAsync(
+                suite.Id,
+                timeProvider.GetStoredUtcNow(),
+                cancellationToken
+            );
         }
     }
 }

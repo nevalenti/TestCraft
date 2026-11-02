@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -26,6 +24,7 @@ public static class DeleteTestRun
     public sealed class Handler(
         IApplicationDbContext context,
         ICacheService cache,
+        ITestRunNotifier notifier,
         TimeProvider timeProvider
     ) : IRequestHandler<Command>
     {
@@ -41,6 +40,7 @@ public static class DeleteTestRun
             run.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
+            await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
 
             await cache.RemoveAsync(CacheKeys.TestRunResponse(run.Id), cancellationToken);
         }

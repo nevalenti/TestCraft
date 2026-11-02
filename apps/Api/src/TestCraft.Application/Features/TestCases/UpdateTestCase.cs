@@ -1,14 +1,13 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
+using TestCraft.Application.Features.TestPlans;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestCases;
@@ -38,6 +37,9 @@ public static class UpdateTestCase
 
         /// <summary>The test case's new priority.</summary>
         public required TestCasePriority Priority { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -50,8 +52,11 @@ public static class UpdateTestCase
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context)
-        : IRequestHandler<Command, TestCaseResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier,
+        TimeProvider timeProvider
+    ) : IRequestHandler<Command, TestCaseResponse>
     {
         public async Task<TestCaseResponse> Handle(
             Command request,
@@ -67,13 +72,27 @@ public static class UpdateTestCase
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(testCase, request.ExpectedVersion);
+            var renamed = testCase.Name != request.Name;
             testCase.Update(request.Name, request.Description, request.Priority);
 
-            await context.SaveChangesAsync(cancellationToken);
+            await context.SaveOrConflictAsync(
+                dbExceptionClassifier,
+                CatalogConflicts.CaseNameTaken(),
+                cancellationToken
+            );
+            if (renamed)
+            {
+                await context.TouchPlansForCaseAsync(
+                    testCase.Id,
+                    timeProvider.GetStoredUtcNow(),
+                    cancellationToken
+                );
+            }
 
             return await context
                 .TestCases.Where(updatedTestCase => updatedTestCase.Id == testCase.Id)
-                .ToTestCaseResponse()
+                .Select(TestCaseResponse.Projection)
                 .FirstAsync(cancellationToken);
         }
     }

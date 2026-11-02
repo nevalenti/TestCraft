@@ -1,21 +1,29 @@
 using MassTransit;
-
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-
 using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Messaging;
 
 public static class MessageBusExtensions
 {
-    public static IServiceCollection AddMessageBus(
+    public static IServiceCollection AddMessageBus<TDbContext>(
         this IServiceCollection services,
         InfrastructureOptions options
     )
+        where TDbContext : DbContext
     {
         services.AddMassTransit(busConfig =>
         {
             busConfig.AddConsumers(typeof(Application.DependencyInjection).Assembly);
+            busConfig.AddEntityFrameworkOutbox<TDbContext>(outbox =>
+            {
+                outbox.UsePostgres();
+                outbox.UseBusOutbox();
+            });
+            busConfig.AddConfigureEndpointsCallback(
+                (context, _, endpoint) => endpoint.UseInMemoryOutbox(context)
+            );
 
             if (options.IsRabbitMqConfigured)
             {

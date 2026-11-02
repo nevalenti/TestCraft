@@ -1,7 +1,6 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -25,6 +24,9 @@ public record SuiteBreakdown
 
     /// <summary>Number of skipped results in the suite.</summary>
     public required int Skipped { get; init; }
+
+    /// <summary>Number of planned cases awaiting execution.</summary>
+    public required int Untested { get; init; }
 }
 
 public static class GetSuiteBreakdown
@@ -51,6 +53,7 @@ public static class GetSuiteBreakdown
                     result.TestRunId == request.RunId
                     && result.TestRun!.ProjectId == request.ProjectId
                 )
+                .CurrentOutcomes()
                 .Join(
                     context.TestCases,
                     result => result.TestCaseId,
@@ -78,6 +81,9 @@ public static class GetSuiteBreakdown
                     ),
                     Skipped = group.Count(resultSuiteName =>
                         resultSuiteName.Status == TestResultStatus.Skipped
+                    ),
+                    Untested = group.Count(resultSuiteName =>
+                        resultSuiteName.Status == TestResultStatus.Untested
                     ),
                 })
                 .ToListAsync(cancellationToken);

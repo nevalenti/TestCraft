@@ -1,6 +1,5 @@
 using System.Xml;
 using System.Xml.Linq;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
@@ -21,7 +20,7 @@ public static class JUnitParser
             using var reader = XmlReader.Create(new StringReader(xml), settings);
             doc = XDocument.Load(reader);
         }
-        catch (Exception ex)
+        catch (XmlException ex)
         {
             throw new DomainException("Invalid JUnit XML: could not parse the document", ex)
             {
@@ -141,7 +140,10 @@ public static class JUnitParser
     private static long? ParseDurationMs(string? timeStr)
     {
         if (string.IsNullOrEmpty(timeStr))
+        {
             return null;
+        }
+
         if (
             double.TryParse(
                 timeStr,
@@ -150,7 +152,10 @@ public static class JUnitParser
                 out var seconds
             )
         )
+        {
             return (long)(seconds * 1000);
+        }
+
         return null;
     }
 

@@ -1,9 +1,12 @@
-import { FolderIcon } from '@heroicons/react/24/solid';
-import type { Project } from '@testcraft/types';
+import { FolderIcon } from "@heroicons/react/24/solid";
+import type { Project } from "@testcraft/types";
 
-import { MetaPill } from '@/components/ui/MetaPill';
-import { ResourceCard } from '@/components/ui/ResourceCard';
-import { formatDate } from '@/lib/format';
+import { MetaPill } from "@/components/ui/MetaPill";
+import { RelativeTime } from "@/components/ui/RelativeTime";
+import { ResourceCard } from "@/components/ui/resource/ResourceCard";
+import { PassRateTrend } from "@/features/projects/PassRateTrend";
+import { cn } from "@/lib/cn";
+import { passRateClass } from "@/lib/format";
 
 interface ProjectCardProps {
   project: Project;
@@ -12,16 +15,16 @@ interface ProjectCardProps {
 }
 
 const CountBadges = ({ project }: { project: Project }) => {
-  if (project.suiteCount === undefined || project.runCount === undefined)
+  if (project.suite_count === undefined || project.run_count === undefined)
     return null;
 
   return (
     <>
       <MetaPill>
-        {project.suiteCount} {project.suiteCount === 1 ? 'suite' : 'suites'}
+        {project.suite_count} {project.suite_count === 1 ? "suite" : "suites"}
       </MetaPill>
       <MetaPill>
-        {project.runCount} {project.runCount === 1 ? 'run' : 'runs'}
+        {project.run_count} {project.run_count === 1 ? "run" : "runs"}
       </MetaPill>
     </>
   );
@@ -32,12 +35,15 @@ export const ProjectCard = ({
   onEdit,
   onDelete,
 }: ProjectCardProps) => {
-  const deleteHandler = project.isOwner ? onDelete : undefined;
+  const editHandler = project.is_owner ? onEdit : undefined;
+  const deleteHandler = project.is_owner ? onDelete : undefined;
+  const rates = project.recent_pass_rates ?? [];
+  const latestRate = rates.at(-1);
 
   return (
     <ResourceCard
       to={`/projects/${project.id}`}
-      onEdit={onEdit}
+      onEdit={editHandler}
       onDelete={deleteHandler}
       label="project"
       testId="project-card"
@@ -49,18 +55,42 @@ export const ProjectCard = ({
         <span className="line-clamp-2 text-base leading-snug font-semibold">
           {project.name}
         </span>
-        <p className="line-clamp-2 text-sm leading-relaxed text-base-content/70">
-          {project.description ?? (
-            <span className="text-base-content/55 italic">No description</span>
-          )}
-        </p>
+        {project.description && (
+          <p className="line-clamp-2 text-sm leading-relaxed text-fg-muted">
+            {project.description}
+          </p>
+        )}
+      </div>
+      <div className="flex items-end justify-between gap-3 pt-1">
+        {latestRate === undefined ? (
+          <p className="text-sm text-fg-subtle">No completed runs yet</p>
+        ) : (
+          <p className="flex items-baseline gap-1.5">
+            <span
+              className={cn(
+                "font-display text-xl font-bold tabular-nums",
+                passRateClass(latestRate),
+              )}
+            >
+              {Math.round(latestRate)}%
+            </span>
+            <span className="text-xs text-fg-subtle">pass rate, last run</span>
+          </p>
+        )}
+        {rates.length > 1 && <PassRateTrend rates={rates} />}
       </div>
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1">
           <CountBadges project={project} />
         </div>
-        <span className="shrink-0 text-xs font-medium text-base-content/55 tabular-nums">
-          {formatDate(project.createdAt)}
+        <span className="shrink-0 text-xs text-fg-subtle">
+          {project.last_run_at ? (
+            <>
+              Last run <RelativeTime value={project.last_run_at} />
+            </>
+          ) : (
+            "No runs yet"
+          )}
         </span>
       </div>
     </ResourceCard>

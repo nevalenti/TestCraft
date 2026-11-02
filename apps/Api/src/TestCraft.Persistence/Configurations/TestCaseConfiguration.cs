@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -10,6 +9,8 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
     public void Configure(EntityTypeBuilder<TestCase> builder)
     {
         builder.ToTable("test_cases");
+
+        builder.ConfigureVersion();
 
         builder.ConfigureGeneratedId(testCase => testCase.Id);
 
@@ -30,6 +31,12 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
         builder.ConfigureSoftDelete();
 
         builder.HasIndex(testCase => testCase.SuiteId);
+
+        builder
+            .HasIndex(testCase => new { testCase.SuiteId, testCase.Name })
+            .HasDatabaseName("uq_test_cases_active_name")
+            .IsUnique()
+            .HasFilter("NOT is_deleted");
 
         builder.HasIndex(testCase => testCase.Priority);
 

@@ -1,29 +1,27 @@
-import { queryOptions } from '@tanstack/react-query';
-import type {
-  ApiTokenResponse,
-  CreateApiToken,
-  CreateApiTokenResponse,
-} from '@testcraft/types';
+import { queryOptions } from "@tanstack/react-query";
+import type { CreateApiToken } from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
-
-const BASE = (projectId: string) => `projects/${projectId}/tokens`;
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const apiTokensApi = {
   getAll: async (projectId: string) => {
-    const { data } = await client.get<ApiTokenResponse[]>(BASE(projectId));
+    const { data } = await sdk.listApiTokens({
+      path: { project_id: projectId },
+    });
     return data;
   },
   create: async (projectId: string, input: CreateApiToken) => {
-    const { data } = await client.post<CreateApiTokenResponse>(
-      BASE(projectId),
-      input,
-    );
+    const { data } = await sdk.createApiToken({
+      path: { project_id: projectId },
+      body: input,
+    });
     return data;
   },
   revoke: (projectId: string, id: string) =>
-    client.delete(`${BASE(projectId)}/${id}`),
+    sdk.revokeApiToken({
+      path: { project_id: projectId, token_id: id },
+    }),
 };
 
 export const apiTokenQueries = {

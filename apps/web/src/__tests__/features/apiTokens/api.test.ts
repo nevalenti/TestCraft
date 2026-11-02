@@ -1,38 +1,51 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/api/client', () => ({
-  default: { get: vi.fn(), post: vi.fn(), delete: vi.fn() },
+vi.mock("@/api/sdk", () => ({
+  listApiTokens: vi.fn(),
+  createApiToken: vi.fn(),
+  revokeApiToken: vi.fn(),
 }));
 
-import client from '@/api/client';
-import { apiTokensApi } from '@/features/apiTokens/api';
+import * as sdk from "@/api/sdk";
+import { apiTokensApi } from "@/features/apiTokens/api";
 
 beforeEach(() => {
   vi.clearAllMocks();
 });
 
-describe('apiTokensApi', () => {
-  it('getAll fetches tokens for the project', async () => {
-    vi.mocked(client.get).mockResolvedValue({ data: [] });
+describe("apiTokensApi", () => {
+  it("getAll fetches tokens for the project", async () => {
+    vi.mocked(sdk.listApiTokens).mockResolvedValue({
+      data: [],
+    } as never);
 
-    await apiTokensApi.getAll('p1');
+    await apiTokensApi.getAll("p1");
 
-    expect(client.get).toHaveBeenCalledWith('projects/p1/tokens');
-  });
-
-  it('create posts the token input', async () => {
-    vi.mocked(client.post).mockResolvedValue({ data: { id: 't1' } });
-
-    await apiTokensApi.create('p1', { name: 'CI token' } as any);
-
-    expect(client.post).toHaveBeenCalledWith('projects/p1/tokens', {
-      name: 'CI token',
+    expect(sdk.listApiTokens).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
     });
   });
 
-  it('revoke deletes the token by id', () => {
-    apiTokensApi.revoke('p1', 't1');
+  it("create posts the token input", async () => {
+    vi.mocked(sdk.createApiToken).mockResolvedValue({
+      data: { id: "t1" },
+    } as never);
 
-    expect(client.delete).toHaveBeenCalledWith('projects/p1/tokens/t1');
+    await apiTokensApi.create("p1", { name: "CI token" } as any);
+
+    expect(sdk.createApiToken).toHaveBeenCalledWith({
+      path: { project_id: "p1" },
+      body: {
+        name: "CI token",
+      },
+    });
+  });
+
+  it("revoke deletes the token by id", () => {
+    apiTokensApi.revoke("p1", "t1");
+
+    expect(sdk.revokeApiToken).toHaveBeenCalledWith({
+      path: { project_id: "p1", token_id: "t1" },
+    });
   });
 });

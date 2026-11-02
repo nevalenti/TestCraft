@@ -1,19 +1,22 @@
-import { keepPreviousData, queryOptions } from '@tanstack/react-query';
+import { keepPreviousData, queryOptions } from "@tanstack/react-query";
 import type {
   CreateTestResult,
-  Paginated,
-  TestResult,
   TestResultStatus,
   UpdateTestResult,
-} from '@testcraft/types';
+} from "@testcraft/types";
 
-import client from '@/api/client';
-import { queryKeys } from '@/api/queryKeys';
+import { fetchAllPages } from "@/api/fetchAllPages";
+import { ifMatch } from "@/api/ifMatch";
+import { queryKeys } from "@/api/queryKeys";
+import * as sdk from "@/api/sdk";
 
 export const RESULTS_PAGE_SIZE = 15;
-
-const BASE = (projectId: string, runId: string) =>
-  `projects/${projectId}/runs/${runId}/results`;
+export type ResultSortKey =
+  | "test_case_name"
+  | "status"
+  | "duration_ms"
+  | "executed_at";
+export type ResultSortDirection = "asc" | "desc";
 
 export const testResultsApi = {
   getAll: async (
@@ -23,31 +26,26 @@ export const testResultsApi = {
     search?: string,
     page = 1,
     pageSize = RESULTS_PAGE_SIZE,
+    sortBy?: ResultSortKey,
+    sortDir?: ResultSortDirection,
   ) => {
-    const { data } = await client.get<Paginated<TestResult>>(
-      BASE(projectId, runId),
-      {
-        params: {
-          page,
-          pageSize,
-          ...(status !== undefined && { status }),
-          ...(search && { search }),
-        },
+    const { data } = await sdk.listTestResults({
+      path: { project_id: projectId, run_id: runId },
+      query: {
+        page,
+        page_size: pageSize,
+        ...(status !== undefined && { status }),
+        ...(search && { search }),
+        ...(sortBy && { sort_by: sortBy, sort_dir: sortDir }),
       },
-    );
-    return data;
-  },
-  getById: async (projectId: string, runId: string, id: string) => {
-    const { data } = await client.get<TestResult>(
-      `${BASE(projectId, runId)}/${id}`,
-    );
+    });
     return data;
   },
   create: async (projectId: string, runId: string, input: CreateTestResult) => {
-    const { data } = await client.post<TestResult>(
-      BASE(projectId, runId),
-      input,
-    );
+    const { data } = await sdk.createTestResult({
+      path: { project_id: projectId, run_id: runId },
+      body: input,
+    });
     return data;
   },
   update: async (
@@ -55,15 +53,19 @@ export const testResultsApi = {
     runId: string,
     id: string,
     input: UpdateTestResult,
+    version: number,
   ) => {
-    const { data } = await client.put<TestResult>(
-      `${BASE(projectId, runId)}/${id}`,
-      { ...input, id },
-    );
+    const { data } = await sdk.updateTestResult({
+      path: { project_id: projectId, run_id: runId, result_id: id },
+      body: input,
+      headers: ifMatch(version),
+    });
     return data;
   },
   delete: (projectId: string, runId: string, id: string) =>
-    client.delete(`${BASE(projectId, runId)}/${id}`),
+    sdk.deleteTestResult({
+      path: { project_id: projectId, run_id: runId, result_id: id },
+    }),
 };
 
 export const testResultQueries = {
@@ -73,6 +75,8 @@ export const testResultQueries = {
     status?: TestResultStatus,
     search?: string,
     page = 1,
+    sortBy?: ResultSortKey,
+    sortDir?: ResultSortDirection,
   ) =>
     queryOptions({
       queryKey: [
@@ -80,23 +84,57 @@ export const testResultQueries = {
         status,
         search,
         page,
+        sortBy,
+        sortDir,
       ],
       queryFn: () =>
-        testResultsApi.getAll(projectId, runId, status, search, page),
+        testResultsApi.getAll(
+          projectId,
+          runId,
+          status,
+          search,
+          page,
+          RESULTS_PAGE_SIZE,
+          sortBy,
+          sortDir,
+        ),
       enabled: !!projectId && !!runId,
       placeholderData: keepPreviousData,
     }),
-  detail: (projectId: string, runId: string, id: string) =>
+  everything: (
+    projectId: string,
+    runId: string,
+    status?: TestResultStatus,
+    search?: string,
+  ) =>
     queryOptions({
-      queryKey: queryKeys.testResults.detail(projectId, runId, id),
-      queryFn: () => testResultsApi.getById(projectId, runId, id),
-      enabled: !!projectId && !!runId && !!id,
+      queryKey: [
+        ...queryKeys.testResults.all(projectId, runId),
+        "everything",
+        status,
+        search,
+      ],
+      queryFn: () =>
+        fetchAllPages((page) =>
+          testResultsApi.getAll(projectId, runId, status, search, page, 500),
+        ),
+      enabled: !!projectId && !!runId,
+      placeholderData: keepPreviousData,
     }),
   feed: (projectId: string, runId: string) =>
     queryOptions({
-      queryKey: [...queryKeys.testResults.all(projectId, runId), 'feed'],
+      queryKey: [...queryKeys.testResults.all(projectId, runId), "feed"],
       queryFn: () =>
-        testResultsApi.getAll(projectId, runId, undefined, undefined, 1, 500),
+        fetchAllPages((page) =>
+          testResultsApi.getAll(
+            projectId,
+            runId,
+            undefined,
+            undefined,
+            page,
+            500,
+          ),
+        ),
       enabled: !!projectId && !!runId,
       refetchOnWindowFocus: false,
     }),

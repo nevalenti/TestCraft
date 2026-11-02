@@ -1,9 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Features.Analytics;
 using TestCraft.Application.Features.TestResults;
@@ -104,6 +102,88 @@ public class AnalyticsApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task GetFlaky_RepeatedAttemptsInOneRun_CountAsOneRun()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id);
+        var run = await client.CreateRunAsync(project.Id);
+
+        foreach (
+            var status in new[]
+            {
+                TestResultStatus.Passed,
+                TestResultStatus.Failed,
+                TestResultStatus.Passed,
+            }
+        )
+        {
+            (
+                await client.PostAsJsonAsync(
+                    $"/api/v1/projects/{project.Id}/runs/{run.Id}/results",
+                    new CreateTestResult.Command
+                    {
+                        TestCaseId = testCase.Id,
+                        Status = status,
+                        ExecutedAt = DateTimeOffset.UtcNow,
+                    }
+                )
+            ).StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        var flaky = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/analytics/flaky")
+        ).Content.ReadFromJsonAsync<IReadOnlyList<FlakyTestStat>>(ApiTestHelpers.JsonOptions);
+
+        flaky.Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task GetFlaky_UsesCurrentOutcomeAcrossThreeRuns()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id);
+        var testCase = await client.CreateCaseAsync(project.Id, suite.Id);
+        var runA = await client.CreateRunAsync(project.Id);
+        var runB = await client.CreateRunAsync(project.Id);
+        var runC = await client.CreateRunAsync(project.Id);
+
+        foreach (
+            var (runId, status) in new[]
+            {
+                (runA.Id, TestResultStatus.Passed),
+                (runA.Id, TestResultStatus.Failed),
+                (runB.Id, TestResultStatus.Passed),
+                (runC.Id, TestResultStatus.Failed),
+            }
+        )
+        {
+            (
+                await client.PostAsJsonAsync(
+                    $"/api/v1/projects/{project.Id}/runs/{runId}/results",
+                    new CreateTestResult.Command
+                    {
+                        TestCaseId = testCase.Id,
+                        Status = status,
+                        ExecutedAt = DateTimeOffset.UtcNow,
+                    }
+                )
+            ).StatusCode.Should().Be(HttpStatusCode.Created);
+        }
+
+        var flaky = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/analytics/flaky")
+        ).Content.ReadFromJsonAsync<IReadOnlyList<FlakyTestStat>>(ApiTestHelpers.JsonOptions);
+
+        flaky.Should().ContainSingle();
+        flaky![0].TotalRuns.Should().Be(3);
+        flaky[0].PassCount.Should().Be(1);
+        flaky[0].FailCount.Should().Be(2);
+    }
+
+    [Fact]
     public async Task Compare_TwoRuns_ReturnsDiff()
     {
         var client = CreateClient(Guid.NewGuid());
@@ -133,7 +213,7 @@ public class AnalyticsApiTests(ApiFactory factory)
         );
 
         var response = await client.GetAsync(
-            $"/api/v1/projects/{project.Id}/analytics/runs/compare?runAId={runA.Id}&runBId={runB.Id}"
+            $"/api/v1/projects/{project.Id}/analytics/runs/compare?run_a_id={runA.Id}&run_b_id={runB.Id}"
         );
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);

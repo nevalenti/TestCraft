@@ -9,24 +9,16 @@ public sealed class HangfireBasicAuthOptions : IStartupOptions, IBasicAuthCreden
     public string Realm => "TestCraft Hangfire Dashboard";
 
     [NotSensitive]
-    public string? HangfireBasicAuthUsername { get; init; }
+    [ConfigurationKeyName("HANGFIRE_BASIC_AUTH_USERNAME")]
+    public string? HangfireBasicAuthUsername { get; set; }
 
     [Sensitive]
-    public string? HangfireBasicAuthPassword { get; init; }
+    [ConfigurationKeyName("HANGFIRE_BASIC_AUTH_PASSWORD")]
+    public string? HangfireBasicAuthPassword { get; set; }
 
     [NotSensitive]
     public string? Username => HangfireBasicAuthUsername;
 
     [Sensitive]
     public string? Password => HangfireBasicAuthPassword;
-
-    public static HangfireBasicAuthOptions Bind(IConfiguration configuration) =>
-        OptionsValidator.ValidateAndThrow(
-            new HangfireBasicAuthOptions
-            {
-                HangfireBasicAuthUsername = configuration["HANGFIRE_BASIC_AUTH_USERNAME"],
-                HangfireBasicAuthPassword = configuration["HANGFIRE_BASIC_AUTH_PASSWORD"],
-            },
-            "Hangfire basic-auth"
-        );
 }

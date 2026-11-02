@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Infrastructure.Notifications;

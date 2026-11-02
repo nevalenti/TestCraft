@@ -1,5 +1,5 @@
-import type { TestRun } from '@testcraft/types';
-import { useMemo } from 'react';
+import type { TestRun } from "@testcraft/types";
+import { useMemo } from "react";
 
 export const useRunSources = (
   runs: TestRun[] | undefined,

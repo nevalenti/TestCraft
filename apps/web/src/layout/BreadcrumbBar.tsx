@@ -1,9 +1,8 @@
-import { Link } from '@tanstack/react-router';
-import { useEffect, useRef } from 'react';
+import { Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
-import { AccountMenu } from '@/layout/AccountMenu';
-import { cn } from '@/lib/cn';
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs';
+import { cn } from "@/lib/cn";
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 export const BreadcrumbBar = () => {
   const breadcrumbs = useBreadcrumbsStore((store) => store.items);
@@ -14,10 +13,10 @@ export const BreadcrumbBar = () => {
     if (nav) nav.scrollLeft = nav.scrollWidth;
   }, [breadcrumbs]);
 
-  const content = () => {
-    if (breadcrumbs === null || breadcrumbs.length === 0) return null;
+  if (breadcrumbs === null || breadcrumbs.length === 0) return null;
 
-    return (
+  return (
+    <div className="header-stripes hidden h-9 shrink-0 items-center border-b border-border bg-base-300 px-4 sm:flex sm:px-6 lg:h-10 lg:px-8">
       <nav
         ref={navRef}
         aria-label="Breadcrumb"
@@ -34,7 +33,7 @@ export const BreadcrumbBar = () => {
               >
                 {index > 0 && (
                   <span
-                    className="text-xs text-base-content/45 select-none"
+                    className="text-sm text-fg-subtle select-none"
                     aria-hidden="true"
                   >
                     /
@@ -43,18 +42,19 @@ export const BreadcrumbBar = () => {
                 {item.href ? (
                   <Link
                     to={item.href}
+                    activeOptions={{ exact: true }}
                     title={item.label}
-                    className="flex max-w-28 items-center truncate text-xs font-medium text-base-content/75 transition-colors hover:text-base-content/90 sm:max-w-48"
+                    className="flex max-w-28 items-center truncate text-sm font-medium text-fg-secondary transition-colors hover:text-base-content sm:max-w-48"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <span
-                    aria-current={isLast ? 'page' : undefined}
+                    aria-current={isLast ? "page" : undefined}
                     title={item.label}
                     className={cn(
-                      'max-w-40 truncate text-xs font-semibold sm:max-w-64',
-                      isLast ? 'text-base-content/90' : 'text-base-content/85',
+                      "max-w-40 truncate text-sm font-semibold sm:max-w-64",
+                      isLast ? "text-base-content" : "text-fg-secondary",
                     )}
                   >
                     {item.label}
@@ -65,15 +65,6 @@ export const BreadcrumbBar = () => {
           })}
         </ol>
       </nav>
-    );
-  };
-
-  return (
-    <div className="header-stripes flex h-10 shrink-0 items-center border-b border-border bg-base-300 px-4 sm:px-6 lg:h-14 lg:px-8">
-      {content()}
-      <div className="ml-auto hidden items-center gap-2 lg:flex">
-        <AccountMenu />
-      </div>
     </div>
   );
 };

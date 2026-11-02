@@ -1,80 +1,65 @@
-import { useState } from 'react';
+import { LinkIcon, PlusIcon } from "@heroicons/react/24/solid";
+import type { NotificationEvent } from "@testcraft/types";
+import { useState } from "react";
 
-import { ErrorState } from '@/components/ErrorState';
-import { SettingsEntityList } from '@/components/ui/SettingsEntityList';
-import { EventCheckboxes } from '@/features/notifications/EventCheckboxes';
+import { ErrorState } from "@/components/ui/ErrorState";
+import { ListToolbar } from "@/components/ui/ListToolbar";
+import { Modal } from "@/components/ui/Modal";
+import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
+import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import {
   useCreateWebhook,
   useDeleteWebhook,
   useWebhooks,
-} from '@/features/notifications/hooks';
-import { AVAILABLE_EVENTS } from '@/features/notifications/notificationEvents';
+} from "@/features/notifications/hooks";
+import { WebhookForm } from "@/features/notifications/WebhookForm";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export const WebhooksSection = ({ projectId }: { projectId: string }) => {
   const { data: webhooks, isError, error, refetch } = useWebhooks(projectId);
   const createWebhook = useCreateWebhook(projectId);
   const deleteWebhook = useDeleteWebhook(projectId);
-  const [url, setUrl] = useState('');
-  const [secret, setSecret] = useState('');
-  const [events, setEvents] = useState<string[]>(AVAILABLE_EVENTS);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const debouncedSearch = useDebounce(search, 300);
 
-  const handleCreate = () => {
-    if (!url) return;
+  const handleCreate = (data: {
+    url: string;
+    secret: string;
+    events: NotificationEvent[];
+  }) => {
     createWebhook.mutate(
-      { url, secret: secret || undefined, events },
-      {
-        onSuccess: () => {
-          setUrl('');
-          setSecret('');
-          setEvents(AVAILABLE_EVENTS);
-        },
-      },
+      { url: data.url, secret: data.secret || undefined, events: data.events },
+      { onSuccess: () => setIsCreateOpen(false) },
     );
   };
 
+  const visibleWebhooks = debouncedSearch
+    ? (webhooks ?? []).filter((wh) =>
+        wh.url.toLowerCase().includes(debouncedSearch.toLowerCase()),
+      )
+    : webhooks;
+
   return (
-    <div>
-      <p className="mb-3 text-xs font-semibold tracking-widest text-base-content/75 uppercase">
-        Webhooks
-      </p>
-      <div className="mb-4 space-y-3">
-        <div>
-          <label htmlFor="webhook-url" className="label-text label text-xs">
-            Webhook URL
-          </label>
-          <input
-            id="webhook-url"
-            className="input-bordered input input-sm w-full"
-            placeholder="https://hooks.example.com/testcraft"
-            value={url}
-            onChange={(event) => setUrl(event.target.value)}
-          />
-        </div>
-        <div>
-          <label htmlFor="webhook-secret" className="label-text label text-xs">
-            Secret (optional)
-          </label>
-          <input
-            id="webhook-secret"
-            className="input-bordered input input-sm w-full"
-            placeholder="whsec_..."
-            value={secret}
-            onChange={(event) => setSecret(event.target.value)}
-          />
-          <p className="mt-1 text-xs text-base-content/70">
-            Used to sign requests with HMAC-SHA256 so you can verify they came
-            from TestCraft.
-          </p>
-        </div>
-        <EventCheckboxes selected={events} onChange={setEvents} />
+    <SettingsSectionCard
+      icon={LinkIcon}
+      title="Webhooks"
+      description="Send an HTTP request to your own endpoint on run events."
+    >
+      <ListToolbar
+        search={search}
+        onSearch={setSearch}
+        placeholder="Search webhooks…"
+      >
         <button
           className="btn btn-sm btn-primary"
-          onClick={handleCreate}
-          disabled={!url || events.length === 0 || createWebhook.isPending}
+          onClick={() => setIsCreateOpen(true)}
         >
-          Add Webhook
+          <PlusIcon className="size-4" aria-hidden="true" />
+          New Webhook
         </button>
-      </div>
+      </ListToolbar>
+
       {isError ? (
         <ErrorState
           title="Failed to load webhooks"
@@ -83,16 +68,28 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
         />
       ) : (
         <SettingsEntityList
-          items={webhooks ?? []}
+          items={visibleWebhooks ?? []}
           getKey={(wh) => wh.id}
           renderPrimary={(wh) => wh.url}
-          renderSecondary={(wh) => wh.events.join(', ')}
+          renderSecondary={(wh) => wh.events.join(", ")}
           onRemove={(wh) => deleteWebhook.mutate(wh.id)}
           removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
           emptyTitle="No webhooks yet"
           emptyDescription="Add a webhook to get notified on run events."
         />
       )}
-    </div>
+
+      <Modal
+        isOpen={isCreateOpen}
+        onClose={() => setIsCreateOpen(false)}
+        title="New Webhook"
+      >
+        <WebhookForm
+          onSubmit={handleCreate}
+          onCancel={() => setIsCreateOpen(false)}
+          isLoading={createWebhook.isPending}
+        />
+      </Modal>
+    </SettingsSectionCard>
   );
 };

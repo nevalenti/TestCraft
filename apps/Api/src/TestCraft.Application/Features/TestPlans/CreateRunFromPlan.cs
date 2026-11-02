@@ -1,9 +1,6 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -16,7 +13,7 @@ namespace TestCraft.Application.Features.TestPlans;
 
 public static class CreateRunFromPlan
 {
-    /// <summary>Creates a new run seeded with all test cases in a plan, in Blocked status.</summary>
+    /// <summary>Creates a new run seeded with all test cases in a plan, in Untested status.</summary>
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the plan belongs to.</summary>
@@ -43,8 +40,11 @@ public static class CreateRunFromPlan
         }
     }
 
-    public sealed class Handler(IApplicationDbContext context, ICurrentUser currentUser)
-        : IRequestHandler<Command, TestRunResponse>
+    public sealed class Handler(
+        IApplicationDbContext context,
+        ICurrentUser currentUser,
+        ITestRunNotifier notifier
+    ) : IRequestHandler<Command, TestRunResponse>
     {
         public async Task<TestRunResponse> Handle(
             Command request,
@@ -65,7 +65,6 @@ public static class CreateRunFromPlan
                 .Select(tpc => tpc.TestCaseId)
                 .ToListAsync(cancellationToken);
 
-            var now = DateTimeOffset.UtcNow;
             var run = TestRun.Create(
                 request.ProjectId,
                 request.Name,
@@ -84,17 +83,18 @@ public static class CreateRunFromPlan
                     TestResult.Create(
                         run.Id,
                         caseId,
-                        TestResultStatus.Blocked,
+                        TestResultStatus.Untested,
                         notes: null,
                         defectType: null,
                         durationMs: null,
-                        executedAt: now,
-                        executedById: currentUser.UserId
+                        executedAt: null,
+                        executedById: null
                     )
                 );
             }
 
             await context.SaveChangesAsync(cancellationToken);
+            await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
 
             return TestRunResponse.FromEntity(run);
         }

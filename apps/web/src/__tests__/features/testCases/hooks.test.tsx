@@ -1,33 +1,10 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { renderHook, waitFor } from '@testing-library/react';
-import type { ReactNode } from 'react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { act, renderHook, waitFor } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-vi.mock('@/features/testCases/api', () => ({
-  testCaseQueries: {
-    byProject: vi.fn((projectId: string) => ({
-      queryKey: ['projects', projectId, 'cases'],
-      queryFn: vi.fn().mockResolvedValue({ items: [] }),
-    })),
-    all: vi.fn((projectId: string, suiteId: string, search?: string) => ({
-      queryKey: ['projects', projectId, 'suites', suiteId, 'cases', search],
-      queryFn: vi.fn().mockResolvedValue({ items: [] }),
-    })),
-    detail: vi.fn((projectId: string, suiteId: string, id: string) => ({
-      queryKey: ['projects', projectId, 'suites', suiteId, 'cases', id],
-      queryFn: vi.fn().mockResolvedValue(null),
-    })),
-  },
-  testCasesApi: {
-    create: vi.fn(),
-    update: vi.fn(),
-    delete: vi.fn(),
-  },
-}));
-
-vi.mock('@/lib/notify', () => ({ notify: vi.fn() }));
-
-import { testCaseQueries, testCasesApi } from '@/features/testCases/api';
+import { apiResponse, makeTestCase, paginated } from "@/__tests__/fixtures";
+import { createWrapper } from "@/__tests__/test-utils";
+import { queryKeys } from "@/api/queryKeys";
+import { testCaseQueries, testCasesApi } from "@/features/testCases/api";
 import {
   useCreateTestCase,
   useDeleteTestCase,
@@ -35,212 +12,188 @@ import {
   useTestCase,
   useTestCases,
   useUpdateTestCase,
-} from '@/features/testCases/hooks';
-import { notify } from '@/lib/notify';
+} from "@/features/testCases/hooks";
+import { notify } from "@/lib/notify";
 
-const makeWrapper = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
+vi.mock("@/api/client", () => ({ apiClient: {} }));
+vi.mock("@/lib/notify", () => ({ notify: vi.fn() }));
+
+afterEach(() => vi.restoreAllMocks());
+
+const setupCatalog = () => {
+  const context = createWrapper();
+  context.queryClient.setDefaultOptions({
+    queries: { retry: false, staleTime: Infinity },
   });
-  const wrapper = ({ children }: { children: ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  const original = makeTestCase();
+  let items = [original];
+  vi.spyOn(testCasesApi, "getAll").mockImplementation(async () =>
+    paginated(items),
   );
-  return { queryClient, wrapper };
+  vi.spyOn(testCasesApi, "getAllByProject").mockImplementation(async () =>
+    paginated(items),
+  );
+  vi.spyOn(testCasesApi, "getById").mockImplementation(async () => items[0]);
+  const queries = renderHook(
+    () => ({
+      suite: useTestCases("project-1", "suite-1", "Login"),
+      project: useProjectTestCases("project-1"),
+      detail: useTestCase("project-1", "suite-1", original.id),
+    }),
+    { wrapper: context.wrapper },
+  );
+  return {
+    ...context,
+    queries,
+    original,
+    changeItems: (next: typeof items) => {
+      items = next;
+    },
+  };
 };
 
-beforeEach(() => {
-  vi.clearAllMocks();
-});
-
-describe('useProjectTestCases', () => {
-  describe('given a projectId — calls the byProject query factory', () => {
-    it('calls testCaseQueries.byProject with the projectId', () => {
-      const { wrapper } = makeWrapper();
-      renderHook(() => useProjectTestCases('proj-1'), { wrapper });
-      expect(testCaseQueries.byProject).toHaveBeenCalledWith('proj-1');
-    });
-  });
-});
-
-describe('useTestCases', () => {
-  describe('given projectId, suiteId, and search — calls the query factory', () => {
-    it('calls testCaseQueries.all with all three args', () => {
-      const { wrapper } = makeWrapper();
-      renderHook(() => useTestCases('proj-1', 'suite-1', 'login'), { wrapper });
-      expect(testCaseQueries.all).toHaveBeenCalledWith(
-        'proj-1',
-        'suite-1',
-        'login',
-      );
-    });
-  });
-});
-
-describe('useTestCase', () => {
-  describe('given projectId, suiteId, and id — calls the detail query factory', () => {
-    it('calls testCaseQueries.detail with all three ids', () => {
-      const { wrapper } = makeWrapper();
-      renderHook(() => useTestCase('proj-1', 'suite-1', 'case-1'), { wrapper });
-      expect(testCaseQueries.detail).toHaveBeenCalledWith(
-        'proj-1',
-        'suite-1',
-        'case-1',
-      );
-    });
-  });
-});
-
-describe('useCreateTestCase', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls testCasesApi.create with projectId, suiteId, and input', async () => {
-      vi.mocked(testCasesApi.create).mockResolvedValue({
-        id: 'c1',
-        name: 'Login test',
-      } as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useCreateTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate({ name: 'Login test' });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testCasesApi.create).toHaveBeenCalledWith('proj-1', 'suite-1', {
-        name: 'Login test',
-      });
-    });
-
-    it("notifies 'Test case created' on success", async () => {
-      vi.mocked(testCasesApi.create).mockResolvedValue({
-        id: 'c1',
-        name: 'Login test',
-      } as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useCreateTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate({ name: 'Login test' });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test case "Login test" created');
-    });
+describe("test-case query lifecycle", () => {
+  it("exposes loading and returns the case catalog and detail", async () => {
+    const { queries, original } = setupCatalog();
+    expect(queries.result.current.suite.isPending).toBe(true);
+    await waitFor(() =>
+      expect(queries.result.current.suite.data).toEqual([original]),
+    );
+    expect(queries.result.current.project.data).toEqual([original]);
+    expect(queries.result.current.detail.data).toEqual(original);
   });
 
-  describe('on mutate failure — sets error state', () => {
-    it('is in error state when the API rejects', async () => {
-      vi.mocked(testCasesApi.create).mockRejectedValue(
-        new Error('Server error'),
-      );
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useCreateTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate({ name: 'Fail' });
-
-      await waitFor(() => expect(result.current.isError).toBe(true));
-      expect(notify).not.toHaveBeenCalled();
+  it("exposes an error when the catalog request fails", async () => {
+    vi.spyOn(testCasesApi, "getAll").mockRejectedValue(new Error("offline"));
+    const { wrapper } = createWrapper();
+    const { result } = renderHook(() => useTestCases("project-1", "suite-1"), {
+      wrapper,
     });
-  });
-});
-
-describe('useUpdateTestCase', () => {
-  describe('on mutate — calls API with id and stripped input', () => {
-    it('calls testCasesApi.update with all ids and the update payload', async () => {
-      vi.mocked(testCasesApi.update).mockResolvedValue({
-        id: 'c1',
-        name: 'Updated',
-      } as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useUpdateTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate({ id: 'c1', name: 'Updated', priority: 'Medium' });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testCasesApi.update).toHaveBeenCalledWith(
-        'proj-1',
-        'suite-1',
-        'c1',
-        { name: 'Updated', priority: 'Medium' },
-      );
-    });
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(result.current.error?.message).toBe("offline");
   });
 
-  describe('on mutate failure — sets error state', () => {
-    it('is in error state when the API rejects', async () => {
-      vi.mocked(testCasesApi.update).mockRejectedValue(
-        new Error('Server error'),
-      );
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useUpdateTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate({ id: 'c1', name: 'Fail', priority: 'Medium' });
-
-      await waitFor(() => expect(result.current.isError).toBe(true));
+  it("refreshes the suite and project picker after creating a case", async () => {
+    const context = setupCatalog();
+    await waitFor(() =>
+      expect(context.queries.result.current.project.isSuccess).toBe(true),
+    );
+    const added = makeTestCase({ id: "case-2", name: "Second login test" });
+    vi.spyOn(testCasesApi, "create").mockImplementation(async () => {
+      context.changeItems([context.original, added]);
+      return added;
     });
-  });
-});
-
-describe('useDeleteTestCase', () => {
-  describe('on mutate — calls API and notifies', () => {
-    it('calls testCasesApi.delete with projectId, suiteId, and caseId', async () => {
-      vi.mocked(testCasesApi.delete).mockResolvedValue(undefined as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useDeleteTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate('c1');
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(testCasesApi.delete).toHaveBeenCalledWith(
-        'proj-1',
-        'suite-1',
-        'c1',
-      );
-    });
-
-    it("notifies 'Test case deleted' on success", async () => {
-      vi.mocked(testCasesApi.delete).mockResolvedValue(undefined as any);
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useDeleteTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate('c1');
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(notify).toHaveBeenCalledWith('Test case deleted');
-    });
+    const { result } = renderHook(
+      () => useCreateTestCase("project-1", "suite-1"),
+      { wrapper: context.wrapper },
+    );
+    await act(() => result.current.mutateAsync({ name: added.name }));
+    await waitFor(() =>
+      expect(context.queries.result.current.project.data).toEqual([
+        context.original,
+        added,
+      ]),
+    );
+    expect(context.queries.result.current.suite.data).toEqual([
+      context.original,
+      added,
+    ]);
   });
 
-  describe('on mutate failure — sets error state', () => {
-    it('is in error state when the API rejects', async () => {
-      vi.mocked(testCasesApi.delete).mockRejectedValue(
-        new Error('Server error'),
-      );
-      const { wrapper } = makeWrapper();
-      const { result } = renderHook(
-        () => useDeleteTestCase('proj-1', 'suite-1'),
-        { wrapper },
-      );
-
-      result.current.mutate('c1');
-
-      await waitFor(() => expect(result.current.isError).toBe(true));
-      expect(notify).not.toHaveBeenCalled();
+  it("refreshes lists, details and plan projections after renaming a case", async () => {
+    const context = setupCatalog();
+    await waitFor(() =>
+      expect(context.queries.result.current.detail.isSuccess).toBe(true),
+    );
+    const planKey = queryKeys.testPlans.cases("project-1", "plan-1");
+    const resultKey = queryKeys.testResults.all("project-1", "run-1");
+    context.queryClient.setQueryData(resultKey, paginated([]));
+    const otherProject = testCaseQueries.byProject("project-2").queryKey;
+    context.queryClient.setQueryData(planKey, []);
+    context.queryClient.setQueryData(otherProject, paginated([]));
+    const updated = makeTestCase({ name: "Renamed login" });
+    vi.spyOn(testCasesApi, "update").mockImplementation(async () => {
+      context.changeItems([updated]);
+      return updated;
     });
+    const { result } = renderHook(
+      () => useUpdateTestCase("project-1", "suite-1"),
+      { wrapper: context.wrapper },
+    );
+    await act(() =>
+      result.current.mutateAsync({
+        id: updated.id,
+        version: updated.version,
+        name: updated.name,
+        priority: "medium",
+      }),
+    );
+    await waitFor(() =>
+      expect(context.queries.result.current.detail.data).toEqual(updated),
+    );
+    expect(context.queries.result.current.suite.data).toEqual([updated]);
+    expect(context.queries.result.current.project.data).toEqual([updated]);
+    expect(context.queryClient.getQueryState(planKey)?.isInvalidated).toBe(
+      true,
+    );
+    expect(context.queryClient.getQueryState(resultKey)?.isInvalidated).toBe(
+      true,
+    );
+    expect(context.queryClient.getQueryState(otherProject)?.isInvalidated).toBe(
+      false,
+    );
+  });
+
+  it("finds the deleted name in a searched list and removes cached descendants", async () => {
+    const { queryClient, wrapper } = createWrapper();
+    const original = makeTestCase();
+    queryClient.setQueryData(
+      testCaseQueries.all("project-1", "suite-1", "Login").queryKey,
+      paginated([original]),
+    );
+    queryClient.setQueryData(
+      testCaseQueries.byProject("project-1").queryKey,
+      paginated([original]),
+    );
+    const detailKey = testCaseQueries.detail(
+      "project-1",
+      "suite-1",
+      original.id,
+    ).queryKey;
+    queryClient.setQueryData(detailKey, original);
+    queryClient.setQueryData([...detailKey, "steps"], paginated([]));
+    vi.spyOn(testCasesApi, "delete").mockResolvedValue(apiResponse(undefined));
+    const { result } = renderHook(
+      () => useDeleteTestCase("project-1", "suite-1"),
+      { wrapper },
+    );
+    await act(() => result.current.mutateAsync(original.id));
+    expect(notify).toHaveBeenCalledWith('Test case "Login test" deleted');
+    expect(queryClient.getQueryData(detailKey)).toBeUndefined();
+    expect(queryClient.getQueryData([...detailKey, "steps"])).toBeUndefined();
+    expect(
+      queryClient.getQueryState(testCaseQueries.byProject("project-1").queryKey)
+        ?.isInvalidated,
+    ).toBe(true);
+  });
+
+  it("preserves fresh caches and reports failure when a mutation rejects", async () => {
+    vi.mocked(notify).mockClear();
+    const { queryClient, wrapper } = createWrapper();
+    const key = testCaseQueries.byProject("project-1").queryKey;
+    queryClient.setQueryData(key, paginated([makeTestCase()]));
+    vi.spyOn(testCasesApi, "create").mockRejectedValue(new Error("offline"));
+    const { result } = renderHook(
+      () => useCreateTestCase("project-1", "suite-1"),
+      { wrapper },
+    );
+    await act(async () => {
+      await expect(
+        result.current.mutateAsync({ name: "New case" }),
+      ).rejects.toThrow("offline");
+    });
+    expect(result.current.isError).toBe(true);
+    expect(queryClient.getQueryState(key)?.isInvalidated).toBe(false);
+    expect(notify).not.toHaveBeenCalled();
   });
 });

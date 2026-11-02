@@ -41,7 +41,10 @@ spec:
               mkdir -p /data/import
               if [ -n "$GITHUB_CLIENT_ID" ]; then GITHUB_ENABLED=true; else GITHUB_ENABLED=false; fi
               if [ -n "$GOOGLE_CLIENT_ID" ]; then GOOGLE_ENABLED=true; else GOOGLE_ENABLED=false; fi
-              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g; s|\${KEYCLOAK_ADMIN_CLIENT_SECRET}|$KEYCLOAK_ADMIN_CLIENT_SECRET|g; s|\${TESTCRAFT_CI_CLIENT_SECRET}|$TESTCRAFT_CI_CLIENT_SECRET|g" \
+              if [ -n "$SMTP_HOST" ]; then VERIFY_EMAIL=true; else VERIFY_EMAIL=false; fi
+              if [ -n "$SMTP_USER" ]; then SMTP_AUTH=true; else SMTP_AUTH=false; fi
+              esc() { printf '%s' "$1" | sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | sed -e 's/[\\|&]/\\&/g'; }
+              sed "s|\"GITHUB_IDP_ENABLED\"|$GITHUB_ENABLED|g; s|\${GITHUB_CLIENT_ID}|$GITHUB_CLIENT_ID|g; s|\${GITHUB_CLIENT_SECRET}|$GITHUB_CLIENT_SECRET|g; s|\"GOOGLE_IDP_ENABLED\"|$GOOGLE_ENABLED|g; s|\${GOOGLE_CLIENT_ID}|$GOOGLE_CLIENT_ID|g; s|\${GOOGLE_CLIENT_SECRET}|$GOOGLE_CLIENT_SECRET|g; s|\${KEYCLOAK_ADMIN_CLIENT_SECRET}|$KEYCLOAK_ADMIN_CLIENT_SECRET|g; s|\${TESTCRAFT_CI_CLIENT_SECRET}|$TESTCRAFT_CI_CLIENT_SECRET|g; s|\"VERIFY_EMAIL_ENABLED\"|$VERIFY_EMAIL|g; s|SMTP_AUTH_ENABLED|$SMTP_AUTH|g; s|\${SMTP_HOST}|$(esc "$SMTP_HOST")|g; s|\${SMTP_PORT}|$(esc "${SMTP_PORT:-587}")|g; s|\${SMTP_FROM_ADDRESS}|$(esc "$SMTP_FROM_ADDRESS")|g; s|\${SMTP_USER}|$(esc "$SMTP_USER")|g; s|\${SMTP_PASSWORD}|$(esc "$SMTP_PASSWORD")|g" \
                 /realm-source/testcraft-realm.json > /data/import/testcraft-realm.json
           env:
             - name: GITHUB_CLIENT_ID
@@ -78,6 +81,36 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: TESTCRAFT_CI_CLIENT_SECRET
+            - name: SMTP_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SMTP_HOST
+                  optional: true
+            - name: SMTP_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SMTP_PORT
+                  optional: true
+            - name: SMTP_USER
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SMTP_USER
+                  optional: true
+            - name: SMTP_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SMTP_PASSWORD
+                  optional: true
+            - name: SMTP_FROM_ADDRESS
+              valueFrom:
+                secretKeyRef:
+                  name: testcraft-secrets
+                  key: SMTP_FROM_ADDRESS
+                  optional: true
           volumeMounts:
             - name: data
               mountPath: /data

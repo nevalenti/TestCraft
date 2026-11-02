@@ -1,10 +1,8 @@
-import type { components } from './generated/schema.js';
+import type { components } from "./generated/schema.js";
 
-export type TestRun =
-  components['schemas']['TestCraft.Application.TestRuns.TestRunResponse'];
-export type CreateTestRun =
-  components['schemas']['TestCraft.Application.TestRuns.CreateTestRun.Command'];
-export type UpdateTestRun =
-  components['schemas']['TestCraft.Application.TestRuns.UpdateTestRun.Command'];
-export type TestRunSummary =
-  components['schemas']['TestCraft.Application.TestRuns.GetTestRunSummary.Response'];
+export type TestRun = components["schemas"]["TestRunResponse"];
+export type CreateTestRun = components["schemas"]["CreateTestRunRequest"];
+export type UpdateTestRun = components["schemas"]["UpdateTestRunRequest"];
+export type TestRunSummary = components["schemas"]["TestRunSummaryResponse"];
+export type SocketTicket = components["schemas"]["SocketTicketResponse"];
+export type RunLogPage = components["schemas"]["RunLogPageResponse"];

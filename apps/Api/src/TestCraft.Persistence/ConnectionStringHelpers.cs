@@ -4,7 +4,11 @@ namespace TestCraft.Persistence;
 
 public static class ConnectionStringHelpers
 {
-    public static string ToNpgsqlConnectionString(string databaseUrl)
+    public static string ToNpgsqlConnectionString(
+        string databaseUrl,
+        int? poolTimeoutSeconds = null,
+        int? statementTimeoutMs = null
+    )
     {
         var uri = new Uri(databaseUrl);
         var userInfo = uri.UserInfo.Split(':', 2);
@@ -15,11 +19,22 @@ public static class ConnectionStringHelpers
             Port = uri.Port > 0 ? uri.Port : 5432,
             Database = uri.AbsolutePath.TrimStart('/'),
             Username = Uri.UnescapeDataString(userInfo[0]),
+            GssEncryptionMode = GssEncryptionMode.Disable,
         };
 
         if (userInfo.Length > 1)
         {
             builder.Password = Uri.UnescapeDataString(userInfo[1]);
+        }
+
+        if (poolTimeoutSeconds is { } timeout)
+        {
+            builder.Timeout = timeout;
+        }
+
+        if (statementTimeoutMs is { } statementTimeout)
+        {
+            builder.Options = $"-c statement_timeout={statementTimeout}";
         }
 
         return builder.ConnectionString;

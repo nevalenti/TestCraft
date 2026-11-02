@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -56,9 +54,7 @@ public static class AddTestCaseLabel
                 return;
             }
 
-            context.TestCaseLabels.Add(
-                TestCaseLabel.Create(request.TestCaseId, request.LabelId)
-            );
+            context.TestCaseLabels.Add(TestCaseLabel.Create(request.TestCaseId, request.LabelId));
 
             await context.SaveChangesAsync(cancellationToken);
         }

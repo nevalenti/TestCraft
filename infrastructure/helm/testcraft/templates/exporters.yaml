@@ -130,6 +130,8 @@ spec:
           env:
             - name: RABBIT_URL
               value: http://rabbitmq:15672
+            - name: PUBLISH_PORT
+              value: "9419"
             - name: RABBIT_USER
               valueFrom:
                 secretKeyRef:

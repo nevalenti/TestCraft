@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /src
 
-COPY Directory.Build.props Directory.Packages.props ./
+COPY .editorconfig Directory.Build.props Directory.Packages.props ./
 COPY apps/Api/.editorconfig apps/Api/
 COPY Common/src/TestCraft.Common/TestCraft.Common.csproj Common/src/TestCraft.Common/
 COPY apps/Api/src/TestCraft.Domain/TestCraft.Domain.csproj apps/Api/src/TestCraft.Domain/
@@ -14,6 +14,7 @@ RUN dotnet restore apps/Api/src/TestCraft.Api/TestCraft.Api.csproj
 
 COPY Common/src/ Common/src/
 COPY apps/Api/src/ apps/Api/src/
+COPY apps/Api/openapi/contract/v1.json apps/Api/openapi/contract/
 
 RUN dotnet publish apps/Api/src/TestCraft.Api/TestCraft.Api.csproj -c Release -o /app --no-restore
 

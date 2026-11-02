@@ -1,14 +1,11 @@
-using System.Text.Json;
-
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Notifications;
 
@@ -28,14 +25,31 @@ public static class UpdateWebhookSubscription
         /// <summary>The URL to POST event payloads to.</summary>
         public required string Url { get; init; }
 
-        /// <summary>An optional shared secret used to sign the webhook payload.</summary>
-        public string? Secret { get; init; }
+        /// <summary>
+        /// The shared secret that signs payloads. Leave it out to keep the current one; send
+        /// null to remove it.
+        /// </summary>
+        public string? Secret
+        {
+            get;
+            init
+            {
+                field = value;
+                IsSecretProvided = true;
+            }
+        }
+
+        [JsonIgnore]
+        public bool IsSecretProvided { get; private init; }
 
         /// <summary>The event types to notify on.</summary>
-        public required IReadOnlyList<string> Events { get; init; }
+        public required IReadOnlyList<NotificationEvent> Events { get; init; }
 
         /// <summary>Whether the subscription is active.</summary>
         public required bool IsActive { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -52,6 +66,7 @@ public static class UpdateWebhookSubscription
                 );
             RuleFor(command => command.Secret).MaximumLength(200);
             RuleFor(command => command.Events).NotEmpty();
+            RuleForEach(command => command.Events).IsInEnum();
         }
     }
 
@@ -71,24 +86,17 @@ public static class UpdateWebhookSubscription
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(subscription, request.ExpectedVersion);
             subscription.Update(
                 request.Url,
-                request.Secret,
-                JsonSerializer.Serialize(request.Events),
+                request.IsSecretProvided ? request.Secret : subscription.Secret,
+                NotificationEvents.Serialize(request.Events),
                 request.IsActive
             );
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new WebhookSubscriptionResponse
-            {
-                Id = subscription.Id,
-                ProjectId = subscription.ProjectId,
-                Url = subscription.Url,
-                IsActive = subscription.IsActive,
-                Events = request.Events,
-                CreatedAt = subscription.CreatedAt,
-            };
+            return WebhookSubscriptionResponse.FromEntity(subscription);
         }
     }
 }

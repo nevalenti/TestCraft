@@ -14,4 +14,4 @@ datasources:
         filterByTraceID: false
         filterBySpanID: false
         customQuery: true
-        query: '{app="testcraft-api"} |= "${__trace.traceId}"'
+        query: '{service_name=~"testcraft-api|testcraft-gateway"} |= "$${__trace.traceId}"'

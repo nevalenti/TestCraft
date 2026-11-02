@@ -159,10 +159,7 @@
         </div>
       </main>
 
-      <footer class="shrink-0 flex items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8" style="border-top: 1px solid var(--color-border);">
-        <span class="text-xs font-bold tracking-tight text-base-content/65" style="font-family: var(--font-display)">TestCraft</span>
-        <p class="text-xs text-base-content/50">&copy; 2026 All rights reserved</p>
-      </footer>
+      <footer />
     </div>
 
   </body>

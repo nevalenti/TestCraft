@@ -1,11 +1,13 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Features.Notifications;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.Features.Notifications;
 
+[ProjectRoles(Read = ProjectRole.Admin, Write = ProjectRole.Admin)]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/notifications")]
 public class NotificationsController(ISender sender) : ApiControllerBase
 {
@@ -29,7 +31,7 @@ public class NotificationsController(ISender sender) : ApiControllerBase
 
     /// <summary>Creates a webhook subscription.</summary>
     [HttpPost("webhooks")]
-    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> CreateWebhook(
         ProjectId projectId,
         CreateWebhookSubscription.Command command,
@@ -45,17 +47,26 @@ public class NotificationsController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates a webhook subscription.</summary>
     [HttpPut("webhooks/{id:guid}")]
-    [ProducesResponseType(typeof(WebhookSubscriptionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<WebhookSubscriptionResponse>> UpdateWebhook(
         ProjectId projectId,
         WebhookSubscriptionId id,
         UpdateWebhookSubscription.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }
@@ -96,7 +107,7 @@ public class NotificationsController(ISender sender) : ApiControllerBase
 
     /// <summary>Creates an email subscription.</summary>
     [HttpPost("emails")]
-    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<EmailSubscriptionResponse>> CreateEmail(
         ProjectId projectId,
         CreateEmailSubscription.Command command,
@@ -112,17 +123,26 @@ public class NotificationsController(ISender sender) : ApiControllerBase
 
     /// <summary>Updates an email subscription.</summary>
     [HttpPut("emails/{id:guid}")]
-    [ProducesResponseType(typeof(EmailSubscriptionResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status412PreconditionFailed)]
     public async Task<ActionResult<EmailSubscriptionResponse>> UpdateEmail(
         ProjectId projectId,
         EmailSubscriptionId id,
         UpdateEmailSubscription.Command command,
+        [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var scopedCommand = command with
+        {
+            ProjectId = projectId,
+            Id = id,
+            ExpectedVersion = ExpectedVersion(ifMatch),
+        };
 
         var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
 
         return Ok(result);
     }

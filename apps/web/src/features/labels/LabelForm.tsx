@@ -1,20 +1,20 @@
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
 
-import { FormActions } from '@/components/ui/FormActions';
-import { FormField } from '@/components/ui/FormField';
-import { FormInput } from '@/components/ui/FormInput';
-import { LabelBadge } from '@/components/ui/LabelBadge';
+import { FormActions } from "@/components/ui/form/FormActions";
+import { FormField } from "@/components/ui/form/FormField";
+import { FormInput } from "@/components/ui/form/FormInput";
+import { LabelBadge } from "@/components/ui/LabelBadge";
 
 const PRESET_COLORS = [
-  '#ef4444',
-  '#f97316',
-  '#eab308',
-  '#22c55e',
-  '#06b6d4',
-  '#3b82f6',
-  '#8b5cf6',
-  '#ec4899',
-  '#64748b',
+  "#ef4444",
+  "#f97316",
+  "#eab308",
+  "#22c55e",
+  "#06b6d4",
+  "#3b82f6",
+  "#8b5cf6",
+  "#ec4899",
+  "#64748b",
 ];
 
 interface LabelFormValues {
@@ -31,7 +31,7 @@ interface LabelFormProps {
 }
 
 export const LabelForm = ({
-  defaultValues = { name: '', color: PRESET_COLORS[0] },
+  defaultValues = { name: "", color: PRESET_COLORS[0] },
   onSubmit,
   onCancel,
   isLoading,
@@ -40,14 +40,14 @@ export const LabelForm = ({
   const { register, handleSubmit, watch, setValue } = useForm<LabelFormValues>({
     defaultValues,
   });
-  const color = watch('color');
+  const color = watch("color");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <FormField label="Name" htmlFor="label-name">
         <FormInput
           id="label-name"
-          {...register('name', { required: true })}
+          {...register("name", { required: true })}
           placeholder="e.g. smoke, regression, flaky"
           autoFocus
         />
@@ -67,27 +67,20 @@ export const LabelForm = ({
                     ? `0 0 0 2px ${presetColor}`
                     : undefined,
               }}
-              onClick={() => setValue('color', presetColor)}
+              onClick={() => setValue("color", presetColor)}
               aria-label={presetColor}
             />
           ))}
           <input
             id="label-color-custom"
             type="color"
-            {...register('color')}
+            {...register("color")}
             className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0"
             title="Custom color"
           />
         </div>
         <div className="mt-1">
-          <LabelBadge
-            label={{
-              id: '',
-              name: watch('name') || 'Preview',
-              color,
-              projectId: '',
-            }}
-          />
+          <LabelBadge label={{ name: watch("name") || "Preview", color }} />
         </div>
       </FormField>
 

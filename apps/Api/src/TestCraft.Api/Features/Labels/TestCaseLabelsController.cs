@@ -1,11 +1,11 @@
 using MediatR;
-
 using Microsoft.AspNetCore.Mvc;
-
+using TestCraft.Api.Authorization;
 using TestCraft.Application.Features.Labels;
 
 namespace TestCraft.Api.Features.Labels;
 
+[ApiTokenScope("cases")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/cases/{caseId:guid}/labels")]
 public class TestCaseLabelsController(ISender sender) : ApiControllerBase
 {

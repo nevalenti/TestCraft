@@ -1,11 +1,10 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Features.Notifications;
+using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Notifications;
 
@@ -35,7 +34,7 @@ public class NotificationsApiTests(ApiFactory factory)
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
             }
         );
 
@@ -70,7 +69,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(ApiTestHelpers.JsonOptions);
@@ -100,11 +99,11 @@ public class NotificationsApiTests(ApiFactory factory)
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "not-a-url",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -124,7 +123,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -140,11 +139,11 @@ public class NotificationsApiTests(ApiFactory factory)
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "ftp://example.com/hook",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -160,7 +159,7 @@ public class NotificationsApiTests(ApiFactory factory)
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
             }
         );
 
@@ -192,7 +191,7 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "delete-me@example.com",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<EmailSubscriptionResponse>(ApiTestHelpers.JsonOptions);
@@ -221,11 +220,11 @@ public class NotificationsApiTests(ApiFactory factory)
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "not-an-email",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
     }
 
     [Fact]
@@ -244,7 +243,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -275,18 +274,18 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/updated-hook",
-                Events = ["run.completed", "run.failed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = false,
             }
         );
@@ -297,7 +296,7 @@ public class NotificationsApiTests(ApiFactory factory)
             ApiTestHelpers.JsonOptions
         );
         updated!.Url.Should().Be("https://example.com/updated-hook");
-        IReadOnlyList<string> expectedWebhookEvents = ["run.completed", "run.failed"];
+        IReadOnlyList<NotificationEvent> expectedWebhookEvents = [NotificationEvent.RunCompleted];
         updated.Events.Should().BeEquivalentTo(expectedWebhookEvents);
         updated.IsActive.Should().BeFalse();
     }
@@ -308,13 +307,13 @@ public class NotificationsApiTests(ApiFactory factory)
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{Guid.NewGuid()}",
             new UpdateWebhookSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "https://example.com/hook",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = true,
             }
         );
@@ -336,12 +335,12 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
@@ -352,7 +351,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -369,23 +368,23 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Url = "https://example.com/hook",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<WebhookSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/webhooks/{created!.Id}",
             new UpdateWebhookSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Url = "ftp://example.com/hook",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = true,
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -402,18 +401,18 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<EmailSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "updated@example.com",
-                Events = ["run.completed", "run.failed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = false,
             }
         );
@@ -424,7 +423,7 @@ public class NotificationsApiTests(ApiFactory factory)
             ApiTestHelpers.JsonOptions
         );
         updated!.Email.Should().Be("updated@example.com");
-        IReadOnlyList<string> expectedEmailEvents = ["run.completed", "run.failed"];
+        IReadOnlyList<NotificationEvent> expectedEmailEvents = [NotificationEvent.RunCompleted];
         updated.Events.Should().BeEquivalentTo(expectedEmailEvents);
         updated.IsActive.Should().BeFalse();
     }
@@ -435,13 +434,13 @@ public class NotificationsApiTests(ApiFactory factory)
         var client = CreateClient(Guid.NewGuid());
         var project = await client.CreateProjectAsync();
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/emails/{Guid.NewGuid()}",
             new UpdateEmailSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "ci@example.com",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = true,
             }
         );
@@ -463,12 +462,12 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<EmailSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
@@ -479,7 +478,7 @@ public class NotificationsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 
@@ -496,23 +495,23 @@ public class NotificationsApiTests(ApiFactory factory)
                 {
                     ProjectId = ApiTestHelpers.AnyProjectId,
                     Email = "ci@example.com",
-                    Events = ["run.completed"],
+                    Events = [NotificationEvent.RunCompleted],
                 }
             )
         ).Content.ReadFromJsonAsync<EmailSubscriptionResponse>(ApiTestHelpers.JsonOptions);
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{project.Id}/notifications/emails/{created!.Id}",
             new UpdateEmailSubscription.Command
             {
                 ProjectId = ApiTestHelpers.AnyProjectId,
                 Email = "not-an-email",
-                Events = ["run.completed"],
+                Events = [NotificationEvent.RunCompleted],
                 IsActive = true,
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 }

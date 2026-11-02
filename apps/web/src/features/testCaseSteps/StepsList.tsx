@@ -1,13 +1,23 @@
-import { DndContext, DragOverlay } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import type { TestCaseStep } from '@testcraft/types';
+} from "@dnd-kit/sortable";
+import type { TestCaseStep } from "@testcraft/types";
 
-import { StepDragPreview } from '@/features/testCaseSteps/StepDragPreview';
-import { StepRow } from '@/features/testCaseSteps/StepRow';
-import { useStepReorder } from '@/features/testCaseSteps/useStepReorder';
+import { StepDragPreview } from "@/features/testCaseSteps/StepDragPreview";
+import { StepRow } from "@/features/testCaseSteps/StepRow";
+import { useStepReorder } from "@/features/testCaseSteps/useStepReorder";
+
+const noReorder = () => {};
+
+interface StepsListProps {
+  sortedSteps: TestCaseStep[];
+  isReordering: boolean;
+  onReorder?: (steps: { id: string; order: number }[]) => void;
+  onEdit?: (step: TestCaseStep) => void;
+  onDelete?: (step: TestCaseStep) => void;
+}
 
 export const StepsList = ({
   sortedSteps,
@@ -15,13 +25,7 @@ export const StepsList = ({
   onReorder,
   onEdit,
   onDelete,
-}: {
-  sortedSteps: TestCaseStep[];
-  isReordering: boolean;
-  onReorder: (steps: { id: string; order: number }[]) => void;
-  onEdit: (step: TestCaseStep) => void;
-  onDelete: (step: TestCaseStep) => void;
-}) => {
+}: StepsListProps) => {
   const {
     sensors,
     collisionDetection,
@@ -30,7 +34,8 @@ export const StepsList = ({
     handleDragStart,
     handleDragOver,
     handleDragEnd,
-  } = useStepReorder(sortedSteps, onReorder, isReordering);
+    handleDragCancel,
+  } = useStepReorder(sortedSteps, onReorder ?? noReorder, isReordering);
 
   return (
     <DndContext
@@ -39,6 +44,7 @@ export const StepsList = ({
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragEnd={handleDragEnd}
+      onDragCancel={handleDragCancel}
     >
       <SortableContext
         items={displaySteps.map((step) => step.id)}
@@ -49,8 +55,9 @@ export const StepsList = ({
             <StepRow
               key={step.id}
               step={step}
-              onEdit={() => onEdit(step)}
-              onDelete={() => onDelete(step)}
+              onEdit={onEdit && (() => onEdit(step))}
+              onDelete={onDelete && (() => onDelete(step))}
+              reorderable={!!onReorder}
             />
           ))}
         </div>

@@ -1,16 +1,16 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
-import path from 'node:path';
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import path from "node:path";
 
 const wildcardToRegExp = (pattern: string): RegExp => {
   const escaped = pattern
     .replaceAll(/[.+^${}()|[\]\\]/g, String.raw`\$&`)
-    .replaceAll('*', '.*');
+    .replaceAll("*", ".*");
   return new RegExp(`^${escaped}$`);
 };
 
 const extractSuites = (xml: string): string => {
   const match = xml.match(/<testsuites[^>]*>([\s\S]*)<\/testsuites>/);
-  return (match ? match[1] : xml.replace(/<\?xml[^>]*\?>/, '')).trim();
+  return (match ? match[1] : xml.replace(/<\?xml[^>]*\?>/, "")).trim();
 };
 
 export const resolveJunitXml = (
@@ -19,8 +19,8 @@ export const resolveJunitXml = (
 ): string | null => {
   const absolute = path.resolve(workspace, pattern);
 
-  if (!absolute.includes('*')) {
-    return existsSync(absolute) ? readFileSync(absolute, 'utf8') : null;
+  if (!absolute.includes("*")) {
+    return existsSync(absolute) ? readFileSync(absolute, "utf8") : null;
   }
 
   const dir = path.dirname(absolute);
@@ -34,6 +34,6 @@ export const resolveJunitXml = (
 
   if (files.length === 0) return null;
 
-  const suites = files.map((file) => extractSuites(readFileSync(file, 'utf8')));
-  return `<?xml version="1.0" encoding="UTF-8"?><testsuites>${suites.join('\n')}</testsuites>`;
+  const suites = files.map((file) => extractSuites(readFileSync(file, "utf8")));
+  return `<?xml version="1.0" encoding="UTF-8"?><testsuites>${suites.join("\n")}</testsuites>`;
 };

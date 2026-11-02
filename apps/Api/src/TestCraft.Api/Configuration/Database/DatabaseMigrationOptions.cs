@@ -5,14 +5,6 @@ namespace TestCraft.Api.Configuration.Database;
 public sealed class DatabaseMigrationOptions : IStartupOptions
 {
     [NotSensitive]
-    public bool ApplyMigrations { get; init; }
-
-    public static DatabaseMigrationOptions Bind(IConfiguration configuration) =>
-        OptionsValidator.ValidateAndThrow(
-            new DatabaseMigrationOptions
-            {
-                ApplyMigrations = configuration.GetValue<bool>("APPLY_MIGRATIONS"),
-            },
-            "database migration"
-        );
+    [ConfigurationKeyName("APPLY_MIGRATIONS")]
+    public bool ApplyMigrations { get; set; }
 }

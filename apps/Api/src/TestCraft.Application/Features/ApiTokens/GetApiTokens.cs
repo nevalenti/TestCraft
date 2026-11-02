@@ -1,7 +1,5 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -31,6 +29,7 @@ public static class GetApiTokens
                     Id = token.Id,
                     Name = token.Name,
                     ProjectId = token.ProjectId,
+                    Scopes = token.Scopes,
                     LastUsedAt = token.LastUsedAt,
                     ExpiresAt = token.ExpiresAt,
                     IsRevoked = token.IsRevoked,

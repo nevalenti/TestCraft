@@ -1,8 +1,7 @@
 using MassTransit;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Import.Contracts;
 using TestCraft.Application.Features.TestRuns;
@@ -14,7 +13,8 @@ namespace TestCraft.Application.Features.Import.Consumers;
 public partial class ImportJUnitRequestedConsumer(
     IApplicationDbContext dbContext,
     ITestRunNotifier notifier,
-    ILogger<ImportJUnitRequestedConsumer> logger
+    ILogger<ImportJUnitRequestedConsumer> logger,
+    TimeProvider timeProvider
 ) : IConsumer<ImportJUnitRequested>
 {
     public async Task Consume(ConsumeContext<ImportJUnitRequested> context)
@@ -38,11 +38,11 @@ public partial class ImportJUnitRequestedConsumer(
 
         await dbContext.SaveChangesAsync(cancellationToken);
 
+        TestRunResponse run;
         try
         {
             var (runName, cases) = JUnitParser.Parse(message.Xml);
 
-            TestRunResponse run;
             if (message.RunId.HasValue)
             {
                 run = await ImportRunWriter.AppendResultsToRunAsync(
@@ -52,7 +52,8 @@ public partial class ImportJUnitRequestedConsumer(
                     cases,
                     message.UserId,
                     message.Source?.ToLowerInvariant(),
-                    job,
+                    job.Id,
+                    timeProvider.GetStoredUtcNow(),
                     cancellationToken
                 );
             }
@@ -68,30 +69,59 @@ public partial class ImportJUnitRequestedConsumer(
                     message.UserId,
                     message.UserName,
                     message.Source?.ToLowerInvariant(),
-                    job,
+                    job.Id,
+                    timeProvider.GetStoredUtcNow(),
                     cancellationToken
                 );
             }
-
-            await notifier.RunStatusChangedAsync(run.Id, run.Status.ToString(), cancellationToken);
         }
         catch (DomainException ex)
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.MarkFailed(ex.Message);
+            await ImportRunWriter.MarkJobFailedAsync(
+                dbContext,
+                job.Id,
+                ex.Message,
+                cancellationToken
+            );
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            return;
         }
         catch (Exception ex) when (ex is not OperationCanceledException)
         {
             LogImportFailed(logger, ex, job.Id);
 
-            job.MarkFailed("Import failed due to an unexpected error");
+            await ImportRunWriter.MarkJobFailedAsync(
+                dbContext,
+                job.Id,
+                "Import failed due to an unexpected error",
+                cancellationToken
+            );
 
-            await dbContext.SaveChangesAsync(cancellationToken);
+            return;
+        }
+
+        try
+        {
+            await notifier.RunStatusChangedAsync(run.Id, run.Status, cancellationToken);
+            await notifier.DashboardChangedAsync(run.ProjectId, run.Id, cancellationToken);
+        }
+        catch (Exception ex) when (ex is not OperationCanceledException)
+        {
+            LogNotifyFailed(logger, ex, job.Id);
         }
     }
+
+    [LoggerMessage(
+        Level = LogLevel.Warning,
+        Message = "Import job {JobId} completed but its live update was not sent"
+    )]
+    private static partial void LogNotifyFailed(
+        ILogger logger,
+        Exception exception,
+        ImportJobId jobId
+    );
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Import job {JobId} not found")]
     private static partial void LogJobNotFound(ILogger logger, ImportJobId jobId);

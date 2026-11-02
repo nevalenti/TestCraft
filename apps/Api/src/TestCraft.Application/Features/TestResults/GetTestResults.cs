@@ -1,10 +1,10 @@
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
 
@@ -12,26 +12,35 @@ namespace TestCraft.Application.Features.TestResults;
 
 public static class GetTestResults
 {
-    /// <summary>Lists the test results within a run.</summary>
-    public sealed record Query : IRequest<Paginated<TestResultResponse>>, IProjectScopedRequest
+    public enum SortField
+    {
+        TestCaseName,
+        Status,
+        DurationMs,
+        ExecutedAt,
+        CreatedAt,
+    }
+
+    /// <summary>Lists the test results within a run; search matches the test case name.</summary>
+    public sealed record Query
+        : SearchPageQuery,
+            IRequest<Paginated<TestResultResponse>>,
+            IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The run to list results for.</summary>
+        [RouteValue]
         public TestRunId RunId { get; init; }
 
-        /// <summary>Filters results to this status.</summary>
+        /// <summary>Only results with this status.</summary>
         public TestResultStatus? Status { get; init; }
 
-        /// <summary>Filters results whose test case name contains this text.</summary>
-        public string? Search { get; init; }
+        public SortField SortBy { get; init; } = SortField.CreatedAt;
 
-        /// <summary>The page number to return, starting at 1.</summary>
-        public int? Page { get; init; }
-
-        /// <summary>The number of results per page.</summary>
-        public int? PageSize { get; init; }
+        public SortDirection SortDir { get; init; } = SortDirection.Asc;
     }
 
     public sealed class Handler(IApplicationDbContext context)
@@ -42,43 +51,56 @@ public static class GetTestResults
             CancellationToken cancellationToken
         )
         {
-            var query = context.TestResults.Where(result =>
-                result.TestRunId == request.RunId && result.TestRun!.ProjectId == request.ProjectId
+            var runExists = await context.TestRuns.AnyAsync(
+                run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
+                cancellationToken
+            );
+            if (!runExists)
+            {
+                throw new NotFoundException();
+            }
+
+            var query = context.LiveResults().Where(result => result.TestRunId == request.RunId);
+
+            if (request.Status is { } status)
+            {
+                query = query.Where(result => result.Status == status);
+            }
+
+            query = query.WhereContainsIgnoringCase(
+                result => result.TestCase!.Name,
+                request.Search
             );
 
-            if (request.Status is not null)
+            var direction = request.SortDir;
+            var sorted = request.SortBy switch
             {
-                query = query.Where(result => result.Status == request.Status);
-            }
-
-            if (!string.IsNullOrWhiteSpace(request.Search))
-            {
-#pragma warning disable CA1304, CA1311
-                var pattern = $"%{request.Search.ToLower()}%";
-                query = query.Where(result =>
-                    EF.Functions.Like(result.TestCase!.Name.ToLower(), pattern)
-                );
-#pragma warning restore CA1304, CA1311
-            }
-
-            var pagination = PaginationParams.Create(request.Page, request.PageSize);
-
-            var total = await query.CountAsync(cancellationToken);
-
-            var items = await query
-                .OrderBy(result => result.CreatedAt)
-                .Skip(pagination.Skip)
-                .Take(pagination.Take)
-                .ToTestResultResponse()
-                .ToListAsync(cancellationToken);
-
-            return new Paginated<TestResultResponse>
-            {
-                Items = items,
-                Total = total,
-                Page = pagination.Page,
-                PageSize = pagination.PageSize,
+                SortField.TestCaseName => query.SortedBy(
+                    result => result.TestCase!.Name,
+                    direction,
+                    result => result.Id
+                ),
+                SortField.Status => query.SortedBy(
+                    result => result.Status,
+                    direction,
+                    result => result.Id
+                ),
+                SortField.DurationMs => query.SortedBy(
+                    result => result.DurationMs,
+                    direction,
+                    result => result.Id
+                ),
+                SortField.ExecutedAt => query.SortedBy(
+                    result => result.ExecutedAt,
+                    direction,
+                    result => result.Id
+                ),
+                _ => query.SortedBy(result => result.CreatedAt, direction, result => result.Id),
             };
+
+            return await sorted
+                .Select(TestResultResponse.Projection)
+                .ToPaginatedAsync(request.ToPagination(), cancellationToken);
         }
     }
 }

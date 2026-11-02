@@ -1,14 +1,15 @@
 using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-
 using FluentAssertions;
-
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Api.IntegrationTests.Infrastructure;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestResults;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Enums;
+using TestCraft.Persistence;
 
 namespace TestCraft.Api.IntegrationTests.TestResults;
 
@@ -24,6 +25,62 @@ public class TestResultsApiTests(ApiFactory factory)
         );
 
         return client;
+    }
+
+    [Fact]
+    public async Task Create_UntestedStatus_ReturnsValidationProblem()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, testCaseId) = await CreateProjectRunCaseAsync(client);
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/runs/{runId}/results",
+            new CreateTestResult.Command
+            {
+                TestCaseId = testCaseId,
+                Status = TestResultStatus.Untested,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Fact]
+    public async Task CreateByName_ConcurrentRequestsReuseOneSuiteAndCase()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var run = await client.CreateRunAsync(project.Id);
+        var path = $"/api/v1/projects/{project.Id}/runs/{run.Id}/results/by-name";
+        var command = new CreateTestResultByName.Command
+        {
+            SuiteName = "CI Suite",
+            TestCaseName = "CI Case",
+            Status = TestResultStatus.Passed,
+            ExecutedAt = DateTimeOffset.UtcNow,
+        };
+
+        var responses = await Task.WhenAll(
+            Enumerable.Range(0, 6).Select(_ => client.PostAsJsonAsync(path, command))
+        );
+        responses.Should().OnlyContain(response => response.StatusCode == HttpStatusCode.Created);
+
+        using var scope = factory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        var suites = await context
+            .TestSuites.Where(suite => suite.ProjectId == project.Id && suite.Name == "CI Suite")
+            .Select(suite => suite.Id)
+            .ToListAsync();
+        suites.Should().ContainSingle();
+        (
+            await context.TestCases.CountAsync(testCase =>
+                testCase.SuiteId == suites[0] && testCase.Name == "CI Case"
+            )
+        )
+            .Should()
+            .Be(1);
+        (await context.TestResults.CountAsync(result => result.TestRunId == run.Id)).Should().Be(6);
     }
 
     private static async Task<(
@@ -102,7 +159,7 @@ public class TestResultsApiTests(ApiFactory factory)
         );
 
         var response = await client.GetAsync(
-            $"/api/v1/projects/{projectId}/runs/{runId}/results?status=Failed"
+            $"/api/v1/projects/{projectId}/runs/{runId}/results?status=failed"
         );
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -130,7 +187,7 @@ public class TestResultsApiTests(ApiFactory factory)
             )
         ).Content.ReadFromJsonAsync<TestResultResponse>(ApiTestHelpers.JsonOptions);
 
-        var updateResponse = await client.PutAsJsonAsync(
+        var updateResponse = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results/{created!.Id}",
             new UpdateTestResult.Command
             {
@@ -188,7 +245,7 @@ public class TestResultsApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{projectId}/runs/{runId}")
         ).Content.ReadFromJsonAsync<TestRunResponse>(ApiTestHelpers.JsonOptions);
 
-        await client.PutAsJsonAsync(
+        await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
             new UpdateTestRun.Command
             {
@@ -198,7 +255,7 @@ public class TestResultsApiTests(ApiFactory factory)
                 Status = TestRunStatus.Completed,
             }
         );
-        await client.PutAsJsonAsync(
+        await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
             new UpdateTestRun.Command
             {
@@ -206,7 +263,8 @@ public class TestResultsApiTests(ApiFactory factory)
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Archived,
-            }
+            },
+            version: 2
         );
 
         var response = await client.PostAsJsonAsync(
@@ -245,7 +303,7 @@ public class TestResultsApiTests(ApiFactory factory)
             await client.GetAsync($"/api/v1/projects/{projectId}/runs/{runId}")
         ).Content.ReadFromJsonAsync<TestRunResponse>(ApiTestHelpers.JsonOptions);
 
-        await client.PutAsJsonAsync(
+        await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
             new UpdateTestRun.Command
             {
@@ -255,7 +313,7 @@ public class TestResultsApiTests(ApiFactory factory)
                 Status = TestRunStatus.Completed,
             }
         );
-        await client.PutAsJsonAsync(
+        await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}",
             new UpdateTestRun.Command
             {
@@ -263,10 +321,11 @@ public class TestResultsApiTests(ApiFactory factory)
                 Name = run.Name,
                 Environment = run.Environment,
                 Status = TestRunStatus.Archived,
-            }
+            },
+            version: 2
         );
 
-        var response = await client.PutAsJsonAsync(
+        var response = await client.UpdateAsJsonAsync(
             $"/api/v1/projects/{projectId}/runs/{runId}/results/{created!.Id}",
             new UpdateTestResult.Command { Id = created.Id, Status = TestResultStatus.Failed }
         );
@@ -305,7 +364,7 @@ public class TestResultsApiTests(ApiFactory factory)
             }
         );
 
-        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
         response.Content.Headers.ContentType?.MediaType.Should().Be("application/problem+json");
     }
 

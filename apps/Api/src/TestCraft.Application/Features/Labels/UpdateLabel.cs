@@ -1,9 +1,7 @@
 using FluentValidation;
-
 using MediatR;
-
 using Microsoft.EntityFrameworkCore;
-
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -28,6 +26,9 @@ public static class UpdateLabel
 
         /// <summary>The label's new color, as a "#RRGGBB" hex string.</summary>
         public required string Color { get; init; }
+
+        [JsonIgnore]
+        public int? ExpectedVersion { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -56,18 +57,13 @@ public static class UpdateLabel
                     cancellationToken
                 ) ?? throw new NotFoundException();
 
+            VersionCheck.Ensure(label, request.ExpectedVersion);
             label.Name = request.Name;
             label.Color = request.Color;
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return new LabelResponse
-            {
-                Id = label.Id,
-                Name = label.Name,
-                Color = label.Color,
-                ProjectId = label.ProjectId,
-            };
+            return LabelResponse.FromEntity(label);
         }
     }
 }

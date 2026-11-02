@@ -30,7 +30,7 @@ public record AllureResultItem
     public string? FullName { get; init; }
 
     /// <summary>The Allure status string (e.g. "passed", "failed", "broken", "skipped").</summary>
-    public string? Status { get; init; }
+    public AllureStatus? Status { get; init; }
 
     /// <summary>Failure details, when the test did not pass.</summary>
     public AllureStatusDetails? StatusDetails { get; init; }
@@ -43,4 +43,14 @@ public record AllureResultItem
 
     /// <summary>Stop time, in epoch milliseconds.</summary>
     public long? Stop { get; init; }
+}
+
+/// <summary>An Allure result status.</summary>
+public enum AllureStatus
+{
+    Passed,
+    Failed,
+    Broken,
+    Skipped,
+    Unknown,
 }

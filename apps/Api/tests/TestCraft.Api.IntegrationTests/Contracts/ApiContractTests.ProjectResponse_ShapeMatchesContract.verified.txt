@@ -1,1 +1,1 @@
-﻿{"id":"Guid_1","name":"Contract Project","description":"For contract testing","createdAt":"TIMESTAMP","updatedAt":"TIMESTAMP","suiteCount":0,"runCount":0,"isOwner":true}
+﻿{"id":"Guid_1","version":1,"name":"Contract Project","description":"For contract testing","created_at":"TIMESTAMP","updated_at":"TIMESTAMP","suite_count":0,"run_count":0,"is_owner":true,"role":"owner","last_run_at":null,"recent_pass_rates":[]}
