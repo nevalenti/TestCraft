@@ -59,8 +59,8 @@ export const SuitePage = () => {
       { id: item.id, version: item.version, ...input },
       { onSuccess: close },
     );
-  const handleDelete = (id: string) =>
-    deleteCase.mutate(id, { onSuccess: close });
+  const handleDelete = (item: TestCase) =>
+    deleteCase.mutate({ id: item.id, name: item.name }, { onSuccess: close });
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
@@ -164,7 +164,7 @@ export const SuitePage = () => {
       <ConfirmDialog
         isOpen={modal.type === "delete"}
         onClose={close}
-        onConfirm={() => deleteItem && handleDelete(deleteItem.id)}
+        onConfirm={() => deleteItem && handleDelete(deleteItem)}
         title="Delete Test Case"
         description={deleteItem ? `Delete "${deleteItem.name}"?` : ""}
         isLoading={deleteCase.isPending}
