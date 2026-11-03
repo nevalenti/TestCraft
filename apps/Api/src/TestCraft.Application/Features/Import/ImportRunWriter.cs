@@ -6,20 +6,24 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Import;
 
+internal sealed record ImportBatch(
+    ProjectId ProjectId,
+    UserId UserId,
+    string? Source,
+    ImportJobId JobId,
+    DateTimeOffset Now
+);
+
 internal static class ImportRunWriter
 {
     public static async Task<TestRunResponse> CreateRunWithResultsAsync(
         IApplicationDbContext context,
-        ProjectId projectId,
+        ImportBatch batch,
         string name,
         string environment,
         TestRunStatus status,
         IReadOnlyList<ParsedTestCase> cases,
-        UserId userId,
         string? userName,
-        string? source,
-        ImportJobId jobId,
-        DateTimeOffset now,
         CancellationToken cancellationToken
     )
     {
@@ -27,11 +31,11 @@ internal static class ImportRunWriter
             async _ =>
             {
                 var run = TestRun.Create(
-                    projectId,
+                    batch.ProjectId,
                     name,
                     environment,
-                    source: source,
-                    executedById: userId,
+                    source: batch.Source,
+                    executedById: batch.UserId,
                     executedByName: userName
                 );
 
@@ -44,19 +48,10 @@ internal static class ImportRunWriter
 
                 await context.SaveChangesAsync(cancellationToken);
 
-                await InsertResultsAsync(
-                    context,
-                    projectId,
-                    run.Id,
-                    cases,
-                    now,
-                    userId,
-                    source,
-                    cancellationToken
-                );
+                await InsertResultsAsync(context, batch, run.Id, cases, cancellationToken);
 
                 var job = await context.ImportJobs.FirstAsync(
-                    importJob => importJob.Id == jobId,
+                    importJob => importJob.Id == batch.JobId,
                     cancellationToken
                 );
                 job.MarkCompleted(run.Id);
@@ -71,13 +66,9 @@ internal static class ImportRunWriter
 
     public static async Task<TestRunResponse> AppendResultsToRunAsync(
         IApplicationDbContext context,
-        ProjectId projectId,
+        ImportBatch batch,
         TestRunId runId,
         IReadOnlyList<ParsedTestCase> cases,
-        UserId userId,
-        string? source,
-        ImportJobId jobId,
-        DateTimeOffset now,
         CancellationToken cancellationToken
     )
     {
@@ -86,27 +77,18 @@ internal static class ImportRunWriter
             {
                 var run =
                     await context.TestRuns.FirstOrDefaultAsync(
-                        testRun => testRun.Id == runId && testRun.ProjectId == projectId,
+                        testRun => testRun.Id == runId && testRun.ProjectId == batch.ProjectId,
                         cancellationToken
                     )
                     ?? throw new InvalidOperationException(
-                        $"Run {runId} not found in project {projectId}"
+                        $"Run {runId} not found in project {batch.ProjectId}"
                     );
 
-                await InsertResultsAsync(
-                    context,
-                    projectId,
-                    run.Id,
-                    cases,
-                    now,
-                    userId,
-                    source,
-                    cancellationToken
-                );
+                await InsertResultsAsync(context, batch, run.Id, cases, cancellationToken);
 
                 run.TransitionTo(TestRunStatus.Completed);
                 var job = await context.ImportJobs.FirstAsync(
-                    importJob => importJob.Id == jobId,
+                    importJob => importJob.Id == batch.JobId,
                     cancellationToken
                 );
                 job.MarkCompleted(run.Id);
@@ -138,32 +120,28 @@ internal static class ImportRunWriter
 
     private static async Task InsertResultsAsync(
         IApplicationDbContext context,
-        ProjectId projectId,
+        ImportBatch batch,
         TestRunId runId,
         IReadOnlyList<ParsedTestCase> cases,
-        DateTimeOffset now,
-        UserId userId,
-        string? source,
         CancellationToken cancellationToken
     )
     {
         var suiteMap = await ResolveSuitesAsync(
             context,
-            projectId,
+            batch.ProjectId,
             cases,
-            source,
+            batch.Source,
             cancellationToken
         );
         var caseMap = await ResolveTestCasesAsync(context, suiteMap, cases, cancellationToken);
 
         await InsertTestResultsAsync(
             context,
+            batch,
             runId,
             suiteMap,
             caseMap,
             cases,
-            now,
-            userId,
             cancellationToken
         );
     }
@@ -295,12 +273,11 @@ internal static class ImportRunWriter
 
     private static async Task InsertTestResultsAsync(
         IApplicationDbContext context,
+        ImportBatch batch,
         TestRunId runId,
         Dictionary<string, TestSuiteId> suiteMap,
         Dictionary<(TestSuiteId SuiteId, string Name), TestCaseId> caseMap,
         IReadOnlyList<ParsedTestCase> cases,
-        DateTimeOffset now,
-        UserId userId,
         CancellationToken cancellationToken
     )
     {
@@ -322,8 +299,8 @@ internal static class ImportRunWriter
                     parsedCase.Notes,
                     defectType: null,
                     parsedCase.DurationMs,
-                    executedAt: now,
-                    executedById: userId
+                    executedAt: batch.Now,
+                    executedById: batch.UserId
                 )
             );
         }
