@@ -144,7 +144,7 @@ describe("test-case query lifecycle", () => {
     );
   });
 
-  it("finds the deleted name in a searched list and removes cached descendants", async () => {
+  it("names the deleted case and removes cached descendants", async () => {
     const { queryClient, wrapper } = createWrapper();
     const original = makeTestCase();
     queryClient.setQueryData(
@@ -167,7 +167,9 @@ describe("test-case query lifecycle", () => {
       () => useDeleteTestCase("project-1", "suite-1"),
       { wrapper },
     );
-    await act(() => result.current.mutateAsync(original.id));
+    await act(() =>
+      result.current.mutateAsync({ id: original.id, name: original.name }),
+    );
     expect(notify).toHaveBeenCalledWith('Test case "Login test" deleted');
     expect(queryClient.getQueryData(detailKey)).toBeUndefined();
     expect(queryClient.getQueryData([...detailKey, "steps"])).toBeUndefined();
