@@ -43,18 +43,22 @@ public partial class ImportAllureRequestedConsumer(
         {
             var cases = AllureParser.Parse(message.Results);
 
+            var batch = new ImportBatch(
+                message.ProjectId,
+                message.UserId,
+                message.Source?.ToLowerInvariant(),
+                job.Id,
+                timeProvider.GetStoredUtcNow()
+            );
+
             run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
-                message.ProjectId,
+                batch,
                 message.Name ?? ImportAllure.Command.DefaultRunName,
                 message.Environment,
                 TestRunStatus.Completed,
                 cases,
-                message.UserId,
                 message.UserName,
-                message.Source?.ToLowerInvariant(),
-                job.Id,
-                timeProvider.GetStoredUtcNow(),
                 cancellationToken
             );
         }
