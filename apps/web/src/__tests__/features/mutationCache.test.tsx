@@ -1,3 +1,4 @@
+import { TestRunStatus } from "@testcraft/types";
 import { act, renderHook } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -25,8 +26,11 @@ import {
 } from "@/features/testPlans/hooks";
 import { testResultsApi } from "@/features/testResults/api";
 import { useUpdateTestResult } from "@/features/testResults/hooks";
+import { testRunsApi } from "@/features/testRuns/api";
+import { useCreateTestRun, useDeleteTestRun } from "@/features/testRuns/hooks";
 import { testSuitesApi } from "@/features/testSuites/api";
 import {
+  useCreateTestSuite,
   useDeleteTestSuite,
   useUpdateTestSuite,
 } from "@/features/testSuites/hooks";
@@ -64,6 +68,16 @@ const keys = {
   analytics: queryKeys.analytics.trend("p1", 20),
   labels: queryKeys.labels.all("p1"),
   otherProject: queryKeys.testCases.byProject("p2"),
+};
+const run = {
+  id: "r1",
+  version: 1,
+  name: "Run",
+  environment: "test",
+  project_id: "p1",
+  status: TestRunStatus.Active,
+  created_at: "",
+  updated_at: "",
 };
 const scenarios = [
   {
@@ -151,8 +165,9 @@ const scenarios = [
   },
   {
     name: "deleting a suite",
-    affected: ["catalog", "plan", "project"],
+    affected: ["catalog", "plan", "project", "runs", "analytics"],
     removed: ["cases", "detail", "steps"],
+    untouched: ["labels"],
     mock: () =>
       vi
         .spyOn(testSuitesApi, "delete")
@@ -201,17 +216,8 @@ const scenarios = [
   {
     name: "creating a run from a plan",
     affected: ["runs", "project"],
-    mock: () =>
-      vi.spyOn(testPlansApi, "createRun").mockResolvedValue({
-        id: "r1",
-        version: 1,
-        name: "Run",
-        environment: "test",
-        project_id: "p1",
-        status: "active",
-        created_at: "",
-        updated_at: "",
-      }),
+    untouched: ["labels"],
+    mock: () => vi.spyOn(testPlansApi, "createRun").mockResolvedValue(run),
     useMutation: () => {
       const mutation = useCreateRunFromPlan("p1");
       return () =>
@@ -220,6 +226,37 @@ const scenarios = [
           name: "Run",
           environment: "test",
         });
+    },
+  },
+  {
+    name: "creating a run",
+    affected: ["runs", "project"],
+    untouched: ["labels"],
+    mock: () => vi.spyOn(testRunsApi, "create").mockResolvedValue(run),
+    useMutation: () => {
+      const mutation = useCreateTestRun("p1");
+      return () => mutation.mutateAsync({ name: "Run", environment: "test" });
+    },
+  },
+  {
+    name: "deleting a run",
+    affected: ["runs", "analytics", "project"],
+    untouched: ["labels"],
+    mock: () =>
+      vi.spyOn(testRunsApi, "delete").mockResolvedValue(apiResponse(undefined)),
+    useMutation: () => {
+      const mutation = useDeleteTestRun("p1");
+      return () => mutation.mutateAsync("r1");
+    },
+  },
+  {
+    name: "creating a suite",
+    affected: ["project"],
+    untouched: ["labels"],
+    mock: () => vi.spyOn(testSuitesApi, "create").mockResolvedValue(suite),
+    useMutation: () => {
+      const mutation = useCreateTestSuite("p1");
+      return () => mutation.mutateAsync({ name: "Suite" });
     },
   },
   {
@@ -280,6 +317,14 @@ describe("mutation cache projections", () => {
             queryClient.getQueryData(keys[name as keyof typeof keys]),
             name,
           ).toBeUndefined();
+      }
+      if ("untouched" in scenario) {
+        for (const name of scenario.untouched ?? [])
+          expect(
+            queryClient.getQueryState(keys[name as keyof typeof keys])
+              ?.isInvalidated,
+            name,
+          ).toBe(false);
       }
       expect(queryClient.getQueryState(keys.otherProject)?.isInvalidated).toBe(
         false,

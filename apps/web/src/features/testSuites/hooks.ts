@@ -33,6 +33,7 @@ export const useCreateTestSuite = (projectId: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });
@@ -85,7 +86,14 @@ export const useDeleteTestSuite = (projectId: string) => {
         queryKey: queryKeys.testSuites.detail(projectId, id),
       });
       queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.analytics.all(projectId),
+      });
+      queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });

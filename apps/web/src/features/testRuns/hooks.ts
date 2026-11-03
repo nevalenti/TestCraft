@@ -56,6 +56,7 @@ export const useCreateTestRun = (projectId: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });
@@ -129,7 +130,11 @@ const useImportMutation = <T>(
         queryKey: queryKeys.testRuns.all(projectId),
       });
       queryClient.invalidateQueries({
+        queryKey: queryKeys.analytics.all(projectId),
+      });
+      queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
     onError: (error: Error) => {
@@ -169,7 +174,11 @@ export const useDeleteTestRun = (projectId: string) => {
         queryKey: queryKeys.testRuns.detail(projectId, id),
       });
       queryClient.invalidateQueries({
+        queryKey: queryKeys.analytics.all(projectId),
+      });
+      queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });
