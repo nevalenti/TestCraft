@@ -1,10 +1,43 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  type QueryClient,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
 
 import { findCached } from "@/api/findCached";
 import { queryKeys } from "@/api/queryKeys";
 import { labelQueries, labelsApi } from "@/features/labels/api";
 import { notify } from "@/lib/notify";
+
+const invalidateLabelsAndDependents = (
+  queryClient: QueryClient,
+  projectId: string,
+) => {
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.labels.all(projectId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.testSuites.all(projectId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.testCases.byProject(projectId),
+  });
+};
+
+const invalidateCaseLabels = (
+  queryClient: QueryClient,
+  projectId: string,
+  suiteId: string,
+) => {
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.testCases.all(projectId, suiteId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.testCases.byProject(projectId),
+  });
+};
 
 export const useLabels = (projectId: string) =>
   useQuery(labelQueries.all(projectId));
@@ -43,15 +76,7 @@ export const useUpdateLabel = (projectId: string) => {
     }) => labelsApi.update(projectId, id, input, version),
     onSuccess: (_, { name }) => {
       notify(`Label "${name}" updated`);
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.labels.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testSuites.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.byProject(projectId),
-      });
+      invalidateLabelsAndDependents(queryClient, projectId);
     },
   });
 };
@@ -68,15 +93,7 @@ export const useDeleteLabel = (projectId: string) => {
         id,
       )?.name;
       notify(name ? `Label "${name}" deleted` : "Label deleted");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.labels.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testSuites.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.byProject(projectId),
-      });
+      invalidateLabelsAndDependents(queryClient, projectId);
     },
   });
 };
@@ -98,12 +115,7 @@ export const useAddTestCaseLabel = (
         labelId,
       )?.name;
       notify(name ? `Label "${name}" added` : "Label added");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.all(projectId, suiteId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.byProject(projectId),
-      });
+      invalidateCaseLabels(queryClient, projectId, suiteId);
     },
   });
 };
@@ -125,12 +137,7 @@ export const useRemoveTestCaseLabel = (
         labelId,
       )?.name;
       notify(name ? `Label "${name}" removed` : "Label removed");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.all(projectId, suiteId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testCases.byProject(projectId),
-      });
+      invalidateCaseLabels(queryClient, projectId, suiteId);
     },
   });
 };
