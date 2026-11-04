@@ -47,7 +47,7 @@ export const ProjectCard = ({
       onDelete={deleteHandler}
       label="project"
       testId="project-card"
-      cardBg="card-bg-primary"
+      cardBg="bg-primary/8 border-primary/28"
       accentText="text-primary"
       typeIcon={<FolderIcon className="size-3.5" />}
     >

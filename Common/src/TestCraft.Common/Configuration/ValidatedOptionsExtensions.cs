@@ -13,13 +13,16 @@ public static class ValidatedOptionsExtensions
         where T : class, new()
     {
         var options = configuration.Get<T>() ?? new T();
-        var result = new DataAnnotationValidateOptions<T>(Options.DefaultName).Validate(
-            Options.DefaultName,
-            options
-        );
+        var result = new DataAnnotationValidateOptions<T>(
+            Options.DefaultName
+        ).Validate(Options.DefaultName, options);
         if (result.Failed)
         {
-            throw new OptionsValidationException(Options.DefaultName, typeof(T), result.Failures);
+            throw new OptionsValidationException(
+                Options.DefaultName,
+                typeof(T),
+                result.Failures
+            );
         }
 
         services.AddSingleton(Options.Create(options));
