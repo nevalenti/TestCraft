@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
+using TestCraft.Common.Configuration;
 
 namespace TestCraft.Infrastructure.Configuration;
 
@@ -14,17 +14,7 @@ public static class StartupOptionsServiceCollectionExtensions
     )
         where T : class, IStartupOptions, new()
     {
-        var options = configuration.Get<T>() ?? new T();
-        var result = new DataAnnotationValidateOptions<T>(Options.DefaultName).Validate(
-            Options.DefaultName,
-            options
-        );
-        if (result.Failed)
-        {
-            throw new OptionsValidationException(Options.DefaultName, typeof(T), result.Failures);
-        }
-
-        services.AddSingleton(Options.Create(options));
+        var options = services.AddValidatedOptions<T>(configuration);
         services.AddSingleton<IStartupOptions>(options);
 
         return options;
