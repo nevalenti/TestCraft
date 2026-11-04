@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Prometheus;
+using TestCraft.Common.Hosting;
 using TestCraft.Gateway.Middleware;
 
 namespace TestCraft.Gateway.Configuration;
@@ -8,11 +9,7 @@ public static class HostingExtensions
 {
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Host.UseDefaultServiceProvider(options =>
-        {
-            options.ValidateOnBuild = true;
-            options.ValidateScopes = true;
-        });
+        builder.UseStrictHosting();
 
         var loggingOptions =
             builder.Services.AddStartupOptions<GatewayLoggingOptions>(
@@ -20,10 +17,6 @@ public static class HostingExtensions
             );
         builder.Services.AddStartupOptions<GatewayMetricsOptions>(
             builder.Configuration
-        );
-
-        builder.WebHost.ConfigureKestrel(options =>
-            options.AddServerHeader = false
         );
 
         builder.Services.AddProblemDetails();
