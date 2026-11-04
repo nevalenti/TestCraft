@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using Prometheus;
+using TestCraft.Common.Http;
 using TestCraft.Gateway.Middleware;
 
 namespace TestCraft.Gateway.Configuration;

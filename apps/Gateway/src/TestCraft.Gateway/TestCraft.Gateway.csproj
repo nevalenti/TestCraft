@@ -16,4 +16,8 @@
     <PackageReference Include="Serilog.Sinks.Grafana.Loki" />
     <PackageReference Include="Yarp.ReverseProxy" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Common\src\TestCraft.Common\TestCraft.Common.csproj" />
+  </ItemGroup>
 </Project>
