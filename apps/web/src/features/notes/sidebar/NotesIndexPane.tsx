@@ -37,7 +37,7 @@ export const NotesIndexPane = ({
     <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 py-12">
       <div className="my-auto w-full max-w-2xl">
         <div className="flex flex-col items-center text-center">
-          <span className="card-bg-primary mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
+          <span className="bg-primary/8 border-primary/28 mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
             <PencilSquareIcon className="size-6" aria-hidden="true" />
           </span>
           <h2 className="font-display text-xl font-bold tracking-tight text-base-content">
