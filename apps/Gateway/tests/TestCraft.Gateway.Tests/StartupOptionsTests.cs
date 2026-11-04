@@ -2,6 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using TestCraft.Common.Configuration;
 using TestCraft.Gateway.Configuration;
 
 namespace TestCraft.Gateway.Tests;
@@ -44,7 +45,7 @@ public class StartupOptionsTests
     private static GatewayLoggingOptions Add(
         params (string Key, string Value)[] values
     ) =>
-        new ServiceCollection().AddStartupOptions<GatewayLoggingOptions>(
+        new ServiceCollection().AddValidatedOptions<GatewayLoggingOptions>(
             new ConfigurationBuilder()
                 .AddInMemoryCollection(
                     values.Select(v => new KeyValuePair<string, string?>(
