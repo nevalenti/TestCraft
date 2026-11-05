@@ -17,44 +17,13 @@ on:
         required: true
         type: string
 
-concurrency:
-  group: deploy-production
-  cancel-in-progress: false
-
 permissions:
   contents: read
 
 jobs:
   deploy:
     name: deploy ${{ inputs.app }}@${{ inputs.version }} to production
-    runs-on: [self-hosted, testcraft-production]
-    timeout-minutes: 10
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-          ref: main
-
-      - name: Restore production secrets
-        run: |
-          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
-          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
-          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
-
-      - name: Normalize tag
-        id: normalize
-        env:
-          VERSION: ${{ inputs.version }}
-        run: |
-          version="$VERSION"
-          if [[ "$version" =~ ^[0-9a-f]{40}$ ]]; then
-            version="sha-$version"
-          fi
-          echo "tag=$version" >> "$GITHUB_OUTPUT"
-
-      - name: Deploy
-        env:
-          APP: ${{ inputs.app }}
-          TAG: ${{ steps.normalize.outputs.tag }}
-        run: just deploy-app "$APP" "$TAG"
+    uses: ./.github/workflows/reusable-deploy.yml # zizmor: ignore[self-repository]
+    with:
+      app: ${{ inputs.app }}
+      tag: ${{ inputs.version }}

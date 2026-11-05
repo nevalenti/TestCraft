@@ -1,0 +1,12 @@
+name: restore-production-secrets
+description: Copy the production Helm secrets file from the deploy host into the checked-out chart.
+
+runs:
+  using: composite
+  steps:
+    - name: Restore production secrets
+      shell: bash
+      run: |
+        secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
+        test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
+        cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
