@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@11.3.0 --activate
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches/ ./patches/
@@ -13,23 +13,15 @@ COPY apps/docs/ ./apps/docs/
 
 RUN pnpm --filter testcraft-docs run build
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
 
+USER root
 ARG APK_CACHE_BUST=0
 RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
-
-RUN rm /etc/nginx/conf.d/default.conf
 
 COPY apps/docs/default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY --from=build /app/apps/docs/dist /usr/share/nginx/html
-
-RUN chown -R nginx:nginx /usr/share/nginx/html \
-  && chown -R nginx:nginx /var/cache/nginx \
-  && chown -R nginx:nginx /var/log/nginx \
-  && chown -R nginx:nginx /etc/nginx/conf.d \
-  && touch /var/run/nginx.pid \
-  && chown nginx:nginx /var/run/nginx.pid
 
 USER nginx
 
