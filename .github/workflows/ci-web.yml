@@ -38,9 +38,6 @@ defaults:
   run:
     shell: sh
 
-env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/testcraft-web
-
 jobs:
   build-test:
     name: build & test
@@ -136,129 +133,36 @@ jobs:
           retention-days: 7
 
   docker:
-    name: docker build & push
+    name: docker (web)
     needs: build-test
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
     permissions:
       contents: read
       packages: write
       security-events: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
-
-      - name: Get current date
-        id: date
-        run: echo "date=$(date -u +%Y-%m-%d)" >> "$GITHUB_OUTPUT"
-
-      - name: Log in to GHCR
-        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main'
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=sha,format=long
-            type=raw,value=latest,enable={{is_default_branch}}
-
-      - name: Build image for scanning
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: apps/web/Dockerfile
-          load: true
-          tags: web-scan:${{ github.sha }}
-          build-args: |
-            VITE_API_URL=https://testcraft.pro
-            VITE_KEYCLOAK_URL=https://auth.testcraft.pro
-            VITE_KEYCLOAK_REALM=testcraft
-            VITE_KEYCLOAK_CLIENT_ID=testcraft-web
-            VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
-            VITE_RELEASE=${{ github.sha }}
-            VITE_ENVIRONMENT=production
-            APK_CACHE_BUST=${{ steps.date.outputs.date }}
-          cache-from: type=gha,scope=web
-
-      - name: Scan image with Trivy
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          image-ref: web-scan:${{ github.sha }}
-          format: sarif
-          output: trivy-results.sarif
-          severity: CRITICAL,HIGH
-          ignore-unfixed: true
-          exit-code: "1"
-
-      - name: Upload scan results to Security tab
-        if: always()
-        continue-on-error: true
-        uses: github/codeql-action/upload-sarif@a2983b8bed1923f44751c5c43237f479442827b3 # v3
-        with:
-          sarif_file: trivy-results.sarif
-
-      - name: Build and push
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: apps/web/Dockerfile
-          platforms: linux/amd64
-          push: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            VITE_API_URL=https://testcraft.pro
-            VITE_KEYCLOAK_URL=https://auth.testcraft.pro
-            VITE_KEYCLOAK_REALM=testcraft
-            VITE_KEYCLOAK_CLIENT_ID=testcraft-web
-            VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
-            VITE_RELEASE=${{ github.sha }}
-            VITE_ENVIRONMENT=production
-            APK_CACHE_BUST=${{ steps.date.outputs.date }}
-            SENTRY_URL=${{ vars.GLITCHTIP_URL }}
-            SENTRY_ORG=${{ vars.GLITCHTIP_ORG }}
-            SENTRY_PROJECT=${{ vars.GLITCHTIP_WEB_PROJECT }}
-          secrets: |
-            glitchtip_auth_token=${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/main' && secrets.GLITCHTIP_AUTH_TOKEN || '' }}
-          cache-from: type=gha,scope=web
-          cache-to: type=gha,mode=max,scope=web
-          provenance: false
+    uses: ./.github/workflows/reusable-image.yml # zizmor: ignore[self-repository]
+    with:
+      name: web
+      dockerfile: apps/web/Dockerfile
+      build-args: |
+        VITE_API_URL=https://testcraft.pro
+        VITE_KEYCLOAK_URL=https://auth.testcraft.pro
+        VITE_KEYCLOAK_REALM=testcraft
+        VITE_KEYCLOAK_CLIENT_ID=testcraft-web
+        VITE_GLITCHTIP_DSN=${{ vars.VITE_GLITCHTIP_DSN }}
+        VITE_RELEASE=${{ github.sha }}
+        VITE_ENVIRONMENT=production
+      push-build-args: |
+        SENTRY_URL=${{ vars.GLITCHTIP_URL }}
+        SENTRY_ORG=${{ vars.GLITCHTIP_ORG }}
+        SENTRY_PROJECT=${{ vars.GLITCHTIP_WEB_PROJECT }}
+    secrets:
+      glitchtip_auth_token: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
 
   deploy:
     name: deploy to production
     needs: docker
     if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && vars.AUTO_DEPLOY_PRODUCTION == 'true'))
-    runs-on: [self-hosted, testcraft-production]
-    timeout-minutes: 10
-    concurrency:
-      group: deploy-production
-      cancel-in-progress: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-          ref: main
-
-      - name: Restore production secrets
-        run: |
-          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
-          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
-          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
-
-      - name: Deploy web
-        run: just deploy-app web sha-${{ github.sha }}
+    uses: ./.github/workflows/reusable-deploy.yml # zizmor: ignore[self-repository]
+    with:
+      app: web
+      tag: sha-${{ github.sha }}

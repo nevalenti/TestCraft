@@ -1,0 +1,44 @@
+name: reusable-deploy
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: "app to deploy: api, web, gateway or docs"
+        required: true
+        type: string
+      tag:
+        description: "image tag: a released version (v1.2.3), sha-<commit> or a bare 40-character commit SHA"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: deploy ${{ inputs.app }}
+    runs-on: [self-hosted, testcraft-production]
+    timeout-minutes: 10
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          ref: main
+
+      - name: Restore production secrets
+        uses: ./.github/actions/restore-production-secrets # zizmor: ignore[self-repository]
+
+      - name: Deploy
+        env:
+          APP: ${{ inputs.app }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          if [[ "$TAG" =~ ^[0-9a-f]{40}$ ]]; then
+            TAG="sha-$TAG"
+          fi
+          just deploy-app "$APP" "$TAG"
