@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using TestCraft.Application.Common.Interfaces;
-using TestCraft.Common.Security;
 
 namespace TestCraft.Infrastructure.Auth;
 
@@ -17,12 +16,6 @@ public class ApiTokenHasher : IApiTokenHasher
     public string Hash(string token)
     {
         var bytes = SHA256.HashData(Encoding.UTF8.GetBytes(token));
-        return Convert.ToHexString(bytes).ToLowerInvariant();
+        return Convert.ToHexStringLower(bytes);
     }
-
-    public bool Verify(string token, string hash) =>
-        FixedTimeCredentialComparer.Equals(
-            Convert.FromHexString(Hash(token)),
-            Convert.FromHexString(hash)
-        );
 }

@@ -78,17 +78,7 @@ public static partial class UploadAvatar
                 cancellationToken
             );
 
-            if (profile?.AvatarKey is not null)
-            {
-                try
-                {
-                    await storage.DeleteAsync(profile.AvatarKey, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    LogOldAvatarDeleteFailed(logger, ex, profile.AvatarKey);
-                }
-            }
+            var previousKey = profile?.AvatarKey;
 
             var extension = Path.GetExtension(request.FileName);
             var storageKey = $"avatars/{userId}/{Guid.NewGuid()}{extension}";
@@ -112,6 +102,18 @@ public static partial class UploadAvatar
             }
 
             await context.SaveChangesAsync(cancellationToken);
+
+            if (previousKey is not null)
+            {
+                try
+                {
+                    await storage.DeleteAsync(previousKey, CancellationToken.None);
+                }
+                catch (Exception ex)
+                {
+                    LogOldAvatarDeleteFailed(logger, ex, previousKey);
+                }
+            }
 
             var url = await storage.GetPresignedUrlAsync(
                 storageKey,

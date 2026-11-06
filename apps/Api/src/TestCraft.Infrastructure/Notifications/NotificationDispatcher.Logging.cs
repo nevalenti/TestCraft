@@ -3,7 +3,7 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Infrastructure.Notifications;
 
-public partial class NotificationDispatcher
+internal sealed partial class NotificationDispatcher
 {
     private static string RedactWebhookUrl(string url) =>
         Uri.TryCreate(url, UriKind.Absolute, out var uri)

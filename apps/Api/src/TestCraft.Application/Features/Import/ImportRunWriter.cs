@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.TestRuns;
 using TestCraft.Domain.Entities;
@@ -18,6 +19,7 @@ internal static class ImportRunWriter
 {
     public static async Task<TestRunResponse> CreateRunWithResultsAsync(
         IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier,
         ImportBatch batch,
         string name,
         string environment,
@@ -27,7 +29,9 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        return await context.ExecuteInTransactionAsync(
+        return await RetryOnUniqueViolationAsync(
+            context,
+            dbExceptionClassifier,
             async _ =>
             {
                 var run = TestRun.Create(
@@ -66,13 +70,16 @@ internal static class ImportRunWriter
 
     public static async Task<TestRunResponse> AppendResultsToRunAsync(
         IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier,
         ImportBatch batch,
         TestRunId runId,
         IReadOnlyList<ParsedTestCase> cases,
         CancellationToken cancellationToken
     )
     {
-        return await context.ExecuteInTransactionAsync(
+        return await RetryOnUniqueViolationAsync(
+            context,
+            dbExceptionClassifier,
             async _ =>
             {
                 var run =
@@ -80,7 +87,7 @@ internal static class ImportRunWriter
                         testRun => testRun.Id == runId && testRun.ProjectId == batch.ProjectId,
                         cancellationToken
                     )
-                    ?? throw new InvalidOperationException(
+                    ?? throw new NotFoundException(
                         $"Run {runId} not found in project {batch.ProjectId}"
                     );
 
@@ -99,6 +106,23 @@ internal static class ImportRunWriter
             },
             cancellationToken
         );
+    }
+
+    private static async Task<T> RetryOnUniqueViolationAsync<T>(
+        IApplicationDbContext context,
+        IDbExceptionClassifier dbExceptionClassifier,
+        Func<CancellationToken, Task<T>> operation,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            return await context.ExecuteInTransactionAsync(operation, cancellationToken);
+        }
+        catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
+        {
+            return await context.ExecuteInTransactionAsync(operation, cancellationToken);
+        }
     }
 
     public static async Task MarkJobFailedAsync(

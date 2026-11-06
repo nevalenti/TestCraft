@@ -36,6 +36,7 @@ public static class HangfireExtensions
 
         builder.Services.AddScoped<ExpiredShareTokenCleanupJob>();
         builder.Services.AddScoped<NotificationDeliveryRetryJob>();
+        builder.Services.AddScoped<SingleRunNotificationDeliveryRetryJob>();
         builder.Services.AddScoped<NotificationDeliveryCleanupJob>();
         builder.Services.AddScoped<StaleTestRunCleanupJob>();
         builder.Services.AddScoped<IdempotencyCleanupJob>();
@@ -80,7 +81,7 @@ public static class HangfireExtensions
             Cron.Hourly
         );
 
-        RecurringJob.AddOrUpdate<NotificationDeliveryRetryJob>(
+        RecurringJob.AddOrUpdate<SingleRunNotificationDeliveryRetryJob>(
             "retry-notification-deliveries",
             job => job.RunAsync(CancellationToken.None),
             "*/5 * * * *"

@@ -9,10 +9,14 @@ public static class NotificationsExtensions
 {
     public static IServiceCollection AddNotifications(this IServiceCollection services)
     {
+        services.AddScoped<WebhookSender>();
         services.AddScoped<INotificationDispatcher, NotificationDispatcher>();
 
         services
-            .AddHttpClient("notifications", client => client.Timeout = TimeSpan.FromSeconds(10))
+            .AddHttpClient(
+                WebhookSender.ClientName,
+                client => client.Timeout = TimeSpan.FromSeconds(10)
+            )
             .ConfigurePrimaryHttpMessageHandler(() =>
                 new SocketsHttpHandler
                 {

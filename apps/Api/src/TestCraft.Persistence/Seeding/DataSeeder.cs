@@ -6,7 +6,11 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Persistence.Seeding;
 
-public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder> logger)
+public sealed partial class DataSeeder(
+    AppDbContext context,
+    ILogger<DataSeeder> logger,
+    TimeProvider timeProvider
+)
 {
     private const int RandomSeed = 20260101;
 
@@ -144,7 +148,7 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
                 Name = label.Name,
                 Color = label.Color,
                 ProjectId = project.Id,
-                CreatedAt = DateTimeOffset.UtcNow,
+                CreatedAt = timeProvider.GetUtcNow(),
             })
             .ToList();
         context.Labels.AddRange(labels);
@@ -234,7 +238,7 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
         return (project.Name, suites.Count, allCases.Count, runs.Count, results.Count);
     }
 
-    private static List<(TestRun Run, DateTimeOffset CreatedAt)> BuildRuns(
+    private List<(TestRun Run, DateTimeOffset CreatedAt)> BuildRuns(
         ProjectId projectId,
         List<(string Name, UserId Id)> teamMembers,
         Random random
@@ -247,9 +251,10 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
         {
             var createdAt =
                 i == 0
-                    ? DateTimeOffset.UtcNow.AddMinutes(-random.Next(5, 240))
-                    : DateTimeOffset
-                        .UtcNow.AddDays(-random.Next(1, 60))
+                    ? timeProvider.GetUtcNow().AddMinutes(-random.Next(5, 240))
+                    : timeProvider
+                        .GetUtcNow()
+                        .AddDays(-random.Next(1, 60))
                         .AddHours(-random.Next(0, 23));
 
             TestRun run;

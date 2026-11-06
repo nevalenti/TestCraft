@@ -1,8 +1,5 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using TestCraft.Application.Common.Extensions;
@@ -13,27 +10,17 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Notifications;
 
-#pragma warning disable CA1873
-public partial class NotificationDispatcher(
+internal sealed partial class NotificationDispatcher(
     IApplicationDbContext context,
     IEmailService email,
-    IHttpClientFactory httpClientFactory,
+    WebhookSender webhookSender,
     IOptions<InfrastructureOptions> options,
     ILogger<NotificationDispatcher> logger,
     TimeProvider timeProvider
 ) : INotificationDispatcher
 {
-    private readonly record struct DeliveryAttemptResult(
-        bool Success,
-        string? Error,
-        Exception? Exception = null
-    )
-    {
-        public static readonly DeliveryAttemptResult Ok = new(true, null);
-
-        public static DeliveryAttemptResult Fail(string error, Exception? exception = null) =>
-            new(false, error, exception);
-    }
+    private const int RetryBatchSize = 100;
+    private const int MaxParallelDeliveries = 8;
 
     private sealed record EmailPayload(string Subject, string HtmlBody);
 
@@ -78,6 +65,8 @@ public partial class NotificationDispatcher(
                 delivery.Status == NotificationDeliveryStatus.Pending
                 && delivery.NextAttemptAt <= timeProvider.GetUtcNow()
             )
+            .OrderBy(delivery => delivery.NextAttemptAt)
+            .Take(RetryBatchSize)
             .ToListAsync(cancellationToken);
 
         if (due.Count == 0)
@@ -85,46 +74,69 @@ public partial class NotificationDispatcher(
             return;
         }
 
-        foreach (var delivery in due)
+        var results = await SendAllAsync(due, TrySendAsync, cancellationToken);
+
+        for (var i = 0; i < due.Count; i++)
         {
-            var result =
-                delivery.Channel == NotificationChannel.Webhook
-                    ? await TrySendWebhookAsync(
-                        delivery.Target,
-                        delivery.Secret,
-                        delivery.Payload,
-                        cancellationToken
-                    )
-                    : await TrySendEmailAsync(delivery, cancellationToken);
+            var delivery = due[i];
+            var result = results[i];
+            var target = RedactTarget(delivery.Channel, delivery.Target);
 
             if (result.Success)
             {
                 delivery.MarkSent();
-                LogDeliveryRetrySucceeded(
+                LogDeliveryRetrySucceeded(logger, delivery.Channel, target, delivery.AttemptCount);
+                continue;
+            }
+
+            delivery.RecordFailedAttempt(result.Error!, timeProvider.GetStoredUtcNow());
+            if (delivery.Status == NotificationDeliveryStatus.Abandoned)
+            {
+                NotificationMetrics.RecordAbandoned(delivery.Channel);
+                LogDeliveryAbandoned(
                     logger,
+                    result.Exception,
                     delivery.Channel,
-                    RedactTarget(delivery.Channel, delivery.Target),
+                    target,
                     delivery.AttemptCount
                 );
-            }
-            else
-            {
-                delivery.RecordFailedAttempt(result.Error!, timeProvider.GetStoredUtcNow());
-                if (delivery.Status == NotificationDeliveryStatus.Abandoned)
-                {
-                    NotificationMetrics.RecordAbandoned(delivery.Channel);
-                    LogDeliveryAbandoned(
-                        logger,
-                        result.Exception,
-                        delivery.Channel,
-                        RedactTarget(delivery.Channel, delivery.Target),
-                        delivery.AttemptCount
-                    );
-                }
             }
         }
 
         await context.SaveChangesAsync(cancellationToken);
+    }
+
+    private Task<DeliveryAttemptResult> TrySendAsync(
+        NotificationDelivery delivery,
+        CancellationToken cancellationToken
+    ) =>
+        delivery.Channel == NotificationChannel.Webhook
+            ? webhookSender.SendAsync(
+                delivery.Target,
+                delivery.Secret,
+                delivery.Payload,
+                cancellationToken
+            )
+            : TrySendEmailAsync(delivery, cancellationToken);
+
+    private static async Task<DeliveryAttemptResult[]> SendAllAsync<T>(
+        IReadOnlyList<T> items,
+        Func<T, CancellationToken, Task<DeliveryAttemptResult>> send,
+        CancellationToken cancellationToken
+    )
+    {
+        var results = new DeliveryAttemptResult[items.Count];
+        await Parallel.ForEachAsync(
+            Enumerable.Range(0, items.Count),
+            new ParallelOptions
+            {
+                MaxDegreeOfParallelism = MaxParallelDeliveries,
+                CancellationToken = cancellationToken,
+            },
+            async (index, token) => results[index] = await send(items[index], token)
+        );
+
+        return results;
     }
 
     private async Task DispatchWebhooksAsync(
@@ -144,16 +156,16 @@ public partial class NotificationDispatcher(
             .ToListAsync(cancellationToken);
 
         var json = JsonSerializer.Serialize(payload);
+        var results = await SendAllAsync(
+            webhooks,
+            (webhook, token) => webhookSender.SendAsync(webhook.Url, webhook.Secret, json, token),
+            cancellationToken
+        );
 
-        foreach (var webhook in webhooks)
+        for (var i = 0; i < webhooks.Count; i++)
         {
-            var result = await TrySendWebhookAsync(
-                webhook.Url,
-                webhook.Secret,
-                json,
-                cancellationToken
-            );
-
+            var webhook = webhooks[i];
+            var result = results[i];
             if (result.Success)
             {
                 continue;
@@ -199,9 +211,16 @@ public partial class NotificationDispatcher(
             .Select(emailSubscription => emailSubscription.Email)
             .ToListAsync(cancellationToken);
 
-        foreach (var recipient in recipients)
+        var results = await SendAllAsync(
+            recipients,
+            (recipient, token) => TrySendEmailAsync(recipient, subject, body, token),
+            cancellationToken
+        );
+
+        for (var i = 0; i < recipients.Count; i++)
         {
-            var result = await TrySendEmailAsync(recipient, subject, body, cancellationToken);
+            var recipient = recipients[i];
+            var result = results[i];
             if (result.Success)
             {
                 continue;
@@ -227,47 +246,6 @@ public partial class NotificationDispatcher(
                     timeProvider.GetStoredUtcNow()
                 )
             );
-        }
-    }
-
-    private async Task<DeliveryAttemptResult> TrySendWebhookAsync(
-        string url,
-        string? secret,
-        string json,
-        CancellationToken cancellationToken
-    )
-    {
-        try
-        {
-            var http = httpClientFactory.CreateClient("notifications");
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
-            {
-                Content = new StringContent(json, Encoding.UTF8, "application/json"),
-            };
-            request.Headers.Add("X-TestCraft-Delivery-Id", DeliveryId(url, json));
-
-            if (!string.IsNullOrEmpty(secret))
-            {
-                var sig = ComputeHmac(secret, json);
-                request.Headers.Add("X-Signature", $"sha256={sig}");
-            }
-
-            using var response = await http.SendAsync(request, cancellationToken);
-            return response.IsSuccessStatusCode
-                ? DeliveryAttemptResult.Ok
-                : DeliveryAttemptResult.Fail($"HTTP {(int)response.StatusCode}");
-        }
-        catch (TaskCanceledException ex) when (!cancellationToken.IsCancellationRequested)
-        {
-            return DeliveryAttemptResult.Fail("webhook timeout", ex);
-        }
-        catch (HttpRequestException ex) when (ex.InnerException is InvalidOperationException)
-        {
-            return DeliveryAttemptResult.Fail("webhook address resolution failed", ex);
-        }
-        catch (Exception ex) when (ex is not OperationCanceledException)
-        {
-            return DeliveryAttemptResult.Fail("webhook transport failed", ex);
         }
     }
 
@@ -302,18 +280,4 @@ public partial class NotificationDispatcher(
             cancellationToken
         );
     }
-
-    private static string DeliveryId(string url, string json) =>
-        Convert
-            .ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes($"{url}\n{json}")))
-            .ToLowerInvariant()[..32];
-
-    private static string ComputeHmac(string secret, string payload)
-    {
-        var keyBytes = Encoding.UTF8.GetBytes(secret);
-        var msgBytes = Encoding.UTF8.GetBytes(payload);
-        var hashBytes = HMACSHA256.HashData(keyBytes, msgBytes);
-        return Convert.ToHexString(hashBytes).ToLowerInvariant();
-    }
 }
-#pragma warning restore CA1873

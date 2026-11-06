@@ -12,6 +12,7 @@ namespace TestCraft.Application.Features.Import.Consumers;
 
 public partial class ImportAllureRequestedConsumer(
     IApplicationDbContext dbContext,
+    IDbExceptionClassifier dbExceptionClassifier,
     ITestRunNotifier notifier,
     ILogger<ImportAllureRequestedConsumer> logger,
     TimeProvider timeProvider
@@ -53,6 +54,7 @@ public partial class ImportAllureRequestedConsumer(
 
             run = await ImportRunWriter.CreateRunWithResultsAsync(
                 dbContext,
+                dbExceptionClassifier,
                 batch,
                 message.Name ?? ImportAllure.Command.DefaultRunName,
                 message.Environment,

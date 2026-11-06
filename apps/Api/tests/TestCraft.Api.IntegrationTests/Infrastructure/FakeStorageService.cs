@@ -8,7 +8,7 @@ public class FakeStorageService : IStorageService
     private readonly ConcurrentDictionary<string, (byte[] Content, string ContentType)> _store =
         new();
 
-    public async Task<string> UploadAsync(
+    public virtual async Task<string> UploadAsync(
         string key,
         Stream content,
         string contentType,
@@ -29,6 +29,9 @@ public class FakeStorageService : IStorageService
         _store.TryRemove(key, out _);
         return Task.CompletedTask;
     }
+
+    public int CountObjectsUnder(string prefix) =>
+        _store.Keys.Count(key => key.StartsWith(prefix, StringComparison.Ordinal));
 
     public bool HasObjectsUnder(string prefix) =>
         _store.Keys.Any(key => key.StartsWith(prefix, StringComparison.Ordinal));

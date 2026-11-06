@@ -43,7 +43,11 @@ if (!options.Seed)
 
 try
 {
-    var seeder = new DataSeeder(dbContext, loggerFactory.CreateLogger<DataSeeder>());
+    var seeder = new DataSeeder(
+        dbContext,
+        loggerFactory.CreateLogger<DataSeeder>(),
+        TimeProvider.System
+    );
     await seeder.SeedAsync(options.OwnerId, options.Reset, CancellationToken.None);
 }
 catch (Exception exception)

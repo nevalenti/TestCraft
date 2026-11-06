@@ -12,6 +12,7 @@ namespace TestCraft.Application.Features.Import.Consumers;
 
 public partial class ImportJUnitRequestedConsumer(
     IApplicationDbContext dbContext,
+    IDbExceptionClassifier dbExceptionClassifier,
     ITestRunNotifier notifier,
     ILogger<ImportJUnitRequestedConsumer> logger,
     TimeProvider timeProvider
@@ -55,6 +56,7 @@ public partial class ImportJUnitRequestedConsumer(
             {
                 run = await ImportRunWriter.AppendResultsToRunAsync(
                     dbContext,
+                    dbExceptionClassifier,
                     batch,
                     message.RunId.Value,
                     cases,
@@ -65,6 +67,7 @@ public partial class ImportJUnitRequestedConsumer(
             {
                 run = await ImportRunWriter.CreateRunWithResultsAsync(
                     dbContext,
+                    dbExceptionClassifier,
                     batch,
                     message.Name ?? runName,
                     message.Environment,

@@ -314,4 +314,43 @@ public class ImportApiTests(ApiFactory factory)
             .Should()
             .Be(0);
     }
+
+    [Fact]
+    public async Task ImportJUnit_WhenAnotherImportCreatesTheSuiteFirst_RetriesAndCompletes()
+    {
+        IServiceProvider? services = null;
+        var interceptor = new RacingSuiteInsertInterceptor("Auth", () => services!);
+        await using var racingFactory = factory.WithWebHostBuilder(builder =>
+            builder.ConfigureServices(s =>
+                s.ConfigureDbContext<AppDbContext>(options => options.AddInterceptors(interceptor))
+            )
+        );
+        services = racingFactory.Services;
+        var client = racingFactory.CreateClient();
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+            "Bearer",
+            Guid.NewGuid().ToString()
+        );
+        var project = await client.CreateProjectAsync();
+
+        var job = await (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/import/junit",
+                new ImportJUnit.Command { Xml = JUnitXml, Environment = "ci" }
+            )
+        ).Content.ReadFromJsonAsync<ImportJobResponse>(ApiTestHelpers.JsonOptions);
+
+        var finishedJob = await client.WaitForImportJobAsync(project.Id, job!.Id);
+        interceptor.Raced.Should().BeTrue();
+        finishedJob.Status.Should().Be(ImportJobStatus.Completed);
+
+        using var scope = racingFactory.Services.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        (await context.TestSuites.CountAsync(suite => suite.ProjectId == project.Id))
+            .Should()
+            .Be(1);
+        (await context.TestResults.CountAsync(result => result.TestRunId == finishedJob.TestRunId))
+            .Should()
+            .Be(1);
+    }
 }

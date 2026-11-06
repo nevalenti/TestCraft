@@ -33,6 +33,17 @@ public partial class GlobalExceptionHandler(
             pageId is not null ? LogContext.PushProperty("pageId", pageId) : null,
             userId is not null ? LogContext.PushProperty("userId", userId) : null
         );
+
+        if (ToProblem(httpContext, exception) is { } problem)
+        {
+            await ProblemWriter.WriteAsync(httpContext, problem);
+        }
+
+        return true;
+    }
+
+    private ProblemResponse? ToProblem(HttpContext httpContext, Exception exception)
+    {
         var safePath = ApiPaths.RedactSecrets(httpContext.Request.Path);
 
         switch (exception)
@@ -45,69 +56,34 @@ public partial class GlobalExceptionHandler(
                     safePath,
                     badRequestException.StatusCode
                 );
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    badRequestException.StatusCode == StatusCodes.Status413PayloadTooLarge
-                        ? Problems.ContentTooLarge()
-                        : Problems.ForStatus(badRequestException.StatusCode)
-                );
-
-                return true;
+                return badRequestException.StatusCode == StatusCodes.Status413PayloadTooLarge
+                    ? Problems.ContentTooLarge()
+                    : Problems.ForStatus(badRequestException.StatusCode);
 
             case NotFoundException:
-                await ProblemWriter.WriteAsync(httpContext, Problems.NotFound());
-
-                return true;
+                return Problems.NotFound();
 
             case UnauthorizedException unauthorizedException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Unauthorized() with
-                    {
-                        Detail = unauthorizedException.Message,
-                    }
-                );
-
-                return true;
+                return Problems.Unauthorized() with { Detail = unauthorizedException.Message };
 
             case ConflictException conflictException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Conflict(conflictException.Message) with
-                    {
-                        Code = conflictException.Code,
-                    }
-                );
-
-                return true;
+                return Problems.Conflict(conflictException.Message) with
+                {
+                    Code = conflictException.Code,
+                };
 
             case ForbiddenException forbiddenException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Forbidden() with
-                    {
-                        Detail = forbiddenException.Message,
-                        Code = forbiddenException.Code,
-                    }
-                );
-
-                return true;
+                return Problems.Forbidden() with
+                {
+                    Detail = forbiddenException.Message,
+                    Code = forbiddenException.Code,
+                };
 
             case PreconditionFailedException preconditionFailedException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.PreconditionFailed(preconditionFailedException.Message)
-                );
-
-                return true;
+                return Problems.PreconditionFailed(preconditionFailedException.Message);
 
             case DbUpdateConcurrencyException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.PreconditionFailed("The resource changed during the update")
-                );
-
-                return true;
+                return Problems.PreconditionFailed("The resource changed during the update");
 
             case DomainException domainException:
                 LogDomainRuleViolation(
@@ -117,30 +93,20 @@ public partial class GlobalExceptionHandler(
                     safePath,
                     domainException.Message
                 );
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Unprocessable(domainException.Message, domainException.ErrorCode)
-                );
-
-                return true;
+                return Problems.Unprocessable(domainException.Message, domainException.ErrorCode);
 
             case ValidationException validationException:
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Validation(
-                        validationException
-                            .Errors.Select(error =>
-                                ValidationErrors.ForMember(
-                                    httpContext.Request,
-                                    error.PropertyName,
-                                    error.ErrorMessage
-                                )
+                return Problems.Validation(
+                    validationException
+                        .Errors.Select(error =>
+                            ValidationErrors.ForMember(
+                                httpContext.Request,
+                                error.PropertyName,
+                                error.ErrorMessage
                             )
-                            .ToList()
-                    )
+                        )
+                        .ToList()
                 );
-
-                return true;
 
             case DbUpdateException dbUpdateException
                 when dbExceptionClassifier.IsForeignKeyViolation(dbUpdateException):
@@ -150,12 +116,7 @@ public partial class GlobalExceptionHandler(
                     httpContext.Request.Method,
                     safePath
                 );
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Conflict("Referenced entity does not exist")
-                );
-
-                return true;
+                return Problems.Conflict("Referenced entity does not exist");
 
             case DbUpdateException dbUpdateException
                 when dbExceptionClassifier.IsUniqueViolation(dbUpdateException):
@@ -165,12 +126,7 @@ public partial class GlobalExceptionHandler(
                     httpContext.Request.Method,
                     safePath
                 );
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Conflict("A record with these values already exists")
-                );
-
-                return true;
+                return Problems.Conflict("A record with these values already exists");
 
             case RedisException redisException:
                 LogBackingServiceUnavailable(
@@ -180,27 +136,20 @@ public partial class GlobalExceptionHandler(
                     safePath
                 );
                 httpContext.Response.Headers.RetryAfter = "1";
-                await ProblemWriter.WriteAsync(httpContext, Problems.ServiceUnavailable());
-
-                return true;
+                return Problems.ServiceUnavailable();
 
             case OperationCanceledException when httpContext.RequestAborted.IsCancellationRequested:
                 LogClientDisconnected(logger, httpContext.Request.Method, safePath);
 
-                return true;
+                return null;
 
             default:
                 LogUnhandledException(logger, exception, httpContext.Request.Method, safePath);
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Internal(
-                        hostEnvironment.IsDevelopment()
-                            ? $"{exception.GetType().Name}: {exception.Message}"
-                            : null
-                    )
+                return Problems.Internal(
+                    hostEnvironment.IsDevelopment()
+                        ? $"{exception.GetType().Name}: {exception.Message}"
+                        : null
                 );
-
-                return true;
         }
     }
 
