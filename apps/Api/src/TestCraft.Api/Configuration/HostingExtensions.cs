@@ -16,6 +16,7 @@ using TestCraft.Api.Middleware;
 using TestCraft.Api.Realtime;
 using TestCraft.Application;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Common.Hosting;
 using TestCraft.Common.Http;
 using TestCraft.Infrastructure;
 using TestCraft.Infrastructure.Configuration;
@@ -27,12 +28,7 @@ public static class HostingExtensions
 {
     public static void ConfigureServices(this WebApplicationBuilder builder)
     {
-        builder.Host.UseDefaultServiceProvider(options =>
-        {
-            options.ValidateOnBuild = true;
-            options.ValidateScopes = true;
-        });
-        builder.WebHost.ConfigureKestrel(options => options.AddServerHeader = false);
+        builder.UseStrictHosting();
 
         var infrastructureOptions = builder.Services.AddStartupOptions<InfrastructureOptions>(
             builder.Configuration
