@@ -8,15 +8,6 @@ public static partial class InfrastructureFallbackLogging
     {
         public void LogInfrastructureFallbacks(InfrastructureOptions options)
         {
-            if (!options.IsRedisConfigured)
-            {
-                LogDegradedProvider(
-                    logger,
-                    "Redis",
-                    "in-process no-op cache (no cross-instance caching)"
-                );
-            }
-
             if (!options.IsRabbitMqConfigured)
             {
                 LogDegradedProvider(

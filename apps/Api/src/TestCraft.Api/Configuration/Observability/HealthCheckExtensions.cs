@@ -33,14 +33,11 @@ public static class HealthCheckExtensions
                 tags: [ReadyTag]
             );
 
-        if (!string.IsNullOrEmpty(options.RedisUrl))
-        {
-            healthChecks.AddRedis(
-                RedisConnectionStringHelpers.ToRedisConfiguration(options.RedisUrl),
-                name: "redis",
-                tags: [ReadyTag]
-            );
-        }
+        healthChecks.AddRedis(
+            RedisConnectionStringHelpers.ToRedisConfiguration(options.RedisUrl),
+            name: "redis",
+            tags: [ReadyTag]
+        );
 
         if (!string.IsNullOrEmpty(options.RabbitMqUrl))
         {

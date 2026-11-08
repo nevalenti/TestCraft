@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using StackExchange.Redis;
 
 namespace TestCraft.Api.Realtime;
@@ -8,49 +7,6 @@ public interface IConnectionSlots
     Task<bool> TryAcquireAsync(UserId userId);
 
     Task ReleaseAsync(UserId userId);
-}
-
-public sealed class InMemoryConnectionSlots(int maxPerUser) : IConnectionSlots
-{
-    private readonly ConcurrentDictionary<UserId, int> _open = new();
-
-    public Task<bool> TryAcquireAsync(UserId userId)
-    {
-        while (true)
-        {
-            var current = _open.GetValueOrDefault(userId);
-            if (current >= maxPerUser)
-            {
-                return Task.FromResult(false);
-            }
-
-            if (
-                current == 0
-                    ? _open.TryAdd(userId, 1)
-                    : _open.TryUpdate(userId, current + 1, current)
-            )
-            {
-                return Task.FromResult(true);
-            }
-        }
-    }
-
-    public Task ReleaseAsync(UserId userId)
-    {
-        while (_open.TryGetValue(userId, out var current))
-        {
-            var released =
-                current <= 1
-                    ? _open.TryRemove(new KeyValuePair<UserId, int>(userId, current))
-                    : _open.TryUpdate(userId, current - 1, current);
-            if (released)
-            {
-                break;
-            }
-        }
-
-        return Task.CompletedTask;
-    }
 }
 
 public sealed class RedisConnectionSlots(IConnectionMultiplexer redis, int maxPerUser)
