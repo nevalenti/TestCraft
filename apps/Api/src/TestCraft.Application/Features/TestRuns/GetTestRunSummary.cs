@@ -67,39 +67,22 @@ public static class GetTestRunSummary
                 return cached;
             }
 
-            var counts = await context
-                .TestResults.Where(result => result.TestRunId == request.Id)
-                .CurrentOutcomes()
-                .GroupBy(result => result.Status)
-                .Select(group => new { Status = group.Key, Count = group.Count() })
-                .ToListAsync(cancellationToken);
-
-            var passed =
-                counts.FirstOrDefault(count => count.Status == TestResultStatus.Passed)?.Count ?? 0;
-            var failed =
-                counts.FirstOrDefault(count => count.Status == TestResultStatus.Failed)?.Count ?? 0;
-            var blocked =
-                counts.FirstOrDefault(count => count.Status == TestResultStatus.Blocked)?.Count
-                ?? 0;
-            var skipped =
-                counts.FirstOrDefault(count => count.Status == TestResultStatus.Skipped)?.Count
-                ?? 0;
-            var untested =
-                counts.FirstOrDefault(count => count.Status == TestResultStatus.Untested)?.Count
-                ?? 0;
-            var executed = passed + failed + blocked + skipped;
-            var total = executed + untested;
-            var passRate = executed > 0 ? Math.Round(passed * 100.0 / executed, 1) : 0.0;
+            var counts = await StatusCounts.CountByStatusAsync(
+                context
+                    .TestResults.Where(result => result.TestRunId == request.Id)
+                    .CurrentOutcomes(),
+                cancellationToken
+            );
 
             var summary = new Response
             {
-                Total = total,
-                Passed = passed,
-                Failed = failed,
-                Blocked = blocked,
-                Skipped = skipped,
-                Untested = untested,
-                PassRate = passRate,
+                Total = counts.Total,
+                Passed = counts.Passed,
+                Failed = counts.Failed,
+                Blocked = counts.Blocked,
+                Skipped = counts.Skipped,
+                Untested = counts.Untested,
+                PassRate = counts.PassRate ?? 0,
             };
 
             await cache.SetAsync(key, summary, cancellationToken: cancellationToken);

@@ -73,13 +73,14 @@ public static class GetDashboardSummary
                 .TestResults.Where(result => previousRunIds.Contains(result.TestRunId))
                 .CurrentOutcomes();
 
-            var currentCounts = await StatusCounts(currentResults, cancellationToken);
-            var previousCounts = await StatusCounts(previousResults, cancellationToken);
-            var executed =
-                currentCounts.Passed
-                + currentCounts.Failed
-                + currentCounts.Blocked
-                + currentCounts.Skipped;
+            var currentCounts = await StatusCounts.CountByStatusAsync(
+                currentResults,
+                cancellationToken
+            );
+            var previousCounts = await StatusCounts.CountByStatusAsync(
+                previousResults,
+                cancellationToken
+            );
 
             var executedResults = currentResults.Where(result =>
                 result.Status != TestResultStatus.Untested
@@ -146,9 +147,9 @@ public static class GetDashboardSummary
             return new DashboardSummaryResponse
             {
                 WindowDays = WindowDays,
-                PassRate = Rate(currentCounts),
-                PreviousPassRate = Rate(previousCounts),
-                ExecutedCount = executed,
+                PassRate = currentCounts.PassRate,
+                PreviousPassRate = previousCounts.PassRate,
+                ExecutedCount = currentCounts.Executed,
                 FailingTestCount = failingTestCount,
                 FlakyTestCount = flakyCount,
                 ActiveRunCount = await visibleRuns.CountAsync(
@@ -157,29 +158,6 @@ public static class GetDashboardSummary
                 ),
                 TopFailingTests = topFailingTests,
             };
-        }
-
-        private static async Task<(int Passed, int Failed, int Blocked, int Skipped)> StatusCounts(
-            IQueryable<TestCraft.Domain.Entities.TestResult> results,
-            CancellationToken cancellationToken
-        )
-        {
-            var counts = await results
-                .GroupBy(result => result.Status)
-                .Select(group => new { Status = group.Key, Count = group.Count() })
-                .ToDictionaryAsync(item => item.Status, item => item.Count, cancellationToken);
-            return (
-                counts.GetValueOrDefault(TestResultStatus.Passed),
-                counts.GetValueOrDefault(TestResultStatus.Failed),
-                counts.GetValueOrDefault(TestResultStatus.Blocked),
-                counts.GetValueOrDefault(TestResultStatus.Skipped)
-            );
-        }
-
-        private static double? Rate((int Passed, int Failed, int Blocked, int Skipped) counts)
-        {
-            var executed = counts.Passed + counts.Failed + counts.Blocked + counts.Skipped;
-            return executed == 0 ? null : Math.Round(counts.Passed * 100.0 / executed, 1);
         }
     }
 }
