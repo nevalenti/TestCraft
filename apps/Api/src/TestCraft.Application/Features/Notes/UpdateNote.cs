@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.Notes;
@@ -67,8 +68,8 @@ public static class UpdateNote
             );
             note.Replace(request.Title, request.Language, key, request.Content);
 
-            await NoteContent.SaveOrDiscardAsync(context, storage, key, cancellationToken);
-            await NoteContent.DeleteReplacedAsync(storage, previousKey, logger);
+            await context.SaveChangesOrDiscardAsync(storage, key, cancellationToken);
+            await storage.DeleteReplacedAsync(previousKey, logger);
 
             return NoteResponse.FromEntity(note);
         }

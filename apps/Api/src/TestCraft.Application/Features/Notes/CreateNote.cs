@@ -1,5 +1,6 @@
 using FluentValidation;
 using MediatR;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 
@@ -58,7 +59,7 @@ public static class CreateNote
             );
             context.Notes.Add(note);
 
-            await NoteContent.SaveOrDiscardAsync(context, storage, key, cancellationToken);
+            await context.SaveChangesOrDiscardAsync(storage, key, cancellationToken);
 
             return NoteResponse.FromEntity(note);
         }
