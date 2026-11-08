@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
@@ -15,7 +16,7 @@ public record AvatarUrlResponse
     public required string? Url { get; init; }
 }
 
-public static partial class UploadAvatar
+public static class UploadAvatar
 {
     /// <summary>Uploads a new avatar for the current user, replacing any existing one.</summary>
     public sealed record Command : IRequest<AvatarUrlResponse>
@@ -59,7 +60,7 @@ public static partial class UploadAvatar
         }
     }
 
-    public sealed partial class Handler(
+    public sealed class Handler(
         IApplicationDbContext context,
         ICurrentUser currentUser,
         IStorageService storage,
@@ -78,20 +79,8 @@ public static partial class UploadAvatar
                 cancellationToken
             );
 
-            if (profile?.AvatarKey is not null)
-            {
-                try
-                {
-                    await storage.DeleteAsync(profile.AvatarKey, cancellationToken);
-                }
-                catch (Exception ex)
-                {
-                    LogOldAvatarDeleteFailed(logger, ex, profile.AvatarKey);
-                }
-            }
-
-            var extension = Path.GetExtension(request.FileName);
-            var storageKey = $"avatars/{userId}/{Guid.NewGuid()}{extension}";
+            var previousKey = profile?.AvatarKey;
+            var storageKey = StorageExtensions.NewKey($"avatars/{userId}", request.FileName);
 
             await storage.UploadAsync(
                 storageKey,
@@ -111,7 +100,12 @@ public static partial class UploadAvatar
                 profile.SetAvatarKey(storageKey);
             }
 
-            await context.SaveChangesAsync(cancellationToken);
+            await context.SaveChangesOrDiscardAsync(storage, storageKey, cancellationToken);
+
+            if (previousKey is not null)
+            {
+                await storage.DeleteReplacedAsync(previousKey, logger);
+            }
 
             var url = await storage.GetPresignedUrlAsync(
                 storageKey,
@@ -121,15 +115,5 @@ public static partial class UploadAvatar
 
             return new AvatarUrlResponse { Url = url };
         }
-
-        [LoggerMessage(
-            Level = LogLevel.Warning,
-            Message = "Failed to delete old avatar {AvatarKey}"
-        )]
-        private static partial void LogOldAvatarDeleteFailed(
-            ILogger logger,
-            Exception exception,
-            string avatarKey
-        );
     }
 }
