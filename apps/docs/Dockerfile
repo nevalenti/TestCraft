@@ -13,7 +13,7 @@ COPY apps/docs/ ./apps/docs/
 
 RUN pnpm --filter testcraft-docs run build
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS runtime
 
 USER root
 ARG APK_CACHE_BUST=0
