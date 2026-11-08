@@ -199,7 +199,7 @@ services:
     command: -config.file=/etc/tempo/tempo.yaml
 
   mailpit:
-    image: axllent/mailpit:latest
+    image: ${MAILPIT_IMAGE}
     container_name: testcraft-mailpit
     ports:
       - "1025:1025"

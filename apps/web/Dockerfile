@@ -1,7 +1,7 @@
 FROM --platform=$BUILDPLATFORM node:24-alpine AS build
 WORKDIR /app
 
-RUN corepack enable && corepack prepare pnpm@10.34.5 --activate
+RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY patches/ ./patches/
@@ -40,23 +40,15 @@ RUN --mount=type=secret,id=glitchtip_auth_token,required=false \
     pnpm --filter testcraft-web run build \
     && find apps/web/dist -name '*.map' -delete
 
-FROM nginx:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
 
+USER root
 ARG APK_CACHE_BUST=0
 RUN echo "apk-cache-bust=${APK_CACHE_BUST}" && apk update && apk upgrade --no-cache
-
-RUN rm /etc/nginx/conf.d/default.conf
 
 COPY apps/web/default.conf.template /etc/nginx/templates/default.conf.template
 
 COPY --from=build /app/apps/web/dist /usr/share/nginx/html
-
-RUN chown -R nginx:nginx /usr/share/nginx/html \
-  && chown -R nginx:nginx /var/cache/nginx \
-  && chown -R nginx:nginx /var/log/nginx \
-  && chown -R nginx:nginx /etc/nginx/conf.d \
-  && touch /var/run/nginx.pid \
-  && chown nginx:nginx /var/run/nginx.pid
 
 USER nginx
 

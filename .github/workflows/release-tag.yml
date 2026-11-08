@@ -51,6 +51,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
       - name: Log in to GHCR
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
         with:
@@ -58,12 +64,23 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Retag latest api/migrator/web/gateway/docs images as the release version
+      - name: Retag the images built for this commit as the release version
         run: |
           version="$GITHUB_REF_NAME"
           for image in "$API_IMAGE" "$MIGRATOR_IMAGE" "$WEB_IMAGE" "$GATEWAY_IMAGE" "$DOCS_IMAGE"; do
-            echo "Promoting $image:latest -> $image:$version"
-            docker buildx imagetools create --tag "$image:$version" "$image:latest"
+            source_tag=""
+            for commit in $(git rev-list --max-count=200 "$GITHUB_SHA"); do
+              if docker buildx imagetools inspect "$image:sha-$commit" > /dev/null 2>&1; then
+                source_tag="sha-$commit"
+                break
+              fi
+            done
+            if [ -z "$source_tag" ]; then
+              echo "::error::No $image build found in the 200 commits up to $GITHUB_SHA"
+              exit 1
+            fi
+            echo "Promoting $image:$source_tag -> $image:$version"
+            docker buildx imagetools create --tag "$image:$version" "$image:$source_tag"
           done
 
   github-release:

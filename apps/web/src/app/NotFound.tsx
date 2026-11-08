@@ -10,7 +10,7 @@ export const NotFound = () => {
   return (
     <div className="flex min-h-[60vh] w-full flex-1 items-center justify-center px-6 py-16">
       <div className="flex max-w-sm flex-col items-center text-center">
-        <span className="card-bg-primary mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
+        <span className="bg-primary/8 border-primary/28 mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
           <MapIcon className="size-6" aria-hidden="true" />
         </span>
         <p className="text-xs font-semibold tracking-wider text-fg-subtle uppercase">

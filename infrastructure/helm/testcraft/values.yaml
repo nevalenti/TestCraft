@@ -23,6 +23,7 @@ images:
 thirdPartyImages:
   postgres: postgres:16-alpine
   pgweb: sosedoff/pgweb:0.17.0
+  mailpit: axllent/mailpit:v1.31.1
   redis: redis:7-alpine
   rabbitmq: rabbitmq:4-management-alpine
   minio: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z

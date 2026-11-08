@@ -30,10 +30,7 @@ jobs:
           ref: main
 
       - name: Restore production secrets
-        run: |
-          secrets_file=/home/deploy/repos/TestCraft/infrastructure/helm/testcraft/values.secrets.yaml
-          test -f "$secrets_file" || { echo "::error::production secrets file missing at $secrets_file"; exit 1; }
-          cp "$secrets_file" infrastructure/helm/testcraft/values.secrets.yaml
+        uses: ./.github/actions/restore-production-secrets # zizmor: ignore[self-repository]
 
       - name: Deploy
         run: just deploy-prod

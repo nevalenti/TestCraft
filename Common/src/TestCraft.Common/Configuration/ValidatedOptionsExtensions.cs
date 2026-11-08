@@ -1,10 +1,12 @@
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace TestCraft.Gateway.Configuration;
+namespace TestCraft.Common.Configuration;
 
-public static class StartupOptionsExtensions
+public static class ValidatedOptionsExtensions
 {
-    public static T AddStartupOptions<T>(
+    public static T AddValidatedOptions<T>(
         this IServiceCollection services,
         IConfiguration configuration
     )

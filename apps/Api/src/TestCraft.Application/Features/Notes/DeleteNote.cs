@@ -35,7 +35,7 @@ public static class DeleteNote
             note.Delete(timeProvider.GetStoredUtcNow());
 
             await context.SaveChangesAsync(cancellationToken);
-            await NoteContent.DeleteReplacedAsync(storage, note.StorageKey, logger);
+            await storage.DeleteReplacedAsync(note.StorageKey, logger);
         }
     }
 }

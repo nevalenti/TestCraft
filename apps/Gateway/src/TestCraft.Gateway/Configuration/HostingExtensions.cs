@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Options;
 using Prometheus;
 using TestCraft.Common.Hosting;
+using TestCraft.Common.Configuration;
+using TestCraft.Common.Http;
 using TestCraft.Gateway.Middleware;
 
 namespace TestCraft.Gateway.Configuration;
@@ -12,10 +14,10 @@ public static class HostingExtensions
         builder.UseStrictHosting();
 
         var loggingOptions =
-            builder.Services.AddStartupOptions<GatewayLoggingOptions>(
+            builder.Services.AddValidatedOptions<GatewayLoggingOptions>(
                 builder.Configuration
             );
-        builder.Services.AddStartupOptions<GatewayMetricsOptions>(
+        builder.Services.AddValidatedOptions<GatewayMetricsOptions>(
             builder.Configuration
         );
 

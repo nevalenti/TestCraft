@@ -13,7 +13,7 @@ export const SettingsSectionCard = ({
 }: SettingsSectionCardProps) => (
   <div className="panel p-5 [&_[data-list-toolbar]]:static [&_[data-list-toolbar]]:mt-0 [&_[data-list-toolbar]]:bg-transparent [&_[data-list-toolbar]]:pt-0">
     <div className="mb-4 flex items-start gap-3">
-      <span className="card-bg-primary flex size-9 shrink-0 items-center justify-center rounded-lg border text-primary">
+      <span className="bg-primary/8 border-primary/28 flex size-9 shrink-0 items-center justify-center rounded-lg border text-primary">
         <Icon className="size-4" />
       </span>
       <div className="min-w-0">

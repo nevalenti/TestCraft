@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -120,8 +121,10 @@ public static class UploadAttachment
 
             run.EnsureCanAddResult();
 
-            var extension = Path.GetExtension(request.FileName);
-            var storageKey = $"{request.ProjectId}/{request.ResultId}/{Guid.NewGuid()}{extension}";
+            var storageKey = StorageExtensions.NewKey(
+                $"{request.ProjectId}/{request.ResultId}",
+                request.FileName
+            );
 
             await storage.UploadAsync(
                 storageKey,
@@ -141,15 +144,7 @@ public static class UploadAttachment
 
             context.Attachments.Add(attachment);
 
-            try
-            {
-                await context.SaveChangesAsync(cancellationToken);
-            }
-            catch
-            {
-                await storage.DeleteAsync(storageKey, CancellationToken.None);
-                throw;
-            }
+            await context.SaveChangesOrDiscardAsync(storage, storageKey, cancellationToken);
 
             return new AttachmentResponse
             {
