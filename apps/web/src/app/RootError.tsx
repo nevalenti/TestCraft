@@ -10,7 +10,7 @@ export const RootError = ({ error }: Pick<ErrorComponentProps, "error">) => {
   }, [error]);
 
   return (
-    <div className="flex flex-1 items-center justify-center p-8">
+    <div role="alert" className="flex flex-1 items-center justify-center p-8">
       <div className="text-center">
         <p className="mb-2 font-semibold text-error">Something went wrong</p>
         <p className="mx-auto mb-4 max-w-sm text-sm text-fg-secondary">
@@ -19,6 +19,7 @@ export const RootError = ({ error }: Pick<ErrorComponentProps, "error">) => {
             : "An unexpected error occurred"}
         </p>
         <button
+          type="button"
           className="btn rounded-full btn-sm btn-primary"
           onClick={() => location.reload()}
         >

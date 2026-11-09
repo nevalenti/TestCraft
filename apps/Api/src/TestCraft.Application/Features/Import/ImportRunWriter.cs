@@ -50,13 +50,7 @@ internal static class ImportRunWriter
 
                 await InsertResultsAsync(context, batch, run.Id, cases, cancellationToken);
 
-                var job = await context.ImportJobs.FirstAsync(
-                    importJob => importJob.Id == batch.JobId,
-                    cancellationToken
-                );
-                job.MarkCompleted(run.Id);
-
-                await context.SaveChangesAsync(cancellationToken);
+                await CompleteJobAsync(context, batch.JobId, run.Id, cancellationToken);
 
                 return TestRunResponse.FromEntity(run);
             },
@@ -87,18 +81,28 @@ internal static class ImportRunWriter
                 await InsertResultsAsync(context, batch, run.Id, cases, cancellationToken);
 
                 run.TransitionTo(TestRunStatus.Completed);
-                var job = await context.ImportJobs.FirstAsync(
-                    importJob => importJob.Id == batch.JobId,
-                    cancellationToken
-                );
-                job.MarkCompleted(run.Id);
-
-                await context.SaveChangesAsync(cancellationToken);
+                await CompleteJobAsync(context, batch.JobId, run.Id, cancellationToken);
 
                 return TestRunResponse.FromEntity(run);
             },
             cancellationToken
         );
+    }
+
+    private static async Task CompleteJobAsync(
+        IApplicationDbContext context,
+        ImportJobId jobId,
+        TestRunId runId,
+        CancellationToken cancellationToken
+    )
+    {
+        var job = await context.ImportJobs.FirstAsync(
+            importJob => importJob.Id == jobId,
+            cancellationToken
+        );
+        job.MarkCompleted(runId);
+
+        await context.SaveChangesAsync(cancellationToken);
     }
 
     public static async Task MarkJobFailedAsync(
@@ -239,19 +243,11 @@ internal static class ImportRunWriter
 
             var testCase = TestCase.Create(suiteId, parsedCase.CaseName);
 
-            if (parsedCase.Steps is { Count: > 0 })
+            foreach (var step in parsedCase.Steps ?? [])
             {
-                foreach (var step in parsedCase.Steps)
-                {
-                    testCase.Steps.Add(
-                        TestCaseStep.Create(
-                            testCase.Id,
-                            step.Order,
-                            step.Action,
-                            step.ExpectedResult
-                        )
-                    );
-                }
+                testCase.Steps.Add(
+                    TestCaseStep.Create(testCase.Id, step.Order, step.Action, step.ExpectedResult)
+                );
             }
 
             context.TestCases.Add(testCase);
@@ -281,11 +277,6 @@ internal static class ImportRunWriter
         CancellationToken cancellationToken
     )
     {
-        if (cases.Count == 0)
-        {
-            return;
-        }
-
         foreach (var parsedCase in cases)
         {
             var suiteId = suiteMap[parsedCase.SuiteName];

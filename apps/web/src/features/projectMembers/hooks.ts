@@ -33,18 +33,33 @@ export const useAddProjectMember = (projectId: string) => {
 
 export const useUpdateProjectMemberRole = (projectId: string) => {
   const queryClient = useQueryClient();
+  const queryKey = queryKeys.projectMembers.all(projectId);
 
   return useMutation({
     mutationFn: ({ id, role }: { id: string; role: AssignableRole }) =>
       projectMembersApi.update(projectId, id, { role }),
+    onMutate: async ({ id, role }) => {
+      await queryClient.cancelQueries({ queryKey });
+
+      const previous = queryClient.getQueryData<ProjectMember[]>(queryKey);
+      queryClient.setQueryData<ProjectMember[]>(queryKey, (current) =>
+        current?.map((member) =>
+          member.id === id ? { ...member, role } : member,
+        ),
+      );
+
+      return { previous };
+    },
+    onError: (_error, _input, context) => {
+      if (context?.previous)
+        queryClient.setQueryData(queryKey, context.previous);
+    },
     onSuccess: (member) => {
       notify(
         `${member.email} is now ${member.role === "admin" ? "an" : "a"} ${member.role}`,
       );
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.projectMembers.all(projectId),
-      });
     },
+    onSettled: () => queryClient.invalidateQueries({ queryKey }),
   });
 };
 

@@ -1,4 +1,4 @@
-import { PencilIcon, PlusIcon, TrashIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, TagIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
 import { useState } from "react";
@@ -157,7 +157,7 @@ export const LabelsTab = () => {
       >
         {canEdit && (
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
-            <PlusIcon className="size-4" />
+            <TagIcon className="size-4" />
             New Label
           </button>
         )}

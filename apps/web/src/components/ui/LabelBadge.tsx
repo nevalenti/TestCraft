@@ -1,5 +1,7 @@
 import type { Label } from "@testcraft/types";
 
+import { readableOnSurface } from "@/lib/color";
+
 interface LabelBadgeProps {
   label: Pick<Label, "name" | "color">;
 }
@@ -9,7 +11,7 @@ export const LabelBadge = ({ label }: LabelBadgeProps) => (
     className="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium whitespace-nowrap"
     style={{
       backgroundColor: `${label.color}22`,
-      color: label.color,
+      color: readableOnSurface(label.color),
       border: `1px solid ${label.color}55`,
     }}
   >

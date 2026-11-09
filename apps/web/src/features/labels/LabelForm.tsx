@@ -37,23 +37,28 @@ export const LabelForm = ({
   isLoading,
   submitLabel,
 }: LabelFormProps) => {
-  const { register, handleSubmit, watch, setValue } = useForm<LabelFormValues>({
-    defaultValues,
-  });
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+  } = useForm<LabelFormValues>({ defaultValues });
   const color = watch("color");
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <FormField label="Name" htmlFor="label-name">
+      <FormField label="Name" htmlFor="label-name" error={errors.name?.message}>
         <FormInput
           id="label-name"
-          {...register("name", { required: true })}
+          hasError={!!errors.name}
+          {...register("name", { required: "Name is required" })}
           placeholder="e.g. smoke, regression, flaky"
           autoFocus
         />
       </FormField>
 
-      <FormField label="Color" htmlFor="label-color-custom">
+      <FormField label="Color">
         <div className="flex flex-wrap gap-2">
           {PRESET_COLORS.map((presetColor) => (
             <button
@@ -68,7 +73,8 @@ export const LabelForm = ({
                     : undefined,
               }}
               onClick={() => setValue("color", presetColor)}
-              aria-label={presetColor}
+              aria-label={`Color ${presetColor}`}
+              aria-pressed={color === presetColor}
             />
           ))}
           <input
@@ -76,7 +82,7 @@ export const LabelForm = ({
             type="color"
             {...register("color")}
             className="size-6 cursor-pointer rounded-full border-0 bg-transparent p-0"
-            title="Custom color"
+            aria-label="Custom color"
           />
         </div>
         <div className="mt-1">

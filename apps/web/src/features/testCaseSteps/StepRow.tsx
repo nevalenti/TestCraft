@@ -63,7 +63,7 @@ export const StepRow = ({
               <Bars2Icon className="size-4" aria-hidden="true" />
             </button>
           )}
-          <span className="flex size-6 shrink-0 items-center justify-center rounded-md bg-base-content/8 text-xs font-bold text-fg-secondary tabular-nums">
+          <span className="flex size-6 shrink-0 items-center justify-center rounded-md subtle-surface text-xs font-bold text-fg-secondary tabular-nums">
             {step.order}
           </span>
           <div className="min-w-0 flex-1">

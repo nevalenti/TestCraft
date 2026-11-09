@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
 
 namespace TestCraft.Application.Features.TestRuns;
@@ -33,8 +34,10 @@ public static class GetRunLogs
     /// <summary>Requests the newest log lines, optionally only those older than a line.</summary>
     public sealed record Query : IRequest<RunLogPageResponse>, IProjectScopedRequest
     {
+        [RouteValue]
         public ProjectId ProjectId { get; init; }
 
+        [RouteValue]
         public TestRunId RunId { get; init; }
 
         public long? BeforeSeq { get; init; }

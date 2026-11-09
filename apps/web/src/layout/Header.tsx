@@ -15,6 +15,8 @@ import {
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 
+const FOCUSABLE = ":is(a[href], button:not(:disabled))";
+
 import { AccountMenu } from "@/layout/AccountMenu";
 import { LogoMark } from "@/layout/LogoMark";
 import { NavItem } from "@/layout/NavItem";
@@ -50,18 +52,40 @@ export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const openButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const closeDrawer = () => setIsDrawerOpen(false);
 
   useEffect(() => {
     if (!isDrawerOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Tab") {
+        const items =
+          panelRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE);
+        const first = items?.item(0);
+        const last = items?.item(items.length - 1);
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last?.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first?.focus();
+        }
+        return;
+      }
       if (event.key !== "Escape") return;
       setIsDrawerOpen(false);
       openButtonRef.current?.focus();
     };
     addEventListener("keydown", handleKeyDown);
-    return () => removeEventListener("keydown", handleKeyDown);
+    const fallbackFocus = setTimeout(() => {
+      if (!panelRef.current?.contains(document.activeElement))
+        closeButtonRef.current?.focus();
+    }, 400);
+    return () => {
+      removeEventListener("keydown", handleKeyDown);
+      clearTimeout(fallbackFocus);
+    };
   }, [isDrawerOpen]);
 
   return (
@@ -87,7 +111,7 @@ export const Header = () => {
             className="flex min-w-0 shrink-0 items-center gap-2 text-base-content transition-opacity hover:opacity-75"
           >
             <LogoMark />
-            <span className="font-display text-[15px] font-extrabold tracking-tight">
+            <span className="font-display text-brand font-extrabold tracking-tight">
               TestCraft
             </span>
           </Link>
@@ -99,9 +123,9 @@ export const Header = () => {
             href="/docs/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-fg-secondary transition-colors hover:bg-base-content/6 hover:text-base-content"
+            className="flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-fg-secondary transition-colors hover-surface hover:text-base-content"
           >
-            <BookOpenIcon className="size-[18px] shrink-0" aria-hidden="true" />
+            <BookOpenIcon className="size-4.5 shrink-0" aria-hidden="true" />
             Documentation
             <ArrowTopRightOnSquareIcon
               className="size-3.5 shrink-0 text-fg-subtle"
@@ -143,13 +167,17 @@ export const Header = () => {
             className="drawer-overlay"
           />
           <div
+            ref={panelRef}
             id="mobile-nav-panel"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Navigation menu"
             className="flex min-h-full w-64 flex-col bg-base-100"
           >
             <div className="flex items-center justify-between border-b border-border p-4">
               <div className="flex items-center gap-2.5">
                 <LogoMark />
-                <span className="font-display text-[15px] font-extrabold tracking-tight text-base-content">
+                <span className="font-display text-brand font-extrabold tracking-tight text-base-content">
                   TestCraft
                 </span>
               </div>
@@ -177,10 +205,10 @@ export const Header = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={closeDrawer}
-                className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-fg-secondary transition-colors hover:bg-base-content/6 hover:text-base-content"
+                className="mt-auto flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-fg-secondary transition-colors hover-surface hover:text-base-content"
               >
                 <BookOpenIcon
-                  className="size-[18px] shrink-0"
+                  className="size-4.5 shrink-0"
                   aria-hidden="true"
                 />
                 Documentation

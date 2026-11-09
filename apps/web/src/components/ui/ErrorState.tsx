@@ -28,7 +28,7 @@ export const ErrorState = ({
   title = "Failed to load",
   error,
   message,
-  onRetry = () => location.reload(),
+  onRetry,
 }: Props) => {
   const displayMessage =
     message ??
@@ -36,7 +36,10 @@ export const ErrorState = ({
     "Please check your connection and try again.";
 
   return (
-    <div className="flex flex-1 items-center justify-center px-4 py-12">
+    <div
+      role="alert"
+      className="flex flex-1 items-center justify-center px-4 py-12"
+    >
       <div className="flex max-w-sm flex-col items-center text-center">
         <span className="mb-3 flex size-10 items-center justify-center rounded-xl bg-error/12 text-error">
           <ExclamationTriangleIcon className="size-5" aria-hidden="true" />
@@ -45,10 +48,16 @@ export const ErrorState = ({
         <p className="mt-1 text-sm leading-relaxed text-fg-muted">
           {displayMessage}
         </p>
-        <button className="btn mt-4 btn-outline btn-sm" onClick={onRetry}>
-          <ArrowPathIcon className="size-4" aria-hidden="true" />
-          Retry
-        </button>
+        {onRetry && (
+          <button
+            type="button"
+            className="btn mt-4 btn-outline btn-sm"
+            onClick={onRetry}
+          >
+            <ArrowPathIcon className="size-4" aria-hidden="true" />
+            Retry
+          </button>
+        )}
       </div>
     </div>
   );

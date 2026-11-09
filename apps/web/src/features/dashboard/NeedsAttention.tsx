@@ -1,4 +1,8 @@
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
+import {
+  CheckCircleIcon,
+  ExclamationTriangleIcon,
+  XCircleIcon,
+} from "@heroicons/react/24/solid";
 import { Link } from "@tanstack/react-router";
 import type { FailingTest } from "@testcraft/types";
 
@@ -7,13 +11,17 @@ import { RelativeTime } from "@/components/ui/RelativeTime";
 
 interface NeedsAttentionProps {
   tests: FailingTest[];
-  windowDays: number;
 }
 
-export const NeedsAttention = ({ tests, windowDays }: NeedsAttentionProps) => (
+export const NeedsAttention = ({ tests }: NeedsAttentionProps) => (
   <CollapsibleCard
+    icon={
+      <ExclamationTriangleIcon
+        className="size-4 shrink-0 text-warning"
+        aria-hidden="true"
+      />
+    }
     title="Needs attention"
-    description={`Tests failing most in the last ${windowDays} days`}
     storageKey="dashboard-needs-attention"
   >
     {tests.length === 0 ? (
@@ -35,20 +43,25 @@ export const NeedsAttention = ({ tests, windowDays }: NeedsAttentionProps) => (
                 suiteId: test.suite_id,
                 caseId: test.test_case_id,
               }}
-              className="flex items-start gap-3 px-4 py-3 transition-colors hover:bg-base-content/5"
+              className="flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-base-content/5"
             >
-              <XCircleIcon
-                className="mt-0.5 size-4 shrink-0 text-error"
+              <span
                 aria-hidden="true"
-              />
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-error/15 text-error"
+              >
+                <XCircleIcon className="size-4.5" />
+              </span>
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm font-medium text-base-content">
                   {test.test_case_name}
                 </span>
-                <span className="block truncate text-xs text-fg-subtle">
-                  {test.project_name} · failed {test.failure_count}× · last{" "}
+                <span className="mt-0.5 block truncate text-xs text-fg-subtle">
+                  {test.project_name} · last{" "}
                   <RelativeTime value={test.last_failed_at} />
                 </span>
+              </span>
+              <span className="shrink-0 rounded-md bg-error/15 px-2 py-0.5 text-xs font-semibold text-error tabular-nums">
+                {test.failure_count}× failed
               </span>
             </Link>
           </li>

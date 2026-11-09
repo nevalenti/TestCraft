@@ -112,6 +112,10 @@ export const queryKeys = {
     all: (projectId: string) => ["projects", projectId, "runs"] as const,
     detail: (projectId: string, id: string) =>
       ["projects", projectId, "runs", id] as const,
+    dashboardActive: (projectId: string) =>
+      ["projects", projectId, "runs", "dashboard", "active"] as const,
+    dashboardCompleted: (projectId: string, limit: number) =>
+      ["projects", projectId, "runs", "dashboard", "completed", limit] as const,
     summary: (projectId: string, id: string) =>
       ["projects", projectId, "runs", id, "summary"] as const,
     logs: (projectId: string, id: string) =>

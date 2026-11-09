@@ -141,7 +141,7 @@ export const NotesSidebar = ({
             </span>
             <time
               dateTime={note.updated_at}
-              className="shrink-0 text-[11px] text-fg-subtle tabular-nums"
+              className="shrink-0 text-2xs text-fg-subtle tabular-nums"
             >
               {formatRelativeTime(note.updated_at)}
             </time>
@@ -149,7 +149,7 @@ export const NotesSidebar = ({
           {note.excerpt ? (
             <span className="line-clamp-2 text-xs leading-relaxed text-fg-subtle">
               {note.language !== DEFAULT_NOTE_LANGUAGE && (
-                <span className="mr-1.5 rounded bg-base-content/8 px-1 py-px font-mono text-[10px] font-semibold text-fg-muted">
+                <span className="mr-1.5 rounded subtle-surface px-1 py-px font-mono text-3xs font-semibold text-fg-muted">
                   {languageShortLabel(note.language)}
                 </span>
               )}
@@ -181,7 +181,7 @@ export const NotesSidebar = ({
           {Array.from({ length: 5 }, (_, index) => (
             <li key={index} className="flex flex-col gap-2 p-3">
               <span className="h-3.5 w-2/3 animate-pulse rounded bg-base-content/10" />
-              <span className="h-3 w-full animate-pulse rounded bg-base-content/6" />
+              <span className="h-3 w-full animate-pulse rounded subtle-surface" />
             </li>
           ))}
         </ul>
@@ -220,7 +220,7 @@ export const NotesSidebar = ({
         {groupNotes(notes).map((group) => (
           <Fragment key={group.label || "all"}>
             {group.label && (
-              <h3 className="sticky top-0 z-1 bg-(--notes-list-bg) px-5 py-2 text-[11px] font-semibold tracking-wider text-fg-subtle uppercase">
+              <h3 className="sticky top-0 z-1 bg-(--notes-list-bg) px-5 py-2 text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
                 {group.label}
               </h3>
             )}

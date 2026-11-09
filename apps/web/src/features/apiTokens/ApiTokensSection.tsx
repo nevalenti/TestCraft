@@ -1,15 +1,10 @@
-import {
-  EyeIcon,
-  EyeSlashIcon,
-  KeyIcon,
-  PlusIcon,
-} from "@heroicons/react/24/solid";
+import { EyeIcon, EyeSlashIcon, KeyIcon } from "@heroicons/react/24/solid";
 import type { CreateApiTokenResponse } from "@testcraft/types";
 import { useRef, useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
 import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import { StatusPill } from "@/components/ui/StatusPill";
@@ -89,6 +84,16 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
 
   return (
     <SettingsSectionCard
+      action={
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <KeyIcon className="size-4" aria-hidden="true" />
+          New Token
+        </button>
+      }
       icon={KeyIcon}
       title="API Tokens"
       description="Authenticate CI pipelines and scripts against the TestCraft API."
@@ -130,19 +135,14 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
           </div>
         )}
 
-        <ListToolbar
-          search={search}
-          onSearch={setSearch}
-          placeholder="Search tokens…"
-        >
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => setIsCreateOpen(true)}
-          >
-            <PlusIcon className="size-4" aria-hidden="true" />
-            New Token
-          </button>
-        </ListToolbar>
+        {(tokens?.length ?? 0) > 0 || search ? (
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Search tokens…"
+            className="mb-4 w-full sm:max-w-sm"
+          />
+        ) : null}
 
         {isError ? (
           <ErrorState

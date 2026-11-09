@@ -61,32 +61,48 @@ public sealed class IdempotencyMiddleware(RequestDelegate next, TimeProvider tim
             is not { } reservedAt
         )
         {
-            var stored = await records.AsNoTracking().SingleAsync(httpContext.RequestAborted);
-            if (stored.StatusCode is null)
-            {
-                await WriteInProgressAsync(httpContext);
-            }
-            else if (stored.RequestHash != requestHash)
-            {
-                await ProblemWriter.WriteAsync(
-                    httpContext,
-                    Problems.Unprocessable(
-                        "This Idempotency-Key was already used for a different request",
-                        "IDEMPOTENCY_KEY_REUSED"
-                    )
-                );
-            }
-            else
-            {
-                await ReplayAsync(httpContext, stored);
-            }
-
+            await RespondToExistingAsync(httpContext, records, requestHash);
             return;
         }
 
         var reservation = records.Where(record =>
             record.CreatedAt == reservedAt && record.RequestHash == requestHash
         );
+        await ExecuteAndRecordAsync(httpContext, reservation);
+    }
+
+    private static async Task RespondToExistingAsync(
+        HttpContext httpContext,
+        IQueryable<IdempotencyRecord> records,
+        string requestHash
+    )
+    {
+        var stored = await records.AsNoTracking().SingleAsync(httpContext.RequestAborted);
+        if (stored.StatusCode is null)
+        {
+            await WriteInProgressAsync(httpContext);
+        }
+        else if (stored.RequestHash != requestHash)
+        {
+            await ProblemWriter.WriteAsync(
+                httpContext,
+                Problems.Unprocessable(
+                    "This Idempotency-Key was already used for a different request",
+                    "IDEMPOTENCY_KEY_REUSED"
+                )
+            );
+        }
+        else
+        {
+            await ReplayAsync(httpContext, stored);
+        }
+    }
+
+    private async Task ExecuteAndRecordAsync(
+        HttpContext httpContext,
+        IQueryable<IdempotencyRecord> reservation
+    )
+    {
         var response = httpContext.Response;
         var originalBody = response.Body;
         await using var buffer = new MemoryStream();

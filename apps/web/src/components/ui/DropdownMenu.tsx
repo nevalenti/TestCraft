@@ -28,9 +28,31 @@ export const DropdownMenu = ({
   useEffect(() => {
     if (!isOpen) return;
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      setIsOpen(false);
-      triggerRef.current?.focus();
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        triggerRef.current?.focus();
+        return;
+      }
+      const items = [
+        ...(menuRef.current?.querySelectorAll<HTMLElement>(
+          ":is(a[href], button:not(:disabled))",
+        ) ?? []),
+      ];
+      if (
+        items.length === 0 ||
+        !containerRef.current?.contains(document.activeElement)
+      )
+        return;
+      const current = items.indexOf(document.activeElement as HTMLElement);
+      const target = {
+        ArrowDown: items[(current + 1) % items.length],
+        ArrowUp: items[(current - 1 + items.length) % items.length],
+        Home: items[0],
+        End: items.at(-1),
+      }[event.key];
+      if (!target) return;
+      event.preventDefault();
+      target.focus();
     };
     const handlePointerDown = (event: PointerEvent) => {
       if (!containerRef.current?.contains(event.target as Node))
@@ -71,6 +93,18 @@ export const DropdownMenu = ({
         aria-expanded={isOpen}
         aria-controls={menuId}
         onClick={() => setIsOpen((previous) => !previous)}
+        onKeyDown={(event) => {
+          if (event.key !== "ArrowDown") return;
+          event.preventDefault();
+          setIsOpen(true);
+          requestAnimationFrame(() =>
+            menuRef.current
+              ?.querySelector<HTMLElement>(
+                ":is(a[href], button:not(:disabled))",
+              )
+              ?.focus(),
+          );
+        }}
         className={triggerClassName}
       >
         {trigger}

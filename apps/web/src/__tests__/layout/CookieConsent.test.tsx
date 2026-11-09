@@ -21,11 +21,11 @@ const mockConsent = (overrides: Partial<ReturnType<typeof useCookieConsent>>) =>
 
 describe("CookieConsent", () => {
   describe("when isShowing is true — renders the banner", () => {
-    it("shows the cookie consent dialog", () => {
+    it("shows the cookie consent region", () => {
       mockConsent({ isShowing: true });
       render(<CookieConsent />);
       expect(
-        screen.getByRole("dialog", { name: "Cookie consent" }),
+        screen.getByRole("region", { name: "Cookie consent" }),
       ).toBeInTheDocument();
     });
 

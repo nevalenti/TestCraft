@@ -17,7 +17,7 @@ const config: Record<DefectType, { label: string; cls: string }> = {
   },
   [DefectType.ToInvestigate]: {
     label: "To Investigate",
-    cls: "bg-base-content/6 text-fg-secondary border-base-content/15",
+    cls: "subtle-surface text-fg-secondary border-base-content/15",
   },
 };
 

@@ -1,10 +1,10 @@
-import { LinkIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { LinkIcon } from "@heroicons/react/24/solid";
 import type { NotificationEvent } from "@testcraft/types";
 import { useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
 import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import {
@@ -42,23 +42,28 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
 
   return (
     <SettingsSectionCard
+      action={
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <LinkIcon className="size-4" aria-hidden="true" />
+          New Webhook
+        </button>
+      }
       icon={LinkIcon}
       title="Webhooks"
       description="Send an HTTP request to your own endpoint on run events."
     >
-      <ListToolbar
-        search={search}
-        onSearch={setSearch}
-        placeholder="Search webhooks…"
-      >
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
-          <PlusIcon className="size-4" aria-hidden="true" />
-          New Webhook
-        </button>
-      </ListToolbar>
+      {(webhooks?.length ?? 0) > 0 || search ? (
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search webhooks…"
+          className="mb-4 w-full sm:max-w-sm"
+        />
+      ) : null}
 
       {isError ? (
         <ErrorState

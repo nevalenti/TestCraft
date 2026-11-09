@@ -26,25 +26,23 @@ const toRunLogs = (page: RunLogPage): RunLogs => ({
   hasMore: page.has_more,
 });
 
+const listAllRuns = (
+  projectId: string,
+  filter: { search?: string; status?: TestRunStatus },
+) =>
+  fetchAllPages(async (page) => {
+    const { data } = await sdk.listTestRuns({
+      path: { project_id: projectId },
+      query: { page, page_size: PAGE_SIZE, ...filter },
+    });
+    return data;
+  });
+
 export const testRunsApi = {
-  getAll: async (projectId: string, search?: string) => {
-    return fetchAllPages(async (page) => {
-      const { data } = await sdk.listTestRuns({
-        path: { project_id: projectId },
-        query: { page, page_size: PAGE_SIZE, ...(search && { search }) },
-      });
-      return data;
-    });
-  },
-  getActive: async (projectId: string) => {
-    return fetchAllPages(async (page) => {
-      const { data } = await sdk.listTestRuns({
-        path: { project_id: projectId },
-        query: { page, page_size: PAGE_SIZE, status: TestRunStatus.Active },
-      });
-      return data;
-    });
-  },
+  getAll: (projectId: string, search?: string) =>
+    listAllRuns(projectId, search ? { search } : {}),
+  getActive: (projectId: string) =>
+    listAllRuns(projectId, { status: TestRunStatus.Active }),
   getRecentlyCompleted: async (projectId: string, limit: number) => {
     const { data } = await sdk.listTestRuns({
       path: { project_id: projectId },
@@ -115,18 +113,13 @@ export const testRunQueries = {
     }),
   active: (projectId: string) =>
     queryOptions({
-      queryKey: [...queryKeys.testRuns.all(projectId), "dashboard", "active"],
+      queryKey: queryKeys.testRuns.dashboardActive(projectId),
       queryFn: () => testRunsApi.getActive(projectId),
       enabled: !!projectId,
     }),
   recentlyCompleted: (projectId: string, limit: number) =>
     queryOptions({
-      queryKey: [
-        ...queryKeys.testRuns.all(projectId),
-        "dashboard",
-        "completed",
-        limit,
-      ],
+      queryKey: queryKeys.testRuns.dashboardCompleted(projectId, limit),
       queryFn: () => testRunsApi.getRecentlyCompleted(projectId, limit),
       enabled: !!projectId,
     }),

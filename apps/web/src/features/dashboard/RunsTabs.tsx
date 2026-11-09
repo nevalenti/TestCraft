@@ -1,14 +1,13 @@
 import { BoltIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
+import { type KeyboardEvent, useRef } from "react";
 
 import { SECTION_TAB, SECTION_TAB_ACTIVE } from "@/components/ui/subNavStyles";
+import { TabCountBadge } from "@/components/ui/TabCountBadge";
+import { RUNS_PANEL_ID, runsTabId } from "@/features/dashboard/runsTabIds";
 import { cn } from "@/lib/cn";
 import type { DashboardRunsTab } from "@/stores/dashboardTab";
 
-const TabCount = ({ count }: { count: number }) => (
-  <span className="rounded-full bg-base-content/10 px-1.5 py-0.5 text-xs font-semibold text-fg-muted tabular-nums">
-    {count}
-  </span>
-);
+const TABS: DashboardRunsTab[] = ["active", "completed"];
 
 interface RunsTabsProps {
   tab: DashboardRunsTab;
@@ -22,35 +21,74 @@ export const RunsTabs = ({
   onChange,
   activeCount,
   completedCount,
-}: RunsTabsProps) => (
-  <div className="flex items-center overflow-x-auto border-b border-border px-2 pt-1.5">
+}: RunsTabsProps) => {
+  const tabRefs = useRef<Record<DashboardRunsTab, HTMLButtonElement | null>>({
+    active: null,
+    completed: null,
+  });
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    const index = TABS.indexOf(tab);
+    const next = {
+      ArrowRight: TABS[(index + 1) % TABS.length],
+      ArrowLeft: TABS[(index - 1 + TABS.length) % TABS.length],
+      Home: TABS[0],
+      End: TABS.at(-1),
+    }[event.key];
+    if (!next) return;
+    event.preventDefault();
+    onChange(next);
+    tabRefs.current[next]?.focus();
+  };
+
+  const renderTab = (
+    value: DashboardRunsTab,
+    label: string,
+    count: number,
+    icon: React.ReactNode,
+  ) => (
     <button
+      ref={(element) => {
+        tabRefs.current[value] = element;
+      }}
       type="button"
-      onClick={() => onChange("active")}
-      aria-pressed={tab === "active"}
+      role="tab"
+      id={runsTabId(value)}
+      aria-selected={tab === value}
+      aria-controls={RUNS_PANEL_ID}
+      tabIndex={tab === value ? 0 : -1}
+      onClick={() => onChange(value)}
+      onKeyDown={handleKeyDown}
       className={cn(
         SECTION_TAB,
-        "cursor-pointer max-sm:px-2 max-sm:text-[13px]",
-        tab === "active" && SECTION_TAB_ACTIVE,
+        "cursor-pointer max-sm:px-2 max-sm:text-label",
+        tab === value && SECTION_TAB_ACTIVE,
       )}
     >
-      <BoltIcon className="size-4 text-warning" aria-hidden="true" />
-      Active Runs
-      <TabCount count={activeCount} />
+      {icon}
+      {label}
+      <TabCountBadge count={count} />
     </button>
-    <button
-      type="button"
-      onClick={() => onChange("completed")}
-      aria-pressed={tab === "completed"}
-      className={cn(
-        SECTION_TAB,
-        "cursor-pointer max-sm:px-2 max-sm:text-[13px]",
-        tab === "completed" && SECTION_TAB_ACTIVE,
-      )}
+  );
+
+  return (
+    <div
+      role="tablist"
+      aria-label="Runs"
+      className="flex items-center overflow-x-auto border-b border-border px-2 pt-1.5"
     >
-      <CheckCircleIcon className="size-4 text-success" aria-hidden="true" />
-      Recently Completed
-      <TabCount count={completedCount} />
-    </button>
-  </div>
-);
+      {renderTab(
+        "active",
+        "Active Runs",
+        activeCount,
+        <BoltIcon className="size-4 text-warning" aria-hidden="true" />,
+      )}
+      {renderTab(
+        "completed",
+        "Recently Completed",
+        completedCount,
+        <CheckCircleIcon className="size-4 text-success" aria-hidden="true" />,
+      )}
+    </div>
+  );
+};

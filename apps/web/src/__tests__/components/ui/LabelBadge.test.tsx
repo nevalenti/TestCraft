@@ -26,10 +26,16 @@ describe("LabelBadge", () => {
       expect(screen.getByText("Bug").tagName).toBe("SPAN");
     });
 
-    it("sets text color to the label color", () => {
-      render(<LabelBadge label={makeLabel({ color: "#FF0000" })} />);
+    it("keeps a readable label color as the text color", () => {
+      render(<LabelBadge label={makeLabel({ color: "#22c55e" })} />);
       const badge = screen.getByText("Bug");
-      expect(badge).toHaveStyle({ color: "#FF0000" });
+      expect(badge).toHaveStyle({ color: "#22c55e" });
+    });
+
+    it("lightens a low-contrast label color for the text", () => {
+      render(<LabelBadge label={makeLabel({ color: "#000000" })} />);
+      const badge = screen.getByText("Bug");
+      expect(badge).not.toHaveStyle({ color: "#000000" });
     });
 
     it("derives background color from label color", () => {

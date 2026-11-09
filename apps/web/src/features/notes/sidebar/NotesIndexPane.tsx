@@ -1,4 +1,4 @@
-import { PencilSquareIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { DocumentPlusIcon, PencilSquareIcon } from "@heroicons/react/24/solid";
 import { Link, type LinkOptions } from "@tanstack/react-router";
 import type { Note } from "@testcraft/types";
 
@@ -54,7 +54,7 @@ export const NotesIndexPane = ({
               {isCreating ? (
                 <span className="loading size-4 loading-spinner" />
               ) : (
-                <PlusIcon className="size-4" aria-hidden="true" />
+                <DocumentPlusIcon className="size-4" aria-hidden="true" />
               )}
               New note
             </button>
@@ -63,7 +63,7 @@ export const NotesIndexPane = ({
 
         {hasNotes && (
           <section className="mt-10">
-            <h3 className="mb-3 text-[11px] font-semibold tracking-wider text-fg-subtle uppercase">
+            <h3 className="mb-3 text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
               Recently edited
             </h3>
             <ul className="grid gap-3 sm:grid-cols-2">
@@ -83,7 +83,7 @@ export const NotesIndexPane = ({
                         </span>
                       )}
                     </span>
-                    <span className="mt-auto pt-1 text-[11px] text-fg-subtle">
+                    <span className="mt-auto pt-1 text-2xs text-fg-subtle">
                       {formatRelativeTime(note.updated_at)}
                     </span>
                   </Link>

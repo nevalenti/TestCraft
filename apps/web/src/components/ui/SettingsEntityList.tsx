@@ -33,7 +33,9 @@ export const SettingsEntityList = <T,>({
   emptyDescription,
 }: SettingsEntityListProps<T>) => {
   if (items.length === 0)
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+    return (
+      <EmptyState compact title={emptyTitle} description={emptyDescription} />
+    );
 
   return (
     <ul className="space-y-2">
@@ -59,11 +61,12 @@ export const SettingsEntityList = <T,>({
             {renderTrailing?.(item)}
             {!isRemoveHidden?.(item) && (
               <button
+                type="button"
                 className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
                 onClick={() => onRemove(item)}
                 aria-label={removeAriaLabel(item)}
               >
-                <TrashIcon className="size-3.5" />
+                <TrashIcon className="size-3.5" aria-hidden="true" />
                 {removeLabel}
               </button>
             )}

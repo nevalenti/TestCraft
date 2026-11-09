@@ -59,7 +59,7 @@ const describeCounts = (counts: Record<string, number>) =>
 const SuiteBar = ({ group }: { group: SuiteGroup }) => (
   <div
     aria-hidden="true"
-    className="hidden h-1.5 w-28 shrink-0 gap-0.5 overflow-hidden rounded-full bg-base-content/8 sm:flex"
+    className="hidden h-1.5 w-28 shrink-0 gap-0.5 overflow-hidden rounded-full subtle-surface sm:flex"
   >
     {STATUS_OPTIONS.map(({ value }) =>
       (group.counts[value] ?? 0) > 0 ? (

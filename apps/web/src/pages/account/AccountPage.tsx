@@ -7,7 +7,6 @@ import { useRef, useState } from "react";
 
 import { keycloak } from "@/auth/keycloak";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { useAvatarUrl, useUploadAvatar } from "@/features/account/hooks";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { env } from "@/lib/env";
@@ -49,30 +48,7 @@ export const AccountPage = () => {
   return (
     <>
       <div className="flex min-h-0 w-full flex-1 flex-col">
-        <PageHeader
-          title="Account"
-          description="Your profile and sign-in settings."
-          actions={
-            <>
-              <a
-                href={keycloakAccountUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn gap-2 btn-outline btn-sm"
-              >
-                <ArrowTopRightOnSquareIcon className="size-3.5" />
-                Manage account
-              </a>
-              <button
-                onClick={() => setIsSignOutOpen(true)}
-                className="btn gap-2 text-fg-secondary btn-ghost btn-sm hover:text-error"
-              >
-                <ArrowRightStartOnRectangleIcon className="size-4" />
-                Sign out
-              </button>
-            </>
-          }
-        />
+        <h1 className="sr-only">Account</h1>
         <div className="page-content min-h-0 flex-1 overflow-y-auto">
           <section className="max-w-2xl overflow-hidden panel">
             <div className="flex items-center gap-5 p-6">
@@ -137,6 +113,28 @@ export const AccountPage = () => {
               ))}
             </dl>
           </section>
+          <div className="mt-4 flex max-w-2xl flex-wrap items-center justify-end gap-2">
+            <a
+              href={keycloakAccountUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn gap-2 btn-outline btn-sm"
+            >
+              <ArrowTopRightOnSquareIcon className="size-3.5" />
+              Manage account
+            </a>
+            <button
+              type="button"
+              onClick={() => setIsSignOutOpen(true)}
+              className="btn gap-2 btn-sm btn-error"
+            >
+              <ArrowRightStartOnRectangleIcon
+                className="size-4"
+                aria-hidden="true"
+              />
+              Sign out
+            </button>
+          </div>
         </div>
       </div>
 

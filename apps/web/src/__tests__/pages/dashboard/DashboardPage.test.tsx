@@ -177,7 +177,7 @@ describe("DashboardPage", () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole("button", { name: /Active Runs/ }),
+        screen.getByRole("tab", { name: /Active Runs/ }),
       ).toBeInTheDocument();
     });
 
@@ -185,7 +185,7 @@ describe("DashboardPage", () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole("button", { name: /Recently Completed/ }),
+        screen.getByRole("tab", { name: /Recently Completed/ }),
       ).toBeInTheDocument();
     });
   });
@@ -206,7 +206,9 @@ describe("DashboardPage", () => {
       render(<DashboardPage />);
       expect(screen.getByText("No active runs")).toBeInTheDocument();
       expect(
-        screen.getByText("Active test runs will appear here."),
+        screen.getByText(
+          "Runs that are in progress show up here as they report results.",
+        ),
       ).toBeInTheDocument();
     });
   });
@@ -228,7 +230,7 @@ describe("DashboardPage", () => {
     });
     render(<DashboardPage />);
     expect(
-      screen.getByRole("button", { name: /Recently Completed/ }),
+      screen.getByRole("tab", { name: /Recently Completed/ }),
     ).toHaveTextContent("120");
   });
 
@@ -251,9 +253,6 @@ describe("DashboardPage", () => {
       render(<DashboardPage />);
 
       expect(screen.getByText("82.5%")).toBeInTheDocument();
-      expect(
-        screen.getByText("Up 4.5 pts on the week before"),
-      ).toBeInTheDocument();
       expect(screen.getByText("Failing tests")).toBeInTheDocument();
       expect(screen.getByText("Checkout total is correct")).toBeInTheDocument();
       expect(screen.getByText("Project health")).toBeInTheDocument();
