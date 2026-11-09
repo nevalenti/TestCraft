@@ -11,7 +11,6 @@ on:
       - "apps/Api/openapi/redocly-plugin.mjs"
       - "apps/Api/openapi/.redocly.lint-ignore.yaml"
       - "pnpm-lock.yaml"
-      - "scripts/check-web-sdk.mjs"
       - ".github/workflows/ci-web.yml"
   pull_request:
     branches: [main]
@@ -23,7 +22,6 @@ on:
       - "apps/Api/openapi/redocly-plugin.mjs"
       - "apps/Api/openapi/.redocly.lint-ignore.yaml"
       - "pnpm-lock.yaml"
-      - "scripts/check-web-sdk.mjs"
       - ".github/workflows/ci-web.yml"
   workflow_dispatch:
 
@@ -70,7 +68,10 @@ jobs:
         run: pnpm run lint:contract
 
       - name: Check generated SDK
-        run: pnpm --filter testcraft-web check:sdk
+        run: |
+          pnpm --filter testcraft-web generate:sdk
+          git add -N apps/web/src/api/generated
+          git diff --exit-code -- apps/web/src/api/generated
 
       - name: Lint
         run: pnpm --filter testcraft-web run lint
