@@ -1,9 +1,9 @@
-using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
+using TestCraft.Application.Common.Pagination;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.ShareTokens;
@@ -79,19 +79,9 @@ public record SharedResultItem
 public static class GetRunByShareToken
 {
     /// <summary>Requests a run's results by its public share token.</summary>
-    public sealed record Query(string Token, int Page = 1, int PageSize = 50)
-        : IRequest<SharedRunResponse>;
-
-    public sealed class Validator : AbstractValidator<Query>
+    public sealed record Query : PageQuery, IRequest<SharedRunResponse>
     {
-        public Validator()
-        {
-            RuleFor(query => query.Page).InclusiveBetween(1, 10_000);
-            RuleFor(query => query.PageSize).InclusiveBetween(1, 500);
-            RuleFor(query => query)
-                .Must(query => (query.Page - 1) * query.PageSize <= 100_000)
-                .WithMessage("Pages beyond the first 100,000 results are unavailable");
-        }
+        public required string Token { get; init; }
     }
 
     public sealed class Handler(
@@ -108,7 +98,10 @@ public static class GetRunByShareToken
             var tokenHash = hasher.Hash(request.Token);
             var shareToken = await context
                 .ShareTokens.AsNoTracking()
-                .FirstOrDefaultAsync(st => st.TokenHash == tokenHash, cancellationToken);
+                .FirstOrDefaultAsync(
+                    candidate => candidate.TokenHash == tokenHash,
+                    cancellationToken
+                );
 
             if (
                 shareToken is null
@@ -134,11 +127,12 @@ public static class GetRunByShareToken
                 .CurrentOutcomes();
             var counts = await StatusCounts.CountByStatusAsync(resultsQuery, cancellationToken);
 
+            var pagination = request.ToPagination();
             var results = await resultsQuery
                 .OrderBy(result => result.CreatedAt)
                 .ThenBy(result => result.Id)
-                .Skip((request.Page - 1) * request.PageSize)
-                .Take(request.PageSize)
+                .Skip(pagination.Skip)
+                .Take(pagination.Take)
                 .Select(result => new SharedResultItem
                 {
                     TestCaseName = result.TestCase!.Name,

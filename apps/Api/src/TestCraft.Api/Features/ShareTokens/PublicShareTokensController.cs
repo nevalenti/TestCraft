@@ -23,7 +23,12 @@ public class PublicShareTokensController(ISender sender) : ControllerBase
         [FromQuery] int pageSize = 50
     )
     {
-        var query = new GetRunByShareToken.Query(token, page, pageSize);
+        var query = new GetRunByShareToken.Query
+        {
+            Token = token,
+            Page = page,
+            PageSize = pageSize,
+        };
 
         var result = await sender.Send(query, cancellationToken);
 
