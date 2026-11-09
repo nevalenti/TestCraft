@@ -46,6 +46,32 @@ public class ApiTokensApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Create_WithNonUtcExpiry_StoresItAsTheSameInstant()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var expiresAt = new DateTimeOffset(2099, 1, 1, 12, 0, 0, TimeSpan.FromHours(2));
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{project.Id}/tokens",
+            new CreateApiToken.Command
+            {
+                Name = "Expiring",
+                ExpiresAt = expiresAt,
+                Scopes = [ApiTokenScope.RunsWrite],
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.Created);
+
+        var tokens = await client.GetFromJsonAsync<IReadOnlyList<ApiTokenResponse>>(
+            $"/api/v1/projects/{project.Id}/tokens",
+            ApiTestHelpers.JsonOptions
+        );
+        tokens!.Single().ExpiresAt.Should().Be(expiresAt);
+    }
+
+    [Fact]
     public async Task GetAll_ListsTokensWithoutRawValue()
     {
         var client = CreateClient(Guid.NewGuid());

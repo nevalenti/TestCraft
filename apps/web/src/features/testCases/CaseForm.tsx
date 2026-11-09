@@ -79,11 +79,7 @@ export const CaseForm = ({
         htmlFor="case-priority"
         error={errors.priority?.message}
       >
-        <FormSelect
-          id="case-priority"
-          className="select-bordered select w-full"
-          {...register("priority")}
-        >
+        <FormSelect id="case-priority" {...register("priority")}>
           {priorityOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

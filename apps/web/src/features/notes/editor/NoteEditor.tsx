@@ -9,12 +9,17 @@ import {
   useState,
 } from "react";
 
+import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { DEFAULT_NOTE_TITLE } from "@/features/notes/constants";
+import { NoteEditorStatusBar } from "@/features/notes/editor/NoteEditorStatusBar";
 import {
   NoteEditorToolbar,
   type ViewMode,
 } from "@/features/notes/editor/NoteEditorToolbar";
-import { isProseLanguage } from "@/features/notes/editor/noteLanguages";
+import {
+  isProseLanguage,
+  NOTE_LANGUAGES,
+} from "@/features/notes/editor/noteLanguages";
 import {
   type NoteEditorValue,
   useNoteAutosave,
@@ -77,6 +82,7 @@ export const NoteEditor = ({
   const [viewMode, setViewMode] = useState<ViewMode>(() =>
     readOnly ? "preview" : readStoredViewMode(),
   );
+  const [cursor, setCursor] = useState({ line: 1, column: 1 });
   const titleRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const isFreshNote =
@@ -107,36 +113,46 @@ export const NoteEditor = ({
   };
 
   const sourcePane = (
-    <Suspense
-      fallback={<div className="h-full animate-pulse bg-base-200/40" />}
-    >
-      <LazyCodeEditor
-        value={value.content}
-        language={value.language}
-        onChange={(content) =>
-          setValue((previous) => ({ ...previous, content }))
-        }
-        onMount={(editor) => {
-          editorRef.current = editor;
-        }}
-        height="100%"
-        readOnly={readOnly}
-        variant={isProseLanguage(value.language) ? "prose" : "code"}
-        transparent
-        padding={{ top: 16, bottom: 16 }}
-        className="h-full rounded-none border-0"
-      />
-    </Suspense>
+    <SectionErrorBoundary title="The editor failed to load">
+      <Suspense
+        fallback={<div className="h-full animate-pulse bg-base-200/40" />}
+      >
+        <LazyCodeEditor
+          value={value.content}
+          language={value.language}
+          onChange={(content) =>
+            setValue((previous) => ({ ...previous, content }))
+          }
+          onMount={(editor) => {
+            editorRef.current = editor;
+            editor.onDidChangeCursorPosition((event) =>
+              setCursor({
+                line: event.position.lineNumber,
+                column: event.position.column,
+              }),
+            );
+          }}
+          height="100%"
+          readOnly={readOnly}
+          variant={isProseLanguage(value.language) ? "prose" : "code"}
+          transparent
+          padding={{ top: 16, bottom: 16 }}
+          className="h-full rounded-none border-0"
+        />
+      </Suspense>
+    </SectionErrorBoundary>
   );
 
   const previewPane = (
-    <div className="h-full overflow-y-auto px-6 py-5 lg:px-10">
-      <Suspense fallback={null}>
-        <LazyNoteMarkdown
-          content={value.content}
-          className="mx-auto max-w-4xl"
-        />
-      </Suspense>
+    <div className="h-full overflow-y-auto bg-base-100 px-6 py-5 lg:px-10">
+      <SectionErrorBoundary title="The preview failed to render">
+        <Suspense fallback={null}>
+          <LazyNoteMarkdown
+            content={value.content}
+            className="mx-auto max-w-4xl"
+          />
+        </Suspense>
+      </SectionErrorBoundary>
     </div>
   );
 
@@ -181,6 +197,17 @@ export const NoteEditor = ({
           </div>
         )}
       </div>
+
+      <NoteEditorStatusBar
+        readOnly={readOnly}
+        line={cursor.line}
+        column={cursor.column}
+        language={
+          NOTE_LANGUAGES.find((option) => option.value === value.language)
+            ?.label ?? value.language
+        }
+        showCursor={isShowSource}
+      />
     </div>
   );
 };

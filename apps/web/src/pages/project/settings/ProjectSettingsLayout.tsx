@@ -54,7 +54,7 @@ export const ProjectSettingsLayout = () => {
         </Link>
       </SubNav>
 
-      <div className="mt-6">
+      <div className="mt-6 max-w-4xl">
         <Outlet />
       </div>
     </div>

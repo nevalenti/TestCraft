@@ -14,6 +14,9 @@ import {
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { FormField } from "@/components/ui/form/FormField";
+import { FormSelect } from "@/components/ui/form/FormSelect";
+import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { useSuiteBreakdown } from "@/features/analytics/hooks";
 import { latestRuns } from "@/features/analytics/latestRuns";
 import { SuiteTooltip } from "@/features/analytics/SuiteTooltip";
@@ -79,25 +82,21 @@ export const AnalyticsSuiteTab = () => {
     <div className="space-y-4 pb-10">
       <div className="flex items-center gap-3">
         <div className="flex-1">
-          <label
-            htmlFor="suite-run-select"
-            className="mb-1 block text-xs font-medium text-fg-secondary"
-          >
-            Select run
-          </label>
-          <select
-            id="suite-run-select"
-            className="select-bordered select w-full max-w-sm select-sm"
-            value={suiteRunId}
-            onChange={(event) => setSuiteRunId(event.target.value)}
-          >
-            <option value="">Choose a run to inspect…</option>
-            {(runs ?? []).map((run) => (
-              <option key={run.id} value={run.id}>
-                {run.name} · {formatDate(run.created_at)}
-              </option>
-            ))}
-          </select>
+          <FormField label="Select run" htmlFor="suite-run-select">
+            <FormSelect
+              id="suite-run-select"
+              className="max-w-sm select-sm"
+              value={suiteRunId}
+              onChange={(event) => setSuiteRunId(event.target.value)}
+            >
+              <option value="">Choose a run to inspect…</option>
+              {(runs ?? []).map((run) => (
+                <option key={run.id} value={run.id}>
+                  {run.name} · {formatDate(run.created_at)}
+                </option>
+              ))}
+            </FormSelect>
+          </FormField>
         </div>
       </div>
 
@@ -105,7 +104,6 @@ export const AnalyticsSuiteTab = () => {
         <EmptyState
           icon={<Squares2X2Icon className="size-6" />}
           title="No run selected"
-          description="Select a test run above to see how its results are distributed across suites."
         />
       )}
 
@@ -121,7 +119,6 @@ export const AnalyticsSuiteTab = () => {
         <EmptyState
           icon={<Squares2X2Icon className="size-6" />}
           title="No suite data"
-          description="This run has no suite breakdown data available."
         />
       )}
 
@@ -132,71 +129,73 @@ export const AnalyticsSuiteTab = () => {
               {selectedRun.name} · {formatDate(selectedRun.created_at)}
             </p>
           )}
-          <ResponsiveContainer width="100%" height={288}>
-            <BarChart
-              data={suiteData}
-              margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke="currentColor"
-                strokeOpacity={0.06}
-                vertical={false}
-              />
-              <XAxis
-                dataKey="suiteName"
-                tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
-                tickLine={false}
-                axisLine={false}
-                width={28}
-              />
-              <Tooltip
-                content={<SuiteTooltip />}
-                cursor={{ fill: "currentColor", fillOpacity: 0.04 }}
-              />
-              <Legend
-                iconType="circle"
-                iconSize={7}
-                wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
-              />
-              <Bar
-                dataKey="passed"
-                name="Passed"
-                stackId="a"
-                fill={COLORS.passed}
-              />
-              <Bar
-                dataKey="failed"
-                name="Failed"
-                stackId="a"
-                fill={COLORS.failed}
-              />
-              <Bar
-                dataKey="blocked"
-                name="Blocked"
-                stackId="a"
-                fill={COLORS.blocked}
-              />
-              <Bar
-                dataKey="skipped"
-                name="Skipped"
-                stackId="a"
-                fill={COLORS.skipped}
-              />
-              <Bar
-                dataKey="untested"
-                name="Untested"
-                stackId="a"
-                fill={COLORS.untested}
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <SectionErrorBoundary title="The chart failed to display">
+            <ResponsiveContainer width="100%" height={288}>
+              <BarChart
+                data={suiteData}
+                margin={{ top: 4, right: 4, bottom: 0, left: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="currentColor"
+                  strokeOpacity={0.06}
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="suiteName"
+                  tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  tick={{ fontSize: 11, fill: "currentColor", opacity: 0.6 }}
+                  tickLine={false}
+                  axisLine={false}
+                  width={28}
+                />
+                <Tooltip
+                  content={<SuiteTooltip />}
+                  cursor={{ fill: "currentColor", fillOpacity: 0.04 }}
+                />
+                <Legend
+                  iconType="circle"
+                  iconSize={7}
+                  wrapperStyle={{ fontSize: 11, paddingTop: 10 }}
+                />
+                <Bar
+                  dataKey="passed"
+                  name="Passed"
+                  stackId="a"
+                  fill={COLORS.passed}
+                />
+                <Bar
+                  dataKey="failed"
+                  name="Failed"
+                  stackId="a"
+                  fill={COLORS.failed}
+                />
+                <Bar
+                  dataKey="blocked"
+                  name="Blocked"
+                  stackId="a"
+                  fill={COLORS.blocked}
+                />
+                <Bar
+                  dataKey="skipped"
+                  name="Skipped"
+                  stackId="a"
+                  fill={COLORS.skipped}
+                />
+                <Bar
+                  dataKey="untested"
+                  name="Untested"
+                  stackId="a"
+                  fill={COLORS.untested}
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            </ResponsiveContainer>
+          </SectionErrorBoundary>
         </div>
       )}
     </div>

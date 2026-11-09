@@ -15,16 +15,16 @@ export const ListToolbar = ({
 }: ListToolbarProps) => (
   <div
     data-list-toolbar
-    className="sticky -top-5 z-10 -mt-5 mb-4 flex flex-col gap-3 bg-base-300 pt-5 pb-2 sm:flex-row sm:items-center"
+    className="mb-4 flex flex-col gap-3 pb-2 sm:grid sm:grid-cols-[1fr_minmax(0,24rem)_1fr] sm:items-center"
   >
     <SearchInput
       value={search}
       onChange={onSearch}
       placeholder={placeholder}
-      className="w-full sm:max-w-sm"
+      className="w-full sm:col-start-2"
     />
     {children && (
-      <div className="flex flex-wrap items-center justify-end gap-2 sm:ml-auto sm:shrink-0">
+      <div className="flex flex-wrap items-center justify-end gap-2 sm:col-start-3">
         {children}
       </div>
     )}

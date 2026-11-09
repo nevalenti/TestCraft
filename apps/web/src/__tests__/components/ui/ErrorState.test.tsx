@@ -101,4 +101,18 @@ describe("ErrorState", () => {
       expect(onRetry).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe("accessibility", () => {
+    it("announces itself as an alert", () => {
+      render(<ErrorState onRetry={vi.fn()} />);
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+
+    it("renders no Retry button when onRetry is not provided", () => {
+      render(<ErrorState message="Nope" />);
+      expect(
+        screen.queryByRole("button", { name: "Retry" }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

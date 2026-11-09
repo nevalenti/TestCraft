@@ -72,6 +72,24 @@ describe("Header", () => {
     expect(openMenuButton()).toHaveFocus();
   });
 
+  it("keeps Tab inside the open drawer", async () => {
+    render(<Header />);
+    await userEvent.click(openMenuButton());
+    const panel = screen.getByRole("dialog", { name: "Navigation menu" });
+    const links = within(panel).getAllByRole("link");
+    links.at(-1)?.focus();
+    console.log(
+      "DBG",
+      links.length,
+      document.activeElement?.outerHTML.slice(0, 80),
+      panel.querySelectorAll("a[href], button:not(:disabled)").length,
+    );
+
+    await userEvent.tab();
+
+    expect(screen.getByRole("button", { name: "Close menu" })).toHaveFocus();
+  });
+
   describe("when a drawer nav item is clicked", () => {
     it("closes the drawer", async () => {
       render(<Header />);

@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { FolderPlusIcon } from "@heroicons/react/24/solid";
 import type { CreateProject, Project, UpdateProject } from "@testcraft/types";
 import { useState } from "react";
 
@@ -6,7 +6,6 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
 import {
   useCreateProject,
@@ -65,22 +64,18 @@ export const ProjectsPage = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <PageHeader
-        title="Projects"
-        description="Each project holds its suites, runs, plans and analytics."
-        actions={
-          <button className="btn btn-sm btn-primary" onClick={openCreate}>
-            <PlusIcon className="size-4" aria-hidden="true" />
-            New Project
-          </button>
-        }
-      />
+      <h1 className="sr-only">Projects</h1>
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <ListToolbar
           search={search}
           onSearch={setSearch}
           placeholder="Search projects…"
-        />
+        >
+          <button className="btn btn-sm btn-primary" onClick={openCreate}>
+            <FolderPlusIcon className="size-4" aria-hidden="true" />
+            New Project
+          </button>
+        </ListToolbar>
         <div className="min-h-80">
           <ResourceView
             isPending={isPending}
@@ -92,7 +87,6 @@ export const ProjectsPage = () => {
             items={projects}
             viewMode="grid"
             emptyTitle="No projects yet"
-            emptyDescription="Projects group your test suites and runs."
             renderCard={renderCard}
           />
         </div>

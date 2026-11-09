@@ -35,6 +35,7 @@ public class MinioStorageService(
         string key,
         Stream content,
         string contentType,
+        bool forceDownload = true,
         CancellationToken cancellationToken = default
     )
     {
@@ -44,10 +45,10 @@ public class MinioStorageService(
             .WithBucket(options.Value.MinioBucket)
             .WithObject(key)
             .WithStreamData(content)
-            .WithObjectSize(content.CanSeek ? content.Length : -1)
+            .WithObjectSize(content.CanSeek && content.Length > 0 ? content.Length : -1)
             .WithContentType(contentType);
 
-        if (!InlineRenderableContentTypes.Contains(contentType))
+        if (forceDownload && !InlineRenderableContentTypes.Contains(contentType))
         {
             putArgs = putArgs.WithHeaders(
                 new Dictionary<string, string> { ["Content-Disposition"] = "attachment" }

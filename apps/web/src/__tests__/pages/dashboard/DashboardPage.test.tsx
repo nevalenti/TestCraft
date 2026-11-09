@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -177,7 +178,7 @@ describe("DashboardPage", () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole("button", { name: /Active Runs/ }),
+        screen.getByRole("tab", { name: /Active Runs/ }),
       ).toBeInTheDocument();
     });
 
@@ -185,7 +186,7 @@ describe("DashboardPage", () => {
       setupMocks();
       render(<DashboardPage />);
       expect(
-        screen.getByRole("button", { name: /Recently Completed/ }),
+        screen.getByRole("tab", { name: /Recently Completed/ }),
       ).toBeInTheDocument();
     });
   });
@@ -205,9 +206,6 @@ describe("DashboardPage", () => {
       setupMocks({ activeRuns: [] });
       render(<DashboardPage />);
       expect(screen.getByText("No active runs")).toBeInTheDocument();
-      expect(
-        screen.getByText("Active test runs will appear here."),
-      ).toBeInTheDocument();
     });
   });
 
@@ -228,7 +226,7 @@ describe("DashboardPage", () => {
     });
     render(<DashboardPage />);
     expect(
-      screen.getByRole("button", { name: /Recently Completed/ }),
+      screen.getByRole("tab", { name: /Recently Completed/ }),
     ).toHaveTextContent("120");
   });
 
@@ -245,15 +243,34 @@ describe("DashboardPage", () => {
     });
   });
 
+  describe("searching runs", () => {
+    it("filters the table by run name and explains when nothing matches", async () => {
+      setupMocks({
+        projects: [makeProject("proj-1", "Alpha")],
+        activeRuns: [
+          makeRun("login", "proj-1", TestRunStatus.Active),
+          makeRun("checkout", "proj-1", TestRunStatus.Active),
+        ],
+      });
+      render(<DashboardPage />);
+      const search = screen.getByRole("searchbox", { name: "Search runs" });
+
+      await userEvent.type(search, "login");
+      expect(screen.getByText("Run login")).toBeInTheDocument();
+      expect(screen.queryByText("Run checkout")).not.toBeInTheDocument();
+
+      await userEvent.clear(search);
+      await userEvent.type(search, "zzz");
+      expect(screen.getByText("No runs match your search")).toBeInTheDocument();
+    });
+  });
+
   describe("weekly summary", () => {
     it("shows the stat tiles and the tests needing attention", () => {
       setupMocks();
       render(<DashboardPage />);
 
       expect(screen.getByText("82.5%")).toBeInTheDocument();
-      expect(
-        screen.getByText("Up 4.5 pts on the week before"),
-      ).toBeInTheDocument();
       expect(screen.getByText("Failing tests")).toBeInTheDocument();
       expect(screen.getByText("Checkout total is correct")).toBeInTheDocument();
       expect(screen.getByText("Project health")).toBeInTheDocument();

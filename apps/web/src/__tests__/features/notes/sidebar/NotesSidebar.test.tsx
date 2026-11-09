@@ -156,9 +156,7 @@ describe("NotesSidebar", () => {
     expect(
       screen.queryByRole("button", { name: "New note" }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByText("Nobody has written a note here yet."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("No notes yet")).toBeInTheDocument();
   });
 
   it('focuses search when "/" is pressed outside a text field', async () => {
@@ -171,19 +169,17 @@ describe("NotesSidebar", () => {
     ).toHaveFocus();
   });
 
-  it("says who can see the notes", () => {
+  it("titles the personal list", () => {
     renderSidebar();
     expect(
       screen.getByRole("heading", { name: /My notes/, level: 2 }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Only you can see these")).toBeInTheDocument();
   });
 
-  it("labels project notes as shared", () => {
+  it("titles the project list", () => {
     renderSidebar({ scope: "project" });
     expect(
       screen.getByRole("heading", { name: /Project notes/, level: 2 }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Shared with project members")).toBeInTheDocument();
   });
 });

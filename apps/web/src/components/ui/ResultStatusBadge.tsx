@@ -30,7 +30,7 @@ const config: Record<
   },
   [TestResultStatus.Skipped]: {
     label: "Skipped",
-    cls: "bg-base-content/6 text-fg-secondary border-base-content/15",
+    cls: "subtle-surface text-fg-secondary border-base-content/15",
     icon: <MinusIcon className="size-3" />,
   },
   [TestResultStatus.Untested]: {

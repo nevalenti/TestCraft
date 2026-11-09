@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
@@ -82,5 +82,31 @@ describe("DropdownMenu", () => {
 
     expect(screen.getByRole("button", { name: "Outside" })).toHaveFocus();
     expect(trigger).toHaveAttribute("aria-expanded", "false");
+  });
+});
+
+describe("DropdownMenu keyboard navigation", () => {
+  it("opens with ArrowDown, focuses the first item and cycles with arrows", async () => {
+    render(
+      <DropdownMenu label="Menu" trigger="Menu">
+        <li>
+          <button type="button">One</button>
+        </li>
+        <li>
+          <button type="button">Two</button>
+        </li>
+      </DropdownMenu>,
+    );
+    screen.getByRole("button", { name: "Menu" }).focus();
+
+    await userEvent.keyboard("{ArrowDown}");
+    await waitFor(() => expect(screen.getByText("One")).toHaveFocus());
+
+    await userEvent.keyboard("{ArrowDown}");
+    expect(screen.getByText("Two")).toHaveFocus();
+    await userEvent.keyboard("{ArrowDown}");
+    expect(screen.getByText("One")).toHaveFocus();
+    await userEvent.keyboard("{ArrowUp}");
+    expect(screen.getByText("Two")).toHaveFocus();
   });
 });

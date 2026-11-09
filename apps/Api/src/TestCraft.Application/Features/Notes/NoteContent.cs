@@ -14,7 +14,13 @@ internal static class NoteContent
     {
         var key = scope.NewStorageKey();
         using var stream = new MemoryStream(Encoding.UTF8.GetBytes(content));
-        await storage.UploadAsync(key, stream, NoteRules.ContentType, cancellationToken);
+        await storage.UploadAsync(
+            key,
+            stream,
+            NoteRules.ContentType,
+            forceDownload: false,
+            cancellationToken: cancellationToken
+        );
 
         return key;
     }

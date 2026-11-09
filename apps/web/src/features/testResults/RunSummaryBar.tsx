@@ -1,11 +1,12 @@
 import {
   ListBulletIcon,
-  PlusIcon,
+  PlusCircleIcon,
   RectangleGroupIcon,
 } from "@heroicons/react/24/solid";
 import { TestResultStatus, type TestRunSummary } from "@testcraft/types";
 
 import { ListToolbar } from "@/components/ui/ListToolbar";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   STATUS_COLOR,
   STATUS_OPTIONS,
@@ -51,36 +52,29 @@ export const RunSummaryBar = ({
       placeholder="Search test cases…"
     >
       {onGroupedChange && (
-        <div
-          role="group"
-          aria-label="Group results"
-          className="flex items-center gap-0.5 rounded-lg bg-base-content/6 p-0.5 text-xs"
-        >
-          {[
-            { value: false, label: "List", Icon: ListBulletIcon },
-            { value: true, label: "By suite", Icon: RectangleGroupIcon },
-          ].map(({ value, label, Icon }) => (
-            <button
-              key={label}
-              type="button"
-              aria-pressed={isGrouped === value}
-              onClick={() => onGroupedChange(value)}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-colors",
-                isGrouped === value
-                  ? "bg-base-100 text-base-content shadow-sm"
-                  : "text-fg-muted hover:text-base-content",
-              )}
-            >
-              <Icon className="size-3.5" aria-hidden="true" />
-              {label}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          label="Group results"
+          value={isGrouped ? "suite" : "list"}
+          onChange={(v) => onGroupedChange(v === "suite")}
+          options={[
+            {
+              value: "list",
+              label: "List",
+              icon: <ListBulletIcon className="size-3.5" aria-hidden="true" />,
+            },
+            {
+              value: "suite",
+              label: "By suite",
+              icon: (
+                <RectangleGroupIcon className="size-3.5" aria-hidden="true" />
+              ),
+            },
+          ]}
+        />
       )}
       {onAdd && (
         <button className="btn btn-sm btn-primary" onClick={onAdd}>
-          <PlusIcon className="size-4" aria-hidden="true" />
+          <PlusCircleIcon className="size-4" aria-hidden="true" />
           Add Result
         </button>
       )}
@@ -110,7 +104,7 @@ export const RunSummaryBar = ({
       {runSummary.total > 0 && (
         <div
           aria-hidden="true"
-          className="mt-3 flex h-2 gap-0.5 overflow-hidden rounded-full bg-base-content/8"
+          className="mt-3 flex h-2 gap-0.5 overflow-hidden rounded-full subtle-surface"
         >
           {STATUS_OPTIONS.map(({ value }) => {
             const count = runSummary[STATUS_TO_SUMMARY_KEY[value]];
@@ -134,7 +128,7 @@ export const RunSummaryBar = ({
           <button
             type="button"
             onClick={() => onStatusFilter(null)}
-            className="rounded-full border border-border px-3 py-1 text-xs font-medium text-fg-secondary transition-colors hover:bg-base-content/6 hover:text-base-content"
+            className="rounded-full border border-border px-3 py-1 text-xs font-medium text-fg-secondary transition-colors hover-surface hover:text-base-content"
           >
             All results
           </button>
@@ -155,7 +149,7 @@ export const RunSummaryBar = ({
                 "flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium transition-colors",
                 isActive
                   ? "border-base-content/30 bg-base-content/10 text-base-content"
-                  : "border-border text-fg-secondary hover:bg-base-content/6 hover:text-base-content",
+                  : "border-border text-fg-secondary hover-surface hover:text-base-content",
                 statusFilter !== null && !isActive && "opacity-60",
               )}
             >

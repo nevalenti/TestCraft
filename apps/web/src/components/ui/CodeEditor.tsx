@@ -50,7 +50,7 @@ export const CodeEditor = ({
           <span
             role="status"
             aria-label="Loading editor"
-            className="loading loading-md loading-spinner text-primary"
+            className="loading loading-md loading-spinner text-secondary"
           />
         }
         onChange={handleChange}

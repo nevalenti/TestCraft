@@ -5,7 +5,7 @@ import { StatusPill } from "@/components/ui/StatusPill";
 const config: Record<TestCasePriority, { label: string; cls: string }> = {
   [TestCasePriority.Low]: {
     label: "Low",
-    cls: "bg-base-content/6 text-fg-secondary border-base-content/15",
+    cls: "subtle-surface text-fg-secondary border-base-content/15",
   },
   [TestCasePriority.Medium]: {
     label: "Medium",

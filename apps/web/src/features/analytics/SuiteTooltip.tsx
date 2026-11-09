@@ -10,7 +10,7 @@ export const SuiteTooltip = ({ active, payload, label }: SuiteTooltipProps) => {
   if (!active || !payload?.length) return null;
   const total = payload.reduce((sum, entry) => sum + (entry.value ?? 0), 0);
   return (
-    <div className="min-w-40 rounded-xl border border-border bg-base-100 px-3.5 py-2.5 text-sm shadow-xl">
+    <div className="min-w-40 rounded-xl border border-border bg-base-100 px-3.5 py-2.5 text-sm shadow-popover">
       <p className="mb-2 max-w-52 truncate font-semibold">{label}</p>
       {payload.map((entry) => (
         <div

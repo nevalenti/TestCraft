@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { useRunTrend } from "@/features/analytics/hooks";
 import { type TrendEntry } from "@/features/analytics/trendHelpers";
 import { TrendSection } from "@/features/analytics/TrendSection";
@@ -63,14 +64,15 @@ export const AnalyticsTrendTab = () => {
       <EmptyState
         icon={<ArrowTrendingUpIcon className="size-6" />}
         title="No run data yet"
-        description="Complete a test run to see trend data."
       />
     );
 
   return (
     <div className="space-y-8 pb-10">
       {groups.map((group) => (
-        <TrendSection key={group.source ?? "__manual__"} group={group} />
+        <SectionErrorBoundary key={group.source ?? "__manual__"}>
+          <TrendSection group={group} />
+        </SectionErrorBoundary>
       ))}
     </div>
   );

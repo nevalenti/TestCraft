@@ -51,7 +51,7 @@ export const SortablePlanCase = ({
       <span className="flex-1 text-sm font-medium">{item.test_case_name}</span>
       {onRemove && (
         <button
-          className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
+          className="btn btn-ghost btn-xs btn-danger-ghost"
           onClick={() => onRemove(item.test_case_id)}
           aria-label="Remove from plan"
         >

@@ -122,20 +122,13 @@ public class TestRunsController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<RunLogPageResponse>> GetLogs(
         ProjectId projectId,
         TestRunId id,
-        [FromQuery] long? beforeSeq,
-        CancellationToken cancellationToken,
-        [FromQuery] int limit = GetRunLogs.DefaultLimit
+        [FromQuery] GetRunLogs.Query query,
+        CancellationToken cancellationToken
     )
     {
-        var query = new GetRunLogs.Query
-        {
-            ProjectId = projectId,
-            RunId = id,
-            BeforeSeq = beforeSeq,
-            Limit = limit,
-        };
+        var scopedQuery = query with { ProjectId = projectId, RunId = id };
 
-        return Ok(await sender.Send(query, cancellationToken));
+        return Ok(await sender.Send(scopedQuery, cancellationToken));
     }
 
     /// <summary>Appends log lines to the live feed for a test run.</summary>

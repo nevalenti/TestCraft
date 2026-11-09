@@ -52,7 +52,7 @@ export const AddCasesPanel = ({
           {search ? "No matches." : "All test cases are in the plan."}
         </p>
       ) : (
-        <ul className="max-h-[28rem] overflow-y-auto rounded-xl border border-border bg-base-100">
+        <ul className="max-h-112 overflow-y-auto rounded-xl border border-border bg-base-100">
           {filtered.map((testCase) => (
             <li
               key={testCase.id}
@@ -62,7 +62,7 @@ export const AddCasesPanel = ({
                 {testCase.name}
               </span>
               <button
-                className="btn shrink-0 text-primary btn-ghost btn-xs"
+                className="btn shrink-0 text-secondary btn-ghost btn-xs"
                 type="button"
                 aria-label={`Add ${testCase.name}`}
                 onClick={() => onAdd(testCase.id)}

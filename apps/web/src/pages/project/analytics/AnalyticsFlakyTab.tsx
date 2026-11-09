@@ -56,7 +56,6 @@ export const AnalyticsFlakyTab = () => {
       <EmptyState
         icon={<ExclamationTriangleIcon className="size-6" />}
         title="No flaky tests detected"
-        description="Tests that alternate between passing and failing across runs will appear here."
       />
     );
 

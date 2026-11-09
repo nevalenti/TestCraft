@@ -1,4 +1,4 @@
-import { ArrowUpTrayIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { ArrowUpTrayIcon, PlayIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
 import { useState } from "react";
@@ -111,7 +111,7 @@ export const RunsTab = () => {
               Import
             </button>
             <button className="btn btn-sm btn-primary" onClick={openCreate}>
-              <PlusIcon className="size-4" aria-hidden="true" />
+              <PlayIcon className="size-4" aria-hidden="true" />
               New Test Run
             </button>
           </>
@@ -136,7 +136,6 @@ export const RunsTab = () => {
         displayItems={visibleRuns}
         viewMode="list"
         emptyTitle="No test runs yet"
-        emptyDescription="Start a test run to record and track results."
         renderTable={renderTable}
       />
 

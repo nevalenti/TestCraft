@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { SquaresPlusIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
   CreateTestSuite,
@@ -93,7 +93,7 @@ export const SuitesTab = () => {
       >
         {canEdit && (
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
-            <PlusIcon className="size-4" aria-hidden="true" />
+            <SquaresPlusIcon className="size-4" aria-hidden="true" />
             New Test Suite
           </button>
         )}
@@ -117,7 +117,6 @@ export const SuitesTab = () => {
         displayItems={visibleSuites}
         viewMode="list"
         emptyTitle="No test suites yet"
-        emptyDescription="Group related test cases into suites."
         renderTable={renderTable}
       />
 

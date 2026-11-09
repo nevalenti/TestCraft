@@ -6,12 +6,12 @@ import { z } from "zod";
 
 import { FormActions } from "@/components/ui/form/FormActions";
 import { FormField } from "@/components/ui/form/FormField";
+import { FormInput } from "@/components/ui/form/FormInput";
 import { FileDropZone } from "@/features/testRuns/resultImport/FileDropZone";
 import {
   detectFormat,
   parseAllureFiles,
 } from "@/features/testRuns/resultImport/importFormat";
-import { cn } from "@/lib/cn";
 
 type ImportData =
   | { type: "junit"; xml: string; environment: string; name?: string }
@@ -158,12 +158,9 @@ export const ImportForm = ({
         htmlFor="import-environment"
         error={errors.environment?.message}
       >
-        <input
+        <FormInput
           id="import-environment"
-          className={cn(
-            "input-bordered input w-full bg-base-200",
-            errors.environment && "input-error",
-          )}
+          hasError={!!errors.environment}
           placeholder="staging"
           {...register("environment")}
         />
@@ -174,9 +171,8 @@ export const ImportForm = ({
         htmlFor="import-name"
         hint="Derived from the imported file if left blank."
       >
-        <input
+        <FormInput
           id="import-name"
-          className="input-bordered input w-full bg-base-200"
           placeholder="e.g. api-run-42"
           {...register("name")}
         />

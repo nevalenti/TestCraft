@@ -28,7 +28,7 @@ export const PassRateTrend = ({ rates, className }: PassRateTrendProps) => (
           title={`${runLabel(runsAgo)}: ${formatRate(rate)}`}
           className={cn(
             "w-1.5 rounded-t-sm",
-            isLatest ? "bg-primary" : "bg-base-content/30",
+            isLatest ? "bg-secondary" : "bg-base-content/30",
           )}
           style={{ height: `${Math.max(rate, 6)}%` }}
         />

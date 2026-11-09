@@ -8,7 +8,7 @@ interface SubNavProps {
 export const SubNav = ({ label, children }: SubNavProps) => (
   <nav
     aria-label={label}
-    className="inline-flex max-w-full items-center gap-0.5 overflow-x-auto rounded-xl bg-base-content/6 p-1"
+    className="-m-1 inline-flex max-w-full items-center gap-1 overflow-x-auto p-1"
   >
     {children}
   </nav>

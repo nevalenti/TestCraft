@@ -31,8 +31,7 @@ export const ResourceCard = ({
       data-testid={testId}
       className={cn(
         "group relative flex items-start gap-3 overflow-hidden rounded-xl border border-border bg-base-100 p-4 shadow-card",
-        "transition-[background-color,border-color,box-shadow] duration-200 ease-out",
-        "hover:border-base-content/25 hover:bg-base-content/[0.03] hover:shadow-card-hover",
+        "transition-colors duration-200 ease-out hover:border-primary",
       )}
     >
       {to && (

@@ -64,15 +64,11 @@ export const FileDropZone = ({
     "aria-invalid": hasError || undefined,
   });
   const colorTheme = colorClasses[color];
-  const inputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
   const dragCounter = useRef(0);
 
-  const openPicker = () => {
-    if (!inputRef.current) return;
-
-    inputRef.current.value = "";
-    inputRef.current.click();
+  const resetInput = (event: React.MouseEvent<HTMLInputElement>) => {
+    event.currentTarget.value = "";
   };
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,12 +103,8 @@ export const FileDropZone = ({
 
   return (
     <div
-      role="button"
-      tabIndex={0}
-      aria-label="File upload area"
-      aria-describedby={fieldAttributes["aria-describedby"]}
       className={cn(
-        "rounded-xl border-2 border-dashed outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+        "rounded-xl border-2 border-dashed has-focus-visible:ring-2 has-focus-visible:ring-offset-2",
         colorTheme.ring,
         isDragging && colorTheme.drag,
         !isDragging && hasError && "border-error/50 bg-error/5",
@@ -123,84 +115,83 @@ export const FileDropZone = ({
             colorTheme.hover,
           ),
       )}
-      onClick={openPicker}
-      onKeyDown={(event) => {
-        if (event.target !== event.currentTarget) return;
-        if (event.key !== "Enter" && event.key !== " ") return;
-        event.preventDefault();
-        openPicker();
-      }}
       onDragEnter={handleDragEnter}
       onDragOver={(event) => event.preventDefault()}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
       <input
-        ref={inputRef}
         {...fieldAttributes}
         type="file"
         accept={accept}
         multiple={multiple}
         className="sr-only"
         onChange={handleInputChange}
-        onClick={(event) => event.stopPropagation()}
-        tabIndex={-1}
+        onClick={resetInput}
       />
 
       {files.length === 0 ? (
-        <div className="pointer-events-none flex flex-col items-center gap-2.5 px-4 py-8 text-center select-none">
-          <div className="rounded-full bg-base-300 p-2.5">
-            <ArrowUpTrayIcon className="size-5 text-fg-secondary" />
-          </div>
-          <div>
-            <p className="text-sm text-fg-secondary">
+        <label
+          htmlFor={fieldAttributes.id}
+          className="flex cursor-pointer flex-col items-center gap-2.5 px-4 py-8 text-center select-none"
+        >
+          <span className="rounded-full bg-base-300 p-2.5">
+            <ArrowUpTrayIcon
+              className="size-5 text-fg-secondary"
+              aria-hidden="true"
+            />
+          </span>
+          <span>
+            <span className="block text-sm text-fg-secondary">
               <span className={cn("font-medium", colorTheme.text)}>
                 Click to upload
               </span>{" "}
               or drag & drop
-            </p>
-            {hint && <p className="mt-0.5 text-xs text-fg-muted">{hint}</p>}
-          </div>
-        </div>
+            </span>
+            {hint && (
+              <span className="mt-0.5 block text-xs text-fg-muted">{hint}</span>
+            )}
+          </span>
+        </label>
       ) : (
-        <div
-          role="presentation"
-          className="flex flex-col gap-1 p-3"
-          onClick={(event) => event.stopPropagation()}
-        >
-          {files.map((file, fileIndex) => (
-            <div
-              key={fileIndex}
-              className="flex items-center gap-2 rounded-lg bg-base-100 px-3 py-2 shadow-sm"
-            >
-              <DocumentIcon className="size-4 shrink-0 text-fg-muted" />
-              <span className="flex-1 truncate text-sm font-medium text-fg-secondary">
-                {file.name}
-              </span>
-              <span className="text-xs whitespace-nowrap text-fg-muted tabular-nums">
-                {formatBytes(file.size)}
-              </span>
-              <button
-                type="button"
-                aria-label={`Remove ${file.name}`}
-                className="ml-1 rounded p-0.5 text-fg-subtle transition-colors hover:bg-error/10 hover:text-error"
-                onClick={() => removeFile(fileIndex)}
+        <div className="flex flex-col gap-1 p-3">
+          <ul className="flex flex-col gap-1">
+            {files.map((file, fileIndex) => (
+              <li
+                key={`${file.name}-${file.size}-${file.lastModified}`}
+                className="flex items-center gap-2 rounded-lg bg-base-100 px-3 py-2 shadow-sm"
               >
-                <XMarkIcon className="size-3.5" />
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
+                <DocumentIcon
+                  className="size-4 shrink-0 text-fg-muted"
+                  aria-hidden="true"
+                />
+                <span className="min-w-0 flex-1 truncate text-sm font-medium text-fg-secondary">
+                  {file.name}
+                </span>
+                <span className="text-xs whitespace-nowrap text-fg-muted tabular-nums">
+                  {formatBytes(file.size)}
+                </span>
+                <button
+                  type="button"
+                  aria-label={`Remove ${file.name}`}
+                  className="ml-1 flex size-6 shrink-0 items-center justify-center rounded text-fg-subtle transition-colors hover:bg-error/10 hover:text-error"
+                  onClick={() => removeFile(fileIndex)}
+                >
+                  <XMarkIcon className="size-3.5" aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+          <label
+            htmlFor={fieldAttributes.id}
             className={cn(
-              "mt-1 flex items-center gap-1.5 px-1 py-0.5 text-xs transition-colors",
+              "mt-1 flex w-fit cursor-pointer items-center gap-1.5 px-1 py-0.5 text-xs transition-colors",
               colorTheme.textMuted,
             )}
-            onClick={openPicker}
           >
-            <ArrowUpTrayIcon className="size-3" />
+            <ArrowUpTrayIcon className="size-3" aria-hidden="true" />
             {multiple ? "Add or replace files" : "Replace file"}
-          </button>
+          </label>
         </div>
       )}
     </div>

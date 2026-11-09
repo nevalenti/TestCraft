@@ -59,11 +59,7 @@ export const MemberForm = ({
         htmlFor="member-role"
         error={errors.role?.message}
       >
-        <FormSelect
-          id="member-role"
-          className="select-bordered select w-full"
-          {...register("role")}
-        >
+        <FormSelect id="member-role" {...register("role")}>
           {roles.map((role) => (
             <option key={role} value={role}>
               {MEMBER_ROLE_LABELS[role]}

@@ -1,10 +1,10 @@
-import { EnvelopeIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { EnvelopeIcon } from "@heroicons/react/24/solid";
 import type { NotificationEvent } from "@testcraft/types";
 import { useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
 import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import { EmailForm } from "@/features/notifications/EmailForm";
@@ -38,23 +38,28 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
 
   return (
     <SettingsSectionCard
+      action={
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <EnvelopeIcon className="size-4" aria-hidden="true" />
+          New Email
+        </button>
+      }
       icon={EnvelopeIcon}
       title="Email Subscriptions"
       description="Send an email to an address on run events."
     >
-      <ListToolbar
-        search={search}
-        onSearch={setSearch}
-        placeholder="Search email subscriptions…"
-      >
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
-          <PlusIcon className="size-4" aria-hidden="true" />
-          New Email
-        </button>
-      </ListToolbar>
+      {(emailSubs?.length ?? 0) > 0 || search ? (
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search email subscriptions…"
+          className="mb-4 w-full sm:max-w-sm"
+        />
+      ) : null}
 
       {isError ? (
         <ErrorState
@@ -71,7 +76,6 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
           onRemove={(sub) => deleteEmail.mutate(sub.id)}
           removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
           emptyTitle="No email subscriptions yet"
-          emptyDescription="Add an email to get notified on run events."
         />
       )}
 

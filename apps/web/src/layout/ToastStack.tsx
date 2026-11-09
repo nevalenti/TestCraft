@@ -15,27 +15,31 @@ import {
 
 const TYPE_STYLE: Record<
   NotificationType,
-  { Icon: typeof CheckCircleIcon; iconClass: string; barClass: string }
+  { Icon: typeof CheckCircleIcon; tileClass: string; barClass: string }
 > = {
   success: {
     Icon: CheckCircleIcon,
-    iconClass: "text-success",
+    tileClass: "border-success/30 bg-success/10 text-success",
     barClass: "bg-success",
   },
-  error: { Icon: XCircleIcon, iconClass: "text-error", barClass: "bg-error" },
+  error: {
+    Icon: XCircleIcon,
+    tileClass: "border-error/30 bg-error/10 text-error",
+    barClass: "bg-error",
+  },
   warning: {
     Icon: ExclamationTriangleIcon,
-    iconClass: "text-warning",
+    tileClass: "border-warning/30 bg-warning/10 text-warning",
     barClass: "bg-warning",
   },
   alert: {
     Icon: ExclamationTriangleIcon,
-    iconClass: "text-warning",
+    tileClass: "border-warning/30 bg-warning/10 text-warning",
     barClass: "bg-warning",
   },
   info: {
     Icon: InformationCircleIcon,
-    iconClass: "text-info",
+    tileClass: "border-info/30 bg-info/10 text-info",
     barClass: "bg-info",
   },
 };
@@ -48,29 +52,40 @@ interface ToastItemProps {
 }
 
 const ToastItem = ({ notification, onDismiss }: ToastItemProps) => {
-  const { Icon, iconClass, barClass } = TYPE_STYLE[notification.type];
+  const { Icon, tileClass, barClass } = TYPE_STYLE[notification.type];
 
   return (
-    <div className="relative flex w-full items-start gap-2.5 overflow-hidden rounded-xl border border-border bg-base-100 py-3 pr-2 pl-3.5 shadow-2xl shadow-black/30 motion-safe:animate-[toast-in_180ms_ease-out] sm:w-80">
+    <div className="relative flex w-full items-center gap-3 overflow-hidden rounded-xl border border-border bg-base-100 p-3 shadow-popover motion-safe:animate-[toast-in_180ms_ease-out] sm:w-80">
       <span
         aria-hidden="true"
-        className={cn("absolute inset-y-0 left-0 w-1", barClass)}
-      />
-      <Icon
-        className={cn("mt-px size-4.5 shrink-0", iconClass)}
-        aria-hidden="true"
-      />
-      <span className="flex-1 text-sm leading-snug font-medium text-base-content">
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-lg border",
+          tileClass,
+        )}
+      >
+        <Icon className="size-4.5" />
+      </span>
+      <span className="min-w-0 flex-1 text-sm leading-snug font-medium text-base-content">
         {notification.message}
       </span>
       <button
         type="button"
         onClick={() => onDismiss(notification.id)}
-        className="-my-1 flex size-6 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover:bg-base-content/8 hover:text-base-content"
+        className="flex size-6 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover-surface hover:text-base-content"
         aria-label="Dismiss notification"
       >
         <XMarkIcon className="size-3.5" aria-hidden="true" />
       </button>
+      {notification.timeout ? (
+        <span
+          aria-hidden="true"
+          style={{ animationDuration: `${notification.timeout}ms` }}
+          className={cn(
+            "absolute inset-x-0 bottom-0 h-0.5 origin-left opacity-60 motion-safe:animate-[toast-progress_linear_forwards]",
+            barClass,
+          )}
+        />
+      ) : null}
     </div>
   );
 };
@@ -83,7 +98,7 @@ export const ToastStack = () => {
   const others = visible.filter(({ type }) => type !== "error");
 
   return (
-    <div className="pointer-events-none fixed inset-x-4 bottom-4 z-[999] flex justify-center sm:inset-x-auto sm:right-6 sm:bottom-6">
+    <div className="pointer-events-none fixed inset-x-4 bottom-4 z-(--z-toast) flex justify-center sm:inset-x-auto sm:right-6 sm:bottom-6">
       <div className="pointer-events-auto flex w-full flex-col gap-2 sm:w-auto">
         <div role="alert" className="flex flex-col gap-2 empty:hidden">
           {errors.map((notification) => (

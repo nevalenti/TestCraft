@@ -1,6 +1,9 @@
 import type { NotificationEvent } from "@testcraft/types";
 
-import { AVAILABLE_EVENTS } from "@/features/notifications/notificationEvents";
+import {
+  AVAILABLE_EVENTS,
+  NOTIFICATION_EVENT_LABELS,
+} from "@/features/notifications/notificationEvents";
 
 interface EventCheckboxesProps {
   selected: NotificationEvent[];
@@ -19,7 +22,7 @@ export const EventCheckboxes = ({
     );
 
   return (
-    <div className="flex flex-wrap gap-3">
+    <div role="group" aria-label="Events" className="flex flex-wrap gap-3">
       {AVAILABLE_EVENTS.map((ev) => (
         <label
           key={ev}
@@ -31,7 +34,7 @@ export const EventCheckboxes = ({
             checked={selected.includes(ev)}
             onChange={() => toggle(ev)}
           />
-          {ev}
+          {NOTIFICATION_EVENT_LABELS[ev]}
         </label>
       ))}
     </div>

@@ -1,4 +1,4 @@
-import { PencilIcon, PlusIcon } from "@heroicons/react/24/solid";
+import { PencilIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
   CreateTestCaseStep,
@@ -114,12 +114,7 @@ export const CasePage = () => {
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedSteps.length === 0)
-      return (
-        <EmptyState
-          title="No steps defined"
-          description="Break this test case down into clear, ordered steps."
-        />
-      );
+      return <EmptyState title="No steps defined" />;
 
     return (
       <StepsList
@@ -184,7 +179,7 @@ export const CasePage = () => {
                 className="btn shrink-0 btn-sm btn-primary"
                 onClick={openCreate}
               >
-                <PlusIcon className="size-4" aria-hidden="true" />
+                <PlusCircleIcon className="size-4" aria-hidden="true" />
                 Add Step
               </button>
             </>

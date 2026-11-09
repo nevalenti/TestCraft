@@ -64,9 +64,6 @@ describe("AnalyticsTrendTab", () => {
     it("prompts to complete a run", async () => {
       renderWithClient();
       expect(await screen.findByText("No run data yet")).toBeInTheDocument();
-      expect(
-        screen.getByText("Complete a test run to see trend data."),
-      ).toBeInTheDocument();
     });
   });
 

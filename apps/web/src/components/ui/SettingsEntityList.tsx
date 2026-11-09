@@ -15,7 +15,6 @@ interface SettingsEntityListProps<T> {
   removeLabel?: ReactNode;
   isRemoveHidden?: (item: T) => boolean;
   emptyTitle: string;
-  emptyDescription?: string;
 }
 
 export const SettingsEntityList = <T,>({
@@ -30,10 +29,8 @@ export const SettingsEntityList = <T,>({
   removeLabel,
   isRemoveHidden,
   emptyTitle,
-  emptyDescription,
 }: SettingsEntityListProps<T>) => {
-  if (items.length === 0)
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+  if (items.length === 0) return <EmptyState compact title={emptyTitle} />;
 
   return (
     <ul className="space-y-2">
@@ -59,11 +56,12 @@ export const SettingsEntityList = <T,>({
             {renderTrailing?.(item)}
             {!isRemoveHidden?.(item) && (
               <button
-                className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
+                type="button"
+                className="btn btn-ghost btn-xs btn-danger-ghost"
                 onClick={() => onRemove(item)}
                 aria-label={removeAriaLabel(item)}
               >
-                <TrashIcon className="size-3.5" />
+                <TrashIcon className="size-3.5" aria-hidden="true" />
                 {removeLabel}
               </button>
             )}

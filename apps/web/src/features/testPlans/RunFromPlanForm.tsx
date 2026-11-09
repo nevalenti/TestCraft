@@ -1,5 +1,8 @@
 import { useForm } from "react-hook-form";
 
+import { FormField } from "@/components/ui/form/FormField";
+import { FormInput } from "@/components/ui/form/FormInput";
+
 interface RunFromPlanFormProps {
   planName: string;
   onSubmit: (data: { name: string; environment: string }) => void;
@@ -20,29 +23,21 @@ export const RunFromPlanForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label htmlFor="run-name" className="label-text label text-xs">
-          Run Name
-        </label>
-        <input
+      <FormField label="Run Name" htmlFor="run-name">
+        <FormInput
           id="run-name"
-          className="input-bordered input input-sm w-full"
           autoFocus
           placeholder={`${planName} – Run 1`}
           {...register("name", { required: true })}
         />
-      </div>
-      <div>
-        <label htmlFor="run-env" className="label-text label text-xs">
-          Environment (optional)
-        </label>
-        <input
+      </FormField>
+      <FormField label="Environment (optional)" htmlFor="run-env">
+        <FormInput
           id="run-env"
-          className="input-bordered input input-sm w-full"
           placeholder="e.g. staging"
           {...register("environment")}
         />
-      </div>
+      </FormField>
       <div className="flex justify-end gap-2">
         <button
           type="button"

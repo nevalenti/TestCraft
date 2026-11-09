@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import type { Table } from "@tanstack/react-table";
 import type { Paginated, TestResult, TestResultStatus } from "@testcraft/types";
 
@@ -62,14 +62,13 @@ export const ResultsContent = ({
     return (
       <EmptyState
         title="No results recorded"
-        description="Add results to track the outcome of each test case in this run."
         action={
           openCreate && (
             <button
               className="btn gap-1.5 btn-sm btn-primary"
               onClick={openCreate}
             >
-              <PlusIcon className="size-4" aria-hidden="true" />
+              <PlusCircleIcon className="size-4" aria-hidden="true" />
               Add Result
             </button>
           )
@@ -82,7 +81,6 @@ export const ResultsContent = ({
       <EmptyState
         icon={<MagnifyingGlassIcon className="size-5" />}
         title="No results match"
-        description="Try a different search term or clear the active filter."
         action={
           <div className="flex gap-2">
             {debouncedSearch && (

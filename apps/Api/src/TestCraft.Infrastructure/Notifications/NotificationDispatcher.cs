@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -13,7 +14,6 @@ using TestCraft.Infrastructure.Configuration;
 
 namespace TestCraft.Infrastructure.Notifications;
 
-#pragma warning disable CA1873
 public partial class NotificationDispatcher(
     IApplicationDbContext context,
     IEmailService email,
@@ -37,6 +37,14 @@ public partial class NotificationDispatcher(
 
     private sealed record EmailPayload(string Subject, string HtmlBody);
 
+    private sealed record RunCompletedPayload(
+        [property: JsonPropertyName("event_id")] Guid EventId,
+        [property: JsonPropertyName("event_type")] string EventType,
+        [property: JsonPropertyName("run_id")] TestRunId RunId,
+        [property: JsonPropertyName("run_name")] string RunName,
+        [property: JsonPropertyName("project_id")] ProjectId ProjectId
+    );
+
     public async Task DispatchRunCompletedAsync(
         ProjectId projectId,
         TestRunId runId,
@@ -44,19 +52,19 @@ public partial class NotificationDispatcher(
         CancellationToken cancellationToken = default
     )
     {
-        var payload = new
-        {
-            event_id = Guid.NewGuid(),
-            event_type = "run.completed",
-            run_id = runId,
-            run_name = runName,
-            project_id = projectId,
-        };
-        await DispatchWebhooksAsync(projectId, "run.completed", payload, cancellationToken);
+        const NotificationEvent notificationEvent = NotificationEvent.RunCompleted;
+        var payload = new RunCompletedPayload(
+            Guid.NewGuid(),
+            NotificationEvents.WireName(notificationEvent),
+            runId,
+            runName,
+            projectId
+        );
+        await DispatchWebhooksAsync(projectId, notificationEvent, payload, cancellationToken);
         var runUrl = $"{options.Value.WebBaseUrl.TrimEnd('/')}/projects/{projectId}/runs/{runId}";
         await DispatchEmailsAsync(
             projectId,
-            "run.completed",
+            notificationEvent,
             RunCompletedEmail.Subject(runName),
             RunCompletedEmail.Body(runName, runUrl),
             cancellationToken
@@ -95,17 +103,19 @@ public partial class NotificationDispatcher(
                         delivery.Payload,
                         cancellationToken
                     )
-                    : await TrySendEmailAsync(delivery, cancellationToken);
+                    : await TrySendQueuedEmailAsync(delivery, cancellationToken);
 
             if (result.Success)
             {
                 delivery.MarkSent();
+#pragma warning disable CA1873 // RedactTarget is a cheap string operation.
                 LogDeliveryRetrySucceeded(
                     logger,
                     delivery.Channel,
                     RedactTarget(delivery.Channel, delivery.Target),
                     delivery.AttemptCount
                 );
+#pragma warning restore CA1873
             }
             else
             {
@@ -129,17 +139,19 @@ public partial class NotificationDispatcher(
 
     private async Task DispatchWebhooksAsync(
         ProjectId projectId,
-        string eventType,
+        NotificationEvent notificationEvent,
         object payload,
         CancellationToken cancellationToken
     )
     {
+        var eventType = NotificationEvents.WireName(notificationEvent);
+        var eventToken = NotificationEvents.StoredToken(notificationEvent);
         var webhooks = await context
             .WebhookSubscriptions.AsNoTracking()
             .Where(webhookSubscription =>
                 webhookSubscription.ProjectId == projectId
                 && webhookSubscription.IsActive
-                && webhookSubscription.Events.Contains($"\"{eventType}\"")
+                && webhookSubscription.Events.Contains(eventToken)
             )
             .ToListAsync(cancellationToken);
 
@@ -184,17 +196,19 @@ public partial class NotificationDispatcher(
 
     private async Task DispatchEmailsAsync(
         ProjectId projectId,
-        string eventType,
+        NotificationEvent notificationEvent,
         string subject,
         string body,
         CancellationToken cancellationToken
     )
     {
+        var eventType = NotificationEvents.WireName(notificationEvent);
+        var eventToken = NotificationEvents.StoredToken(notificationEvent);
         var recipients = await context
             .EmailSubscriptions.Where(emailSubscription =>
                 emailSubscription.ProjectId == projectId
                 && emailSubscription.IsActive
-                && emailSubscription.Events.Contains($"\"{eventType}\"")
+                && emailSubscription.Events.Contains(eventToken)
             )
             .Select(emailSubscription => emailSubscription.Email)
             .ToListAsync(cancellationToken);
@@ -240,7 +254,7 @@ public partial class NotificationDispatcher(
         try
         {
             var http = httpClientFactory.CreateClient("notifications");
-            var request = new HttpRequestMessage(HttpMethod.Post, url)
+            using var request = new HttpRequestMessage(HttpMethod.Post, url)
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json"),
             };
@@ -289,7 +303,7 @@ public partial class NotificationDispatcher(
         }
     }
 
-    private async Task<DeliveryAttemptResult> TrySendEmailAsync(
+    private async Task<DeliveryAttemptResult> TrySendQueuedEmailAsync(
         NotificationDelivery delivery,
         CancellationToken cancellationToken
     )
@@ -316,4 +330,3 @@ public partial class NotificationDispatcher(
         return Convert.ToHexString(hashBytes).ToLowerInvariant();
     }
 }
-#pragma warning restore CA1873

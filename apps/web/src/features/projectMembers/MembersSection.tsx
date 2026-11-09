@@ -1,10 +1,10 @@
-import { PlusIcon, UsersIcon } from "@heroicons/react/24/solid";
+import { UserPlusIcon, UsersIcon } from "@heroicons/react/24/solid";
 import type { AssignableRole } from "@testcraft/types";
 import { useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
-import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { SettingsEntityList } from "@/components/ui/SettingsEntityList";
 import { SettingsSectionCard } from "@/components/ui/SettingsSectionCard";
 import {
@@ -58,23 +58,28 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
 
   return (
     <SettingsSectionCard
+      action={
+        <button
+          type="button"
+          className="btn btn-sm btn-primary"
+          onClick={() => setIsCreateOpen(true)}
+        >
+          <UserPlusIcon className="size-4" aria-hidden="true" />
+          Add Member
+        </button>
+      }
       icon={UsersIcon}
       title="Members"
       description="Invite teammates to collaborate on this project."
     >
-      <ListToolbar
-        search={search}
-        onSearch={setSearch}
-        placeholder="Search members…"
-      >
-        <button
-          className="btn btn-sm btn-primary"
-          onClick={() => setIsCreateOpen(true)}
-        >
-          <PlusIcon className="size-4" aria-hidden="true" />
-          Add Member
-        </button>
-      </ListToolbar>
+      {(members?.length ?? 0) > 0 || search ? (
+        <SearchInput
+          value={search}
+          onChange={setSearch}
+          placeholder="Search members…"
+          className="mb-4 w-full sm:max-w-sm"
+        />
+      ) : null}
 
       {isError ? (
         <ErrorState
@@ -87,7 +92,7 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
           items={visibleMembers ?? []}
           getKey={(member) => member.id}
           renderLeading={(member) => (
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-content">
               {getInitials(memberLabel(member))}
             </span>
           )}
@@ -100,7 +105,7 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
           renderTrailing={(member) =>
             canManageMember(myRole, member.role) ? (
               <select
-                className="select-bordered select select-xs"
+                className="select select-xs"
                 value={member.role}
                 aria-label={`Role of ${member.email ?? memberLabel(member)}`}
                 disabled={updateRole.isPending}
@@ -129,7 +134,6 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
             `Remove ${member.email ?? memberLabel(member)}`
           }
           emptyTitle="No members yet"
-          emptyDescription="Invite teammates to collaborate on this project."
         />
       )}
 

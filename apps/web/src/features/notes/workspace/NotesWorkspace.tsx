@@ -12,7 +12,6 @@ interface NotesWorkspaceProps {
   sidebar: ReactNode;
   children: ReactNode;
   hasActiveNote: boolean;
-  variant?: "flush" | "card";
   fillHeight?: boolean;
   className?: string;
 }
@@ -21,7 +20,6 @@ export const NotesWorkspace = ({
   sidebar,
   children,
   hasActiveNote,
-  variant = "flush",
   fillHeight,
   className,
 }: NotesWorkspaceProps) => {
@@ -59,9 +57,7 @@ export const NotesWorkspace = ({
           isSidebarCollapsed
             ? "md:grid-cols-[minmax(0,1fr)]"
             : "md:grid-cols-[18rem_minmax(0,1fr)] xl:grid-cols-[20rem_minmax(0,1fr)]",
-          variant === "card"
-            ? "panel [--notes-list-bg:color-mix(in_oklab,var(--color-base-200)_40%,var(--color-base-100))]"
-            : "[--notes-list-bg:color-mix(in_oklab,var(--color-base-200)_40%,var(--color-base-300))]",
+          "[--notes-list-bg:color-mix(in_oklab,var(--color-base-200)_40%,var(--color-base-300))]",
           className,
         )}
       >
