@@ -26,7 +26,7 @@ interface CompletedRunTableRowProps {
 const getAvatarBadge = (isLoading: boolean, hasFailed: boolean) => {
   if (isLoading) {
     return {
-      className: "bg-base-content/8 text-fg-muted",
+      className: "subtle-surface text-fg-muted",
       icon: <ClockIcon className="size-4" />,
     };
   }

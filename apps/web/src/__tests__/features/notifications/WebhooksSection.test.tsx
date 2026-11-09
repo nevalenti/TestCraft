@@ -24,7 +24,10 @@ import {
   useDeleteWebhook,
   useWebhooks,
 } from "@/features/notifications/hooks";
-import { AVAILABLE_EVENTS } from "@/features/notifications/notificationEvents";
+import {
+  AVAILABLE_EVENTS,
+  NOTIFICATION_EVENT_LABELS,
+} from "@/features/notifications/notificationEvents";
 import { WebhooksSection } from "@/features/notifications/WebhooksSection";
 
 const makeWebhook = (overrides: Partial<Record<string, unknown>> = {}) => ({
@@ -103,7 +106,9 @@ describe("WebhooksSection", () => {
         "https://example.com/hook",
       );
       for (const event of AVAILABLE_EVENTS) {
-        await userEvent.click(screen.getByLabelText(event));
+        await userEvent.click(
+          screen.getByLabelText(NOTIFICATION_EVENT_LABELS[event]),
+        );
       }
       await userEvent.click(
         screen.getByRole("button", { name: /add webhook/i }),

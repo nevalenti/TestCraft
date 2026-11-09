@@ -88,12 +88,12 @@ export const Modal = ({
       >
         <div className="flex items-start justify-between gap-4 px-5 pt-5 pb-1">
           <div className="min-w-0">
-            <h3
+            <h2
               id={titleId}
               className="font-display text-lg font-bold tracking-tight text-base-content"
             >
               {title}
-            </h3>
+            </h2>
             {description && (
               <p id={descriptionId} className="mt-1 text-sm text-fg-muted">
                 {description}
@@ -102,7 +102,7 @@ export const Modal = ({
           </div>
           <button
             type="button"
-            className="-mt-0.5 -mr-1.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover:bg-base-content/8 hover:text-base-content"
+            className="-mt-0.5 -mr-1.5 flex size-8 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover-surface hover:text-base-content"
             onClick={onClose}
             aria-label="Close dialog"
           >

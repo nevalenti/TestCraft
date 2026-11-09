@@ -51,7 +51,7 @@ export const SearchInput = ({
       )}
     />
     {shortcut && !value && (
-      <kbd className="pointer-events-none absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded border border-border bg-base-200 px-1.5 font-mono text-[10px] leading-4 text-fg-subtle">
+      <kbd className="pointer-events-none absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded border border-border bg-base-200 px-1.5 font-mono text-3xs leading-4 text-fg-subtle">
         {shortcut}
       </kbd>
     )}

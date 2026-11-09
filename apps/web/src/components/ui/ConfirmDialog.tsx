@@ -51,12 +51,15 @@ export const ConfirmDialog = ({
         )}
         onClick={onConfirm}
         disabled={isLoading}
+        aria-busy={isLoading}
       >
-        {isLoading ? (
-          <span className="loading loading-sm loading-spinner" />
-        ) : (
-          confirmLabel
+        {isLoading && (
+          <span
+            className="loading loading-sm loading-spinner"
+            aria-hidden="true"
+          />
         )}
+        {confirmLabel}
       </button>
     </div>
   </Modal>

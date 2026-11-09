@@ -124,3 +124,23 @@ describe("ConfirmDialog tones", () => {
     );
   });
 });
+
+describe("ConfirmDialog loading state", () => {
+  it("keeps the confirm button's accessible name while loading", () => {
+    render(
+      <ConfirmDialog
+        isOpen
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
+        title="Delete thing"
+        description="Sure?"
+        isLoading
+      />,
+    );
+
+    const button = screen.getByRole("button", { name: "Delete" });
+
+    expect(button).toBeDisabled();
+    expect(button).toHaveAttribute("aria-busy", "true");
+  });
+});

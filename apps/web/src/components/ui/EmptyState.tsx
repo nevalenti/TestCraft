@@ -8,6 +8,8 @@ interface EmptyStateProps {
   action?: React.ReactNode;
   icon?: React.ReactNode;
   iconClassName?: string;
+  compact?: boolean;
+  className?: string;
 }
 
 export const EmptyState = ({
@@ -16,11 +18,19 @@ export const EmptyState = ({
   action,
   icon,
   iconClassName,
+  compact,
+  className,
 }: EmptyStateProps) => (
-  <div className="flex w-full flex-col items-center justify-center px-4 py-12 text-center">
+  <div
+    className={cn(
+      "flex w-full flex-col items-center justify-center px-4 text-center",
+      compact ? "rounded-xl border border-dashed border-border py-8" : "py-12",
+      className,
+    )}
+  >
     <span
       className={cn(
-        "mb-3 flex size-10 items-center justify-center rounded-xl bg-base-content/6 text-fg-subtle [&>svg]:size-5",
+        "mb-3 flex size-10 items-center justify-center rounded-xl subtle-surface text-fg-subtle [&>svg]:size-5",
         iconClassName,
       )}
     >

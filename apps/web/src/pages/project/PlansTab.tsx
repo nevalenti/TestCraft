@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
   CreateTestPlan,
@@ -100,7 +100,7 @@ export const PlansTab = () => {
       >
         {canEdit && (
           <button className="btn btn-sm btn-primary" onClick={openCreate}>
-            <PlusIcon className="size-4" aria-hidden="true" />
+            <ClipboardDocumentListIcon className="size-4" aria-hidden="true" />
             New Test Plan
           </button>
         )}

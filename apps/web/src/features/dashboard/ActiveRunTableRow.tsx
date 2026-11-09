@@ -76,7 +76,7 @@ export const ActiveRunTableRow = ({
             badgeClass={
               hasResults
                 ? "bg-warning/15 text-warning"
-                : "bg-base-content/8 text-fg-muted"
+                : "subtle-surface text-fg-muted"
             }
             badgeIcon={
               hasResults ? (

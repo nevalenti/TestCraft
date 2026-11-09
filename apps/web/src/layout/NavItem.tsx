@@ -32,14 +32,14 @@ export const NavItem = ({
         "flex items-center gap-3 rounded-xl px-3 py-2 text-sm transition-colors",
         isActive
           ? "bg-primary/12 font-semibold text-primary"
-          : "font-medium text-fg-secondary hover:bg-base-content/6 hover:text-base-content",
+          : "font-medium text-fg-secondary hover-surface hover:text-base-content",
       )}
     >
       {!hideIcon &&
         (isActive ? (
-          <SolidIcon className="size-[18px] shrink-0" />
+          <SolidIcon className="size-4.5 shrink-0" />
         ) : (
-          <OutlineIcon className="size-[18px] shrink-0" />
+          <OutlineIcon className="size-4.5 shrink-0" />
         ))}
       {label}
     </Link>

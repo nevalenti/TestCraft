@@ -1,5 +1,5 @@
 import { ClipboardIcon, TrashIcon } from "@heroicons/react/24/solid";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Modal } from "@/components/ui/Modal";
 import {
@@ -28,6 +28,7 @@ export const ShareModal = ({
   const [expiresAt, setExpiresAt] = useState("");
   const [newToken, setNewToken] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const urlInputRef = useRef<HTMLInputElement>(null);
 
   const handleCreate = () => {
     createToken.mutate(
@@ -46,9 +47,13 @@ export const ShareModal = ({
   const handleCopy = async () => {
     if (!shareUrl) return;
 
-    await navigator.clipboard.writeText(shareUrl);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      urlInputRef.current?.select();
+    }
   };
 
   return (
@@ -61,18 +66,24 @@ export const ShareModal = ({
             </p>
             <div className="flex gap-2">
               <input
+                ref={urlInputRef}
                 readOnly
                 value={shareUrl}
+                aria-label="Share link URL"
+                onFocus={(event) => event.currentTarget.select()}
                 className="input-bordered input input-sm w-full text-xs"
               />
               <button
+                type="button"
                 className="btn btn-ghost btn-sm"
                 onClick={handleCopy}
-                title="Copy to clipboard"
               >
-                <ClipboardIcon className="size-4" />
+                <ClipboardIcon className="size-4" aria-hidden="true" />
                 {copied ? "Copied!" : "Copy"}
               </button>
+              <span role="status" className="sr-only">
+                {copied ? "Share link copied to clipboard" : ""}
+              </span>
             </div>
             <p className="mt-2 text-xs text-fg-secondary">
               Anyone with this link can view the run results without logging in.
@@ -100,15 +111,19 @@ export const ShareModal = ({
               />
             </div>
             <button
+              type="button"
               className="btn btn-sm btn-primary"
               onClick={handleCreate}
               disabled={createToken.isPending}
+              aria-busy={createToken.isPending}
             >
-              {createToken.isPending ? (
-                <span className="loading loading-xs loading-spinner" />
-              ) : (
-                "Create Link"
+              {createToken.isPending && (
+                <span
+                  className="loading loading-xs loading-spinner"
+                  aria-hidden="true"
+                />
               )}
+              Create Link
             </button>
           </div>
         </div>
@@ -135,11 +150,12 @@ export const ShareModal = ({
                     </p>
                   </div>
                   <button
+                    type="button"
                     className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
                     onClick={() => revokeToken.mutate(token.id)}
-                    aria-label="Revoke share link"
+                    aria-label={`Revoke share link created ${formatDate(token.created_at)}`}
                   >
-                    <TrashIcon className="size-3.5" />
+                    <TrashIcon className="size-3.5" aria-hidden="true" />
                   </button>
                 </li>
               ))}

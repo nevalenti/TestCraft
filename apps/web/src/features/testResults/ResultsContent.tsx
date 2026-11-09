@@ -1,5 +1,5 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { PlusCircleIcon } from "@heroicons/react/24/solid";
 import type { Table } from "@tanstack/react-table";
 import type { Paginated, TestResult, TestResultStatus } from "@testcraft/types";
 
@@ -69,7 +69,7 @@ export const ResultsContent = ({
               className="btn gap-1.5 btn-sm btn-primary"
               onClick={openCreate}
             >
-              <PlusIcon className="size-4" aria-hidden="true" />
+              <PlusCircleIcon className="size-4" aria-hidden="true" />
               Add Result
             </button>
           )

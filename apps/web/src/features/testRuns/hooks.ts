@@ -1,5 +1,6 @@
 import {
   keepPreviousData,
+  type QueryClient,
   useMutation,
   useQueries,
   useQuery,
@@ -20,6 +21,7 @@ import {
   testRunsApi,
 } from "@/features/testRuns/api";
 import { importsApi } from "@/features/testRuns/resultImport/api";
+import { pollImportJob } from "@/features/testRuns/resultImport/pollImportJob";
 import { notify } from "@/lib/notify";
 
 export const useTestRuns = (projectId: string, search?: string) =>
@@ -86,30 +88,17 @@ export const useUpdateTestRun = (projectId: string) => {
   });
 };
 
-const IMPORT_POLL_INTERVAL_MS = 1500;
-const IMPORT_POLL_MAX_ATTEMPTS = 20;
-
-const pollImportJob = async (
-  projectId: string,
-  job: ImportJobResponse,
-): Promise<ImportJobResponse> => {
-  let current = job;
-  for (let attempt = 0; attempt < IMPORT_POLL_MAX_ATTEMPTS; attempt++) {
-    if (current.status === "completed") return current;
-    if (current.status === "failed")
-      throw new Error(current.error ?? "Test run import failed");
-    await new Promise((resolve) =>
-      setTimeout(resolve, IMPORT_POLL_INTERVAL_MS),
-    );
-    try {
-      current = await importsApi.getJob(projectId, current.id);
-    } catch {
-      throw new Error(
-        "Could not check the import status. Refresh the runs list in a moment.",
-      );
-    }
-  }
-  throw new Error("Test run import timed out");
+const invalidateRunData = (queryClient: QueryClient, projectId: string) => {
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.testRuns.all(projectId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.analytics.all(projectId),
+  });
+  queryClient.invalidateQueries({
+    queryKey: queryKeys.projects.detail(projectId),
+    exact: true,
+  });
 };
 
 const useImportMutation = <T>(
@@ -126,16 +115,7 @@ const useImportMutation = <T>(
     },
     onSuccess: () => {
       notify(`${format} results imported`);
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.analytics.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.projects.detail(projectId),
-        exact: true,
-      });
+      invalidateRunData(queryClient, projectId);
     },
     onError: (error: Error) => {
       if (isAxiosError(error)) return;
@@ -167,19 +147,10 @@ export const useDeleteTestRun = (projectId: string) => {
     mutationFn: (id: string) => testRunsApi.delete(projectId, id),
     onSuccess: (_, id) => {
       notify("Test run deleted");
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.testRuns.all(projectId),
-      });
       queryClient.removeQueries({
         queryKey: queryKeys.testRuns.detail(projectId, id),
       });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.analytics.all(projectId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.projects.detail(projectId),
-        exact: true,
-      });
+      invalidateRunData(queryClient, projectId);
     },
   });
 };

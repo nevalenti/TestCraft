@@ -21,7 +21,7 @@ const routeApi = getRouteApi("/share/$token");
 
 const SharePageSkeleton = () => (
   <SkeletonStatus label="Loading shared run…">
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-dvh bg-base-200">
       <div className="mx-auto max-w-4xl px-4 py-10">
         <Skeleton className="h-3 w-32" />
         <Skeleton className="mt-3 h-8 w-72" />
@@ -60,7 +60,7 @@ export const SharePage = () => {
 
   if (isError || !run)
     return (
-      <div className="flex min-h-screen items-center justify-center p-8">
+      <div className="flex min-h-dvh items-center justify-center p-8">
         <div className="text-center">
           <h1 className="mb-2 text-2xl font-bold text-error">Link not found</h1>
           <p className="text-sm text-fg-secondary">
@@ -74,7 +74,7 @@ export const SharePage = () => {
   const firstRowNumber = (run.page - 1) * run.page_size + 1;
 
   return (
-    <div className="min-h-screen bg-base-200">
+    <div className="min-h-dvh bg-base-200">
       <div className="mx-auto max-w-4xl px-4 py-10">
         <div className="mb-2 flex items-center gap-2">
           <span className="text-xs font-semibold tracking-widest text-fg-muted uppercase">

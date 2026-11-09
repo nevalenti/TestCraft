@@ -1,4 +1,4 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
+import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
   CreateTestCase,
@@ -100,7 +100,7 @@ export const SuitePage = () => {
         actions={
           canEdit && (
             <button className="btn btn-sm btn-primary" onClick={openCreate}>
-              <PlusIcon className="size-4" aria-hidden="true" />
+              <DocumentPlusIcon className="size-4" aria-hidden="true" />
               New Test Case
             </button>
           )

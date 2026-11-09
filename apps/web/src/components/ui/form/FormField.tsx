@@ -36,7 +36,7 @@ export const FormField = ({
         <div className="flex items-baseline justify-between gap-2">
           <label
             htmlFor={controlId}
-            className="text-[13px] font-medium text-fg-secondary"
+            className="text-label font-medium text-fg-secondary"
           >
             {label}
           </label>
@@ -51,6 +51,7 @@ export const FormField = ({
         {error && (
           <p
             id={feedbackId}
+            role="alert"
             className="flex items-center gap-1 text-xs font-medium text-error"
           >
             <ExclamationCircleIcon

@@ -17,7 +17,7 @@ export const ProjectNotesLayout = () => {
       hasActiveNote={!!activeNoteId}
       variant="card"
       fillHeight
-      className="min-h-[34rem] basis-0"
+      className="min-h-136 basis-0"
       sidebar={
         <ProjectNotesSidebar
           projectId={projectId}

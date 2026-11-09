@@ -98,6 +98,8 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
           className="min-h-0 overflow-y-auto rounded-xl border border-border bg-base-100"
         >
           <div
+            role="list"
+            aria-label="Test results"
             className="relative w-full"
             style={{ height: virtualizer.getTotalSize() }}
           >
@@ -108,6 +110,9 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
                 <div
                   key={virtualRow.key}
                   ref={virtualizer.measureElement}
+                  role="listitem"
+                  aria-posinset={virtualRow.index + 1}
+                  aria-setsize={items.length}
                   data-index={virtualRow.index}
                   className={cn(
                     "absolute top-0 left-0 flex w-full items-center gap-3 border-l-4 px-4 py-3",
@@ -117,7 +122,10 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
                   style={{ transform: `translateY(${virtualRow.start}px)` }}
                 >
                   <ResultStatusBadge status={result.status} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
+                  <span
+                    className="min-w-0 flex-1 truncate text-sm font-medium"
+                    title={result.test_case_name}
+                  >
                     {result.test_case_name}
                   </span>
                   {duration && (

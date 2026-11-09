@@ -66,7 +66,7 @@ const ToastItem = ({ notification, onDismiss }: ToastItemProps) => {
       <button
         type="button"
         onClick={() => onDismiss(notification.id)}
-        className="-my-1 flex size-6 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover:bg-base-content/8 hover:text-base-content"
+        className="-my-1 flex size-6 shrink-0 items-center justify-center rounded-lg text-fg-subtle transition-colors hover-surface hover:text-base-content"
         aria-label="Dismiss notification"
       >
         <XMarkIcon className="size-3.5" aria-hidden="true" />
@@ -83,7 +83,7 @@ export const ToastStack = () => {
   const others = visible.filter(({ type }) => type !== "error");
 
   return (
-    <div className="pointer-events-none fixed inset-x-4 bottom-4 z-[999] flex justify-center sm:inset-x-auto sm:right-6 sm:bottom-6">
+    <div className="pointer-events-none fixed inset-x-4 bottom-4 z-(--z-toast) flex justify-center sm:inset-x-auto sm:right-6 sm:bottom-6">
       <div className="pointer-events-auto flex w-full flex-col gap-2 sm:w-auto">
         <div role="alert" className="flex flex-col gap-2 empty:hidden">
           {errors.map((notification) => (

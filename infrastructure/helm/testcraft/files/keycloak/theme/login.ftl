@@ -64,7 +64,14 @@
 
       <div class="pt-1">
         <button id="kc-login" name="login" type="submit" class="btn btn-primary w-full">
-          <span id="kc-login-idle">Log in</span>
+          <span id="kc-login-idle">
+            <span class="inline-flex items-center gap-2">
+              <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/>
+              </svg>
+              Log in
+            </span>
+          </span>
           <span id="kc-login-busy" class="hidden items-center gap-2">
             <span class="loading loading-spinner loading-sm"></span> Logging in...
           </span>

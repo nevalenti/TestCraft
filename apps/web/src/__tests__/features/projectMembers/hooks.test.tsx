@@ -10,7 +10,7 @@ vi.mock("@/features/projectMembers/api", () => ({
       queryFn: vi.fn().mockResolvedValue([]),
     })),
   },
-  projectMembersApi: { add: vi.fn(), remove: vi.fn() },
+  projectMembersApi: { add: vi.fn(), remove: vi.fn(), update: vi.fn() },
 }));
 
 vi.mock("@/lib/notify", () => ({ notify: vi.fn() }));
@@ -24,6 +24,7 @@ import {
   useAddProjectMember,
   useProjectMembers,
   useRemoveProjectMember,
+  useUpdateProjectMemberRole,
 } from "@/features/projectMembers/hooks";
 import { notify } from "@/lib/notify";
 
@@ -92,5 +93,39 @@ describe("useRemoveProjectMember", () => {
       queryClient.getQueryState(queryKeys.projectMembers.all("p1"))
         ?.isInvalidated,
     ).toBe(true);
+  });
+});
+
+describe("useUpdateProjectMemberRole", () => {
+  const key = queryKeys.projectMembers.all("p1");
+  const members = [{ id: "m1", role: "viewer", email: "a@b.c" }] as any;
+
+  it("shows the new role immediately", async () => {
+    vi.mocked(projectMembersApi.update).mockReturnValue(new Promise(() => {}));
+    const { queryClient, wrapper } = makeWrapper();
+    queryClient.setQueryData(key, members);
+    const { result } = renderHook(() => useUpdateProjectMemberRole("p1"), {
+      wrapper,
+    });
+
+    result.current.mutate({ id: "m1", role: "admin" });
+
+    await waitFor(() =>
+      expect(queryClient.getQueryData<any[]>(key)?.[0].role).toBe("admin"),
+    );
+  });
+
+  it("rolls back when the request fails", async () => {
+    vi.mocked(projectMembersApi.update).mockRejectedValue(new Error("nope"));
+    const { queryClient, wrapper } = makeWrapper();
+    queryClient.setQueryData(key, members);
+    const { result } = renderHook(() => useUpdateProjectMemberRole("p1"), {
+      wrapper,
+    });
+
+    result.current.mutate({ id: "m1", role: "admin" });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+    expect(queryClient.getQueryData<any[]>(key)?.[0].role).toBe("viewer");
   });
 });

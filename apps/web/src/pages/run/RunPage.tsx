@@ -1,32 +1,21 @@
 import { getRouteApi } from "@tanstack/react-router";
 import {
-  getCoreRowModel,
-  type PaginationState,
-  type SortingState,
-  useReactTable,
-} from "@tanstack/react-table";
-import {
   type CreateTestResult,
   type TestResult,
   TestRunStatus,
   type UpdateTestResult,
 } from "@testcraft/types";
-import { useMemo, useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { ErrorState } from "@/components/ui/ErrorState";
+import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { AttachmentModal } from "@/features/attachments/AttachmentModal";
 import { useProject } from "@/features/projects/hooks";
 import { useProjectPermissions } from "@/features/projects/permissions";
 import { ShareModal } from "@/features/shareTokens/ShareModal";
 import {
-  RESULTS_PAGE_SIZE,
-  type ResultSortKey,
-} from "@/features/testResults/api";
-import { createColumns } from "@/features/testResults/columns";
-import {
   useCreateTestResult,
   useDeleteTestResult,
-  useTestResults,
   useUpdateTestResult,
 } from "@/features/testResults/hooks";
 import { ResultModals } from "@/features/testResults/ResultModals";
@@ -46,7 +35,7 @@ import { cn } from "@/lib/cn";
 import { GroupedResults } from "@/pages/run/GroupedResults";
 import { RunPageHeader } from "@/pages/run/RunPageHeader";
 import type { RunView } from "@/pages/run/RunViewTabs";
-import { useRunPageSearch } from "@/pages/run/useRunPageSearch";
+import { useRunResults } from "@/pages/run/useRunResults";
 
 const routeApi = getRouteApi("/_app/projects/$projectId_/runs/$runId");
 
@@ -60,18 +49,9 @@ export const RunPage = () => {
   const [attachmentResult, setAttachmentResult] = useState<TestResult | null>(
     null,
   );
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: RESULTS_PAGE_SIZE,
-  });
-
   const onEditResult = canEdit ? openEdit : undefined;
   const onDeleteResult = canEdit ? openDelete : undefined;
   const onAddResult = canEdit ? openCreate : undefined;
-
-  const resetPage = () =>
-    setPagination((previous) => ({ ...previous, pageIndex: 0 }));
 
   const {
     statusFilter,
@@ -81,7 +61,14 @@ export const RunPage = () => {
     debouncedSearch,
     setStatusFilter: handleStatusFilter,
     setGrouped,
-  } = useRunPageSearch(resetPage);
+    results: { data: resultsPage, isPending, isError, error, refetch },
+    table,
+    pageCount,
+  } = useRunResults(projectId, runId, {
+    onEdit: onEditResult,
+    onDelete: onDeleteResult,
+    onAttachment: setAttachmentResult,
+  });
   const { data: project } = useProject(projectId);
   const { data: run } = useTestRun(projectId, runId);
   const {
@@ -91,32 +78,12 @@ export const RunPage = () => {
     error: summaryError,
     refetch: refetchSummary,
   } = useTestRunSummary(projectId, runId);
-  const {
-    data: resultsPage,
-    isPending,
-    isError,
-    error,
-    refetch,
-  } = useTestResults(
-    projectId,
-    runId,
-    statusFilter ?? undefined,
-    debouncedSearch || undefined,
-    pagination.pageIndex + 1,
-    sorting[0]?.id as ResultSortKey | undefined,
-    sorting[0] && (sorting[0].desc ? "desc" : "asc"),
-  );
   const createResult = useCreateTestResult(projectId, runId);
   const updateRun = useUpdateTestRun(projectId);
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
 
   useTestRunRealtime(projectId, runId);
-
-  const handleSortingChange: typeof setSorting = (next) => {
-    setSorting(next);
-    resetPage();
-  };
 
   const handleComplete = () => {
     if (!run) return;
@@ -145,34 +112,6 @@ export const RunPage = () => {
     { label: run?.name ?? "…" },
   ]);
 
-  const isShowNotes = !!resultsPage?.items.some((result) => result.notes);
-  const columns = useMemo(
-    () =>
-      createColumns({
-        onEdit: onEditResult,
-        onDelete: onDeleteResult,
-        onAttachment: setAttachmentResult,
-        showNotes: isShowNotes,
-      }),
-    [onEditResult, onDeleteResult, setAttachmentResult, isShowNotes],
-  );
-
-  const pageCount = resultsPage
-    ? Math.ceil(resultsPage.total / RESULTS_PAGE_SIZE)
-    : -1;
-
-  const table = useReactTable({
-    data: resultsPage?.items ?? [],
-    columns,
-    state: { pagination, sorting },
-    onPaginationChange: setPagination,
-    onSortingChange: handleSortingChange,
-    pageCount,
-    manualPagination: true,
-    manualSorting: true,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
   const resultsContent = (
     <ResultsContent
       isPending={isPending}
@@ -191,9 +130,13 @@ export const RunPage = () => {
     />
   );
 
-  let viewContent: React.ReactNode;
+  let viewContent: ReactNode;
   if (view === "live") {
-    viewContent = <LiveLogFeed projectId={projectId} runId={runId} />;
+    viewContent = (
+      <SectionErrorBoundary title="The live log failed to display">
+        <LiveLogFeed projectId={projectId} runId={runId} />
+      </SectionErrorBoundary>
+    );
   } else if (view === "logs") {
     viewContent = <LogPanel projectId={projectId} runId={runId} />;
   } else {

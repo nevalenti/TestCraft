@@ -25,18 +25,22 @@ const storeCollapsed = (
 
 interface CollapsibleCardProps {
   title: string;
+  icon?: ReactNode;
   description?: ReactNode;
   storageKey?: string;
   defaultCollapsed?: boolean;
+  compact?: boolean;
   actions?: ReactNode;
   children: ReactNode;
 }
 
 export const CollapsibleCard = ({
   title,
+  icon,
   description,
   storageKey,
   defaultCollapsed = false,
+  compact,
   actions,
   children,
 }: CollapsibleCardProps) => {
@@ -65,7 +69,10 @@ export const CollapsibleCard = ({
           onClick={toggle}
           aria-expanded={!isCollapsed}
           aria-controls={contentId}
-          className="flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 self-stretch py-3 pl-4 text-left focus-visible:outline-offset-[-2px]"
+          className={cn(
+            "flex min-w-0 flex-1 cursor-pointer items-center gap-2.5 self-stretch pl-4 text-left focus-visible:outline-offset-[-2px]",
+            compact ? "py-2" : "py-3",
+          )}
         >
           <ChevronDownIcon
             aria-hidden="true"
@@ -74,6 +81,7 @@ export const CollapsibleCard = ({
               isCollapsed && "-rotate-90",
             )}
           />
+          {icon}
           <span className="min-w-0">
             <span className="block text-sm font-semibold text-base-content">
               {title}

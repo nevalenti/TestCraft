@@ -20,6 +20,45 @@
           0 1px 2px oklch(0 0 0 / 0.17), 0 8px 20px -4px oklch(0 0 0 / 0.25);
       }
 
+      :root,
+      [data-theme="dracula"] {
+        --color-base-300: oklch(22% 0.02 277.5);
+        --color-base-200: oklch(24.5% 0.02 277.5);
+        --color-base-100: oklch(26.5% 0.021 277.5);
+      }
+
+      .btn {
+        border-radius: 0.75rem;
+      }
+
+      .btn.btn-primary,
+      .btn.btn-outline {
+        border-color: oklch(from var(--color-base-content) l c h / 0.2);
+        background-image: none;
+        background-color: oklch(from var(--color-base-content) l c h / 0.04);
+        color: var(--color-base-content);
+        box-shadow: none;
+        font-weight: 600;
+        transition-property: background-color, border-color, color;
+      }
+
+      .btn.btn-primary:hover,
+      .btn.btn-outline:hover {
+        border-color: oklch(from var(--color-primary) l c h / 0.7);
+        background-color: oklch(from var(--color-primary) l c h / 0.1);
+      }
+
+      .btn.btn-primary:active {
+        transform: translateY(1px);
+      }
+
+      .btn.btn-primary:disabled,
+      .btn.btn-outline:disabled {
+        border-color: var(--color-border);
+        background-color: transparent;
+        color: oklch(from var(--color-base-content) l c h / 0.54);
+      }
+
       html, body {
         margin: 0;
         padding: 0;

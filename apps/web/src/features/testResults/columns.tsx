@@ -2,6 +2,7 @@ import { PaperClipIcon } from "@heroicons/react/24/outline";
 import { createColumnHelper } from "@tanstack/react-table";
 import { type TestResult, TestResultStatus } from "@testcraft/types";
 
+import { ExpandableText } from "@/components/ui/ExpandableText";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { ResourceActions } from "@/components/ui/resource/ResourceActions";
 import { ResultStatusBadge } from "@/components/ui/ResultStatusBadge";
@@ -65,12 +66,10 @@ export const createColumns = ({
             const value = info.getValue();
 
             return value ? (
-              <div
-                className="max-w-[200px] cursor-default truncate text-sm text-fg-secondary"
-                title={value}
-              >
-                {value}
-              </div>
+              <ExpandableText
+                text={value}
+                className="max-w-52 text-sm text-fg-secondary"
+              />
             ) : (
               <span className="text-sm text-fg-subtle italic">—</span>
             );

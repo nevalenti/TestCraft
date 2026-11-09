@@ -45,8 +45,8 @@ describe("FileDropZone", () => {
     });
   });
 
-  describe("given a click on the drop zone — opens the native file picker", () => {
-    it("delegates to the hidden input", async () => {
+  describe("given a click on the prompt — opens the native file picker", () => {
+    it("is a label bound to the file input", () => {
       const { container } = render(
         <FileDropZone
           id="files"
@@ -59,13 +59,12 @@ describe("FileDropZone", () => {
       const input = container.querySelector(
         'input[type="file"]',
       ) as HTMLInputElement;
-      const clickSpy = vi.spyOn(input, "click");
 
-      await userEvent.click(
-        screen.getByRole("button", { name: /file upload area/i }),
-      );
-
-      expect(clickSpy).toHaveBeenCalled();
+      expect(input).toHaveAttribute("id", "files");
+      expect(
+        screen.getByText(/click to upload/i).closest("label"),
+      ).toHaveAttribute("for", "files");
+      expect(input).not.toHaveAttribute("tabindex", "-1");
     });
   });
 
@@ -81,7 +80,9 @@ describe("FileDropZone", () => {
         />,
       );
 
-      const zone = screen.getByRole("button", { name: /file upload area/i });
+      const zone = screen
+        .getByText(/click to upload/i)
+        .closest("label")!.parentElement!;
       fireEvent.drop(zone, { dataTransfer: { files: [xmlFile, jsonFile] } });
 
       expect(onFilesChange).toHaveBeenCalledWith([xmlFile]);
@@ -98,7 +99,9 @@ describe("FileDropZone", () => {
         />,
       );
 
-      const zone = screen.getByRole("button", { name: /file upload area/i });
+      const zone = screen
+        .getByText(/click to upload/i)
+        .closest("label")!.parentElement!;
       fireEvent.drop(zone, { dataTransfer: { files: [jsonFile] } });
 
       expect(onFilesChange).not.toHaveBeenCalled();
@@ -140,30 +143,35 @@ describe("FileDropZone", () => {
   });
 });
 
-it("opens the picker from the keyboard without scrolling or intercepting nested buttons", () => {
-  const onFilesChange = vi.fn();
-  const { container } = render(
+it("keeps the remove controls out of any button-role container", () => {
+  render(
     <FileDropZone
       id="files"
       accept=".xml"
       files={[new File(["xml"], "report.xml")]}
+      onFilesChange={vi.fn()}
+    />,
+  );
+
+  const remove = screen.getByRole("button", { name: "Remove report.xml" });
+
+  expect(remove.closest('[role="button"]')).toBeNull();
+});
+
+it("keys rows by file identity so removing the first row keeps the rest", async () => {
+  const onFilesChange = vi.fn();
+  render(
+    <FileDropZone
+      id="files"
+      accept=".xml,.json"
+      files={[xmlFile, jsonFile]}
       onFilesChange={onFilesChange}
     />,
   );
-  const input = container.querySelector("input")!;
-  const click = vi.spyOn(input, "click");
-  const zone = screen.getByRole("button", { name: "File upload area" });
-  const space = new KeyboardEvent("keydown", {
-    key: " ",
-    bubbles: true,
-    cancelable: true,
-  });
-  fireEvent(zone, space);
-  expect(space.defaultPrevented).toBe(true);
-  expect(click).toHaveBeenCalledOnce();
-  click.mockClear();
-  fireEvent.keyDown(screen.getByRole("button", { name: "Remove report.xml" }), {
-    key: "Enter",
-  });
-  expect(click).not.toHaveBeenCalled();
+
+  await userEvent.click(
+    screen.getByRole("button", { name: "Remove report.xml" }),
+  );
+
+  expect(onFilesChange).toHaveBeenCalledWith([jsonFile]);
 });

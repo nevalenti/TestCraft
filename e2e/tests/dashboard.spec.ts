@@ -4,9 +4,7 @@ test.describe("Dashboard", () => {
   test.beforeEach(async ({ page, testData }) => {
     await testData.createProject();
     await page.goto("/");
-    await expect(
-      page.getByRole("button", { name: /Active Runs/ }),
-    ).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Active Runs/ })).toBeVisible();
   });
 
   test("My Projects button navigates to /projects", async ({ page }) => {
@@ -18,8 +16,6 @@ test.describe("Dashboard", () => {
   });
 
   test("shows the Active Runs tab", async ({ page }) => {
-    await expect(
-      page.getByRole("button", { name: "Active Runs" }),
-    ).toBeVisible();
+    await expect(page.getByRole("tab", { name: /Active Runs/ })).toBeVisible();
   });
 });
