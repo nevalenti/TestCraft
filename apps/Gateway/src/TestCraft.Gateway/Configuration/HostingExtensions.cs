@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Options;
 using Prometheus;
-using TestCraft.Common.Hosting;
 using TestCraft.Common.Configuration;
+using TestCraft.Common.Hosting;
 using TestCraft.Common.Http;
 using TestCraft.Gateway.Middleware;
 
