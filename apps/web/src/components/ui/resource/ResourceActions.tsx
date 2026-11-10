@@ -1,4 +1,8 @@
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/solid";
+import {
+  DocumentDuplicateIcon,
+  PencilIcon,
+  TrashIcon,
+} from "@heroicons/react/24/solid";
 
 import { cn } from "@/lib/cn";
 
@@ -9,6 +13,7 @@ const SIZE_CLASS = {
 
 interface ResourceActionsProps {
   onEdit?: () => void;
+  onCopy?: () => void;
   onDelete?: () => void;
   label: string;
   size?: "sm" | "xs";
@@ -16,6 +21,7 @@ interface ResourceActionsProps {
 
 export const ResourceActions = ({
   onEdit,
+  onCopy,
   onDelete,
   label,
   size = "sm",
@@ -34,6 +40,18 @@ export const ResourceActions = ({
           aria-label={`Edit ${label}`}
         >
           <PencilIcon className={sizeClass.icon} />
+        </button>
+      )}
+      {onCopy && (
+        <button
+          className={cn(
+            "btn btn-ghost text-fg-muted hover:text-base-content",
+            sizeClass.button,
+          )}
+          onClick={onCopy}
+          aria-label={`Copy ${label}`}
+        >
+          <DocumentDuplicateIcon className={sizeClass.icon} />
         </button>
       )}
       {onDelete && (

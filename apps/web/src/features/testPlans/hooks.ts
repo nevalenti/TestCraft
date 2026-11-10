@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
+  CloneTestPlan,
   CreateTestPlan,
   TestPlan,
   TestPlanCase,
@@ -33,6 +34,21 @@ export const useCreateTestPlan = (projectId: string) => {
       testPlansApi.create(projectId, input),
     onSuccess: (_, input) => {
       notify(`Test plan "${input.name}" created`);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testPlans.all(projectId),
+      });
+    },
+  });
+};
+
+export const useCloneTestPlan = (projectId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...input }: CloneTestPlan & { id: string }) =>
+      testPlansApi.clone(projectId, id, input),
+    onSuccess: (plan) => {
+      notify(`Test plan "${plan.name}" copied`);
       queryClient.invalidateQueries({
         queryKey: queryKeys.testPlans.all(projectId),
       });

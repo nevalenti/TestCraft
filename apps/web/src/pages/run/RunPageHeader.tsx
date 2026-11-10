@@ -9,6 +9,7 @@ import { type TestRun, TestRunStatus } from "@testcraft/types";
 import { MetaPill } from "@/components/ui/MetaPill";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { RelativeTime } from "@/components/ui/RelativeTime";
+import { RerunMenu } from "@/features/testRuns/RerunMenu";
 import { RunStatusBadge } from "@/features/testRuns/RunStatusBadge";
 import { type RunView, RunViewTabs } from "@/pages/run/RunViewTabs";
 
@@ -21,6 +22,9 @@ interface RunPageHeaderProps {
   onComplete: () => void;
   isCompleting: boolean;
   onShare: () => void;
+  rerunFailedCount: number;
+  isRerunning: boolean;
+  onRerun: (failedOnly: boolean) => void;
 }
 
 export const RunPageHeader = ({
@@ -32,6 +36,9 @@ export const RunPageHeader = ({
   onComplete,
   isCompleting,
   onShare,
+  rerunFailedCount,
+  isRerunning,
+  onRerun,
 }: RunPageHeaderProps) => (
   <PageHeader
     title={run?.name ?? "…"}
@@ -60,6 +67,13 @@ export const RunPageHeader = ({
     actions={
       <>
         <RunViewTabs view={view} onChange={onViewChange} />
+        {canEdit && (
+          <RerunMenu
+            failedCount={rerunFailedCount}
+            isPending={isRerunning}
+            onRerun={onRerun}
+          />
+        )}
         {canEdit && run?.status === TestRunStatus.Active && (
           <button
             type="button"

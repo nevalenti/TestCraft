@@ -28,6 +28,7 @@ interface PlansTableProps {
   plans: TestPlan[];
   projectId: string;
   onEdit?: (plan: TestPlan) => void;
+  onCopy?: (plan: TestPlan) => void;
   onDelete?: (plan: TestPlan) => void;
   serverPage?: number;
   serverPageCount?: number;
@@ -40,6 +41,7 @@ export const PlansTable = ({
   plans,
   projectId,
   onEdit,
+  onCopy,
   onDelete,
   serverPage,
   serverPageCount,
@@ -95,6 +97,7 @@ export const PlansTable = ({
                 plan={plan}
                 projectId={projectId}
                 onEdit={onEdit && (() => onEdit(plan))}
+                onCopy={onCopy && (() => onCopy(plan))}
                 onDelete={onDelete && (() => onDelete(plan))}
                 showDescription={showDescription}
               />

@@ -7,13 +7,14 @@ using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestResults;
 
 public static class UpdateTestResult
 {
-    /// <summary>Updates a test result's status, notes, and defect type.</summary>
+    /// <summary>Updates a test result's status, notes, defect type, and defect link.</summary>
     public sealed record Command : IRequest<TestResultResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
@@ -37,6 +38,9 @@ public static class UpdateTestResult
         /// <summary>The category of defect, when the result failed.</summary>
         public DefectType? DefectType { get; init; }
 
+        /// <summary>A link to the issue tracking the defect, when the result failed.</summary>
+        public string? DefectUrl { get; init; }
+
         [JsonIgnore]
         public int? ExpectedVersion { get; init; }
     }
@@ -47,6 +51,7 @@ public static class UpdateTestResult
         {
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Notes).MaximumLength(5000);
+            RuleFor(command => command.DefectUrl).HttpUrl();
         }
     }
 
@@ -87,7 +92,8 @@ public static class UpdateTestResult
                 request.Notes,
                 request.DefectType,
                 timeProvider.GetStoredUtcNow(),
-                currentUser.UserId
+                currentUser.UserId,
+                request.DefectUrl
             );
 
             await context.SaveChangesAsync(cancellationToken);

@@ -1,5 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type { CreateTestCase, UpdateTestCase } from "@testcraft/types";
+import type {
+  CloneTestCase,
+  CreateTestCase,
+  UpdateTestCase,
+} from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testCaseQueries, testCasesApi } from "@/features/testCases/api";
@@ -37,6 +41,31 @@ export const useCreateTestCase = (projectId: string, suiteId: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.testCases.byProject(projectId),
+      });
+    },
+  });
+};
+
+export const useCloneTestCase = (projectId: string, suiteId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...input }: CloneTestCase & { id: string }) =>
+      testCasesApi.clone(projectId, suiteId, id, input),
+    onSuccess: (testCase) => {
+      notify(`Test case "${testCase.name}" copied`);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.all(projectId, testCase.suite_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.byProject(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.analytics.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
       });
     },
   });

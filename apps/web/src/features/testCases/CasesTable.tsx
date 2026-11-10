@@ -42,6 +42,7 @@ interface CasesTableProps {
   projectId: string;
   suiteId: string;
   onEdit?: (testCase: TestCase) => void;
+  onCopy?: (testCase: TestCase) => void;
   onDelete?: (testCase: TestCase) => void;
 }
 
@@ -50,6 +51,7 @@ export const CasesTable = ({
   projectId,
   suiteId,
   onEdit,
+  onCopy,
   onDelete,
 }: CasesTableProps) => {
   const [sort, setSort] = usePersistentSort("test-cases", SORT_KEYS);
@@ -103,6 +105,7 @@ export const CasesTable = ({
                 projectId={projectId}
                 suiteId={suiteId}
                 onEdit={onEdit && (() => onEdit(testCase))}
+                onCopy={onCopy && (() => onCopy(testCase))}
                 onDelete={onDelete && (() => onDelete(testCase))}
                 showDescription={showDescription}
                 showLabels={showLabels}

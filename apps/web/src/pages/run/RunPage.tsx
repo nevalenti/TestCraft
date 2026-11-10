@@ -1,4 +1,4 @@
-import { getRouteApi } from "@tanstack/react-router";
+import { getRouteApi, useNavigate } from "@tanstack/react-router";
 import {
   type CreateTestResult,
   type TestResult,
@@ -22,6 +22,7 @@ import { ResultModals } from "@/features/testResults/ResultModals";
 import { ResultsContent } from "@/features/testResults/ResultsContent";
 import { RunSummaryBar } from "@/features/testResults/RunSummaryBar";
 import {
+  useRerunTestRun,
   useTestRun,
   useTestRunSummary,
   useUpdateTestRun,
@@ -80,6 +81,8 @@ export const RunPage = () => {
   } = useTestRunSummary(projectId, runId);
   const createResult = useCreateTestResult(projectId, runId);
   const updateRun = useUpdateTestRun(projectId);
+  const rerunRun = useRerunTestRun(projectId);
+  const navigate = useNavigate();
   const updateResult = useUpdateTestResult(projectId, runId);
   const deleteResult = useDeleteTestResult(projectId, runId);
 
@@ -95,6 +98,18 @@ export const RunPage = () => {
       status: TestRunStatus.Completed,
     });
   };
+
+  const handleRerun = (failedOnly: boolean) =>
+    rerunRun.mutate(
+      { id: runId, failedOnly },
+      {
+        onSuccess: (newRun) =>
+          navigate({
+            to: "/projects/$projectId/runs/$runId",
+            params: { projectId, runId: newRun.id },
+          }),
+      },
+    );
 
   const handleCreate = (input: CreateTestResult) =>
     createResult.mutate(input, { onSuccess: close });
@@ -194,6 +209,11 @@ export const RunPage = () => {
         onComplete={handleComplete}
         isCompleting={updateRun.isPending}
         onShare={() => setShareOpen(true)}
+        rerunFailedCount={
+          (runSummary?.failed ?? 0) + (runSummary?.blocked ?? 0)
+        }
+        isRerunning={rerunRun.isPending}
+        onRerun={handleRerun}
       />
 
       <section

@@ -5,6 +5,7 @@ export type ModalState<T> =
   | { type: "create" }
   | { type: "import" }
   | { type: "edit"; item: T }
+  | { type: "copy"; item: T }
   | { type: "delete"; item: T };
 
 export const useModal = <T>() => {
@@ -16,10 +17,22 @@ export const useModal = <T>() => {
     (item: T) => setModal({ type: "edit", item }),
     [],
   );
+  const openCopy = useCallback(
+    (item: T) => setModal({ type: "copy", item }),
+    [],
+  );
   const openDelete = useCallback(
     (item: T) => setModal({ type: "delete", item }),
     [],
   );
 
-  return { modal, close, openCreate, openImport, openEdit, openDelete };
+  return {
+    modal,
+    close,
+    openCreate,
+    openImport,
+    openEdit,
+    openCopy,
+    openDelete,
+  };
 };

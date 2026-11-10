@@ -68,6 +68,13 @@ export const testRunsApi = {
     });
     return data;
   },
+  rerun: async (projectId: string, id: string, failedOnly: boolean) => {
+    const { data } = await sdk.rerunTestRun({
+      path: { project_id: projectId, run_id: id },
+      body: { failed_only: failedOnly },
+    });
+    return data;
+  },
   update: async (
     projectId: string,
     id: string,

@@ -29,6 +29,7 @@ interface SuitesTableProps {
   suites: TestSuite[];
   projectId: string;
   onEdit?: (suite: TestSuite) => void;
+  onCopy?: (suite: TestSuite) => void;
   onDelete?: (suite: TestSuite) => void;
 }
 
@@ -36,6 +37,7 @@ export const SuitesTable = ({
   suites,
   projectId,
   onEdit,
+  onCopy,
   onDelete,
 }: SuitesTableProps) => {
   const [sort, setSort] = usePersistentSort("suites", SORT_KEYS);
@@ -79,6 +81,7 @@ export const SuitesTable = ({
                 suite={suite}
                 projectId={projectId}
                 onEdit={onEdit && (() => onEdit(suite))}
+                onCopy={onCopy && (() => onCopy(suite))}
                 onDelete={onDelete && (() => onDelete(suite))}
                 showDescription={showDescription}
               />

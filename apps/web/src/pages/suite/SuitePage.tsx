@@ -11,17 +11,19 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
+import { CopyForm } from "@/features/copy/CopyForm";
 import { useProject } from "@/features/projects/hooks";
 import { useProjectPermissions } from "@/features/projects/permissions";
 import { CaseForm } from "@/features/testCases/CaseForm";
 import { CasesTable } from "@/features/testCases/CasesTable";
 import {
+  useCloneTestCase,
   useCreateTestCase,
   useDeleteTestCase,
   useTestCases,
   useUpdateTestCase,
 } from "@/features/testCases/hooks";
-import { useTestSuite } from "@/features/testSuites/hooks";
+import { useTestSuite, useTestSuites } from "@/features/testSuites/hooks";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
@@ -34,7 +36,7 @@ export const SuitePage = () => {
   const { canEdit } = useProjectPermissions(projectId);
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounce(search, 300);
-  const { modal, close, openCreate, openEdit, openDelete } =
+  const { modal, close, openCreate, openEdit, openCopy, openDelete } =
     useModal<TestCase>();
 
   const { data: project } = useProject(projectId);
@@ -49,6 +51,8 @@ export const SuitePage = () => {
   const createCase = useCreateTestCase(projectId, suiteId);
   const updateCase = useUpdateTestCase(projectId, suiteId);
   const deleteCase = useDeleteTestCase(projectId, suiteId);
+  const cloneCase = useCloneTestCase(projectId, suiteId);
+  const { data: suites } = useTestSuites(projectId);
   const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleCreate = (input: CreateTestCase) =>
@@ -58,6 +62,12 @@ export const SuitePage = () => {
       { id: item.id, version: item.version, ...input },
       { onSuccess: close },
     );
+  const handleCopy =
+    (item: TestCase) => (values: { name?: string; target?: string }) =>
+      cloneCase.mutate(
+        { id: item.id, name: values.name, target_suite_id: values.target },
+        { onSuccess: close },
+      );
   const handleDelete = (item: TestCase) =>
     deleteCase.mutate({ id: item.id, name: item.name }, { onSuccess: close });
 
@@ -75,6 +85,7 @@ export const SuitePage = () => {
       projectId={projectId}
       suiteId={suiteId}
       onEdit={canEdit ? openEdit : undefined}
+      onCopy={canEdit ? openCopy : undefined}
       onDelete={canEdit ? openDelete : undefined}
     />
   );
@@ -139,6 +150,28 @@ export const SuitePage = () => {
             onSubmit={handleUpdate(modal.item)}
             onCancel={close}
             isLoading={updateCase.isPending}
+          />
+        )}
+      </Modal>
+      <Modal
+        isOpen={modal.type === "copy"}
+        onClose={close}
+        title="Copy Test Case"
+      >
+        {modal.type === "copy" && (
+          <CopyForm
+            key={modal.item.id}
+            target={{
+              label: "Copy to suite",
+              defaultValue: suiteId,
+              options: (suites ?? []).map((entry) => ({
+                value: entry.id,
+                label: entry.name,
+              })),
+            }}
+            onSubmit={handleCopy(modal.item)}
+            onCancel={close}
+            isLoading={cloneCase.isPending}
           />
         )}
       </Modal>

@@ -20,6 +20,7 @@ public record TestResultResponse
             Notes = result.Notes,
             DurationMs = result.DurationMs,
             DefectType = result.DefectType,
+            DefectUrl = result.DefectUrl,
             ExecutedAt = result.ExecutedAt,
             ExecutedById = result.ExecutedById,
             CreatedAt = result.CreatedAt,
@@ -55,6 +56,9 @@ public record TestResultResponse
 
     /// <summary>The category of defect, when the result failed.</summary>
     public DefectType? DefectType { get; init; }
+
+    /// <summary>A link to the issue tracking the defect, if one was added.</summary>
+    public string? DefectUrl { get; init; }
 
     /// <summary>When the test was executed.</summary>
     public required DateTimeOffset? ExecutedAt { get; init; }

@@ -40,6 +40,9 @@ public static class CreateTestResult
         /// <summary>The category of defect, when the result failed.</summary>
         public DefectType? DefectType { get; init; }
 
+        /// <summary>A link to the issue tracking the defect, when the result failed.</summary>
+        public string? DefectUrl { get; init; }
+
         /// <summary>When the test was executed.</summary>
         public required DateTimeOffset ExecutedAt { get; init; }
     }
@@ -52,6 +55,7 @@ public static class CreateTestResult
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Status).NotEqual(TestResultStatus.Untested);
             RuleFor(command => command.Notes).MaximumLength(5000);
+            RuleFor(command => command.DefectUrl).HttpUrl();
         }
     }
 
@@ -101,6 +105,7 @@ public static class CreateTestResult
                 request.DefectType,
                 request.DurationMs,
                 request.ExecutedAt,
+                request.DefectUrl,
                 cancellationToken
             );
         }

@@ -59,6 +59,7 @@ export const ResultModals = ({
               status: modal.item.status,
               notes: modal.item.notes ?? "",
               defectType: modal.item.defect_type ?? undefined,
+              defectUrl: modal.item.defect_url ?? "",
             }}
             onSubmit={onUpdate(modal.item)}
             onCancel={close}

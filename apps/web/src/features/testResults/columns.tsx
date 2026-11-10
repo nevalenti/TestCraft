@@ -6,6 +6,7 @@ import { ExpandableText } from "@/components/ui/ExpandableText";
 import { RelativeTime } from "@/components/ui/RelativeTime";
 import { ResourceActions } from "@/components/ui/resource/ResourceActions";
 import { ResultStatusBadge } from "@/components/ui/ResultStatusBadge";
+import { DefectLink } from "@/features/testResults/DefectLink";
 import { DefectTypeBadge } from "@/features/testResults/DefectTypeBadge";
 import { formatDuration } from "@/lib/format";
 
@@ -53,6 +54,10 @@ export const createColumns = ({
         {info.getValue() === TestResultStatus.Failed &&
           info.row.original.defect_type && (
             <DefectTypeBadge type={info.row.original.defect_type} />
+          )}
+        {info.getValue() === TestResultStatus.Failed &&
+          info.row.original.defect_url && (
+            <DefectLink url={info.row.original.defect_url} />
           )}
       </div>
     ),

@@ -4,7 +4,11 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import type { CreateTestSuite, UpdateTestSuite } from "@testcraft/types";
+import type {
+  CloneTestSuite,
+  CreateTestSuite,
+  UpdateTestSuite,
+} from "@testcraft/types";
 
 import { queryKeys } from "@/api/queryKeys";
 import { testSuiteQueries, testSuitesApi } from "@/features/testSuites/api";
@@ -33,6 +37,31 @@ export const useCreateTestSuite = (projectId: string) => {
       });
       queryClient.invalidateQueries({
         queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
+      });
+    },
+  });
+};
+
+export const useCloneTestSuite = (projectId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, ...input }: CloneTestSuite & { id: string }) =>
+      testSuitesApi.clone(projectId, id, input),
+    onSuccess: (suite) => {
+      notify(`Suite "${suite.name}" copied`);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testSuites.all(suite.project_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testCases.byProject(suite.project_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.analytics.all(suite.project_id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(suite.project_id),
         exact: true,
       });
     },

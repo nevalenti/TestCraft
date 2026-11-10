@@ -87,6 +87,29 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
 
+    /// <summary>
+    /// Creates a new run with an untested result for each case in an existing run, or only for
+    /// the cases that currently failed or are blocked.
+    /// </summary>
+    [HttpPost("{id:guid}/rerun")]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<TestRunResponse>> Rerun(
+        ProjectId projectId,
+        TestRunId id,
+        RerunTestRun.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        SetETag(result.Version);
+
+        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
+    }
+
     /// <summary>Updates a test run's name, environment, and status.</summary>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

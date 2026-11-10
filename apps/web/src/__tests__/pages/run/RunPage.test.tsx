@@ -55,6 +55,7 @@ vi.mock("@/features/projects/permissions", () => ({
   useProjectPermissions: vi.fn(() => ({ canEdit: false })),
 }));
 vi.mock("@/features/testRuns/hooks", () => ({
+  useRerunTestRun: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
   useUpdateTestRun: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
   useTestRun: vi.fn(() => ({ data: { name: "Run" } })),
   useTestRunSummary: vi.fn(() => ({
@@ -107,7 +108,12 @@ vi.mock("@/features/attachments/AttachmentModal", () => ({
 import { createWrapper } from "@/__tests__/test-utils";
 import * as sdk from "@/api/sdk";
 import { useProjectPermissions } from "@/features/projects/permissions";
-import { useTestRun, useUpdateTestRun } from "@/features/testRuns/hooks";
+import {
+  useRerunTestRun,
+  useTestRun,
+  useTestRunSummary,
+  useUpdateTestRun,
+} from "@/features/testRuns/hooks";
 import { RunPage } from "@/pages/run/RunPage";
 import type { RunPageSearch } from "@/pages/run/runPageSearch";
 import { Route } from "@/routes/_app.projects.$projectId_.runs.$runId";
@@ -198,6 +204,37 @@ describe("RunPage header", () => {
       environment: "staging",
       status: TestRunStatus.Completed,
     });
+  });
+});
+
+describe("RunPage rerun", () => {
+  it("reruns the failed and blocked tests from the header", async () => {
+    const mutate = vi.fn();
+    vi.mocked(useProjectPermissions).mockReturnValue({
+      canEdit: true,
+    } as ReturnType<typeof useProjectPermissions>);
+    vi.mocked(useTestRunSummary).mockReturnValue({
+      data: { total: 40, failed: 2, blocked: 1 },
+      isPending: false,
+      isError: false,
+    } as ReturnType<typeof useTestRunSummary>);
+    vi.mocked(useRerunTestRun).mockReturnValue({
+      mutate,
+      isPending: false,
+    } as unknown as ReturnType<typeof useRerunTestRun>);
+
+    render(<RunPage />, { wrapper: createWrapper().wrapper });
+    await userEvent.click(
+      screen.getByRole("button", { name: "Rerun options" }),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Rerun failed & blocked (3)" }),
+    );
+
+    expect(mutate).toHaveBeenCalledWith(
+      { id: "runId-1", failedOnly: true },
+      expect.any(Object),
+    );
   });
 });
 

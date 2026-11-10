@@ -8,6 +8,7 @@ interface PlanTableRowProps {
   plan: TestPlan;
   projectId: string;
   onEdit?: () => void;
+  onCopy?: () => void;
   onDelete?: () => void;
   showDescription?: boolean;
 }
@@ -16,6 +17,7 @@ export const PlanTableRow = ({
   plan,
   projectId,
   onEdit,
+  onCopy,
   onDelete,
   showDescription = true,
 }: PlanTableRowProps) => (
@@ -59,6 +61,7 @@ export const PlanTableRow = ({
       >
         <ResourceActions
           onEdit={onEdit}
+          onCopy={onCopy}
           onDelete={onDelete}
           label="plan"
           size="xs"

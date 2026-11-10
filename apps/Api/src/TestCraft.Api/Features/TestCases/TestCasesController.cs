@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TestCraft.Api.Authorization;
+using TestCraft.Api.Idempotency;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Features.TestCases;
 
@@ -72,6 +73,34 @@ public class TestCasesController(ISender sender) : ApiControllerBase
             {
                 projectId,
                 suiteId,
+                id = result.Id,
+            },
+            result
+        );
+    }
+
+    /// <summary>Copies a test case, with its steps and labels, into the same or another suite.</summary>
+    [HttpPost("{id:guid}/clone")]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<TestCaseResponse>> Clone(
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        TestCaseId id,
+        CloneTestCase.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId, Id = id };
+
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new
+            {
+                projectId,
+                suiteId = result.SuiteId,
                 id = result.Id,
             },
             result

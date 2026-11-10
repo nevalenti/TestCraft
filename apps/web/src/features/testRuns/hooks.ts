@@ -64,6 +64,25 @@ export const useCreateTestRun = (projectId: string) => {
   });
 };
 
+export const useRerunTestRun = (projectId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, failedOnly }: { id: string; failedOnly: boolean }) =>
+      testRunsApi.rerun(projectId, id, failedOnly),
+    onSuccess: (run) => {
+      notify(`Test run "${run.name}" created`);
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.testRuns.all(projectId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.projects.detail(projectId),
+        exact: true,
+      });
+    },
+  });
+};
+
 export const useUpdateTestRun = (projectId: string) => {
   const queryClient = useQueryClient();
 

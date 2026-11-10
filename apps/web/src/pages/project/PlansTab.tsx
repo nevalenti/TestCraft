@@ -11,8 +11,10 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
+import { CopyForm } from "@/features/copy/CopyForm";
 import { useProjectPermissions } from "@/features/projects/permissions";
 import {
+  useCloneTestPlan,
   useCreateTestPlan,
   useDeleteTestPlan,
   useTestPlansPage,
@@ -51,7 +53,8 @@ export const PlansTab = () => {
   const createPlan = useCreateTestPlan(projectId);
   const updatePlan = useUpdateTestPlan(projectId);
   const deletePlan = useDeleteTestPlan(projectId);
-  const { modal, close, openCreate, openEdit, openDelete } =
+  const clonePlan = useCloneTestPlan(projectId);
+  const { modal, close, openCreate, openEdit, openCopy, openDelete } =
     useModal<TestPlan>();
   const showSkeleton = useIsLoadingVisible(isPending);
 
@@ -62,6 +65,8 @@ export const PlansTab = () => {
       { id: item.id, version: item.version, ...input },
       { onSuccess: close },
     );
+  const handleCopy = (item: TestPlan) => (values: { name?: string }) =>
+    clonePlan.mutate({ id: item.id, name: values.name }, { onSuccess: close });
   const handleDelete = (id: string) =>
     deletePlan.mutate(id, {
       onSuccess: () => {
@@ -77,6 +82,7 @@ export const PlansTab = () => {
       plans={items}
       projectId={projectId}
       onEdit={canEdit ? openEdit : undefined}
+      onCopy={canEdit ? openCopy : undefined}
       onDelete={canEdit ? openDelete : undefined}
       serverPage={page}
       serverPageCount={
@@ -155,6 +161,20 @@ export const PlansTab = () => {
         )}
       </Modal>
 
+      <Modal
+        isOpen={modal.type === "copy"}
+        onClose={close}
+        title="Copy Test Plan"
+      >
+        {modal.type === "copy" && (
+          <CopyForm
+            key={modal.item.id}
+            onSubmit={handleCopy(modal.item)}
+            onCancel={close}
+            isLoading={clonePlan.isPending}
+          />
+        )}
+      </Modal>
       <ConfirmDialog
         isOpen={modal.type === "delete"}
         onClose={close}

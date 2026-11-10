@@ -100,6 +100,29 @@ describe("createColumns", () => {
     });
   });
 
+  describe("the defect link", () => {
+    const url = "https://github.com/acme/shop/issues/482";
+
+    it("links to the issue from a failed result", () => {
+      renderTable([
+        { ...baseResult, status: TestResultStatus.Failed, defect_url: url },
+      ]);
+
+      const link = screen.getByRole("link", { name: /Defect link/ });
+      expect(link).toHaveAttribute("href", url);
+      expect(link).toHaveAttribute("target", "_blank");
+      expect(link).toHaveAttribute("rel", "noopener noreferrer");
+    });
+
+    it("shows no link when the result did not fail", () => {
+      renderTable([
+        { ...baseResult, status: TestResultStatus.Passed, defect_url: url },
+      ]);
+
+      expect(screen.queryByRole("link", { name: /Defect link/ })).toBeNull();
+    });
+  });
+
   describe("the notes column", () => {
     it("shows an em-dash placeholder when there are no notes", () => {
       renderTable([{ ...baseResult, notes: undefined }]);

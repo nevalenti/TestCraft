@@ -9,6 +9,7 @@ interface SuiteTableRowProps {
   suite: TestSuite;
   projectId: string;
   onEdit?: () => void;
+  onCopy?: () => void;
   onDelete?: () => void;
   showDescription?: boolean;
 }
@@ -17,6 +18,7 @@ export const SuiteTableRow = ({
   suite,
   projectId,
   onEdit,
+  onCopy,
   onDelete,
   showDescription = true,
 }: SuiteTableRowProps) => (
@@ -67,6 +69,7 @@ export const SuiteTableRow = ({
       >
         <ResourceActions
           onEdit={onEdit}
+          onCopy={onCopy}
           onDelete={onDelete}
           label="test suite"
           size="xs"
