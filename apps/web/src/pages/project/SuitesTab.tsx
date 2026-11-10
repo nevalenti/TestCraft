@@ -1,9 +1,10 @@
 import { SquaresPlusIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
-import type {
-  CreateTestSuite,
-  TestSuite,
-  UpdateTestSuite,
+import {
+  type CreateTestSuite,
+  ProjectRole,
+  type TestSuite,
+  type UpdateTestSuite,
 } from "@testcraft/types";
 import { useState } from "react";
 
@@ -12,8 +13,14 @@ import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
 import { SourceFilter } from "@/components/ui/SourceFilter";
-import { useProjectPermissions } from "@/features/projects/permissions";
+import { CopyForm } from "@/features/copy/CopyForm";
+import { useProjects } from "@/features/projects/hooks";
 import {
+  hasRole,
+  useProjectPermissions,
+} from "@/features/projects/permissions";
+import {
+  useCloneTestSuite,
   useCreateTestSuite,
   useDeleteTestSuite,
   useTestSuites,
@@ -33,7 +40,7 @@ export const SuitesTab = () => {
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState<string | null>(null);
   const debouncedSearch = useDebounce(search, 300);
-  const { modal, close, openCreate, openEdit, openDelete } =
+  const { modal, close, openCreate, openEdit, openCopy, openDelete } =
     useModal<TestSuite>();
   const {
     data: suites,
@@ -45,6 +52,8 @@ export const SuitesTab = () => {
   const createSuite = useCreateTestSuite(projectId);
   const updateSuite = useUpdateTestSuite(projectId);
   const deleteSuite = useDeleteTestSuite(projectId);
+  const cloneSuite = useCloneTestSuite(projectId);
+  const { data: projects } = useProjects();
   const showSkeleton = useIsLoadingVisible(isPending);
 
   const handleCreate = (input: CreateTestSuite) =>
@@ -54,6 +63,18 @@ export const SuitesTab = () => {
       { id: item.id, version: item.version, ...input },
       { onSuccess: close },
     );
+  const handleCopy =
+    (item: TestSuite) => (values: { name?: string; target?: string }) =>
+      cloneSuite.mutate(
+        { id: item.id, name: values.name, target_project_id: values.target },
+        { onSuccess: close },
+      );
+  const copyTargets = (projects ?? [])
+    .filter(
+      (project) =>
+        project.id === projectId || hasRole(project.role, ProjectRole.Editor),
+    )
+    .map((project) => ({ value: project.id, label: project.name }));
   const handleDelete = (id: string) =>
     deleteSuite.mutate(id, { onSuccess: close });
 
@@ -80,6 +101,7 @@ export const SuitesTab = () => {
       suites={items}
       projectId={projectId}
       onEdit={canEdit ? openEdit : undefined}
+      onCopy={canEdit ? openCopy : undefined}
       onDelete={canEdit ? openDelete : undefined}
     />
   );
@@ -148,6 +170,25 @@ export const SuitesTab = () => {
             onSubmit={handleUpdate(modal.item)}
             onCancel={close}
             isLoading={updateSuite.isPending}
+          />
+        )}
+      </Modal>
+      <Modal
+        isOpen={modal.type === "copy"}
+        onClose={close}
+        title="Copy Test Suite"
+      >
+        {modal.type === "copy" && (
+          <CopyForm
+            key={modal.item.id}
+            target={{
+              label: "Copy to project",
+              defaultValue: projectId,
+              options: copyTargets,
+            }}
+            onSubmit={handleCopy(modal.item)}
+            onCancel={close}
+            isLoading={cloneSuite.isPending}
           />
         )}
       </Modal>

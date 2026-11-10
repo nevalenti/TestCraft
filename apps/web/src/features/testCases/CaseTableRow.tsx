@@ -11,6 +11,7 @@ interface CaseTableRowProps {
   projectId: string;
   suiteId: string;
   onEdit?: () => void;
+  onCopy?: () => void;
   onDelete?: () => void;
   showDescription?: boolean;
   showLabels?: boolean;
@@ -21,6 +22,7 @@ export const CaseTableRow = ({
   projectId,
   suiteId,
   onEdit,
+  onCopy,
   onDelete,
   showDescription = true,
   showLabels = true,
@@ -96,6 +98,7 @@ export const CaseTableRow = ({
         >
           <ResourceActions
             onEdit={onEdit}
+            onCopy={onCopy}
             onDelete={onDelete}
             label="test case"
             size="xs"

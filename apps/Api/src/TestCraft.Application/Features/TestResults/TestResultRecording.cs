@@ -26,6 +26,7 @@ internal static class TestResultRecording
         DefectType? defectType,
         long? durationMs,
         DateTimeOffset executedAt,
+        string? defectUrl,
         CancellationToken cancellationToken
     )
     {
@@ -39,7 +40,7 @@ internal static class TestResultRecording
         var replacedPlaceholder = result is not null;
         if (result is not null)
         {
-            result.Record(status, notes, defectType, durationMs, executedAt, userId);
+            result.Record(status, notes, defectType, durationMs, executedAt, userId, defectUrl);
         }
         else
         {
@@ -51,7 +52,8 @@ internal static class TestResultRecording
                 defectType,
                 durationMs,
                 executedAt,
-                userId
+                userId,
+                defectUrl
             );
             context.TestResults.Add(result);
         }

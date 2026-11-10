@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
@@ -37,6 +38,11 @@ public class TestResultConfiguration : IEntityTypeConfiguration<TestResult>
             .HasColumnName("defect_type")
             .HasConversion<string>()
             .HasMaxLength(20);
+
+        builder
+            .Property(testResult => testResult.DefectUrl)
+            .HasColumnName("defect_url")
+            .HasMaxLength(FieldLengths.Url);
 
         builder.ConfigureAuditTimestamps();
 

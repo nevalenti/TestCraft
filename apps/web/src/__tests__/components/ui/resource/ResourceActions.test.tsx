@@ -50,4 +50,21 @@ describe("ResourceActions", () => {
       expect(onDelete).toHaveBeenCalledOnce();
     });
   });
+
+  describe("when the copy button is clicked — calls onCopy", () => {
+    it("invokes onCopy once", async () => {
+      const onCopy = vi.fn();
+
+      render(<ResourceActions onCopy={onCopy} label="suite" />);
+      await userEvent.click(screen.getByRole("button", { name: "Copy suite" }));
+      expect(onCopy).toHaveBeenCalledOnce();
+    });
+
+    it("renders no copy button without onCopy", () => {
+      render(<ResourceActions onEdit={vi.fn()} label="suite" />);
+      expect(
+        screen.queryByRole("button", { name: "Copy suite" }),
+      ).not.toBeInTheDocument();
+    });
+  });
 });

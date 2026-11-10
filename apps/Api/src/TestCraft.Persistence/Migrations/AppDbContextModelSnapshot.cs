@@ -1044,6 +1044,11 @@ namespace TestCraft.Persistence.Migrations
                         .HasColumnType("character varying(20)")
                         .HasColumnName("defect_type");
 
+                    b.Property<string>("DefectUrl")
+                        .HasMaxLength(2048)
+                        .HasColumnType("character varying(2048)")
+                        .HasColumnName("defect_url");
+
                     b.Property<DateTimeOffset?>("DeletedAt")
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("deleted_at");

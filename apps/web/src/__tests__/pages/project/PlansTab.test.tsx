@@ -43,6 +43,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 vi.mock("@/features/testPlans/hooks", () => ({
   useTestPlansPage: vi.fn(),
+  useCloneTestPlan: vi.fn(),
   useCreateTestPlan: vi.fn(),
   useUpdateTestPlan: vi.fn(),
   useDeleteTestPlan: vi.fn(),
@@ -51,6 +52,7 @@ vi.mock("@/features/testPlans/hooks", () => ({
 import type { TestPlan } from "@testcraft/types";
 
 import {
+  useCloneTestPlan,
   useCreateTestPlan,
   useDeleteTestPlan,
   useTestPlansPage,
@@ -91,6 +93,9 @@ const setupMocks = (plans: TestPlan[] | undefined = [], isPending = false) => {
   );
   vi.mocked(useUpdateTestPlan).mockReturnValue(
     noopMutation as unknown as ReturnType<typeof useUpdateTestPlan>,
+  );
+  vi.mocked(useCloneTestPlan).mockReturnValue(
+    noopMutation as unknown as ReturnType<typeof useCloneTestPlan>,
   );
   vi.mocked(useDeleteTestPlan).mockReturnValue(
     noopMutation as unknown as ReturnType<typeof useDeleteTestPlan>,
@@ -204,6 +209,19 @@ describe("PlansTab", () => {
       await waitFor(() =>
         expect(
           screen.getByRole("heading", { name: "Edit Test Plan" }),
+        ).toBeInTheDocument(),
+      );
+    });
+  });
+
+  describe("copy button — opens the copy modal", () => {
+    it("shows the Copy Test Plan modal heading on click", async () => {
+      setupMocks([makePlan({ name: "Sprint 1" })]);
+      render(<PlansTab />);
+      await userEvent.click(screen.getByRole("button", { name: "Copy plan" }));
+      await waitFor(() =>
+        expect(
+          screen.getByRole("heading", { name: "Copy Test Plan" }),
         ).toBeInTheDocument(),
       );
     });

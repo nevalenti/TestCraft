@@ -83,6 +83,40 @@ public class TestResultTests
     }
 
     [Fact]
+    public void Update_ToFailedStatus_KeepsDefectUrl()
+    {
+        var result = MakeResult();
+
+        result.Update(
+            TestResultStatus.Failed,
+            null,
+            DefectType.ProductBug,
+            DateTimeOffset.UtcNow,
+            null,
+            "https://github.com/acme/shop/issues/482"
+        );
+
+        result.DefectUrl.Should().Be("https://github.com/acme/shop/issues/482");
+    }
+
+    [Fact]
+    public void Update_ToNonFailedStatus_ClearsDefectUrl()
+    {
+        var result = MakeResult(TestResultStatus.Failed);
+
+        result.Update(
+            TestResultStatus.Passed,
+            null,
+            null,
+            DateTimeOffset.UtcNow,
+            null,
+            "https://github.com/acme/shop/issues/482"
+        );
+
+        result.DefectUrl.Should().BeNull();
+    }
+
+    [Fact]
     public void Update_ToNonFailedStatus_ClearsDefectType()
     {
         var result = MakeResult(TestResultStatus.Failed);

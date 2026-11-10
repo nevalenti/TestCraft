@@ -1,5 +1,9 @@
 import { queryOptions } from "@tanstack/react-query";
-import type { CreateTestCase, UpdateTestCase } from "@testcraft/types";
+import type {
+  CloneTestCase,
+  CreateTestCase,
+  UpdateTestCase,
+} from "@testcraft/types";
 
 import { fetchAllPages } from "@/api/fetchAllPages";
 import { ifMatch } from "@/api/ifMatch";
@@ -35,6 +39,18 @@ export const testCasesApi = {
   create: async (projectId: string, suiteId: string, input: CreateTestCase) => {
     const { data } = await sdk.createTestCase({
       path: { project_id: projectId, suite_id: suiteId },
+      body: input,
+    });
+    return data;
+  },
+  clone: async (
+    projectId: string,
+    suiteId: string,
+    id: string,
+    input: CloneTestCase,
+  ) => {
+    const { data } = await sdk.cloneTestCase({
+      path: { project_id: projectId, suite_id: suiteId, case_id: id },
       body: input,
     });
     return data;

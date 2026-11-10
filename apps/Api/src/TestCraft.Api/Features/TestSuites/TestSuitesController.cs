@@ -2,14 +2,19 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using TestCraft.Api.Authorization;
+using TestCraft.Api.Idempotency;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Pagination;
+using TestCraft.Application.Common.Security;
 using TestCraft.Application.Features.TestSuites;
+using TestCraft.Domain.Enums;
+using TestCraft.Infrastructure.Auth;
 
 namespace TestCraft.Api.Features.TestSuites;
 
 [ApiTokenScope("suites")]
 [Route("api/v{version:apiVersion}/projects/{projectId:guid}/suites")]
-public class TestSuitesController(ISender sender) : ApiControllerBase
+public class TestSuitesController(ISender sender, ProjectAccess projectAccess) : ApiControllerBase
 {
     /// <summary>Lists test suites for a project, optionally filtered by name.</summary>
     [HttpGet]
@@ -61,6 +66,33 @@ public class TestSuitesController(ISender sender) : ApiControllerBase
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
 
+    /// <summary>Copies a suite, with its test cases, into the same or another project.</summary>
+    [HttpPost("{id:guid}/clone")]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<TestSuiteResponse>> Clone(
+        ProjectId projectId,
+        TestSuiteId id,
+        CloneTestSuite.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        if (command.TargetProjectId is { } target && target != projectId)
+        {
+            await EnsureCanCopyIntoAsync(target, cancellationToken);
+        }
+
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return CreatedAtAction(
+            nameof(GetById),
+            new { projectId = result.ProjectId, id = result.Id },
+            result
+        );
+    }
+
     /// <summary>Updates a test suite's details.</summary>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -101,5 +133,24 @@ public class TestSuitesController(ISender sender) : ApiControllerBase
         await sender.Send(command, cancellationToken);
 
         return NoContent();
+    }
+
+    private async Task EnsureCanCopyIntoAsync(
+        ProjectId targetProjectId,
+        CancellationToken cancellationToken
+    )
+    {
+        if (User.IsApiToken())
+        {
+            throw new ForbiddenException("API tokens cannot copy into another project");
+        }
+
+        var role =
+            await projectAccess.RoleOfAsync(targetProjectId, cancellationToken)
+            ?? throw new NotFoundException();
+        if (!role.HasAtLeast(ProjectRole.Editor))
+        {
+            throw new ForbiddenException("You need the editor role in the target project");
+        }
     }
 }

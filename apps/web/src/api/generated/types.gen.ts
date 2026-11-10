@@ -474,6 +474,10 @@ export type CreateTestResultByNameRequest = {
 export type CreateTestResultRequest = {
     defect_type?: DefectType | null;
     /**
+     * Link to the issue tracking the defect. Only stored when the status is failed; null means no link.
+     */
+    defect_url?: string | null;
+    /**
      * Duration Ms
      */
     duration_ms?: number | null;
@@ -1288,6 +1292,32 @@ export type ReorderTestCaseStepsRequest = {
 };
 
 /**
+ * RerunTestRunRequest
+ *
+ * Options for rerunning a test run. Sent with the rerun endpoint; every field is optional.
+ */
+export type RerunTestRunRequest = {
+    /**
+     * Environment
+     *
+     * Environment to record on the new run. null uses the original run's environment.
+     */
+    environment?: string | null;
+    /**
+     * Failed Only
+     *
+     * true includes only the cases whose current result is failed or blocked; false includes every case.
+     */
+    failed_only?: boolean;
+    /**
+     * Name
+     *
+     * Name of the new run. null uses "Rerun of" followed by the original name.
+     */
+    name?: string | null;
+};
+
+/**
  * RunComparisonResponse
  */
 export type RunComparisonResponse = {
@@ -1711,6 +1741,10 @@ export type TestResultResponse = {
     created_at: string;
     defect_type?: DefectType | null;
     /**
+     * Link to the issue tracking the defect. null means none was added, or the result did not fail.
+     */
+    defect_url?: string | null;
+    /**
      * Duration Ms
      */
     duration_ms?: number | null;
@@ -2070,6 +2104,10 @@ export type UpdateTestPlanRequest = {
 export type UpdateTestResultRequest = {
     defect_type?: DefectType | null;
     /**
+     * Link to the issue tracking the defect. Only kept when the status is failed; null removes the link.
+     */
+    defect_url?: string | null;
+    /**
      * Notes
      */
     notes?: string | null;
@@ -2167,6 +2205,60 @@ export type WebhookSubscriptionResponse = {
      * Current version; the ETag header carries the same value.
      */
     version: number;
+};
+
+/**
+ * CloneTestCaseRequest
+ *
+ * Options for copying a test case. Every field is optional.
+ */
+export type CloneTestCaseRequest = {
+    /**
+     * Name
+     *
+     * Name of the copy. null keeps the source name, adding " (copy)" when that name is already taken.
+     */
+    name?: string | null;
+    /**
+     * Target Suite Id
+     *
+     * Suite to copy into; it must belong to the same project. null copies into the source suite.
+     */
+    target_suite_id?: string | null;
+};
+
+/**
+ * CloneTestSuiteRequest
+ *
+ * Options for copying a test suite. Every field is optional.
+ */
+export type CloneTestSuiteRequest = {
+    /**
+     * Name
+     *
+     * Name of the copy. null keeps the source name, adding " (copy)" when that name is already taken.
+     */
+    name?: string | null;
+    /**
+     * Target Project Id
+     *
+     * Project to copy into; you need the editor role there. null copies into the source project.
+     */
+    target_project_id?: string | null;
+};
+
+/**
+ * CloneTestPlanRequest
+ *
+ * Options for copying a test plan. Every field is optional.
+ */
+export type CloneTestPlanRequest = {
+    /**
+     * Name
+     *
+     * Name of the copy. null keeps the source name, adding " (copy)" when that name is already taken.
+     */
+    name?: string | null;
 };
 
 export type GetAvatarUrlData = {
@@ -6276,6 +6368,84 @@ export type AppendTestRunLogsResponses = {
 
 export type AppendTestRunLogsResponse = AppendTestRunLogsResponses[keyof AppendTestRunLogsResponses];
 
+export type RerunTestRunData = {
+    body: RerunTestRunRequest;
+    headers?: {
+        /**
+         * Idempotency-Key
+         *
+         * Retrying with the same key replays the first response instead of repeating the write. Keys are kept for at least 24 hours.
+         */
+        'Idempotency-Key'?: string | null;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Run Id
+         *
+         * ID of the run to rerun.
+         */
+        run_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/runs/{run_id}/rerun';
+};
+
+export type RerunTestRunErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The run has nothing to rerun, or a request with this Idempotency-Key is still running (retry after Retry-After seconds)
+     */
+    409: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type RerunTestRunError = RerunTestRunErrors[keyof RerunTestRunErrors];
+
+export type RerunTestRunResponses = {
+    /**
+     * Successful Response
+     */
+    201: TestRunResponse;
+};
+
+export type RerunTestRunResponse = RerunTestRunResponses[keyof RerunTestRunResponses];
+
 export type ListTestResultsData = {
     body?: never;
     path: {
@@ -8827,3 +8997,243 @@ export type GetRunByShareTokenResponses = {
 };
 
 export type GetRunByShareTokenResponse = GetRunByShareTokenResponses[keyof GetRunByShareTokenResponses];
+
+export type CloneTestCaseData = {
+    body: CloneTestCaseRequest;
+    headers?: {
+        /**
+         * Idempotency-Key
+         *
+         * Retrying with the same key replays the first response instead of repeating the write. Keys are kept for at least 24 hours.
+         */
+        'Idempotency-Key'?: string | null;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the suite the test case belongs to.
+         */
+        suite_id: string;
+        /**
+         * Case Id
+         *
+         * ID of the test case to copy.
+         */
+        case_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/cases/{case_id}/clone';
+};
+
+export type CloneTestCaseErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * A test case with that name already exists in the target suite, or a request with this Idempotency-Key is still running (retry after Retry-After seconds)
+     */
+    409: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type CloneTestCaseError = CloneTestCaseErrors[keyof CloneTestCaseErrors];
+
+export type CloneTestCaseResponses = {
+    /**
+     * Successful Response
+     */
+    201: TestCaseResponse;
+};
+
+export type CloneTestCaseResponse = CloneTestCaseResponses[keyof CloneTestCaseResponses];
+
+export type CloneTestSuiteData = {
+    body: CloneTestSuiteRequest;
+    headers?: {
+        /**
+         * Idempotency-Key
+         *
+         * Retrying with the same key replays the first response instead of repeating the write. Keys are kept for at least 24 hours.
+         */
+        'Idempotency-Key'?: string | null;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the suite to copy.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/clone';
+};
+
+export type CloneTestSuiteErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * A suite with that name already exists in the target project, or a request with this Idempotency-Key is still running (retry after Retry-After seconds)
+     */
+    409: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type CloneTestSuiteError = CloneTestSuiteErrors[keyof CloneTestSuiteErrors];
+
+export type CloneTestSuiteResponses = {
+    /**
+     * Successful Response
+     */
+    201: TestSuiteResponse;
+};
+
+export type CloneTestSuiteResponse = CloneTestSuiteResponses[keyof CloneTestSuiteResponses];
+
+export type CloneTestPlanData = {
+    body: CloneTestPlanRequest;
+    headers?: {
+        /**
+         * Idempotency-Key
+         *
+         * Retrying with the same key replays the first response instead of repeating the write. Keys are kept for at least 24 hours.
+         */
+        'Idempotency-Key'?: string | null;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Plan Id
+         *
+         * ID of the plan to copy.
+         */
+        plan_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/plans/{plan_id}/clone';
+};
+
+export type CloneTestPlanErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * A request with this Idempotency-Key is still running (retry after Retry-After seconds)
+     */
+    409: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type CloneTestPlanError = CloneTestPlanErrors[keyof CloneTestPlanErrors];
+
+export type CloneTestPlanResponses = {
+    /**
+     * Successful Response
+     */
+    201: TestPlanResponse;
+};
+
+export type CloneTestPlanResponse = CloneTestPlanResponses[keyof CloneTestPlanResponses];

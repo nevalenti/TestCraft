@@ -159,6 +159,7 @@ public static class CreateTestResultByName
                 defectType: null,
                 request.DurationMs,
                 request.ExecutedAt,
+                defectUrl: null,
                 cancellationToken
             );
         }

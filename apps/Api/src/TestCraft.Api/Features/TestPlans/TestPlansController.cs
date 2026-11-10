@@ -61,6 +61,24 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
 
+    /// <summary>Copies a test plan, with its cases in order, within the project.</summary>
+    [HttpPost("{id:guid}/clone")]
+    [Idempotent]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    public async Task<ActionResult<TestPlanResponse>> Clone(
+        ProjectId projectId,
+        TestPlanId id,
+        CloneTestPlan.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        var scopedCommand = command with { ProjectId = projectId, Id = id };
+
+        var result = await sender.Send(scopedCommand, cancellationToken);
+
+        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
+    }
+
     /// <summary>Updates a test plan.</summary>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

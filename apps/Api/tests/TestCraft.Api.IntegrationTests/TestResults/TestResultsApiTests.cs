@@ -277,6 +277,64 @@ public class TestResultsApiTests(ApiFactory factory)
     }
 
     [Fact]
+    public async Task Create_WithDefectUrl_StoresItOnAFailedResultAndClearsItWhenPassed()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, testCaseId) = await CreateProjectRunCaseAsync(client);
+        const string url = "https://github.com/acme/shop/issues/482";
+
+        var created = await (
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{projectId}/runs/{runId}/results",
+                new CreateTestResult.Command
+                {
+                    TestCaseId = testCaseId,
+                    Status = TestResultStatus.Failed,
+                    DefectUrl = url,
+                    ExecutedAt = DateTimeOffset.UtcNow,
+                }
+            )
+        ).Content.ReadFromJsonAsync<TestResultResponse>(ApiTestHelpers.JsonOptions);
+        created!.DefectUrl.Should().Be(url);
+
+        var updated = await (
+            await client.UpdateAsJsonAsync(
+                $"/api/v1/projects/{projectId}/runs/{runId}/results/{created.Id}",
+                new UpdateTestResult.Command
+                {
+                    Id = created.Id,
+                    Status = TestResultStatus.Passed,
+                    DefectUrl = url,
+                }
+            )
+        ).Content.ReadFromJsonAsync<TestResultResponse>(ApiTestHelpers.JsonOptions);
+        updated!.DefectUrl.Should().BeNull();
+    }
+
+    [Theory]
+    [InlineData("not a url")]
+    [InlineData("javascript:alert(1)")]
+    [InlineData("ftp://example.com/issue/1")]
+    public async Task Create_WithInvalidDefectUrl_ReturnsValidationProblem(string url)
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var (projectId, runId, testCaseId) = await CreateProjectRunCaseAsync(client);
+
+        var response = await client.PostAsJsonAsync(
+            $"/api/v1/projects/{projectId}/runs/{runId}/results",
+            new CreateTestResult.Command
+            {
+                TestCaseId = testCaseId,
+                Status = TestResultStatus.Failed,
+                DefectUrl = url,
+                ExecutedAt = DateTimeOffset.UtcNow,
+            }
+        );
+
+        response.StatusCode.Should().Be(HttpStatusCode.UnprocessableEntity);
+    }
+
+    [Fact]
     public async Task Delete_RemovesResult()
     {
         var client = CreateClient(Guid.NewGuid());

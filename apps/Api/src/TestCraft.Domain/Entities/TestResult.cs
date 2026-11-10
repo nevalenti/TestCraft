@@ -10,6 +10,7 @@ public class TestResult : SoftDeletableEntity, IVersioned
     public string? Notes { get; private set; }
     public long? DurationMs { get; private set; }
     public DefectType? DefectType { get; private set; }
+    public string? DefectUrl { get; private set; }
     public DateTimeOffset? ExecutedAt { get; private set; }
     public UserId? ExecutedById { get; private set; }
     public TestRunId TestRunId { get; private set; }
@@ -27,7 +28,8 @@ public class TestResult : SoftDeletableEntity, IVersioned
         DefectType? defectType,
         long? durationMs,
         DateTimeOffset? executedAt,
-        UserId? executedById
+        UserId? executedById,
+        string? defectUrl = null
     ) =>
         new()
         {
@@ -37,6 +39,7 @@ public class TestResult : SoftDeletableEntity, IVersioned
             Status = status,
             Notes = notes,
             DefectType = defectType,
+            DefectUrl = status == TestResultStatus.Failed ? defectUrl : null,
             DurationMs = durationMs,
             ExecutedAt = executedAt,
             ExecutedById = executedById,
@@ -47,7 +50,8 @@ public class TestResult : SoftDeletableEntity, IVersioned
         string? notes,
         DefectType? defectType,
         DateTimeOffset now,
-        UserId? userId
+        UserId? userId,
+        string? defectUrl = null
     )
     {
         if (status == TestResultStatus.Untested)
@@ -64,6 +68,7 @@ public class TestResult : SoftDeletableEntity, IVersioned
         Status = status;
         Notes = notes;
         DefectType = status == TestResultStatus.Failed ? defectType : null;
+        DefectUrl = status == TestResultStatus.Failed ? defectUrl : null;
     }
 
     public void Record(
@@ -72,12 +77,14 @@ public class TestResult : SoftDeletableEntity, IVersioned
         DefectType? defectType,
         long? durationMs,
         DateTimeOffset executedAt,
-        UserId? userId
+        UserId? userId,
+        string? defectUrl = null
     )
     {
         Status = status;
         Notes = notes;
         DefectType = defectType;
+        DefectUrl = status == TestResultStatus.Failed ? defectUrl : null;
         DurationMs = durationMs;
         ExecutedAt = executedAt;
         ExecutedById = userId;

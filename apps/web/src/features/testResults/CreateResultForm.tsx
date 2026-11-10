@@ -13,6 +13,10 @@ import { FormInput } from "@/components/ui/form/FormInput";
 import { FormSelect } from "@/components/ui/form/FormSelect";
 import { FormTextarea } from "@/components/ui/form/FormTextarea";
 import { useProjectTestCases } from "@/features/testCases/hooks";
+import {
+  DEFECT_URL_PLACEHOLDER,
+  defectUrlSchema,
+} from "@/features/testResults/defectUrl";
 import { EXECUTED_STATUS_OPTIONS } from "@/features/testResults/resultStatus";
 import { cn } from "@/lib/cn";
 import { toDatetimeLocal } from "@/lib/format";
@@ -40,6 +44,7 @@ const schema = z.object({
     .optional()
     .or(z.literal("")),
   defectType: z.union([z.nativeEnum(DefectType), z.literal("")]).optional(),
+  defectUrl: defectUrlSchema,
   executedAt: z.string().min(1, "Executed at is required"),
 });
 
@@ -73,6 +78,7 @@ export const CreateResultForm = ({
       status: TestResultStatus.Passed,
       notes: "",
       durationMs: "",
+      defectUrl: "",
       executedAt: toDatetimeLocal(new Date().toISOString()),
     },
   });
@@ -96,6 +102,10 @@ export const CreateResultForm = ({
           defect_type:
             data.status === TestResultStatus.Failed && data.defectType !== ""
               ? data.defectType
+              : undefined,
+          defect_url:
+            data.status === TestResultStatus.Failed && data.defectUrl
+              ? data.defectUrl
               : undefined,
           executed_at: new Date(data.executedAt).toISOString(),
         }),
@@ -149,6 +159,22 @@ export const CreateResultForm = ({
               </option>
             ))}
           </FormSelect>
+        </FormField>
+      )}
+      {status === TestResultStatus.Failed && (
+        <FormField
+          label="Defect Link"
+          htmlFor="result-defect-url"
+          optional
+          error={errors.defectUrl?.message}
+        >
+          <FormInput
+            id="result-defect-url"
+            inputMode="url"
+            placeholder={DEFECT_URL_PLACEHOLDER}
+            hasError={!!errors.defectUrl}
+            {...register("defectUrl")}
+          />
         </FormField>
       )}
       <FormField

@@ -2,6 +2,7 @@ import type { components } from "./generated/schema.js";
 
 export type TestCase = components["schemas"]["TestCaseResponse"];
 export type CreateTestCase = components["schemas"]["CreateTestCaseRequest"];
+export type CloneTestCase = components["schemas"]["CloneTestCaseRequest"];
 export type UpdateTestCase = components["schemas"]["UpdateTestCaseRequest"];
 
 export type TestCaseStep = components["schemas"]["TestCaseStepResponse"];
