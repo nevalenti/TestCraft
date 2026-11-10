@@ -83,11 +83,7 @@ export const RunForm = ({
         htmlFor="run-status"
         error={errors.status?.message}
       >
-        <FormSelect
-          id="run-status"
-          className="select-bordered select w-full"
-          {...register("status")}
-        >
+        <FormSelect id="run-status" {...register("status")}>
           {runStatusOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}

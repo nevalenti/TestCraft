@@ -76,7 +76,6 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
           onRemove={(sub) => deleteEmail.mutate(sub.id)}
           removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
           emptyTitle="No email subscriptions yet"
-          emptyDescription="Add an email to get notified on run events."
         />
       )}
 

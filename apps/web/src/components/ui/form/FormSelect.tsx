@@ -10,7 +10,7 @@ export const FormSelect = ({
   const fieldAttributes = useFormFieldAttributes(props);
   return (
     <select
-      className={cn("select w-full bg-base-200/60", className)}
+      className={cn("select w-full bg-base-200", className)}
       {...props}
       {...fieldAttributes}
     />

@@ -224,7 +224,7 @@ describe("NoteEditor view modes and actions", () => {
     expect(
       screen.queryByRole("group", { name: "View mode" }),
     ).not.toBeInTheDocument();
-    expect(screen.getByText(/1 lines · 2 words · 8 chars/)).toBeInTheDocument();
+    expect(screen.getByText(/1 line · 2 words · 8 chars/)).toBeInTheDocument();
   });
 
   it("deletes from the actions menu", async () => {

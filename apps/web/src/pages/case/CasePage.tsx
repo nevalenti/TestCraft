@@ -114,12 +114,7 @@ export const CasePage = () => {
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedSteps.length === 0)
-      return (
-        <EmptyState
-          title="No steps defined"
-          description="Break this test case down into clear, ordered steps."
-        />
-      );
+      return <EmptyState title="No steps defined" />;
 
     return (
       <StepsList

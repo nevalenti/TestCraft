@@ -17,7 +17,7 @@ export const SettingsSectionCard = ({
     <div className="mb-4 flex flex-wrap items-start gap-x-4 gap-y-3">
       <span
         aria-hidden="true"
-        className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-primary/30 bg-primary/10 text-primary"
+        className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[color-mix(in_oklab,var(--color-secondary)_30%,var(--color-base-100))] bg-[color-mix(in_oklab,var(--color-secondary)_10%,var(--color-base-100))] text-secondary"
       >
         <Icon className="size-4" />
       </span>

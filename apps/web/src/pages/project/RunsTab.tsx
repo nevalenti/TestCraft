@@ -136,7 +136,6 @@ export const RunsTab = () => {
         displayItems={visibleRuns}
         viewMode="list"
         emptyTitle="No test runs yet"
-        emptyDescription="Start a test run to record and track results."
         renderTable={renderTable}
       />
 

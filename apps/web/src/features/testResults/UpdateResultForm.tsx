@@ -76,12 +76,7 @@ export const UpdateResultForm = ({
         htmlFor="update-result-status"
         error={errors.status?.message}
       >
-        <FormSelect
-          id="update-result-status"
-          className="select-bordered select w-full"
-          autoFocus
-          {...register("status")}
-        >
+        <FormSelect id="update-result-status" autoFocus {...register("status")}>
           {STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -97,7 +92,6 @@ export const UpdateResultForm = ({
         >
           <FormSelect
             id="update-result-defect-type"
-            className="select-bordered select w-full"
             {...register("defectType")}
           >
             <option value="">Select defect type (optional)</option>

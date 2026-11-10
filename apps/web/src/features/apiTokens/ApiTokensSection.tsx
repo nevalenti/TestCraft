@@ -110,7 +110,7 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
                 readOnly
                 type={revealed ? "text" : "password"}
                 value={newToken.token}
-                className="input-bordered input input-sm w-full font-mono text-xs"
+                className="input input-sm w-full font-mono text-xs"
               />
               <button
                 type="button"
@@ -173,7 +173,6 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
             removeLabel="Revoke"
             isRemoveHidden={(t) => t.is_revoked}
             emptyTitle="No API tokens yet"
-            emptyDescription="Create a token to authenticate CI pipelines and scripts."
           />
         )}
       </div>

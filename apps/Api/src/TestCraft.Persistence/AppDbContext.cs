@@ -58,6 +58,10 @@ public class AppDbContext(
                 .Properties(idType)
                 .HaveConversion(typeof(VogenGuidConverter<>).MakeGenericType(idType));
         }
+
+        configurationBuilder
+            .Properties<DateTimeOffset>()
+            .HaveConversion<UtcDateTimeOffsetConverter>();
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

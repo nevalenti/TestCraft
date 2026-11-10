@@ -80,7 +80,6 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
           onRemove={(wh) => deleteWebhook.mutate(wh.id)}
           removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
           emptyTitle="No webhooks yet"
-          emptyDescription="Add a webhook to get notified on run events."
         />
       )}
 

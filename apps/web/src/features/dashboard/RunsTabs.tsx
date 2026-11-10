@@ -1,7 +1,8 @@
 import { BoltIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 import { type KeyboardEvent, useRef } from "react";
 
-import { SECTION_TAB, SECTION_TAB_ACTIVE } from "@/components/ui/subNavStyles";
+import { SearchInput } from "@/components/ui/SearchInput";
+import { PILL_TAB, PILL_TAB_ACTIVE } from "@/components/ui/subNavStyles";
 import { TabCountBadge } from "@/components/ui/TabCountBadge";
 import { RUNS_PANEL_ID, runsTabId } from "@/features/dashboard/runsTabIds";
 import { cn } from "@/lib/cn";
@@ -14,6 +15,8 @@ interface RunsTabsProps {
   onChange: (tab: DashboardRunsTab) => void;
   activeCount: number;
   completedCount: number;
+  search: string;
+  onSearch: (value: string) => void;
 }
 
 export const RunsTabs = ({
@@ -21,6 +24,8 @@ export const RunsTabs = ({
   onChange,
   activeCount,
   completedCount,
+  search,
+  onSearch,
 }: RunsTabsProps) => {
   const tabRefs = useRef<Record<DashboardRunsTab, HTMLButtonElement | null>>({
     active: null,
@@ -60,9 +65,9 @@ export const RunsTabs = ({
       onClick={() => onChange(value)}
       onKeyDown={handleKeyDown}
       className={cn(
-        SECTION_TAB,
+        PILL_TAB,
         "cursor-pointer max-sm:px-2 max-sm:text-label",
-        tab === value && SECTION_TAB_ACTIVE,
+        tab === value && PILL_TAB_ACTIVE,
       )}
     >
       {icon}
@@ -72,23 +77,35 @@ export const RunsTabs = ({
   );
 
   return (
-    <div
-      role="tablist"
-      aria-label="Runs"
-      className="flex items-center overflow-x-auto border-b border-border px-2 pt-1.5"
-    >
-      {renderTab(
-        "active",
-        "Active Runs",
-        activeCount,
-        <BoltIcon className="size-4 text-warning" aria-hidden="true" />,
-      )}
-      {renderTab(
-        "completed",
-        "Recently Completed",
-        completedCount,
-        <CheckCircleIcon className="size-4 text-success" aria-hidden="true" />,
-      )}
+    <div className="flex items-center gap-3 border-b border-border p-2 md:grid md:grid-cols-[1fr_auto_1fr]">
+      <div
+        role="tablist"
+        aria-label="Runs"
+        className="order-2 -m-1 ml-auto flex min-w-0 items-center overflow-x-auto p-1 md:col-start-3 md:row-start-1 md:justify-self-end"
+      >
+        {renderTab(
+          "active",
+          "Active Runs",
+          activeCount,
+          <BoltIcon className="size-4 text-warning" aria-hidden="true" />,
+        )}
+        {renderTab(
+          "completed",
+          "Recently Completed",
+          completedCount,
+          <CheckCircleIcon
+            className="size-4 text-success"
+            aria-hidden="true"
+          />,
+        )}
+      </div>
+      <SearchInput
+        size="sm"
+        value={search}
+        onChange={onSearch}
+        placeholder="Search runs…"
+        className="order-1 w-36 shrink-0 [&_input]:bg-base-200 sm:w-56 md:col-start-2 md:row-start-1 md:w-72"
+      />
     </div>
   );
 };

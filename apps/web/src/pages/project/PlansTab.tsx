@@ -117,7 +117,6 @@ export const PlansTab = () => {
         displayItems={plans}
         viewMode="list"
         emptyTitle="No test plans yet"
-        emptyDescription="Create a plan to pre-select test cases and run them as a structured suite."
         renderTable={renderTable}
       />
 

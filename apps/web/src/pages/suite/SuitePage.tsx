@@ -10,7 +10,6 @@ import { useState } from "react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
-import { PageHeader } from "@/components/ui/PageHeader";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
 import { useProject } from "@/features/projects/hooks";
 import { useProjectPermissions } from "@/features/projects/permissions";
@@ -82,36 +81,19 @@ export const SuitePage = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <PageHeader
-        title={suite?.name ?? "…"}
-        description={suite?.description}
-        meta={
-          testCases && (
-            <span>
-              {testCases.length} test case{testCases.length === 1 ? "" : "s"}
-            </span>
-          )
-        }
-        backTo={{
-          to: "/projects/$projectId/suites",
-          params: { projectId },
-        }}
-        backLabel={project?.name ?? "Suites"}
-        actions={
-          canEdit && (
-            <button className="btn btn-sm btn-primary" onClick={openCreate}>
-              <DocumentPlusIcon className="size-4" aria-hidden="true" />
-              New Test Case
-            </button>
-          )
-        }
-      />
       <section className="page-content min-h-0 flex-1 overflow-y-auto">
         <ListToolbar
           search={search}
           onSearch={setSearch}
           placeholder="Search test cases…"
-        />
+        >
+          {canEdit && (
+            <button className="btn btn-sm btn-primary" onClick={openCreate}>
+              <DocumentPlusIcon className="size-4" aria-hidden="true" />
+              New Test Case
+            </button>
+          )}
+        </ListToolbar>
         <div className="min-h-80">
           <ResourceView
             isPending={isPending}
@@ -123,7 +105,6 @@ export const SuitePage = () => {
             items={testCases}
             viewMode="list"
             emptyTitle="No test cases yet"
-            emptyDescription="Add test cases to document expected behavior."
             renderTable={renderTable}
           />
         </div>

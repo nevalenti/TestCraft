@@ -28,7 +28,7 @@ export const ExpandableText = ({ text, className }: ExpandableTextProps) => {
           aria-expanded={isExpanded}
           aria-controls={textId}
           onClick={() => setIsExpanded((previous) => !previous)}
-          className="mt-0.5 cursor-pointer text-xs font-medium text-primary hover:underline"
+          className="mt-0.5 cursor-pointer text-xs font-medium text-secondary hover:underline"
         >
           {isExpanded ? "Show less" : "Show more"}
         </button>

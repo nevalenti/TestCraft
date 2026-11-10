@@ -117,7 +117,6 @@ export const SuitesTab = () => {
         displayItems={visibleSuites}
         viewMode="list"
         emptyTitle="No test suites yet"
-        emptyDescription="Group related test cases into suites."
         renderTable={renderTable}
       />
 

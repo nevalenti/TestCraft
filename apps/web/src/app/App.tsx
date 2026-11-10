@@ -33,13 +33,18 @@ export const App = () => (
     <QueryClientProvider client={queryClient}>
       <RouterProvider router={router} context={{ queryClient }} />
       {import.meta.env.DEV && (
-        <ReactQueryDevtools initialIsOpen={false} position="bottom" />
+        <ReactQueryDevtools
+          initialIsOpen={false}
+          position="bottom"
+          buttonPosition="bottom-left"
+        />
       )}
       {import.meta.env.DEV && (
         <TanStackRouterDevtools
           router={router}
           initialIsOpen={false}
-          position="bottom-right"
+          position="bottom-left"
+          toggleButtonProps={{ style: { left: "4.5rem" } }}
         />
       )}
     </QueryClientProvider>

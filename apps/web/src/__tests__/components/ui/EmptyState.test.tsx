@@ -11,25 +11,6 @@ describe("EmptyState", () => {
     });
   });
 
-  describe("given a description — renders it below the title", () => {
-    it("displays the description text", () => {
-      render(
-        <EmptyState
-          title="No projects yet"
-          description="Create one to start"
-        />,
-      );
-      expect(screen.getByText("Create one to start")).toBeInTheDocument();
-    });
-  });
-
-  describe("without a description — omits the description element", () => {
-    it("does not render any description text", () => {
-      render(<EmptyState title="Empty" />);
-      expect(screen.queryByText("Create one to start")).not.toBeInTheDocument();
-    });
-  });
-
   describe("given an action — renders it", () => {
     it("displays the action element", () => {
       render(

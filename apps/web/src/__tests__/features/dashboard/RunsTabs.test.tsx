@@ -12,6 +12,8 @@ const setup = (tab: "active" | "completed" = "active") => {
       onChange={onChange}
       activeCount={2}
       completedCount={5}
+      search=""
+      onSearch={vi.fn()}
     />,
   );
   return onChange;

@@ -47,7 +47,7 @@ export const NeedsAttention = ({ tests }: NeedsAttentionProps) => (
             >
               <span
                 aria-hidden="true"
-                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-error/15 text-error"
+                className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklab,var(--color-error)_15%,var(--color-base-100))] text-error"
               >
                 <XCircleIcon className="size-4.5" />
               </span>
@@ -60,7 +60,7 @@ export const NeedsAttention = ({ tests }: NeedsAttentionProps) => (
                   <RelativeTime value={test.last_failed_at} />
                 </span>
               </span>
-              <span className="shrink-0 rounded-md bg-error/15 px-2 py-0.5 text-xs font-semibold text-error tabular-nums">
+              <span className="shrink-0 rounded-md bg-[color-mix(in_oklab,var(--color-error)_15%,var(--color-base-100))] px-2 py-0.5 text-xs font-semibold text-error tabular-nums">
                 {test.failure_count}× failed
               </span>
             </Link>

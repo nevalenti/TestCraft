@@ -17,13 +17,14 @@ interface StatTileProps {
   tone?: Tone;
 }
 
-type Tone = "success" | "warning" | "error" | "info";
+type Tone = "success" | "warning" | "error" | "info" | "neutral";
 
 const TONE_CLASSES: Record<Tone, string> = {
-  success: "bg-success/15 text-success",
-  warning: "bg-warning/15 text-warning",
-  error: "bg-error/15 text-error",
-  info: "bg-info/15 text-info",
+  success: "border-success/30 bg-success/10 text-success",
+  warning: "border-warning/30 bg-warning/10 text-warning",
+  error: "border-error/30 bg-error/10 text-error",
+  info: "border-info/30 bg-info/10 text-info",
+  neutral: "border-secondary/30 bg-secondary/10 text-secondary",
 };
 
 const passRateTone = (rate: number): Tone => {
@@ -32,25 +33,30 @@ const passRateTone = (rate: number): Tone => {
   return "error";
 };
 
-const StatTile = ({ label, value, icon: Icon, tone }: StatTileProps) => (
-  <div className="flex items-start justify-between gap-3 panel p-4">
+const StatTile = ({
+  label,
+  value,
+  icon: Icon,
+  tone = "neutral",
+}: StatTileProps) => (
+  <div className="panel flex items-center gap-3 px-4 py-3 transition-colors hover:border-base-content/25">
+    <span
+      aria-hidden="true"
+      className={cn(
+        "flex size-10 shrink-0 items-center justify-center rounded-lg border",
+        TONE_CLASSES[tone],
+      )}
+    >
+      <Icon className="size-5" />
+    </span>
     <div className="min-w-0">
       <p className="truncate text-2xs font-semibold tracking-wider text-fg-subtle uppercase">
         {label}
       </p>
-      <p className="mt-2.5 font-display text-3xl leading-none font-bold text-base-content tabular-nums">
+      <p className="mt-1 font-display text-2xl leading-none font-bold text-base-content tabular-nums">
         {value}
       </p>
     </div>
-    <span
-      aria-hidden="true"
-      className={cn(
-        "flex size-8 shrink-0 items-center justify-center rounded-lg",
-        tone ? TONE_CLASSES[tone] : "subtle-surface text-fg-subtle",
-      )}
-    >
-      <Icon className="size-4" />
-    </span>
   </div>
 );
 
@@ -62,7 +68,7 @@ export const StatTiles = ({ summary }: { summary: DashboardSummary }) => {
         icon={ChartBarIcon}
         tone={
           summary.pass_rate === null
-            ? undefined
+            ? "neutral"
             : passRateTone(summary.pass_rate)
         }
         value={

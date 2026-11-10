@@ -11,6 +11,7 @@ public class UnconfiguredStorageService : IStorageService
         string key,
         Stream content,
         string contentType,
+        bool forceDownload = true,
         CancellationToken cancellationToken = default
     ) => throw new InvalidOperationException(Message);
 

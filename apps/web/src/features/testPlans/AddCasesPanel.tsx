@@ -62,7 +62,7 @@ export const AddCasesPanel = ({
                 {testCase.name}
               </span>
               <button
-                className="btn shrink-0 text-primary btn-ghost btn-xs"
+                className="btn shrink-0 text-secondary btn-ghost btn-xs"
                 type="button"
                 aria-label={`Add ${testCase.name}`}
                 onClick={() => onAdd(testCase.id)}

@@ -86,7 +86,7 @@ public static class UploadAvatar
                 storageKey,
                 request.Content,
                 request.ContentType,
-                cancellationToken
+                cancellationToken: cancellationToken
             );
 
             if (profile is null)

@@ -2,12 +2,13 @@ import {
   CheckCircleIcon,
   ClockIcon,
   FolderOpenIcon,
+  MagnifyingGlassIcon,
   RectangleStackIcon,
 } from "@heroicons/react/24/outline";
 import { Link } from "@tanstack/react-router";
 import type { TestRun } from "@testcraft/types";
 import { compareDesc } from "date-fns";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -34,6 +35,21 @@ import { useDashboardTabStore } from "@/stores/dashboardTab";
 
 const startedAt = (run: TestRun) => run.created_at;
 const completedAt = (run: TestRun) => run.updated_at ?? run.created_at;
+
+const filterRuns = (
+  runs: TestRun[],
+  query: string,
+  projectMap: Map<string, { name: string }>,
+) =>
+  query
+    ? runs.filter(
+        (run) =>
+          run.name.toLowerCase().includes(query) ||
+          (projectMap.get(run.project_id)?.name ?? "")
+            .toLowerCase()
+            .includes(query),
+      )
+    : runs;
 
 export const DashboardPage = () => {
   const {
@@ -77,16 +93,31 @@ export const DashboardPage = () => {
       ),
     [activeRunsUnsorted],
   );
+  const [search, setSearch] = useState("");
+  const query = search.trim().toLowerCase();
+  const activeRunsMatching = useMemo(
+    () => filterRuns(activeRunsAll, query, projectMap),
+    [activeRunsAll, query, projectMap],
+  );
+  const completedRunsMatching = useMemo(
+    () => filterRuns(recentlyCompletedRunsAll, query, projectMap),
+    [recentlyCompletedRunsAll, query, projectMap],
+  );
   const active = useSortedRunsPage(
     "dashboard-active",
-    activeRunsAll,
+    activeRunsMatching,
     startedAt,
   );
   const completed = useSortedRunsPage(
     "dashboard-completed",
-    recentlyCompletedRunsAll,
+    completedRunsMatching,
     completedAt,
   );
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    active.setPage(0);
+    completed.setPage(0);
+  };
   const activeRuns = active.pageItems;
   const recentlyCompletedRuns = completed.pageItems;
 
@@ -116,6 +147,14 @@ export const DashboardPage = () => {
 
   const isContentReady = !isLoading && !showSkeleton;
 
+  const noMatches = (
+    <EmptyState
+      className="flex-1"
+      icon={<MagnifyingGlassIcon className="size-5" />}
+      title="No runs match your search"
+    />
+  );
+
   const activeBody = (
     <DashboardRunsTable
       runs={activeRuns}
@@ -126,19 +165,22 @@ export const DashboardPage = () => {
       pageCount={active.pageCount}
       onPageChange={active.setPage}
       emptyState={
-        <EmptyState
-          className="flex-1"
-          icon={<ClockIcon className="size-5" />}
-          iconClassName="text-warning"
-          title="No active runs"
-          description="Runs that are in progress show up here as they report results."
-          action={
-            <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
-              <FolderOpenIcon className="size-4" aria-hidden="true" />
-              Open a project
-            </Link>
-          }
-        />
+        query ? (
+          noMatches
+        ) : (
+          <EmptyState
+            className="flex-1"
+            icon={<ClockIcon className="size-5" />}
+            iconClassName="text-warning"
+            title="No active runs"
+            action={
+              <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
+                <FolderOpenIcon className="size-4" aria-hidden="true" />
+                Open a project
+              </Link>
+            }
+          />
+        )
       }
       renderRow={(run) => (
         <ActiveRunTableRow
@@ -161,19 +203,22 @@ export const DashboardPage = () => {
       pageCount={completed.pageCount}
       onPageChange={completed.setPage}
       emptyState={
-        <EmptyState
-          className="flex-1"
-          icon={<CheckCircleIcon className="size-5" />}
-          iconClassName="text-success"
-          title="No completed runs"
-          description="Finished runs from all your projects show up here."
-          action={
-            <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
-              <FolderOpenIcon className="size-4" aria-hidden="true" />
-              Open a project
-            </Link>
-          }
-        />
+        query ? (
+          noMatches
+        ) : (
+          <EmptyState
+            className="flex-1"
+            icon={<CheckCircleIcon className="size-5" />}
+            iconClassName="text-success"
+            title="No completed runs"
+            action={
+              <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
+                <FolderOpenIcon className="size-4" aria-hidden="true" />
+                Open a project
+              </Link>
+            }
+          />
+        )
       }
       renderRow={(run) => (
         <CompletedRunTableRow
@@ -202,59 +247,62 @@ export const DashboardPage = () => {
   };
 
   return (
-    <div className="flex min-h-0 w-full flex-col overflow-y-auto">
-      <h1 className="sr-only">Dashboard</h1>
-      {!isContentReady && showSkeleton && (
-        <div role="status" aria-live="polite">
-          <span className="sr-only">Loading dashboard…</span>
-          <DashboardSkeleton />
-        </div>
-      )}
-      {isContentReady && !hasProjects && (
-        <section className="page-content">
-          <EmptyState
-            icon={<RectangleStackIcon className="size-6" />}
-            title="No projects yet"
-            description="Create a project to start tracking test runs and results."
-            action={
-              <Link to="/projects" className="btn btn-sm btn-primary">
-                Go to projects
-              </Link>
-            }
-          />
-        </section>
-      )}
-      {isContentReady && hasProjects && (
-        <section className="page-content flex flex-col gap-6">
-          {renderTiles()}
-          <div className="min-w-0 table-shell">
-            <RunsTabs
-              tab={tab}
-              onChange={setTab}
-              activeCount={activeCount}
-              completedCount={completedCount}
-            />
-
-            <div
-              role="tabpanel"
-              className="flex min-h-80 flex-col"
-              id={RUNS_PANEL_ID}
-              aria-labelledby={runsTabId(tab)}
-            >
-              {tab === "active" ? activeBody : completedBody}
-            </div>
+    <div className="flex min-h-0 w-full flex-col">
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto">
+        <h1 className="sr-only">Dashboard</h1>
+        {!isContentReady && showSkeleton && (
+          <div role="status" aria-live="polite">
+            <span className="sr-only">Loading dashboard…</span>
+            <DashboardSkeleton />
           </div>
-          {summary && (
-            <aside
-              aria-label="Weekly summary"
-              className="grid items-start gap-4 lg:grid-cols-2"
-            >
-              <NeedsAttention tests={summary.top_failing_tests} />
-              <ProjectHealthList projects={projects ?? []} />
-            </aside>
-          )}
-        </section>
-      )}
+        )}
+        {isContentReady && !hasProjects && (
+          <section className="page-content">
+            <EmptyState
+              icon={<RectangleStackIcon className="size-6" />}
+              title="No projects yet"
+              action={
+                <Link to="/projects" className="btn btn-sm btn-primary">
+                  Go to projects
+                </Link>
+              }
+            />
+          </section>
+        )}
+        {isContentReady && hasProjects && (
+          <section className="page-content flex flex-col gap-6">
+            {renderTiles()}
+            <div className="min-w-0 table-shell">
+              <RunsTabs
+                tab={tab}
+                onChange={setTab}
+                activeCount={activeCount}
+                completedCount={completedCount}
+                search={search}
+                onSearch={handleSearch}
+              />
+
+              <div
+                role="tabpanel"
+                className="flex min-h-151 flex-col"
+                id={RUNS_PANEL_ID}
+                aria-labelledby={runsTabId(tab)}
+              >
+                {tab === "active" ? activeBody : completedBody}
+              </div>
+            </div>
+            {summary && (
+              <aside
+                aria-label="Weekly summary"
+                className="grid items-start gap-4 lg:grid-cols-2"
+              >
+                <NeedsAttention tests={summary.top_failing_tests} />
+                <ProjectHealthList projects={projects ?? []} />
+              </aside>
+            )}
+          </section>
+        )}
+      </div>
     </div>
   );
 };

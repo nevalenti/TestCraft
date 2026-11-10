@@ -155,6 +155,13 @@ export const AccountPage = () => {
         title="Sign out?"
         description="You will be returned to the login page."
         confirmLabel="Sign out"
+        confirmClassName="btn-error"
+        confirmIcon={
+          <ArrowRightStartOnRectangleIcon
+            className="size-4"
+            aria-hidden="true"
+          />
+        }
         tone="neutral"
       />
     </>

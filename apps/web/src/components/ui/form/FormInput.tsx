@@ -19,7 +19,7 @@ export const FormInput = ({
   return (
     <input
       className={cn(
-        "input input-bordered w-full bg-base-200/60",
+        "input input-bordered w-full bg-base-200",
         hasError && "input-error",
         className,
       )}

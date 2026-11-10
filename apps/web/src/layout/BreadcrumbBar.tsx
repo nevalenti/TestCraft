@@ -16,7 +16,7 @@ export const BreadcrumbBar = () => {
   if (breadcrumbs === null || breadcrumbs.length === 0) return null;
 
   return (
-    <div className="header-stripes hidden h-9 shrink-0 items-center border-b border-border bg-base-300 px-4 sm:flex sm:px-6 lg:h-10 lg:px-8">
+    <div className="hidden h-9 shrink-0 items-center border-b border-border bg-base-300 px-4 sm:flex sm:px-6 lg:h-10 lg:px-8">
       <nav
         ref={navRef}
         aria-label="Breadcrumb"

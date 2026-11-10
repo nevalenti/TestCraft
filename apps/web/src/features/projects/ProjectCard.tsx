@@ -47,8 +47,8 @@ export const ProjectCard = ({
       onDelete={deleteHandler}
       label="project"
       testId="project-card"
-      cardBg="bg-primary/8 border-primary/28"
-      accentText="text-primary"
+      cardBg="bg-[color-mix(in_oklab,var(--color-secondary)_8%,var(--color-base-100))] border-[color-mix(in_oklab,var(--color-secondary)_28%,var(--color-base-100))]"
+      accentText="text-secondary"
       typeIcon={<FolderIcon className="size-3.5" />}
     >
       <div className="flex flex-col gap-1">

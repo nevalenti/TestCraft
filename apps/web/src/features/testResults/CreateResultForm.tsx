@@ -109,10 +109,7 @@ export const CreateResultForm = ({
       >
         <FormSelect
           id="result-test-case"
-          className={cn(
-            "select-bordered select w-full",
-            errors.testCaseId && "select-error",
-          )}
+          className={cn(errors.testCaseId && "select-error")}
           disabled={loadingCases}
           autoFocus
           {...register("testCaseId")}
@@ -130,11 +127,7 @@ export const CreateResultForm = ({
         htmlFor="result-status"
         error={errors.status?.message}
       >
-        <FormSelect
-          id="result-status"
-          className="select-bordered select w-full"
-          {...register("status")}
-        >
+        <FormSelect id="result-status" {...register("status")}>
           {EXECUTED_STATUS_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -148,11 +141,7 @@ export const CreateResultForm = ({
           htmlFor="result-defect-type"
           error={errors.defectType?.message}
         >
-          <FormSelect
-            id="result-defect-type"
-            className="select-bordered select w-full"
-            {...register("defectType")}
-          >
+          <FormSelect id="result-defect-type" {...register("defectType")}>
             <option value="">Select defect type (optional)</option>
             {defectTypeOptions.map((option) => (
               <option key={option.value} value={option.value}>

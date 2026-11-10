@@ -76,7 +76,7 @@ export const LabelSelect = ({
             onClick={() => setOpen(false)}
             aria-hidden="true"
           />
-          <div className="absolute top-full left-0 z-20 mt-1.5 w-56 overflow-hidden rounded-xl border border-border bg-base-100 shadow-xl">
+          <div className="absolute top-full left-0 z-20 mt-1.5 w-56 overflow-hidden rounded-xl border border-border bg-base-100 shadow-popover">
             <div className="border-b border-border px-3 py-2">
               <p className="text-xs font-semibold tracking-wide text-fg-subtle uppercase">
                 Labels
@@ -84,7 +84,10 @@ export const LabelSelect = ({
             </div>
             {!allLabels || allLabels.length === 0 ? (
               <div className="px-3 py-4 text-center">
-                <TagIcon className="mx-auto mb-1.5 size-5 text-fg-subtle" />
+                <TagIcon
+                  className="mx-auto mb-1.5 size-5 text-fg-subtle"
+                  aria-hidden="true"
+                />
                 <p className="text-xs font-medium text-fg-muted">
                   No labels yet
                 </p>

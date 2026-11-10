@@ -74,12 +74,7 @@ export const LabelsTab = () => {
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (!labels || labels.length === 0)
-      return (
-        <EmptyState
-          title="No labels yet"
-          description="Create labels to tag test cases."
-        />
-      );
+      return <EmptyState title="No labels yet" />;
     return (
       <div className="table-shell">
         <div className="overflow-x-auto">
@@ -123,7 +118,7 @@ export const LabelsTab = () => {
                           <PencilIcon className="size-3.5" />
                         </button>
                         <button
-                          className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
+                          className="btn btn-ghost btn-xs btn-danger-ghost"
                           onClick={() => openDelete(label)}
                           aria-label="Delete label"
                         >

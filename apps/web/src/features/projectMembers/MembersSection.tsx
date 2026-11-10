@@ -92,7 +92,7 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
           items={visibleMembers ?? []}
           getKey={(member) => member.id}
           renderLeading={(member) => (
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-content">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-content">
               {getInitials(memberLabel(member))}
             </span>
           )}
@@ -105,7 +105,7 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
           renderTrailing={(member) =>
             canManageMember(myRole, member.role) ? (
               <select
-                className="select-bordered select select-xs"
+                className="select select-xs"
                 value={member.role}
                 aria-label={`Role of ${member.email ?? memberLabel(member)}`}
                 disabled={updateRole.isPending}
@@ -134,7 +134,6 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
             `Remove ${member.email ?? memberLabel(member)}`
           }
           emptyTitle="No members yet"
-          emptyDescription="Invite teammates to collaborate on this project."
         />
       )}
 

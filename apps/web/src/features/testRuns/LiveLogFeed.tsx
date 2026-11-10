@@ -90,7 +90,6 @@ export const LiveLogFeed = ({ projectId, runId }: Props) => {
         <EmptyState
           icon={<ClockIcon className="size-5" />}
           title="Waiting for results"
-          description="Results will appear here as the run reports them."
         />
       ) : (
         <div

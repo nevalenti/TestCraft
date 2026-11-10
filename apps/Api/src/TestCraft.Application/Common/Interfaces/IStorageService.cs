@@ -6,6 +6,7 @@ public interface IStorageService
         string key,
         Stream content,
         string contentType,
+        bool forceDownload = true,
         CancellationToken cancellationToken = default
     );
 

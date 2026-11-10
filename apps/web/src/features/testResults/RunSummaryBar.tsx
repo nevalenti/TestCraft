@@ -6,6 +6,7 @@ import {
 import { TestResultStatus, type TestRunSummary } from "@testcraft/types";
 
 import { ListToolbar } from "@/components/ui/ListToolbar";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import {
   STATUS_COLOR,
   STATUS_OPTIONS,
@@ -51,32 +52,25 @@ export const RunSummaryBar = ({
       placeholder="Search test cases…"
     >
       {onGroupedChange && (
-        <div
-          role="group"
-          aria-label="Group results"
-          className="flex items-center gap-0.5 rounded-lg subtle-surface p-0.5 text-xs"
-        >
-          {[
-            { value: false, label: "List", Icon: ListBulletIcon },
-            { value: true, label: "By suite", Icon: RectangleGroupIcon },
-          ].map(({ value, label, Icon }) => (
-            <button
-              key={label}
-              type="button"
-              aria-pressed={isGrouped === value}
-              onClick={() => onGroupedChange(value)}
-              className={cn(
-                "flex items-center gap-1.5 rounded-md px-2.5 py-1 font-medium transition-colors",
-                isGrouped === value
-                  ? "bg-base-100 text-base-content shadow-sm"
-                  : "text-fg-muted hover:text-base-content",
-              )}
-            >
-              <Icon className="size-3.5" aria-hidden="true" />
-              {label}
-            </button>
-          ))}
-        </div>
+        <SegmentedControl
+          label="Group results"
+          value={isGrouped ? "suite" : "list"}
+          onChange={(v) => onGroupedChange(v === "suite")}
+          options={[
+            {
+              value: "list",
+              label: "List",
+              icon: <ListBulletIcon className="size-3.5" aria-hidden="true" />,
+            },
+            {
+              value: "suite",
+              label: "By suite",
+              icon: (
+                <RectangleGroupIcon className="size-3.5" aria-hidden="true" />
+              ),
+            },
+          ]}
+        />
       )}
       {onAdd && (
         <button className="btn btn-sm btn-primary" onClick={onAdd}>

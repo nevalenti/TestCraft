@@ -16,6 +16,7 @@ import { TabCountBadge } from "@/components/ui/TabCountBadge";
 import { useProject } from "@/features/projects/hooks";
 import { useProjectPermissions } from "@/features/projects/permissions";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { cn } from "@/lib/cn";
 
 const routeApi = getRouteApi("/_app/projects/$projectId");
 
@@ -24,6 +25,7 @@ export const ProjectLayout = () => {
   const { data: project, isPending } = useProject(projectId);
   const { canManage } = useProjectPermissions(projectId);
   const pathname = useLocation({ select: (location) => location.pathname });
+  const isNotes = pathname.startsWith(`/projects/${projectId}/notes`);
   const tabListRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export const ProjectLayout = () => {
 
   return (
     <div className="flex min-h-0 w-full flex-col">
-      <header className="page-header border-b border-border !pt-2 !pb-0">
+      <header className="page-header border-b border-border bg-base-300 !pt-2 !pb-0">
         <h1 className="sr-only">{project?.name ?? "…"}</h1>
         <nav
           ref={tabListRef}
@@ -136,7 +138,12 @@ export const ProjectLayout = () => {
           )}
         </nav>
       </header>
-      <section className="page-content flex min-h-0 flex-1 flex-col overflow-y-auto">
+      <section
+        className={cn(
+          "flex min-h-0 flex-1 flex-col overflow-y-auto",
+          !isNotes && "page-content",
+        )}
+      >
         <div className="flex-1 has-[>[data-fill-height]]:flex has-[>[data-fill-height]]:flex-col">
           <Outlet />
         </div>

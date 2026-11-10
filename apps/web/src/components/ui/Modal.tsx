@@ -82,7 +82,7 @@ export const Modal = ({
     >
       <div
         className={cn(
-          "modal-box w-full border border-border p-0 shadow-2xl",
+          "modal-box w-full border border-border p-0 shadow-popover",
           SIZE_CLASS[size],
         )}
       >

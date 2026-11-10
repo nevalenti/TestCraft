@@ -19,7 +19,7 @@ export const FormTextarea = ({
   return (
     <textarea
       className={cn(
-        "textarea textarea-bordered w-full bg-base-200/60",
+        "textarea textarea-bordered w-full bg-base-200",
         hasError && "textarea-error",
         className,
       )}

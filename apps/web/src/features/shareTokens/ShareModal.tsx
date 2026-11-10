@@ -1,6 +1,7 @@
 import { ClipboardIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { useRef, useState } from "react";
 
+import { FormInput } from "@/components/ui/form/FormInput";
 import { Modal } from "@/components/ui/Modal";
 import {
   useCreateShareToken,
@@ -71,7 +72,7 @@ export const ShareModal = ({
                 value={shareUrl}
                 aria-label="Share link URL"
                 onFocus={(event) => event.currentTarget.select()}
-                className="input-bordered input input-sm w-full text-xs"
+                className="input input-sm w-full text-xs"
               />
               <button
                 type="button"
@@ -101,10 +102,10 @@ export const ShareModal = ({
               <label className="label-text label text-xs" htmlFor="expires-at">
                 Expires (optional)
               </label>
-              <input
+              <FormInput
                 id="expires-at"
                 type="date"
-                className="input-bordered input input-sm w-full"
+                className="input-sm"
                 value={expiresAt}
                 onChange={(event) => setExpiresAt(event.target.value)}
                 min={todayLocalDate()}
@@ -151,7 +152,7 @@ export const ShareModal = ({
                   </div>
                   <button
                     type="button"
-                    className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
+                    className="btn btn-ghost btn-xs btn-danger-ghost"
                     onClick={() => revokeToken.mutate(token.id)}
                     aria-label={`Revoke share link created ${formatDate(token.created_at)}`}
                   >

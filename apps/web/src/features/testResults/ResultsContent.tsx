@@ -62,7 +62,6 @@ export const ResultsContent = ({
     return (
       <EmptyState
         title="No results recorded"
-        description="Add results to track the outcome of each test case in this run."
         action={
           openCreate && (
             <button
@@ -82,7 +81,6 @@ export const ResultsContent = ({
       <EmptyState
         icon={<MagnifyingGlassIcon className="size-5" />}
         title="No results match"
-        description="Try a different search term or clear the active filter."
         action={
           <div className="flex gap-2">
             {debouncedSearch && (

@@ -13,9 +13,6 @@ test.describe("Analytics", () => {
   }) => {
     await expect(analyticsPage.trendTab).toBeVisible();
     await expect(page.getByText("No run data yet")).toBeVisible();
-    await expect(
-      page.getByText("Complete a test run to see trend data."),
-    ).toBeVisible();
   });
 
   test("can switch to Flaky Tests tab", async ({ analyticsPage, page }) => {

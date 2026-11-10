@@ -108,6 +108,27 @@ describe("ConfirmDialog tones", () => {
     );
   });
 
+  it("lets the caller restyle the confirm button and add an icon", () => {
+    render(
+      <ConfirmDialog
+        isOpen
+        onClose={vi.fn()}
+        onConfirm={vi.fn()}
+        title="Sign out?"
+        description="You will be returned to the login page."
+        confirmLabel="Sign out"
+        confirmClassName="btn-error"
+        confirmIcon={<svg data-testid="confirm-icon" />}
+        tone="neutral"
+      />,
+    );
+
+    const button = screen.getByRole("button", { name: "Sign out" });
+    expect(button).toHaveClass("btn-error");
+    expect(button).not.toHaveClass("btn-primary");
+    expect(screen.getByTestId("confirm-icon")).toBeInTheDocument();
+  });
+
   it("marks destructive confirmations with the error style", () => {
     render(
       <ConfirmDialog

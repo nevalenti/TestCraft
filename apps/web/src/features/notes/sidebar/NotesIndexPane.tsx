@@ -26,28 +26,25 @@ export const NotesIndexPane = ({
     )
     .slice(0, RECENT_COUNT);
   const hasNotes = recent.length > 0;
-  const editableDescription = hasNotes
-    ? "Open a recent note, or start something new. Everything autosaves as you type."
-    : "Write runbooks, checklists and snippets in Markdown or code. Everything autosaves as you type.";
-  const description = onCreate
-    ? editableDescription
-    : "Select a note from the list to read it.";
+  const emptyTitle = hasNotes
+    ? "Pick up where you left off"
+    : "Start your first note";
+  const title = onCreate ? emptyTitle : "Select a note to read it";
 
   return (
     <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 py-12">
       <div className="my-auto w-full max-w-2xl">
         <div className="flex flex-col items-center text-center">
-          <span className="bg-primary/8 border-primary/28 mb-4 flex size-12 items-center justify-center rounded-2xl border text-primary">
+          <span className="icon-tile mb-4">
             <PencilSquareIcon className="size-6" aria-hidden="true" />
           </span>
           <h2 className="font-display text-xl font-bold tracking-tight text-base-content">
-            {hasNotes ? "Pick up where you left off" : "Start your first note"}
+            {title}
           </h2>
-          <p className="mt-1.5 max-w-sm text-sm text-fg-muted">{description}</p>
           {onCreate && (
             <button
               type="button"
-              className="btn mt-5 btn-primary"
+              className="btn mt-5 gap-2 btn-sm btn-primary"
               onClick={onCreate}
               disabled={isCreating}
             >
@@ -71,7 +68,7 @@ export const NotesIndexPane = ({
                 <li key={note.id}>
                   <Link
                     {...getNoteLink(note)}
-                    className="flex h-full flex-col gap-1.5 rounded-xl border border-border bg-base-200/40 p-4 transition-all hover:-translate-y-px hover:border-primary/40 hover:bg-base-200/70 hover:shadow-card"
+                    className="flex h-full flex-col gap-1.5 rounded-xl border border-border bg-base-200/40 p-4 transition-all hover:-translate-y-px hover:border-[color-mix(in_oklab,var(--color-secondary)_40%,var(--color-base-100))] hover:bg-base-200/70 hover:shadow-card"
                   >
                     <span className="truncate text-sm font-semibold text-base-content">
                       {note.title || DEFAULT_NOTE_TITLE}

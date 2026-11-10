@@ -87,7 +87,6 @@ export const ProjectsPage = () => {
             items={projects}
             viewMode="grid"
             emptyTitle="No projects yet"
-            emptyDescription="Projects group your test suites and runs."
             renderCard={renderCard}
           />
         </div>

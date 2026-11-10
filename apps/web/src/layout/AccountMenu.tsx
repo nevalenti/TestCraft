@@ -23,7 +23,7 @@ export const AccountMenu = () => {
       label="Account menu"
       className="dropdown-end"
       triggerClassName="flex cursor-pointer items-center gap-2 rounded-full border border-border bg-base-200 py-0.5 pr-3 pl-1 shadow-sm transition-all group-data-open:border-primary/50 group-data-open:bg-base-300 group-data-open:shadow-md hover:border-primary/40 hover:bg-base-300 hover:shadow-md"
-      menuClassName="z-10 mt-2 w-72 overflow-hidden rounded-2xl border border-border bg-base-100 shadow-2xl shadow-black/10"
+      menuClassName="z-10 mt-2 w-72 overflow-hidden rounded-xl border border-border bg-base-100 shadow-popover"
       trigger={
         <>
           {avatarData?.url ? (

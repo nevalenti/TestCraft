@@ -12,6 +12,7 @@ public class FakeStorageService : IStorageService
         string key,
         Stream content,
         string contentType,
+        bool forceDownload = true,
         CancellationToken cancellationToken = default
     )
     {

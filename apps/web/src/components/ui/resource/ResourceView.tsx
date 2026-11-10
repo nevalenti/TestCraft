@@ -19,7 +19,6 @@ interface ResourceViewProps<T> {
   displayItems?: T[];
   viewMode: ViewMode;
   emptyTitle: string;
-  emptyDescription?: string;
   renderListItem?: (item: T) => ReactElement;
   renderCard?: (item: T) => ReactElement;
   renderTable?: (items: T[]) => ReactElement;
@@ -40,7 +39,6 @@ export function ResourceView<T>({
   displayItems,
   viewMode,
   emptyTitle,
-  emptyDescription,
   renderListItem,
   renderCard,
   renderTable,
@@ -56,8 +54,7 @@ export function ResourceView<T>({
 
   if (isError) return <ErrorState error={error} onRetry={onRetry} />;
 
-  if (items?.length === 0)
-    return <EmptyState title={emptyTitle} description={emptyDescription} />;
+  if (items?.length === 0) return <EmptyState title={emptyTitle} />;
 
   const list = displayItems ?? items ?? [];
 

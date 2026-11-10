@@ -41,7 +41,7 @@ export const ErrorState = ({
       className="flex flex-1 items-center justify-center px-4 py-12"
     >
       <div className="flex max-w-sm flex-col items-center text-center">
-        <span className="mb-3 flex size-10 items-center justify-center rounded-xl bg-error/12 text-error">
+        <span className="mb-3 flex size-10 items-center justify-center rounded-xl bg-[color-mix(in_oklab,var(--color-error)_12%,var(--color-base-100))] text-error">
           <ExclamationTriangleIcon className="size-5" aria-hidden="true" />
         </span>
         <p className="text-sm font-semibold text-fg-secondary">{title}</p>

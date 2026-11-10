@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@tanstack/react-router", () => ({
@@ -205,11 +206,6 @@ describe("DashboardPage", () => {
       setupMocks({ activeRuns: [] });
       render(<DashboardPage />);
       expect(screen.getByText("No active runs")).toBeInTheDocument();
-      expect(
-        screen.getByText(
-          "Runs that are in progress show up here as they report results.",
-        ),
-      ).toBeInTheDocument();
     });
   });
 
@@ -244,6 +240,28 @@ describe("DashboardPage", () => {
       });
       render(<DashboardPage />);
       expect(screen.getByText("Run run-1")).toBeInTheDocument();
+    });
+  });
+
+  describe("searching runs", () => {
+    it("filters the table by run name and explains when nothing matches", async () => {
+      setupMocks({
+        projects: [makeProject("proj-1", "Alpha")],
+        activeRuns: [
+          makeRun("login", "proj-1", TestRunStatus.Active),
+          makeRun("checkout", "proj-1", TestRunStatus.Active),
+        ],
+      });
+      render(<DashboardPage />);
+      const search = screen.getByRole("searchbox", { name: "Search runs" });
+
+      await userEvent.type(search, "login");
+      expect(screen.getByText("Run login")).toBeInTheDocument();
+      expect(screen.queryByText("Run checkout")).not.toBeInTheDocument();
+
+      await userEvent.clear(search);
+      await userEvent.type(search, "zzz");
+      expect(screen.getByText("No runs match your search")).toBeInTheDocument();
     });
   });
 

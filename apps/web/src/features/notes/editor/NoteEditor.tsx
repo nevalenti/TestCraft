@@ -11,11 +11,15 @@ import {
 
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
 import { DEFAULT_NOTE_TITLE } from "@/features/notes/constants";
+import { NoteEditorStatusBar } from "@/features/notes/editor/NoteEditorStatusBar";
 import {
   NoteEditorToolbar,
   type ViewMode,
 } from "@/features/notes/editor/NoteEditorToolbar";
-import { isProseLanguage } from "@/features/notes/editor/noteLanguages";
+import {
+  isProseLanguage,
+  NOTE_LANGUAGES,
+} from "@/features/notes/editor/noteLanguages";
 import {
   type NoteEditorValue,
   useNoteAutosave,
@@ -78,6 +82,7 @@ export const NoteEditor = ({
   const [viewMode, setViewMode] = useState<ViewMode>(() =>
     readOnly ? "preview" : readStoredViewMode(),
   );
+  const [cursor, setCursor] = useState({ line: 1, column: 1 });
   const titleRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
   const isFreshNote =
@@ -120,6 +125,12 @@ export const NoteEditor = ({
           }
           onMount={(editor) => {
             editorRef.current = editor;
+            editor.onDidChangeCursorPosition((event) =>
+              setCursor({
+                line: event.position.lineNumber,
+                column: event.position.column,
+              }),
+            );
           }}
           height="100%"
           readOnly={readOnly}
@@ -133,7 +144,7 @@ export const NoteEditor = ({
   );
 
   const previewPane = (
-    <div className="h-full overflow-y-auto px-6 py-5 lg:px-10">
+    <div className="h-full overflow-y-auto bg-base-100 px-6 py-5 lg:px-10">
       <SectionErrorBoundary title="The preview failed to render">
         <Suspense fallback={null}>
           <LazyNoteMarkdown
@@ -186,6 +197,17 @@ export const NoteEditor = ({
           </div>
         )}
       </div>
+
+      <NoteEditorStatusBar
+        readOnly={readOnly}
+        line={cursor.line}
+        column={cursor.column}
+        language={
+          NOTE_LANGUAGES.find((option) => option.value === value.language)
+            ?.label ?? value.language
+        }
+        showCursor={isShowSource}
+      />
     </div>
   );
 };

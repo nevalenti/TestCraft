@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { TablePager } from "@/components/ui/TablePager";
 import { rowBg, STATUS_BADGE } from "@/features/analytics/comparisonHelpers";
 import { useRunComparison } from "@/features/analytics/hooks";
@@ -109,7 +110,6 @@ export const AnalyticsComparisonTab = () => {
         <EmptyState
           icon={<ArrowsRightLeftIcon className="size-6" />}
           title="Select two runs to compare"
-          description="Choose Run A and Run B above, then click Compare to see regressions and fixes."
         />
       )}
 
@@ -144,33 +144,22 @@ export const AnalyticsComparisonTab = () => {
               </span>
             </div>
 
-            <div className="ml-auto flex items-center gap-0.5 rounded-lg bg-base-200 p-0.5">
-              {(
-                [
-                  { key: "all", label: `All (${comparison.results.length})` },
-                  {
-                    key: "changes",
-                    label: `Changes only (${counts.regressions + counts.fixes})`,
-                  },
-                ] as { key: Filter; label: string }[]
-              ).map(({ key, label }) => (
-                <button
-                  key={key}
-                  className={cn(
-                    "rounded-md px-2.5 py-1 text-xs font-medium transition-colors",
-                    filter === key
-                      ? "bg-base-100 text-base-content shadow-sm"
-                      : "text-fg-secondary hover:text-base-content",
-                  )}
-                  onClick={() => {
-                    setFilter(key);
-                    setPage(0);
-                  }}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+            <SegmentedControl
+              className="ml-auto"
+              label="Filter results"
+              value={filter}
+              onChange={(next) => {
+                setFilter(next);
+                setPage(0);
+              }}
+              options={[
+                { value: "all", label: `All (${comparison.results.length})` },
+                {
+                  value: "changes",
+                  label: `Changes only (${counts.regressions + counts.fixes})`,
+                },
+              ]}
+            />
           </div>
 
           {visibleRows.length === 0 ? (

@@ -7,6 +7,7 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import type { Attachment } from "@testcraft/types";
 import { useRef, useState } from "react";
 
+import { EmptyState } from "@/components/ui/EmptyState";
 import { Modal } from "@/components/ui/Modal";
 import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { SkeletonStatus } from "@/components/ui/skeleton/SkeletonStatus";
@@ -93,10 +94,10 @@ export const AttachmentModal = ({
       );
     if (attachments?.length === 0)
       return (
-        <div className="flex flex-col items-center gap-2 py-8 text-center">
-          <PaperClipIcon className="size-8 text-fg-subtle" />
-          <p className="text-sm text-fg-secondary">No attachments yet</p>
-        </div>
+        <EmptyState
+          title="No attachments yet"
+          icon={<PaperClipIcon aria-hidden="true" />}
+        />
       );
     return (
       <ul className="space-y-2">
@@ -127,7 +128,7 @@ export const AttachmentModal = ({
               {!readOnly && (
                 <button
                   type="button"
-                  className="btn text-fg-subtle btn-ghost btn-xs hover:bg-error/10 hover:text-error"
+                  className="btn btn-ghost btn-xs btn-danger-ghost"
                   aria-label={`Delete ${attachment.file_name}`}
                   onClick={() => handleDelete(attachment.id)}
                   disabled={del.isPending}

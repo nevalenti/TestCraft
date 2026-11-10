@@ -43,7 +43,7 @@ export const StepRow = ({
         className={cn(
           "group flex items-start gap-3 rounded-xl border p-4 transition-colors",
           isDragging
-            ? "border-dashed border-primary/40 bg-transparent"
+            ? "border-dashed border-secondary/40 bg-transparent"
             : "border-border bg-base-100 hover:border-base-content/25",
         )}
       >

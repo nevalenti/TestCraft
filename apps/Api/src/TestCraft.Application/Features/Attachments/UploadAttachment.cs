@@ -130,7 +130,7 @@ public static class UploadAttachment
                 storageKey,
                 request.Content,
                 request.ContentType,
-                cancellationToken
+                cancellationToken: cancellationToken
             );
 
             var attachment = Attachment.Create(
