@@ -3,16 +3,8 @@ name: ci-api
 on:
   push:
     branches: [main]
-    paths:
-      - "apps/Api/**"
-      - "Common/**"
-      - ".github/workflows/ci-api.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "apps/Api/**"
-      - "Common/**"
-      - ".github/workflows/ci-api.yml"
   workflow_dispatch:
 
 concurrency:
@@ -27,8 +19,32 @@ defaults:
     shell: sh
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.api == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: .github/path-filters.yml
+
   build-test:
     name: build & test
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -38,14 +54,6 @@ jobs:
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-
-      - name: Lint Dockerfile
-        shell: sh
-        run: |
-          wget -qO /tmp/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
-          chmod +x /tmp/hadolint
-          /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Dockerfile
-          /tmp/hadolint --ignore DL3018 --ignore DL3059 apps/Api/Migrator.Dockerfile
 
       - name: Setup .NET
         uses: actions/setup-dotnet@67a3573c9a986a3f9c594539f4ab511d57bb3ce9 # v4
@@ -65,14 +73,6 @@ jobs:
 
       - name: Restore tools
         run: dotnet tool restore
-
-      - name: Audit dependencies
-        run: |
-          dotnet list TestCraft.slnx package --vulnerable --include-transitive 2>&1 | tee vulnerable-packages.log
-          if grep -q "has the following vulnerable packages" vulnerable-packages.log; then
-            echo "::error::Vulnerable NuGet packages detected"
-            exit 1
-          fi
 
       - name: Format check
         run: dotnet csharpier check .
@@ -114,6 +114,15 @@ jobs:
           run-name: "#${{ github.run_id }} api (${{ github.ref_name }})"
           source: api
 
+      - name: Upload test results
+        if: failure()
+        continue-on-error: true
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: api-test-results
+          path: apps/Api/test-results
+          retention-days: 7
+
   docker-api:
     name: docker (api)
     needs: build-test
@@ -137,6 +146,19 @@ jobs:
     with:
       name: migrator
       dockerfile: apps/Api/Migrator.Dockerfile
+
+  result:
+    name: api result
+    if: always()
+    needs: [changes, build-test, docker-api, docker-migrator]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail when a job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::a required api job did not pass"
+          exit 1
 
   deploy:
     name: deploy to production

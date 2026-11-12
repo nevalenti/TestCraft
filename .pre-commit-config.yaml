@@ -19,6 +19,11 @@ repos:
         args: ["--force-exclude"]
   - repo: local
     hooks:
+      - id: hadolint
+        name: hadolint
+        language: docker_image
+        entry: ghcr.io/hadolint/hadolint:v2.15.1@sha256:32dac94127fd60b7b7e3fbfc65e1383b9b5e25c9bfd7b8536de7a539fe68a12d hadolint
+        types: [dockerfile]
       - id: web-oxlint
         name: web oxlint
         entry: pnpm --filter testcraft-web exec oxlint

@@ -3,17 +3,9 @@ name: security-checkov
 on:
   push:
     branches: [main]
-    paths:
-      - "infrastructure/helm/**"
-      - "**/Dockerfile*"
-      - ".checkov.baseline"
-      - ".github/workflows/security-checkov.yml"
   pull_request:
-    paths:
-      - "infrastructure/helm/**"
-      - "**/Dockerfile*"
-      - ".checkov.baseline"
-      - ".github/workflows/security-checkov.yml"
+  schedule:
+    - cron: "41 4 * * 1"
   workflow_dispatch:
 
 concurrency:
@@ -22,13 +14,39 @@ concurrency:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || steps.filter.outputs.iac == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name == 'push' || github.event_name == 'pull_request'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: .github/path-filters.yml
+
   scan:
     name: iac security scan
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -52,47 +70,44 @@ jobs:
         run: helm dependency update infrastructure/helm/testcraft
 
       - name: Scan Helm chart
-        if: github.event_name == 'pull_request'
-        run: |
-          checkov -d infrastructure/helm/testcraft --framework helm \
-            --baseline infrastructure/helm/testcraft/.checkov.baseline \
-            -o cli -o sarif --output-file-path console,checkov-helm.sarif
-
-      - name: Scan Helm chart (report only)
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name == 'push' }}
         run: |
           checkov -d infrastructure/helm/testcraft --framework helm \
             --baseline infrastructure/helm/testcraft/.checkov.baseline \
             -o cli -o sarif --output-file-path console,checkov-helm.sarif
 
       - name: Scan Dockerfiles
-        if: github.event_name == 'pull_request'
-        run: |
-          checkov -d . --framework dockerfile \
-            --baseline .checkov.baseline \
-            -o cli -o sarif --output-file-path console,checkov-dockerfile.sarif
-
-      - name: Scan Dockerfiles (report only)
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
+        continue-on-error: ${{ github.event_name == 'push' }}
         run: |
           checkov -d . --framework dockerfile \
             --baseline .checkov.baseline \
             -o cli -o sarif --output-file-path console,checkov-dockerfile.sarif
 
       - name: Upload Helm results to Security tab
-        if: always()
+        if: always() && hashFiles('checkov-helm.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@d6317709a54fd87078d323eeb0e48ec331c8e621 # v3
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           sarif_file: checkov-helm.sarif
           category: checkov-helm
 
       - name: Upload Dockerfile results to Security tab
-        if: always()
+        if: always() && hashFiles('checkov-dockerfile.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@d6317709a54fd87078d323eeb0e48ec331c8e621 # v3
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           sarif_file: checkov-dockerfile.sarif
           category: checkov-dockerfile
+
+  result:
+    name: iac result
+    if: always()
+    needs: [changes, scan]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail when a job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::a required iac job did not pass"
+          exit 1

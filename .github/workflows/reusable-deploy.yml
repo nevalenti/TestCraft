@@ -19,9 +19,10 @@ jobs:
   deploy:
     name: deploy ${{ inputs.app }}
     runs-on: [self-hosted, testcraft-production]
-    timeout-minutes: 10
+    timeout-minutes: 15
+    environment: production
     concurrency:
-      group: deploy-production
+      group: deploy-production-${{ inputs.app }}
       cancel-in-progress: false
     steps:
       - name: Checkout
@@ -41,4 +42,8 @@ jobs:
           if [[ "$TAG" =~ ^[0-9a-f]{40}$ ]]; then
             TAG="sha-$TAG"
           fi
-          just deploy-app "$APP" "$TAG"
+          flock "$HOME/.testcraft-deploy.lock" just deploy-app "$APP" "$TAG"
+
+      - name: Remove production secrets
+        if: always()
+        run: rm -f infrastructure/helm/testcraft/values.secrets.yaml

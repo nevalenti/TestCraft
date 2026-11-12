@@ -70,17 +70,25 @@ jobs:
             type=sha,format=long
             type=raw,value=latest,enable={{is_default_branch}}
 
-      - name: Build image for scanning
+      - name: Build image
         uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
         with:
           context: .
           file: ${{ inputs.dockerfile }}
           load: true
-          tags: ${{ inputs.name }}-scan:${{ github.sha }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            ${{ inputs.name }}-scan:${{ github.sha }}
+          labels: ${{ steps.meta.outputs.labels }}
           build-args: |
             APK_CACHE_BUST=${{ steps.date.outputs.date }}
             ${{ inputs.build-args }}
+            ${{ env.PUBLISH == 'true' && inputs.push-build-args || '' }}
+          secrets: |
+            glitchtip_auth_token=${{ env.PUBLISH == 'true' && secrets.glitchtip_auth_token || '' }}
           cache-from: type=gha,scope=${{ inputs.name }}
+          cache-to: type=gha,mode=max,scope=${{ inputs.name }}
+          provenance: false
 
       - name: Scan image with Trivy
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -93,28 +101,18 @@ jobs:
           exit-code: "1"
 
       - name: Upload scan results to Security tab
-        if: always()
+        if: always() && hashFiles('trivy-results.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@a2983b8bed1923f44751c5c43237f479442827b3 # v3
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           sarif_file: trivy-results.sarif
           category: trivy-${{ inputs.name }}
 
-      - name: Build and push
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: ${{ inputs.dockerfile }}
-          platforms: linux/amd64
-          push: ${{ env.PUBLISH == 'true' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-          build-args: |
-            APK_CACHE_BUST=${{ steps.date.outputs.date }}
-            ${{ inputs.build-args }}
-            ${{ inputs.push-build-args }}
-          secrets: |
-            glitchtip_auth_token=${{ env.PUBLISH == 'true' && secrets.glitchtip_auth_token || '' }}
-          cache-from: type=gha,scope=${{ inputs.name }}
-          cache-to: type=gha,mode=max,scope=${{ inputs.name }}
-          provenance: false
+      - name: Push image
+        if: env.PUBLISH == 'true'
+        env:
+          TAGS: ${{ steps.meta.outputs.tags }}
+        run: |
+          for tag in $TAGS; do
+            docker push "$tag"
+          done

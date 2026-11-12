@@ -33,4 +33,8 @@ jobs:
         uses: ./.github/actions/restore-production-secrets # zizmor: ignore[self-repository]
 
       - name: Deploy
-        run: just deploy-prod
+        run: flock "$HOME/.testcraft-deploy.lock" just deploy-prod
+
+      - name: Remove production secrets
+        if: always()
+        run: rm -f infrastructure/helm/testcraft/values.secrets.yaml

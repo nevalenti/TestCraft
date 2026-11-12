@@ -3,22 +3,44 @@ name: infra-helm-chart
 on:
   push:
     branches: [main]
-    paths:
-      - "infrastructure/helm/**"
-      - ".github/workflows/infra-helm-chart.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "infrastructure/helm/**"
-      - ".github/workflows/infra-helm-chart.yml"
   workflow_dispatch:
+
+concurrency:
+  group: helm-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 permissions:
   contents: read
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.helm == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: .github/path-filters.yml
+
   lint-and-template:
     name: lint & template
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -55,3 +77,16 @@ jobs:
             prom/prometheus:v3.4.0 check rules alert-rules.yml
           docker run --rm -v "$PWD":/rules:ro -w /rules --entrypoint promtool \
             prom/prometheus:v3.4.0 test rules alert-rules.test.yml
+
+  result:
+    name: helm result
+    if: always()
+    needs: [changes, lint-and-template]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail when a job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::a required helm job did not pass"
+          exit 1
