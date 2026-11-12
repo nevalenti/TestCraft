@@ -1,0 +1,91 @@
+dotnet-shared: &dotnet-shared
+  - "Common/**"
+  - "Directory.*"
+  - ".editorconfig"
+  - "global.json"
+  - "dotnet-tools.json"
+  - "TestCraft.slnx"
+
+pnpm-shared: &pnpm-shared
+  - "package.json"
+  - "pnpm-lock.yaml"
+  - "pnpm-workspace.yaml"
+  - "patches/**"
+  - ".nvmrc"
+  - ".npmrc"
+  - "turbo.json"
+  - ".github/actions/*/package.json"
+
+filters: &filters
+  - ".github/path-filters.yml"
+
+api:
+  - *dotnet-shared
+  - *filters
+  - "apps/Api/**"
+  - ".github/workflows/ci-api.yml"
+  - ".github/workflows/reusable-image.yml"
+
+gateway:
+  - *dotnet-shared
+  - *filters
+  - "apps/Gateway/**"
+  - ".github/workflows/ci-gateway.yml"
+  - ".github/workflows/reusable-image.yml"
+
+web:
+  - *pnpm-shared
+  - *filters
+  - "apps/web/**"
+  - "packages/**"
+  - "apps/Api/openapi/contract/**"
+  - "apps/Api/openapi/redocly.yaml"
+  - "apps/Api/openapi/redocly-plugin.mjs"
+  - "apps/Api/openapi/.redocly.lint-ignore.yaml"
+  - ".github/workflows/ci-web.yml"
+  - ".github/workflows/reusable-image.yml"
+
+docs:
+  - *pnpm-shared
+  - *filters
+  - "apps/docs/**"
+  - ".github/workflows/ci-docs.yml"
+  - ".github/workflows/reusable-image.yml"
+
+e2e:
+  - *dotnet-shared
+  - *pnpm-shared
+  - *filters
+  - "apps/Api/**"
+  - "apps/web/**"
+  - "e2e/**"
+  - "packages/**"
+  - "compose.e2e.yaml"
+  - "infrastructure/keycloak/**"
+  - "infrastructure/helm/testcraft/files/keycloak/**"
+  - "scripts/render-dev-realm.sh"
+  - ".github/workflows/ci-e2e.yml"
+
+containers:
+  - *dotnet-shared
+  - *pnpm-shared
+  - *filters
+  - "apps/Api/**"
+  - "apps/web/**"
+  - "apps/Gateway/**"
+  - "packages/types/**"
+  - "compose.smoke.yaml"
+  - "scripts/container-smoke.sh"
+  - ".github/workflows/ci-containers.yml"
+
+helm:
+  - *filters
+  - "infrastructure/helm/**"
+  - ".github/workflows/infra-helm-chart.yml"
+
+iac:
+  - *filters
+  - "infrastructure/helm/**"
+  - "**/*Dockerfile*"
+  - ".checkov.baseline"
+  - ".github/workflows/security-checkov.yml"

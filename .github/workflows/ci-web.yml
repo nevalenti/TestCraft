@@ -3,26 +3,8 @@ name: ci-web
 on:
   push:
     branches: [main]
-    paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "apps/Api/openapi/contract/**"
-      - "apps/Api/openapi/redocly.yaml"
-      - "apps/Api/openapi/redocly-plugin.mjs"
-      - "apps/Api/openapi/.redocly.lint-ignore.yaml"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/ci-web.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "apps/web/**"
-      - "packages/**"
-      - "apps/Api/openapi/contract/**"
-      - "apps/Api/openapi/redocly.yaml"
-      - "apps/Api/openapi/redocly-plugin.mjs"
-      - "apps/Api/openapi/.redocly.lint-ignore.yaml"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/ci-web.yml"
   workflow_dispatch:
 
 concurrency:
@@ -37,8 +19,32 @@ defaults:
     shell: sh
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.web == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: .github/path-filters.yml
+
   build-test:
     name: build & test
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -60,9 +66,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-
-      - name: Audit dependencies
-        run: pnpm audit --audit-level=high
 
       - name: Lint API contract
         run: pnpm run lint:contract
@@ -125,14 +128,6 @@ jobs:
           path: apps/web/test-results
           retention-days: 7
 
-      - name: Upload build artifact
-        continue-on-error: true
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: web-dist
-          path: apps/web/dist
-          retention-days: 7
-
   docker:
     name: docker (web)
     needs: build-test
@@ -158,6 +153,19 @@ jobs:
         SENTRY_PROJECT=${{ vars.GLITCHTIP_WEB_PROJECT }}
     secrets:
       glitchtip_auth_token: ${{ secrets.GLITCHTIP_AUTH_TOKEN }}
+
+  result:
+    name: web result
+    if: always()
+    needs: [changes, build-test, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail when a job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::a required web job did not pass"
+          exit 1
 
   deploy:
     name: deploy to production

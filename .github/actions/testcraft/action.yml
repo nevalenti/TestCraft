@@ -45,5 +45,5 @@ outputs:
     description: ID of the TestCraft run that was created or updated
 
 runs:
-  using: node20
+  using: node24
   main: dist/index.js

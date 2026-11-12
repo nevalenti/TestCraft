@@ -23,6 +23,7 @@ permissions:
 jobs:
   deploy:
     name: deploy ${{ inputs.app }}@${{ inputs.version }} to production
+    if: github.ref == 'refs/heads/main'
     uses: ./.github/workflows/reusable-deploy.yml # zizmor: ignore[self-repository]
     with:
       app: ${{ inputs.app }}

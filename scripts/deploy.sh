@@ -20,13 +20,17 @@ upgrade() {
     "$@"
 }
 
-rollout() {
-  kubectl rollout restart "$@" -n testcraft
+wait_for_rollout() {
   if ! kubectl rollout status "$@" -n testcraft --timeout=120s; then
     echo "rollout of $* failed, rolling back release" >&2
     k3s_helm rollback testcraft -n testcraft
     exit 1
   fi
+}
+
+rollout() {
+  kubectl rollout restart "$@" -n testcraft
+  wait_for_rollout "$@"
 }
 
 image_exists() {
@@ -53,6 +57,17 @@ deploy_all() {
 
 deploy_app() {
   local app=$1 tag=$2 ghcr_owner=$3
+  case "$app" in
+    api | web | gateway | docs) ;;
+    *)
+      echo "unknown app '$app'" >&2
+      exit 1
+      ;;
+  esac
+  if [[ ! "$tag" =~ ^(v[0-9]+\.[0-9]+\.[0-9]+|sha-[0-9a-f]{40})$ ]]; then
+    echo "tag '$tag' is not a release version or sha-<commit>" >&2
+    exit 1
+  fi
   if ! image_exists "${ghcr_owner}/testcraft-${app}" "$tag"; then
     echo "ghcr.io/${ghcr_owner}/testcraft-${app}:${tag} does not exist - refusing to deploy" >&2
     exit 1
@@ -66,7 +81,7 @@ deploy_app() {
     extra+=(--set images.migrator.tag="$tag" --set images.migrator.pullPolicy=IfNotPresent)
   fi
   upgrade --set images."$app".tag="$tag" --set images."$app".pullPolicy=IfNotPresent "${extra[@]}"
-  rollout "deployment/$app"
+  wait_for_rollout "deployment/$app"
 }
 
 case $# in

@@ -12,7 +12,6 @@ concurrency:
 
 permissions:
   contents: read
-  security-events: write
 
 env:
   SEMGREP_CONFIGS: >-
@@ -27,6 +26,9 @@ jobs:
     name: sast scan
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -42,24 +44,24 @@ jobs:
       - name: Install Semgrep
         run: pip install semgrep==1.170.0
 
-      - name: Run Semgrep on pull request diff
-        if: github.event_name == 'pull_request'
+      - name: Run Semgrep
+        continue-on-error: ${{ github.event_name != 'pull_request' }}
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          semgrep scan $SEMGREP_CONFIGS \
-            --baseline-commit "${{ github.event.pull_request.base.sha }}" \
-            --sarif --output semgrep.sarif \
-            --error
-
-      - name: Run Semgrep full scan
-        if: github.event_name != 'pull_request'
-        continue-on-error: true
-        run: |
-          semgrep scan $SEMGREP_CONFIGS \
-            --sarif --output semgrep.sarif
+          if [ "$EVENT" = "pull_request" ]; then
+            set -- --baseline-commit "$BASE_SHA"
+          else
+            set --
+          fi
+          # shellcheck disable=SC2086
+          semgrep scan $SEMGREP_CONFIGS "$@" --sarif --output semgrep.sarif --error
 
       - name: Upload results to Security tab
-        if: always()
+        if: always() && hashFiles('semgrep.sarif') != ''
         continue-on-error: true
-        uses: github/codeql-action/upload-sarif@d6317709a54fd87078d323eeb0e48ec331c8e621 # v3
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           sarif_file: semgrep.sarif
+          category: semgrep

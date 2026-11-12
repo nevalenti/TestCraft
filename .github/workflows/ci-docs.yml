@@ -3,16 +3,8 @@ name: ci-docs
 on:
   push:
     branches: [main]
-    paths:
-      - "apps/docs/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/ci-docs.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "apps/docs/**"
-      - "pnpm-lock.yaml"
-      - ".github/workflows/ci-docs.yml"
   workflow_dispatch:
 
 concurrency:
@@ -27,8 +19,32 @@ defaults:
     shell: sh
 
 jobs:
+  changes:
+    name: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      run: ${{ github.event_name == 'workflow_dispatch' || steps.filter.outputs.docs == 'true' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Detect changed paths
+        id: filter
+        if: github.event_name != 'workflow_dispatch'
+        uses: dorny/paths-filter@ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d # v4.0.3
+        with:
+          filters: .github/path-filters.yml
+
   build-test:
     name: build & test
+    needs: changes
+    if: needs.changes.outputs.run == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -51,36 +67,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Start TestCraft run
-        id: testcraft-start
-        if: always()
-        continue-on-error: true
-        uses: ./.github/actions/testcraft # zizmor: ignore[self-repository]
-        with:
-          command: start
-          token: ${{ secrets.TESTCRAFT_TOKEN }}
-          api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
-          source: docs
+      - name: Lint
+        run: pnpm --filter testcraft-docs run lint
 
       - name: Typecheck
         run: pnpm --filter testcraft-docs run typecheck
 
       - name: Build
         run: pnpm turbo build --filter testcraft-docs
-
-      - name: Import results to TestCraft
-        if: always()
-        continue-on-error: true
-        uses: ./.github/actions/testcraft # zizmor: ignore[self-repository]
-        with:
-          token: ${{ secrets.TESTCRAFT_TOKEN }}
-          api-url: ${{ secrets.TESTCRAFT_API_URL }}
-          project-id: ${{ secrets.TESTCRAFT_PROJECT_ID }}
-          junit-xml: apps/docs/test-results/*.junit.xml
-          run-name: "#${{ github.run_id }} docs (${{ github.ref_name }})"
-          source: docs
 
   docker:
     name: docker (docs)
@@ -93,6 +87,19 @@ jobs:
     with:
       name: docs
       dockerfile: apps/docs/Dockerfile
+
+  result:
+    name: docs result
+    if: always()
+    needs: [changes, build-test, docker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Fail when a job failed or was cancelled
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: |
+          echo "::error::a required docs job did not pass"
+          exit 1
 
   deploy:
     name: deploy to production
