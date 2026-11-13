@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -16,7 +16,6 @@ public static class GetTestPlanCases
         /// <summary>The project the plan belongs to.</summary>
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to list test cases for.</summary>
         public required TestPlanId TestPlanId { get; init; }
     }
 
@@ -28,15 +27,10 @@ public static class GetTestPlanCases
             CancellationToken cancellationToken
         )
         {
-            var planExists = await context.TestPlans.AnyAsync(
+            await context.TestPlans.EnsureExistsAsync(
                 plan => plan.Id == request.TestPlanId && plan.ProjectId == request.ProjectId,
                 cancellationToken
             );
-
-            if (!planExists)
-            {
-                throw new NotFoundException();
-            }
 
             return await context
                 .TestPlanCases.Where(tpc => tpc.TestPlanId == request.TestPlanId)

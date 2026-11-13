@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -42,15 +41,12 @@ public sealed class IdempotencyMiddleware(RequestDelegate next, TimeProvider tim
             return;
         }
 
-        var userId = httpContext.User.GetUserIdOrNull();
-        if (userId is null)
+        if (httpContext.User.GetPrincipalKey() is not { } principal)
         {
             await next(httpContext);
             return;
         }
 
-        var tokenId = httpContext.User.FindFirstValue("api_token_id");
-        var principal = tokenId is null ? $"user:{userId}" : $"token:{tokenId}";
         var requestHash = await HashRequestAsync(httpContext.Request, httpContext.RequestAborted);
         var records = dbContext.IdempotencyRecords.Where(record =>
             record.Principal == principal && record.Key == key

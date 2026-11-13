@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestRuns;
 
 /// <summary>A test run: an execution pass over a set of test cases.</summary>
-public record TestRunResponse
+public record TestRunResponse : IVersionedResponse
 {
     public static readonly Expression<Func<TestRun, TestRunResponse>> Projection =
         run => new TestRunResponse

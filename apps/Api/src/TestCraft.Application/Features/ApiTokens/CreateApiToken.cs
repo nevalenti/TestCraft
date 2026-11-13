@@ -53,7 +53,6 @@ public static class CreateApiToken
     /// <summary>Creates a new API token for a project.</summary>
     public sealed record Command : IRequest<CreateApiTokenResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to create the token for.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 

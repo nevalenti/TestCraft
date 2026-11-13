@@ -1,7 +1,7 @@
 using System.Text;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.Notes;
@@ -24,12 +24,10 @@ public static class GetNote
             CancellationToken cancellationToken
         )
         {
-            var note =
-                await request
-                    .Scope.Notes(context)
-                    .AsNoTracking()
-                    .FirstOrDefaultAsync(note => note.Id == request.Id, cancellationToken)
-                ?? throw new NotFoundException();
+            var note = await request
+                .Scope.Notes(context)
+                .AsNoTracking()
+                .FirstOrNotFoundAsync(note => note.Id == request.Id, cancellationToken);
 
             var content = await storage.DownloadAsync(note.StorageKey, cancellationToken);
 

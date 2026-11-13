@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -40,7 +39,6 @@ public static class CreateShareToken
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to share.</summary>
         [JsonIgnore]
         public TestRunId RunId { get; init; }
 
@@ -60,15 +58,10 @@ public static class CreateShareToken
             CancellationToken cancellationToken
         )
         {
-            var runExists = await context.TestRuns.AnyAsync(
+            await context.TestRuns.EnsureExistsAsync(
                 run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
-
-            if (!runExists)
-            {
-                throw new NotFoundException();
-            }
 
             var token = hasher.GenerateToken();
 

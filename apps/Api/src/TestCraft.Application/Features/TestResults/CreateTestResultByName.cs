@@ -1,11 +1,9 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Caching;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
@@ -23,7 +21,6 @@ public static class CreateTestResultByName
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to record the result against.</summary>
         [JsonIgnore]
         public TestRunId RunId { get; init; }
 
@@ -57,16 +54,14 @@ public static class CreateTestResultByName
             RuleFor(command => command.TestCaseName).NotEmpty().MaximumLength(500);
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Status).NotEqual(TestResultStatus.Untested);
-            RuleFor(command => command.Notes).MaximumLength(5000);
+            RuleFor(command => command.Notes).MaximumLength(FieldLengths.Notes);
         }
     }
 
     public sealed class Handler(
         IApplicationDbContext context,
-        ICacheService cache,
-        ICurrentUser currentUser,
         IDbExceptionClassifier dbExceptionClassifier,
-        ITestRunNotifier notifier
+        TestResultRecorder recorder
     ) : IRequestHandler<Command, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
@@ -74,92 +69,44 @@ public static class CreateTestResultByName
             CancellationToken cancellationToken
         )
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.RunId
-                        && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.RunId && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             run.EnsureCanAddResult();
 
-            var suite = await context.TestSuites.FirstOrDefaultAsync(
+            var suite = await context.GetOrCreateAsync(
+                context.TestSuites,
                 existingSuite =>
                     existingSuite.ProjectId == request.ProjectId
                     && existingSuite.Name == request.SuiteName,
+                () =>
+                    TestSuite.Create(request.ProjectId, request.SuiteName, source: request.Source),
+                dbExceptionClassifier,
                 cancellationToken
             );
 
-            if (suite is null)
-            {
-                suite = TestSuite.Create(
-                    request.ProjectId,
-                    request.SuiteName,
-                    source: request.Source
-                );
-
-                context.TestSuites.Add(suite);
-
-                try
-                {
-                    await context.SaveChangesAsync(cancellationToken);
-                }
-                catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
-                {
-                    context.TestSuites.Remove(suite);
-                    suite = await context.TestSuites.SingleAsync(
-                        existingSuite =>
-                            existingSuite.ProjectId == request.ProjectId
-                            && existingSuite.Name == request.SuiteName,
-                        cancellationToken
-                    );
-                }
-            }
-
-            var testCase = await context.TestCases.FirstOrDefaultAsync(
-                existingTestCase =>
-                    existingTestCase.SuiteId == suite.Id
-                    && existingTestCase.Name == request.TestCaseName,
+            var testCase = await context.GetOrCreateAsync(
+                context.TestCases,
+                existingCase =>
+                    existingCase.SuiteId == suite.Id && existingCase.Name == request.TestCaseName,
+                () => TestCase.Create(suite.Id, request.TestCaseName),
+                dbExceptionClassifier,
                 cancellationToken
             );
 
-            if (testCase is null)
-            {
-                testCase = TestCase.Create(suite.Id, request.TestCaseName);
-
-                context.TestCases.Add(testCase);
-
-                try
-                {
-                    await context.SaveChangesAsync(cancellationToken);
-                }
-                catch (DbUpdateException ex) when (dbExceptionClassifier.IsUniqueViolation(ex))
-                {
-                    context.TestCases.Remove(testCase);
-                    testCase = await context.TestCases.SingleAsync(
-                        existingCase =>
-                            existingCase.SuiteId == suite.Id
-                            && existingCase.Name == request.TestCaseName,
-                        cancellationToken
-                    );
-                }
-            }
-
-            return await TestResultRecording.RecordAsync(
-                context,
-                cache,
-                notifier,
-                currentUser.UserId,
+            return await recorder.RecordAsync(
                 request.ProjectId,
                 request.RunId,
                 testCase.Id,
-                request.Status,
-                request.Notes,
-                defectType: null,
-                request.DurationMs,
-                request.ExecutedAt,
-                defectUrl: null,
+                new RecordedOutcome(
+                    request.Status,
+                    request.Notes,
+                    request.DurationMs,
+                    request.ExecutedAt
+                ),
                 cancellationToken
             );
         }

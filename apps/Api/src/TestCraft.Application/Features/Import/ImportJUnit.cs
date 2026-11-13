@@ -15,7 +15,6 @@ public static class ImportJUnit
     /// <summary>Queues a JUnit XML report for import.</summary>
     public sealed record Command : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to import the run into.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -48,12 +47,11 @@ public static class ImportJUnit
                 .WithMessage("Environment is required")
                 .MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Name)
-                .NotEmpty()
-                .MaximumLength(FieldLengths.Name)
+                .RequiredName()
                 .When(command => command.Name is not null);
             RuleFor(command => command.Source)
                 .NotEmpty()
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.Source)
                 .When(command => command.Source is not null);
         }
     }

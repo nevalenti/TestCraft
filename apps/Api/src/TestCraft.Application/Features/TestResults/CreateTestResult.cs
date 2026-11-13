@@ -1,8 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Caching;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -21,7 +18,6 @@ public static class CreateTestResult
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to record the result against.</summary>
         [JsonIgnore]
         public TestRunId RunId { get; init; }
 
@@ -54,58 +50,46 @@ public static class CreateTestResult
             RuleFor(command => command.TestCaseId).NotEmptyId();
             RuleFor(command => command.Status).IsInEnum();
             RuleFor(command => command.Status).NotEqual(TestResultStatus.Untested);
-            RuleFor(command => command.Notes).MaximumLength(5000);
+            RuleFor(command => command.Notes).MaximumLength(FieldLengths.Notes);
             RuleFor(command => command.DefectUrl).HttpUrl();
         }
     }
 
-    public sealed class Handler(
-        IApplicationDbContext context,
-        ICacheService cache,
-        ICurrentUser currentUser,
-        ITestRunNotifier notifier
-    ) : IRequestHandler<Command, TestResultResponse>
+    public sealed class Handler(IApplicationDbContext context, TestResultRecorder recorder)
+        : IRequestHandler<Command, TestResultResponse>
     {
         public async Task<TestResultResponse> Handle(
             Command request,
             CancellationToken cancellationToken
         )
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.RunId
-                        && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.RunId && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             run.EnsureCanAddResult();
 
-            var caseExists = await context.TestCases.AnyAsync(
+            await context.TestCases.EnsureExistsAsync(
                 testCase =>
                     testCase.Id == request.TestCaseId
                     && testCase.Suite!.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
 
-            return await TestResultRecording.RecordAsync(
-                context,
-                cache,
-                notifier,
-                currentUser.UserId,
+            return await recorder.RecordAsync(
                 request.ProjectId,
                 request.RunId,
                 request.TestCaseId,
-                request.Status,
-                request.Notes,
-                request.DefectType,
-                request.DurationMs,
-                request.ExecutedAt,
-                request.DefectUrl,
+                new RecordedOutcome(
+                    request.Status,
+                    request.Notes,
+                    request.DurationMs,
+                    request.ExecutedAt,
+                    request.DefectType,
+                    request.DefectUrl
+                ),
                 cancellationToken
             );
         }

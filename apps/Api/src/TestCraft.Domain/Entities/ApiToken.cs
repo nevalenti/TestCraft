@@ -40,7 +40,6 @@ public class ApiToken
 
     public void Revoke() => IsRevoked = true;
 
-    /// <summary>How stale <see cref="LastUsedAt"/> may get, so that busy tokens don't write on every request.</summary>
     public static readonly TimeSpan UsageResolution = TimeSpan.FromMinutes(1);
 
     public void RecordUsage(DateTimeOffset now)

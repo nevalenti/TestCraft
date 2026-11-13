@@ -15,11 +15,9 @@ public static class RemoveCaseFromPlan
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to remove the test case from.</summary>
         [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
-        /// <summary>The test case to remove.</summary>
         public required TestCaseId TestCaseId { get; init; }
     }
 

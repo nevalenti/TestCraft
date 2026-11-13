@@ -8,13 +8,11 @@ namespace TestCraft.Application.Features.TestCases;
 
 public static class GetTestCasesByProject
 {
-    /// <summary>Lists test cases across all suites in a project; search matches the case name.</summary>
     public sealed record Query
         : TestCaseListQuery,
             IRequest<Paginated<TestCaseResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list test cases for.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
     }

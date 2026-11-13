@@ -3,6 +3,7 @@ using MediatR;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
@@ -13,7 +14,6 @@ public static class CreateEmailSubscription
     /// <summary>Subscribes an email address to project event notifications.</summary>
     public sealed record Command : IRequest<EmailSubscriptionResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to subscribe to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -28,7 +28,10 @@ public static class CreateEmailSubscription
     {
         public Validator()
         {
-            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .MaximumLength(FieldLengths.Email);
             RuleFor(command => command.Events).NotEmpty();
             RuleForEach(command => command.Events).IsInEnum();
         }

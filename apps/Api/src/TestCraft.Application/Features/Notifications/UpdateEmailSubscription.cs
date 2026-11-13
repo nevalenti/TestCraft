@@ -2,9 +2,10 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Notifications;
@@ -18,7 +19,6 @@ public static class UpdateEmailSubscription
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The subscription to update.</summary>
         [JsonIgnore]
         public EmailSubscriptionId Id { get; init; }
 
@@ -39,7 +39,10 @@ public static class UpdateEmailSubscription
     {
         public Validator()
         {
-            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .MaximumLength(FieldLengths.Email);
             RuleFor(command => command.Events).NotEmpty();
             RuleForEach(command => command.Events).IsInEnum();
         }
@@ -53,13 +56,12 @@ public static class UpdateEmailSubscription
             CancellationToken cancellationToken
         )
         {
-            var subscription =
-                await context.EmailSubscriptions.FirstOrDefaultAsync(
-                    emailSubscription =>
-                        emailSubscription.Id == request.Id
-                        && emailSubscription.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var subscription = await context.EmailSubscriptions.FirstOrNotFoundAsync(
+                emailSubscription =>
+                    emailSubscription.Id == request.Id
+                    && emailSubscription.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(subscription, request.ExpectedVersion);
             subscription.Update(

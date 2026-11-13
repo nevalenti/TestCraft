@@ -16,7 +16,6 @@ public class MetricsController(
     IHostEnvironment hostEnvironment
 ) : ControllerBase
 {
-    /// <summary>Returns Prometheus metrics for scraping.</summary>
     [HttpGet("metrics")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -43,8 +42,6 @@ public class MetricsController(
         return new EmptyResult();
     }
 
-    private static bool IsBearerTokenValid(string? authHeader, string token)
-    {
-        return FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
-    }
+    private static bool IsBearerTokenValid(string? authHeader, string token) =>
+        FixedTimeCredentialComparer.Equals(authHeader ?? string.Empty, $"Bearer {token}");
 }

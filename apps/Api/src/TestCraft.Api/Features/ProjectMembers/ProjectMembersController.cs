@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Api.Authorization;
+using TestCraft.Api.Configuration.RateLimiting;
 using TestCraft.Application.Features.ProjectMembers;
 using TestCraft.Domain.Enums;
 
@@ -16,20 +17,20 @@ public class ProjectMembersController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<IReadOnlyList<ProjectMemberResponse>>> GetAll(
         ProjectId projectId,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetProjectMembers.Query { ProjectId = projectId };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetProjectMembers.Query { ProjectId = projectId },
+                cancellationToken
+            )
+        );
 
     /// <summary>
     /// Adds a user to a project by email, as an editor unless a role is given. Only the owner
     /// can add admins.
     /// </summary>
     [HttpPost]
+    [MemberInviteRateLimit]
     [ProducesResponseType(StatusCodes.Status201Created)]
     public async Task<ActionResult<ProjectMemberResponse>> Add(
         ProjectId projectId,
@@ -37,9 +38,14 @@ public class ProjectMembersController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, ActorRole = CurrentProjectRole };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                ActorRole = CurrentProjectRole,
+            },
+            cancellationToken
+        );
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -52,17 +58,18 @@ public class ProjectMembersController(ISender sender) : ApiControllerBase
         ProjectMemberId id,
         UpdateProjectMember.Command command,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ActorRole = CurrentProjectRole,
-        };
-
-        return Ok(await sender.Send(scopedCommand, cancellationToken));
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ActorRole = CurrentProjectRole,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Removes a member from a project. Only the owner can remove admins.</summary>
     [HttpDelete("{id:guid}")]
@@ -73,14 +80,15 @@ public class ProjectMembersController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new RemoveProjectMember.Command
-        {
-            ProjectId = projectId,
-            Id = id,
-            ActorRole = CurrentProjectRole,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new RemoveProjectMember.Command
+            {
+                ProjectId = projectId,
+                Id = id,
+                ActorRole = CurrentProjectRole,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

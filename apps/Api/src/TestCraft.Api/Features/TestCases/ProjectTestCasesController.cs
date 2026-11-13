@@ -17,12 +17,5 @@ public class ProjectTestCasesController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         [FromQuery] GetTestCasesByProject.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 }

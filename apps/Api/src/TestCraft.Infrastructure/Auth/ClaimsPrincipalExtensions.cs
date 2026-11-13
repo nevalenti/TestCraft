@@ -29,6 +29,18 @@ public static class ClaimsPrincipalExtensions
             ?? user.FindFirstValue(ClaimTypes.Name)
             ?? user.FindFirstValue("preferred_username");
 
+        public string? GetPrincipalKey()
+        {
+            if (user.GetUserIdOrNull() is not { } userId)
+            {
+                return null;
+            }
+
+            return user.FindFirstValue(ApiTokenAuthenticationDefaults.TokenIdClaim) is { } tokenId
+                ? $"token:{tokenId}"
+                : $"user:{userId}";
+        }
+
         public bool IsApiToken() =>
             user.Identity?.AuthenticationType
             == ApiTokenAuthenticationDefaults.AuthenticationScheme;

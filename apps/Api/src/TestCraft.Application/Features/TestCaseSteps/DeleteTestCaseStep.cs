@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -9,17 +8,14 @@ namespace TestCraft.Application.Features.TestCaseSteps;
 
 public static class DeleteTestCaseStep
 {
-    /// <summary>Soft-deletes a test case step.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The test case the step belongs to.</summary>
         public required TestCaseId CaseId { get; init; }
 
-        /// <summary>The step to delete.</summary>
         public required TestCaseStepId Id { get; init; }
     }
 
@@ -28,14 +24,13 @@ public static class DeleteTestCaseStep
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var step =
-                await context.TestCaseSteps.FirstOrDefaultAsync(
-                    existingStep =>
-                        existingStep.Id == request.Id
-                        && existingStep.TestCaseId == request.CaseId
-                        && existingStep.TestCase!.Suite!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var step = await context.TestCaseSteps.FirstOrNotFoundAsync(
+                existingStep =>
+                    existingStep.Id == request.Id
+                    && existingStep.TestCaseId == request.CaseId
+                    && existingStep.TestCase!.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             step.Delete(timeProvider.GetStoredUtcNow());
 

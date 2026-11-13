@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -20,7 +19,6 @@ public static class UpdateTestSuite
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The suite to update.</summary>
         [JsonIgnore]
         public TestSuiteId Id { get; init; }
 
@@ -38,8 +36,8 @@ public static class UpdateTestSuite
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Description).MaximumLength(FieldLengths.Text);
         }
     }
 
@@ -54,13 +52,11 @@ public static class UpdateTestSuite
             CancellationToken cancellationToken
         )
         {
-            var suite =
-                await context.TestSuites.FirstOrDefaultAsync(
-                    existingSuite =>
-                        existingSuite.Id == request.Id
-                        && existingSuite.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var suite = await context.TestSuites.FirstOrNotFoundAsync(
+                existingSuite =>
+                    existingSuite.Id == request.Id && existingSuite.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(suite, request.ExpectedVersion);
             var renamed = suite.Name != request.Name;

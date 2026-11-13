@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -17,7 +16,6 @@ public static class AddCaseToPlan
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to add the test case to.</summary>
         [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
@@ -30,23 +28,15 @@ public static class AddCaseToPlan
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var planExists = await context.TestPlans.AnyAsync(
+            await context.TestPlans.EnsureExistsAsync(
                 plan => plan.Id == request.TestPlanId && plan.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!planExists)
-            {
-                throw new NotFoundException();
-            }
 
-            var caseExists = await context.TestCases.AnyAsync(
+            await context.TestCases.EnsureExistsAsync(
                 tc => tc.Id == request.TestCaseId && tc.Suite!.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
 
             var alreadyAdded = await context.TestPlanCases.AnyAsync(
                 tpc => tpc.TestPlanId == request.TestPlanId && tpc.TestCaseId == request.TestCaseId,

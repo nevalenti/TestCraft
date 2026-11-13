@@ -108,7 +108,7 @@ public partial class NotificationDispatcher(
             if (result.Success)
             {
                 delivery.MarkSent();
-#pragma warning disable CA1873 // RedactTarget is a cheap string operation.
+#pragma warning disable CA1873
                 LogDeliveryRetrySucceeded(
                     logger,
                     delivery.Channel,

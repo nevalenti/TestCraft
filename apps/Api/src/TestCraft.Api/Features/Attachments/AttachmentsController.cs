@@ -24,14 +24,18 @@ public class AttachmentsController(ISender sender) : ApiControllerBase
         TestResultId resultId,
         [FromQuery] GetAttachments.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId, RunId = runId, ResultId = resultId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                query with
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                    ResultId = resultId,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Uploads an attachment to a test result.</summary>
     [HttpPost]
@@ -77,20 +81,19 @@ public class AttachmentsController(ISender sender) : ApiControllerBase
         TestResultId resultId,
         AttachmentId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetAttachmentDownloadUrl.Query
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            ResultId = resultId,
-            AttachmentId = id,
-        };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetAttachmentDownloadUrl.Query
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                    ResultId = resultId,
+                    AttachmentId = id,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes an attachment.</summary>
     [HttpDelete("{id:guid}")]
@@ -103,15 +106,16 @@ public class AttachmentsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteAttachment.Command
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            ResultId = resultId,
-            AttachmentId = id,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteAttachment.Command
+            {
+                ProjectId = projectId,
+                RunId = runId,
+                ResultId = resultId,
+                AttachmentId = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

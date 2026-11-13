@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -15,7 +15,6 @@ public static class DeleteWebhookSubscription
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The subscription to delete.</summary>
         public required WebhookSubscriptionId Id { get; init; }
     }
 
@@ -23,13 +22,12 @@ public static class DeleteWebhookSubscription
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var subscription =
-                await context.WebhookSubscriptions.FirstOrDefaultAsync(
-                    webhookSubscription =>
-                        webhookSubscription.Id == request.Id
-                        && webhookSubscription.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var subscription = await context.WebhookSubscriptions.FirstOrNotFoundAsync(
+                webhookSubscription =>
+                    webhookSubscription.Id == request.Id
+                    && webhookSubscription.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             context.WebhookSubscriptions.Remove(subscription);
 

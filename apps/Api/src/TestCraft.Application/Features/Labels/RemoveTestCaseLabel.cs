@@ -10,14 +10,11 @@ public static class RemoveTestCaseLabel
     /// <summary>Removes a label from a test case.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The test case to unlabel.</summary>
         public required TestCaseId TestCaseId { get; init; }
 
-        /// <summary>The label to remove.</summary>
         public required LabelId LabelId { get; init; }
     }
 

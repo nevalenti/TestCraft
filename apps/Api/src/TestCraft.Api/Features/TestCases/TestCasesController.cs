@@ -20,14 +20,17 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         TestSuiteId suiteId,
         [FromQuery] GetTestCases.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId, SuiteId = suiteId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                query with
+                {
+                    ProjectId = projectId,
+                    SuiteId = suiteId,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Gets a test case by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -37,21 +40,18 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         TestSuiteId suiteId,
         TestCaseId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestCaseById.Query
-        {
-            ProjectId = projectId,
-            SuiteId = suiteId,
-            Id = id,
-        };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestCaseById.Query
+                {
+                    ProjectId = projectId,
+                    SuiteId = suiteId,
+                    Id = id,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates a new test case in a suite.</summary>
     [HttpPost]
@@ -63,9 +63,14 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -91,9 +96,15 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, SuiteId = suiteId, Id = id };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -118,22 +129,19 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         UpdateTestCase.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            SuiteId = suiteId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    SuiteId = suiteId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a test case.</summary>
     [HttpDelete("{id:guid}")]
@@ -145,14 +153,15 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestCase.Command
-        {
-            ProjectId = projectId,
-            SuiteId = suiteId,
-            Id = id,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteTestCase.Command
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

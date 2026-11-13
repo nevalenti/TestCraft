@@ -1,7 +1,6 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -16,7 +15,6 @@ public static class AppendRunLogs
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to append logs to.</summary>
         [JsonIgnore]
         public TestRunId RunId { get; init; }
 
@@ -43,13 +41,11 @@ public static class AppendRunLogs
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.RunId
-                        && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.RunId && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             if (request.Lines.Count == 0)
             {

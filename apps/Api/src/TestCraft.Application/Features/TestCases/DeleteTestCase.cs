@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -10,7 +9,6 @@ namespace TestCraft.Application.Features.TestCases;
 
 public static class DeleteTestCase
 {
-    /// <summary>Soft-deletes a test case.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
@@ -20,7 +18,6 @@ public static class DeleteTestCase
         /// <summary>The suite the test case belongs to.</summary>
         public required TestSuiteId SuiteId { get; init; }
 
-        /// <summary>The test case to delete.</summary>
         public required TestCaseId Id { get; init; }
     }
 
@@ -29,14 +26,13 @@ public static class DeleteTestCase
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var testCase =
-                await context.TestCases.FirstOrDefaultAsync(
-                    existingTestCase =>
-                        existingTestCase.Id == request.Id
-                        && existingTestCase.SuiteId == request.SuiteId
-                        && existingTestCase.Suite!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var testCase = await context.TestCases.FirstOrNotFoundAsync(
+                existingTestCase =>
+                    existingTestCase.Id == request.Id
+                    && existingTestCase.SuiteId == request.SuiteId
+                    && existingTestCase.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             testCase.Delete(timeProvider.GetStoredUtcNow());
 

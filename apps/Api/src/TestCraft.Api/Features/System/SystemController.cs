@@ -13,7 +13,6 @@ namespace TestCraft.Api.Features.System;
 public class SystemController(HealthCheckService healthChecks, TimeProvider timeProvider)
     : ControllerBase
 {
-    /// <summary>Returns detailed runtime status and diagnostics.</summary>
     [HttpGet("status")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<SystemStatusResponse>> GetStatus()

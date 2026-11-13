@@ -1,6 +1,5 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -8,13 +7,11 @@ namespace TestCraft.Application.Features.TestRuns;
 
 public static class GetTestRunById
 {
-    /// <summary>Requests a single test run by id.</summary>
     public sealed record Query : IRequest<TestRunResponse>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
         public required ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to look up.</summary>
         public required TestRunId Id { get; init; }
     }
 
@@ -28,7 +25,6 @@ public static class GetTestRunById
             await context
                 .TestRuns.Where(run => run.Id == request.Id && run.ProjectId == request.ProjectId)
                 .Select(TestRunResponse.Projection)
-                .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException();
+                .FirstOrNotFoundAsync(cancellationToken);
     }
 }

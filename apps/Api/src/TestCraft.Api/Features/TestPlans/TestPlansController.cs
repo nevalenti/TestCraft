@@ -20,12 +20,7 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         [FromQuery] GetTestPlans.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var result = await sender.Send(query with { ProjectId = projectId }, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Gets a test plan by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -34,16 +29,13 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         TestPlanId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestPlanById.Query { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestPlanById.Query { ProjectId = projectId, Id = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates a test plan.</summary>
     [HttpPost]
@@ -54,9 +46,7 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
@@ -72,9 +62,14 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
@@ -89,21 +84,18 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         UpdateTestPlan.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a test plan.</summary>
     [HttpDelete("{id:guid}")]
@@ -114,9 +106,10 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestPlan.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteTestPlan.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -128,14 +121,13 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         TestPlanId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestPlanCases.Query { ProjectId = projectId, TestPlanId = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetTestPlanCases.Query { ProjectId = projectId, TestPlanId = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Adds a test case to a plan.</summary>
     [HttpPost("{id:guid}/cases")]
@@ -147,9 +139,14 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
-
-        await sender.Send(scopedCommand, cancellationToken);
+        await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                TestPlanId = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -164,14 +161,15 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new RemoveCaseFromPlan.Command
-        {
-            ProjectId = projectId,
-            TestPlanId = id,
-            TestCaseId = caseId,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new RemoveCaseFromPlan.Command
+            {
+                ProjectId = projectId,
+                TestPlanId = id,
+                TestCaseId = caseId,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -186,9 +184,14 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
-
-        await sender.Send(scopedCommand, cancellationToken);
+        await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                TestPlanId = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -204,9 +207,14 @@ public class TestPlansController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, TestPlanId = id };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                TestPlanId = id,
+            },
+            cancellationToken
+        );
 
         return Created($"{ApiPaths.V1Prefix}/projects/{projectId}/runs/{result.Id}", result);
     }

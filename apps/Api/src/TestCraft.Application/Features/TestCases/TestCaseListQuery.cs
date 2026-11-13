@@ -7,7 +7,6 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestCases;
 
-/// <summary>Filters and ordering shared by the suite and project test case lists.</summary>
 public abstract record TestCaseListQuery : SearchPageQuery
 {
     public enum SortField

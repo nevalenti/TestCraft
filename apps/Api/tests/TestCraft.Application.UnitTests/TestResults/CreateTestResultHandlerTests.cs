@@ -57,9 +57,12 @@ public class CreateTestResultHandlerTests
         var (context, run, testCase) = await SeedAsync();
         var handler = new CreateTestResult.Handler(
             context,
-            new NoopCacheService(),
-            new FakeCurrentUser(),
-            new NoopTestRunNotifier()
+            new TestResultRecorder(
+                context,
+                new NoopCacheService(),
+                new FakeCurrentUser(),
+                new NoopTestRunNotifier()
+            )
         );
 
         var response = await handler.Handle(MakeCommand(run, testCase.Id), CancellationToken.None);
@@ -76,9 +79,12 @@ public class CreateTestResultHandlerTests
         var (context, run, testCase) = await SeedAsync(TestRunStatus.Archived);
         var handler = new CreateTestResult.Handler(
             context,
-            new NoopCacheService(),
-            new FakeCurrentUser(),
-            new NoopTestRunNotifier()
+            new TestResultRecorder(
+                context,
+                new NoopCacheService(),
+                new FakeCurrentUser(),
+                new NoopTestRunNotifier()
+            )
         );
 
         var act = () => handler.Handle(MakeCommand(run, testCase.Id), CancellationToken.None);
@@ -92,9 +98,12 @@ public class CreateTestResultHandlerTests
         var (context, run, testCase) = await SeedAsync(TestRunStatus.Completed);
         var handler = new CreateTestResult.Handler(
             context,
-            new NoopCacheService(),
-            new FakeCurrentUser(),
-            new NoopTestRunNotifier()
+            new TestResultRecorder(
+                context,
+                new NoopCacheService(),
+                new FakeCurrentUser(),
+                new NoopTestRunNotifier()
+            )
         );
 
         var act = () => handler.Handle(MakeCommand(run, testCase.Id), CancellationToken.None);
@@ -108,9 +117,12 @@ public class CreateTestResultHandlerTests
         var context = TestDbContextFactory.Create();
         var handler = new CreateTestResult.Handler(
             context,
-            new NoopCacheService(),
-            new FakeCurrentUser(),
-            new NoopTestRunNotifier()
+            new TestResultRecorder(
+                context,
+                new NoopCacheService(),
+                new FakeCurrentUser(),
+                new NoopTestRunNotifier()
+            )
         );
 
         var command = new CreateTestResult.Command
@@ -134,9 +146,12 @@ public class CreateTestResultHandlerTests
 
         var handler = new CreateTestResult.Handler(
             context,
-            new NoopCacheService(),
-            new FakeCurrentUser(),
-            new NoopTestRunNotifier()
+            new TestResultRecorder(
+                context,
+                new NoopCacheService(),
+                new FakeCurrentUser(),
+                new NoopTestRunNotifier()
+            )
         );
 
         var command = MakeCommand(run, testCase.Id) with { ProjectId = ProjectId.New() };

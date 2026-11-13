@@ -1,12 +1,27 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Concurrency;
+using TestCraft.Application.Common.Extensions;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.TestResults;
 
 /// <summary>The outcome of executing one test case within a run.</summary>
-public record TestResultResponse
+public record TestResultResponse : IVersionedResponse
 {
+    public static Task<TestResultResponse> LoadAsync(
+        IApplicationDbContext context,
+        TestResultId id,
+        CancellationToken cancellationToken
+    ) =>
+        context
+            .LiveResults()
+            .Where(result => result.Id == id)
+            .Select(Projection)
+            .FirstAsync(cancellationToken);
+
     public static readonly Expression<Func<TestResult, TestResultResponse>> Projection =
         result => new TestResultResponse
         {

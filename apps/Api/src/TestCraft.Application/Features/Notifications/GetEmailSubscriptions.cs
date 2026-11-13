@@ -7,12 +7,10 @@ namespace TestCraft.Application.Features.Notifications;
 
 public static class GetEmailSubscriptions
 {
-    /// <summary>Lists the email subscriptions on a project.</summary>
     public sealed record Query
         : IRequest<IReadOnlyList<EmailSubscriptionResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list subscriptions for.</summary>
         public required ProjectId ProjectId { get; init; }
     }
 

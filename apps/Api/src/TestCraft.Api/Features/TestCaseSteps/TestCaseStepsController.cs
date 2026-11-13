@@ -22,14 +22,17 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         TestCaseId caseId,
         [FromQuery] GetTestCaseSteps.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId, CaseId = caseId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                query with
+                {
+                    ProjectId = projectId,
+                    CaseId = caseId,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Gets a test case step by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -40,21 +43,18 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         TestCaseId caseId,
         TestCaseStepId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestCaseStepById.Query
-        {
-            ProjectId = projectId,
-            CaseId = caseId,
-            Id = id,
-        };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestCaseStepById.Query
+                {
+                    ProjectId = projectId,
+                    CaseId = caseId,
+                    Id = id,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Adds a step to a test case.</summary>
     [HttpPost]
@@ -67,9 +67,14 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, CaseId = caseId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                CaseId = caseId,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -95,9 +100,14 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, CaseId = caseId };
-
-        await sender.Send(scopedCommand, cancellationToken);
+        await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                CaseId = caseId,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -114,22 +124,19 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         UpdateTestCaseStep.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            CaseId = caseId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    CaseId = caseId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a test case step.</summary>
     [HttpDelete("{id:guid}")]
@@ -142,14 +149,15 @@ public class TestCaseStepsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestCaseStep.Command
-        {
-            ProjectId = projectId,
-            CaseId = caseId,
-            Id = id,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteTestCaseStep.Command
+            {
+                ProjectId = projectId,
+                CaseId = caseId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

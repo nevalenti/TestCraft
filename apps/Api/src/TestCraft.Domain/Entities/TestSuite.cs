@@ -35,7 +35,6 @@ public class TestSuite : SoftDeletableEntity, IVersioned
         Description = description;
     }
 
-    /// <summary>Sets the suite's source if it doesn't already have one, e.g. when an import discovers it.</summary>
     public void BackfillSource(string source)
     {
         if (string.IsNullOrEmpty(Source))

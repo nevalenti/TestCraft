@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Exceptions;
@@ -23,11 +23,9 @@ public static class BulkReorderSteps
     /// <summary>Reorders all steps of a test case in one operation.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The test case whose steps are being reordered.</summary>
         [JsonIgnore]
         public TestCaseId CaseId { get; init; }
 
@@ -62,15 +60,11 @@ public static class BulkReorderSteps
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var caseExists = await context.TestCases.AnyAsync(
+            await context.TestCases.EnsureExistsAsync(
                 testCase =>
                     testCase.Id == request.CaseId && testCase.Suite!.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
 
             var ids = request.Steps.Select(stepOrder => stepOrder.Id).ToList();
 

@@ -5,10 +5,8 @@ using TestCraft.Domain.Entities;
 
 namespace TestCraft.Persistence.Configurations;
 
-/// <summary>Shared column conventions reused across <see cref="IEntityTypeConfiguration{TEntity}"/> implementations.</summary>
 public static class EntityTypeBuilderExtensions
 {
-    /// <summary>Configures a database-generated primary key column named "id".</summary>
     public static EntityTypeBuilder<TEntity> ConfigureGeneratedId<TEntity, TId>(
         this EntityTypeBuilder<TEntity> builder,
         Expression<Func<TEntity, TId>> idSelector
@@ -26,7 +24,6 @@ public static class EntityTypeBuilderExtensions
         return builder;
     }
 
-    /// <summary>Configures "created_at"/"updated_at" columns defaulting to the current time.</summary>
     public static EntityTypeBuilder<TEntity> ConfigureAuditTimestamps<TEntity>(
         this EntityTypeBuilder<TEntity> builder
     )
@@ -44,7 +41,6 @@ public static class EntityTypeBuilderExtensions
         return builder;
     }
 
-    /// <summary>Configures "is_deleted"/"deleted_at" columns and filters soft-deleted rows out of queries.</summary>
     public static EntityTypeBuilder<TEntity> ConfigureSoftDelete<TEntity>(
         this EntityTypeBuilder<TEntity> builder
     )

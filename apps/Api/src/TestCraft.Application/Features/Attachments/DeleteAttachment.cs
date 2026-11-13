@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -8,20 +8,15 @@ namespace TestCraft.Application.Features.Attachments;
 
 public static class DeleteAttachment
 {
-    /// <summary>Deletes an attachment and its stored file.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
-        /// <summary>The project the attachment belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run the attachment belongs to.</summary>
         public required TestRunId RunId { get; init; }
 
-        /// <summary>The test result the attachment belongs to.</summary>
         public required TestResultId ResultId { get; init; }
 
-        /// <summary>The attachment to delete.</summary>
         public required AttachmentId AttachmentId { get; init; }
     }
 
@@ -30,19 +25,17 @@ public static class DeleteAttachment
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var attachment =
-                await context
-                    .Attachments.Include(entity => entity.TestResult)
-                        .ThenInclude(result => result!.TestRun)
-                    .FirstOrDefaultAsync(
-                        attachmentEntity =>
-                            attachmentEntity.Id == request.AttachmentId
-                            && attachmentEntity.TestResultId == request.ResultId
-                            && attachmentEntity.TestResult!.TestRunId == request.RunId
-                            && attachmentEntity.TestResult.TestRun!.ProjectId == request.ProjectId,
-                        cancellationToken
-                    )
-                ?? throw new NotFoundException();
+            var attachment = await context
+                .Attachments.Include(entity => entity.TestResult)
+                    .ThenInclude(result => result!.TestRun)
+                .FirstOrNotFoundAsync(
+                    attachmentEntity =>
+                        attachmentEntity.Id == request.AttachmentId
+                        && attachmentEntity.TestResultId == request.ResultId
+                        && attachmentEntity.TestResult!.TestRunId == request.RunId
+                        && attachmentEntity.TestResult.TestRun!.ProjectId == request.ProjectId,
+                    cancellationToken
+                );
 
             attachment.TestResult!.TestRun!.EnsureCanAddResult();
 

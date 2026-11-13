@@ -15,15 +15,12 @@ public static class CloneTestCase
     /// <summary>Copies a test case, with its steps and labels, into the same or another suite of the project.</summary>
     public sealed record Command : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The suite the test case being copied belongs to.</summary>
         [JsonIgnore]
         public TestSuiteId SuiteId { get; init; }
 
-        /// <summary>The test case to copy.</summary>
         [JsonIgnore]
         public TestCaseId Id { get; init; }
 
@@ -52,28 +49,22 @@ public static class CloneTestCase
             CancellationToken cancellationToken
         )
         {
-            var source =
-                await context
-                    .TestCases.Include(testCase => testCase.Steps)
-                    .Include(testCase => testCase.TestCaseLabels)
-                    .FirstOrDefaultAsync(
-                        testCase =>
-                            testCase.Id == request.Id
-                            && testCase.SuiteId == request.SuiteId
-                            && testCase.Suite!.ProjectId == request.ProjectId,
-                        cancellationToken
-                    )
-                ?? throw new NotFoundException();
+            var source = await context
+                .TestCases.Include(testCase => testCase.Steps)
+                .Include(testCase => testCase.TestCaseLabels)
+                .FirstOrNotFoundAsync(
+                    testCase =>
+                        testCase.Id == request.Id
+                        && testCase.SuiteId == request.SuiteId
+                        && testCase.Suite!.ProjectId == request.ProjectId,
+                    cancellationToken
+                );
 
             var targetSuiteId = request.TargetSuiteId ?? source.SuiteId;
-            var targetExists = await context.TestSuites.AnyAsync(
+            await context.TestSuites.EnsureExistsAsync(
                 suite => suite.Id == targetSuiteId && suite.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!targetExists)
-            {
-                throw new NotFoundException();
-            }
 
             var name = request.Name;
             if (name is null)
@@ -105,10 +96,7 @@ public static class CloneTestCase
                 cancellationToken
             );
 
-            return await context
-                .TestCases.Where(created => created.Id == copy.Id)
-                .Select(TestCaseResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestCaseResponse.LoadAsync(context, copy.Id, cancellationToken);
         }
     }
 }

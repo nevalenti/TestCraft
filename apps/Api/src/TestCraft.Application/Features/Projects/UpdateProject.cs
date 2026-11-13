@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -15,7 +14,6 @@ public static class UpdateProject
     /// <summary>Updates a project's name and description.</summary>
     public sealed record Command : IRequest<ProjectResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to update.</summary>
         [JsonIgnore]
         public ProjectId Id { get; init; }
 
@@ -35,7 +33,7 @@ public static class UpdateProject
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
         }
     }
 
@@ -50,13 +48,12 @@ public static class UpdateProject
             CancellationToken cancellationToken
         )
         {
-            var project =
-                await context.Projects.FirstOrDefaultAsync(
-                    existingProject =>
-                        existingProject.Id == request.Id
-                        && existingProject.UserId == currentUser.UserId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var project = await context.Projects.FirstOrNotFoundAsync(
+                existingProject =>
+                    existingProject.Id == request.Id
+                    && existingProject.UserId == currentUser.UserId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(project, request.ExpectedVersion);
             project.Update(request.Name, request.Description);

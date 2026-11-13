@@ -12,7 +12,6 @@ public static class CreateTestRun
     /// <summary>Creates a new, active test run in a project.</summary>
     public sealed record Command : IRequest<TestRunResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to create the run in.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -30,11 +29,11 @@ public static class CreateTestRun
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Environment).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Environment).RequiredName();
             RuleFor(command => command.Source)
                 .NotEmpty()
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.Source)
                 .When(command => command.Source is not null);
         }
     }

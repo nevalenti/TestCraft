@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.Labels;
 
 /// <summary>A colored label that can be attached to test cases.</summary>
-public record LabelResponse
+public record LabelResponse : IVersionedResponse
 {
     public static readonly Expression<Func<Label, LabelResponse>> Projection =
         label => new LabelResponse

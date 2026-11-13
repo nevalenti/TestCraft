@@ -21,17 +21,16 @@ public class PublicShareTokensController(ISender sender) : ControllerBase
         CancellationToken cancellationToken,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 50
-    )
-    {
-        var query = new GetRunByShareToken.Query
-        {
-            Token = token,
-            Page = page,
-            PageSize = pageSize,
-        };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetRunByShareToken.Query
+                {
+                    Token = token,
+                    Page = page,
+                    PageSize = pageSize,
+                },
+                cancellationToken
+            )
+        );
 }

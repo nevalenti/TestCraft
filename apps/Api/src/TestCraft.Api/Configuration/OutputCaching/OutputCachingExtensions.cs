@@ -25,7 +25,6 @@ public static class OutputCachingExtensions
         return builder;
     }
 
-    /// <summary>Drops cached public share views, so a revoked or deleted run stops showing at once.</summary>
     public static ValueTask EvictPublicSharesAsync(
         this IOutputCacheStore store,
         CancellationToken cancellationToken

@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
@@ -25,7 +24,6 @@ public static class UpdateTestCase
         [JsonIgnore]
         public TestSuiteId SuiteId { get; init; }
 
-        /// <summary>The test case to update.</summary>
         [JsonIgnore]
         public TestCaseId Id { get; init; }
 
@@ -46,8 +44,8 @@ public static class UpdateTestCase
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Description).MaximumLength(FieldLengths.Text);
             RuleFor(command => command.Priority).IsInEnum();
         }
     }
@@ -63,14 +61,13 @@ public static class UpdateTestCase
             CancellationToken cancellationToken
         )
         {
-            var testCase =
-                await context.TestCases.FirstOrDefaultAsync(
-                    existingTestCase =>
-                        existingTestCase.Id == request.Id
-                        && existingTestCase.SuiteId == request.SuiteId
-                        && existingTestCase.Suite!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var testCase = await context.TestCases.FirstOrNotFoundAsync(
+                existingTestCase =>
+                    existingTestCase.Id == request.Id
+                    && existingTestCase.SuiteId == request.SuiteId
+                    && existingTestCase.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(testCase, request.ExpectedVersion);
             var renamed = testCase.Name != request.Name;
@@ -90,10 +87,7 @@ public static class UpdateTestCase
                 );
             }
 
-            return await context
-                .TestCases.Where(updatedTestCase => updatedTestCase.Id == testCase.Id)
-                .Select(TestCaseResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestCaseResponse.LoadAsync(context, testCase.Id, cancellationToken);
         }
     }
 }

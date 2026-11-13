@@ -78,7 +78,6 @@ public record SharedResultItem
 
 public static class GetRunByShareToken
 {
-    /// <summary>Requests a run's results by its public share token.</summary>
     public sealed record Query : PageQuery, IRequest<SharedRunResponse>
     {
         public required string Token { get; init; }
@@ -113,14 +112,12 @@ public static class GetRunByShareToken
                 throw new NotFoundException();
             }
 
-            var run =
-                await context
-                    .TestRuns.AsNoTracking()
-                    .FirstOrDefaultAsync(
-                        testRun => testRun.Id == shareToken.TestRunId,
-                        cancellationToken
-                    )
-                ?? throw new NotFoundException();
+            var run = await context
+                .TestRuns.AsNoTracking()
+                .FirstOrNotFoundAsync(
+                    testRun => testRun.Id == shareToken.TestRunId,
+                    cancellationToken
+                );
 
             var resultsQuery = context
                 .TestResults.Where(result => result.TestRunId == run.Id)

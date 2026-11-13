@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TestCraft.Application.Common.Behaviours;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Features.TestResults;
 
 namespace TestCraft.Application;
 
@@ -14,6 +15,7 @@ public static class DependencyInjection
         services.AddTransient(typeof(IValidator<>), typeof(PageQueryValidator<>));
         services.AddTransient(typeof(IValidator<>), typeof(SearchPageQueryValidator<>));
         services.AddScoped<ProjectAccess>();
+        services.AddScoped<TestResultRecorder>();
         services.AddSingleton(TimeProvider.System);
 
         services.AddMediatR(config =>

@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Caching;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -10,14 +9,12 @@ namespace TestCraft.Application.Features.TestRuns;
 
 public static class DeleteTestRun
 {
-    /// <summary>Soft-deletes a test run.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to delete.</summary>
         public required TestRunId Id { get; init; }
     }
 
@@ -30,12 +27,11 @@ public static class DeleteTestRun
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             run.Delete(timeProvider.GetStoredUtcNow());
 

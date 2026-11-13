@@ -31,13 +31,11 @@ public record SuiteBreakdown
 
 public static class GetSuiteBreakdown
 {
-    /// <summary>Requests a per-suite result breakdown for a run.</summary>
     public sealed record Query : IRequest<IReadOnlyList<SuiteBreakdown>>, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to break down by suite.</summary>
         public required TestRunId RunId { get; init; }
     }
 

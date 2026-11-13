@@ -16,14 +16,7 @@ public class ApiTokensController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<IReadOnlyList<ApiTokenResponse>>> GetAll(
         ProjectId projectId,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetApiTokens.Query { ProjectId = projectId };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(new GetApiTokens.Query { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Creates a new API token. The raw token is returned once — store it securely.</summary>
     [HttpPost]
@@ -34,9 +27,7 @@ public class ApiTokensController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -50,9 +41,10 @@ public class ApiTokensController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new RevokeApiToken.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new RevokeApiToken.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }

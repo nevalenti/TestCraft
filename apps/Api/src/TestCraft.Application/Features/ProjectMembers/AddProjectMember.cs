@@ -5,6 +5,7 @@ using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 using TestCraft.Domain.Exceptions;
@@ -16,11 +17,9 @@ public static class AddProjectMember
     /// <summary>Adds a user to a project by email, with a role.</summary>
     public sealed record Command : IRequest<ProjectMemberResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to add the member to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The caller's own role, which limits the roles they can hand out.</summary>
         [JsonIgnore]
         public ProjectRole ActorRole { get; init; }
 
@@ -35,7 +34,10 @@ public static class AddProjectMember
     {
         public Validator()
         {
-            RuleFor(command => command.Email).NotEmpty().EmailAddress().MaximumLength(254);
+            RuleFor(command => command.Email)
+                .NotEmpty()
+                .EmailAddress()
+                .MaximumLength(FieldLengths.Email);
             RuleFor(command => command.Role).IsInEnum();
         }
     }

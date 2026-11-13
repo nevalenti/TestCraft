@@ -22,9 +22,14 @@ public class ShareTokensController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                RunId = runId,
+            },
+            cancellationToken
+        );
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -36,14 +41,13 @@ public class ShareTokensController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         TestRunId runId,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetShareTokens.Query { ProjectId = projectId, RunId = runId };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetShareTokens.Query { ProjectId = projectId, RunId = runId },
+                cancellationToken
+            )
+        );
 
     /// <summary>Revokes a share token.</summary>
     [HttpDelete("{id:guid}")]
@@ -56,14 +60,16 @@ public class ShareTokensController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new RevokeShareToken.Command
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            Id = id,
-        };
+        await sender.Send(
+            new RevokeShareToken.Command
+            {
+                ProjectId = projectId,
+                RunId = runId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
-        await sender.Send(command, cancellationToken);
         await cacheStore.EvictPublicSharesAsync(cancellationToken);
 
         return NoContent();

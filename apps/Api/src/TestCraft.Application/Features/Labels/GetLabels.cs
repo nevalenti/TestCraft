@@ -16,13 +16,11 @@ public static class GetLabels
         CreatedAt,
     }
 
-    /// <summary>Lists the labels defined in a project; search matches the label name.</summary>
     public sealed record Query
         : SearchPageQuery,
             IRequest<Paginated<LabelResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list labels for.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 

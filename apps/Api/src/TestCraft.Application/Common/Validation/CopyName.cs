@@ -2,7 +2,6 @@ namespace TestCraft.Application.Common.Validation;
 
 public static class CopyName
 {
-    /// <summary>The first of "name", "name (copy)", "name (copy 2)", ... that is not in <paramref name="taken"/>.</summary>
     public static string FirstFree(string name, IReadOnlySet<string> taken)
     {
         if (!taken.Contains(name))

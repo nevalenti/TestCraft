@@ -14,7 +14,6 @@ public static class CreateTestSuite
     /// <summary>Creates a new suite in a project.</summary>
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to create the suite in.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -29,8 +28,8 @@ public static class CreateTestSuite
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Description).MaximumLength(FieldLengths.Text);
         }
     }
 

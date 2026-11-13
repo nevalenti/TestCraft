@@ -19,14 +19,15 @@ public class TestCaseLabelsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new AddTestCaseLabel.Command
-        {
-            ProjectId = projectId,
-            TestCaseId = caseId,
-            LabelId = labelId,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new AddTestCaseLabel.Command
+            {
+                ProjectId = projectId,
+                TestCaseId = caseId,
+                LabelId = labelId,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -41,14 +42,15 @@ public class TestCaseLabelsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new RemoveTestCaseLabel.Command
-        {
-            ProjectId = projectId,
-            TestCaseId = caseId,
-            LabelId = labelId,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new RemoveTestCaseLabel.Command
+            {
+                ProjectId = projectId,
+                TestCaseId = caseId,
+                LabelId = labelId,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Enums;
@@ -17,12 +16,10 @@ public static class ProjectStats
         CancellationToken cancellationToken
     )
     {
-        var project =
-            await context
-                .Projects.Where(project => project.Id == projectId)
-                .Select(ProjectResponse.For(userId))
-                .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException();
+        var project = await context
+            .Projects.Where(project => project.Id == projectId)
+            .Select(ProjectResponse.For(userId))
+            .FirstOrNotFoundAsync(cancellationToken);
 
         var withRates = await new[] { project }.WithRecentPassRatesAsync(
             context,

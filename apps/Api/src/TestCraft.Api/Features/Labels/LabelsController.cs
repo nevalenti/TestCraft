@@ -18,12 +18,7 @@ public class LabelsController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         [FromQuery] GetLabels.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var result = await sender.Send(query with { ProjectId = projectId }, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Creates a label.</summary>
     [HttpPost]
@@ -34,9 +29,7 @@ public class LabelsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -51,21 +44,18 @@ public class LabelsController(ISender sender) : ApiControllerBase
         UpdateLabel.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a label.</summary>
     [HttpDelete("{id:guid}")]
@@ -76,9 +66,10 @@ public class LabelsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteLabel.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteLabel.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }

@@ -5,7 +5,6 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Api.IntegrationTests.Infrastructure;
 
-/// <summary>Records every notification, then forwards it to the real notifier.</summary>
 public sealed class FakeTestRunNotifier(ITestRunNotifier inner) : ITestRunNotifier
 {
     private readonly ConcurrentQueue<(string Event, TestRunId RunId)> _events = new();
