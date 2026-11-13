@@ -50,6 +50,10 @@ spec:
                 secretKeyRef:
                   name: testcraft-secrets
                   key: POSTGRES_DB
+            {{- with .Values.postgres.dataSubdir }}
+            - name: PGDATA
+              value: /var/lib/postgresql/data/{{ . }}
+            {{- end }}
           ports:
             - containerPort: 5432
           readinessProbe:

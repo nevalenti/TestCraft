@@ -51,7 +51,7 @@ spec:
             - name: KEYCLOAK_AUTHORITY
               value: http://keycloak:8080/realms/testcraft
             - name: KEYCLOAK_ISSUER
-              value: https://auth.testcraft.pro/realms/testcraft
+              value: {{ printf "%s/realms/testcraft" .Values.keycloak.hostname | quote }}
             - name: KEYCLOAK_ADMIN_CLIENT_ID
               value: testcraft-api
             - name: KEYCLOAK_ADMIN_CLIENT_SECRET
@@ -77,7 +77,7 @@ spec:
             - name: OTEL_TRACES_SAMPLER_ARG
               value: {{ .Values.observability.traceSampleRatio | quote }}
             - name: WEB_BASE_URL
-              value: https://testcraft.pro
+              value: {{ .Values.platform.webBaseUrl | quote }}
             {{- with .Values.proxy.knownNetworks }}
             - name: KNOWN_PROXY_NETWORKS
               value: {{ . | quote }}

@@ -91,9 +91,9 @@ spec:
             - name: PORT
               value: "8000"
             - name: GLITCHTIP_DOMAIN
-              value: "https://glitchtip.testcraft.pro"
+              value: {{ .Values.platform.glitchtipBaseUrl | quote }}
             - name: DEFAULT_FROM_EMAIL
-              value: "alerts@testcraft.pro"
+              value: {{ .Values.platform.alertFromEmail | quote }}
             - name: ENABLE_OPEN_USER_REGISTRATION
               value: "false"
           ports:
@@ -157,9 +157,9 @@ spec:
                   name: testcraft-secrets
                   key: GLITCHTIP_SECRET_KEY
             - name: GLITCHTIP_DOMAIN
-              value: "https://glitchtip.testcraft.pro"
+              value: {{ .Values.platform.glitchtipBaseUrl | quote }}
             - name: DEFAULT_FROM_EMAIL
-              value: "alerts@testcraft.pro"
+              value: {{ .Values.platform.alertFromEmail | quote }}
           resources:
             requests:
               memory: 256Mi

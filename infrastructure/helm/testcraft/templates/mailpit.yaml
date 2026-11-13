@@ -1,0 +1,53 @@
+{{- if .Values.mailpit.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mailpit
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailpit
+  template:
+    metadata:
+      labels:
+        app: mailpit
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        {{- include "testcraft.podSecurityContext" (dict "uid" 1000 "gid" 1000) | nindent 8 }}
+      containers:
+        - name: mailpit
+          image: {{ .Values.thirdPartyImages.mailpit }}
+          securityContext:
+            {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
+          ports:
+            - containerPort: 1025
+            - containerPort: 8025
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8025
+          resources:
+            requests:
+              memory: 32Mi
+              cpu: "10m"
+            limits:
+              memory: 128Mi
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailpit
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: mailpit
+  ports:
+    - name: smtp
+      port: 1025
+    - name: http
+      port: 8025
+{{- end }}

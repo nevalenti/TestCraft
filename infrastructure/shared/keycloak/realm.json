@@ -29,12 +29,14 @@
       "redirectUris": [
         "http://localhost:3000/*",
         "https://localhost/*",
-        "https://testcraft.pro/*"
+        "https://testcraft.pro/*",
+        "https://testcraft.localhost/*"
       ],
       "webOrigins": [
         "http://localhost:3000",
         "https://localhost",
-        "https://testcraft.pro"
+        "https://testcraft.pro",
+        "https://testcraft.localhost"
       ],
       "attributes": {
         "post.logout.redirect.uris": "+",

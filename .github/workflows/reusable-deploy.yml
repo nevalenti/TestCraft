@@ -36,13 +36,14 @@ jobs:
 
       - name: Deploy
         env:
+          TESTCRAFT_DEPLOY_ENV: production
           APP: ${{ inputs.app }}
           TAG: ${{ inputs.tag }}
         run: |
           if [[ "$TAG" =~ ^[0-9a-f]{40}$ ]]; then
             TAG="sha-$TAG"
           fi
-          flock "$HOME/.testcraft-deploy.lock" just deploy-app "$APP" "$TAG"
+          flock "$HOME/.testcraft-deploy.lock" just prod::deploy-app "$APP" "$TAG"
 
       - name: Remove production secrets
         if: always()

@@ -1,21 +1,45 @@
 ---
 title: Hosting
-description: Deploy TestCraft to a Kubernetes cluster.
+description: Deploy TestCraft with its Helm chart.
 sidebar:
   order: 2
 ---
 
 import { Aside, Steps } from "@astrojs/starlight/components";
 
-Deploy TestCraft to a Kubernetes cluster using the Helm chart at `infrastructure/helm/testcraft`.
+TestCraft ships as a Helm chart at `infrastructure/helm/testcraft`. It runs the API, the web app, the gateway, the docs and everything they depend on (Postgres, Redis, RabbitMQ, MinIO, Keycloak, GlitchTip) plus Prometheus, Alertmanager, Grafana, Loki and Tempo. testcraft.pro runs it on a single-node k3s cluster.
 
 ## Prerequisites
 
-- A cluster with `kubectl` access
+- A Kubernetes cluster with `kubectl` access. The chart is tested on k3s.
 - Helm 3
-- [cert-manager](https://cert-manager.io/) >= 1.13, already installed in the cluster (needed for TLS)
+- [cert-manager](https://cert-manager.io/) installed in the cluster
+- DNS records for the web, `auth.` and `glitchtip.` hosts pointing at the cluster
 
-## Deploy
+## Values files
+
+| File                          | Purpose                                                          |
+| ----------------------------- | ---------------------------------------------------------------- |
+| `values.yaml`                 | Chart defaults                                                   |
+| `values.production.yaml`      | testcraft.pro: GHCR images, Let's Encrypt, resource limits       |
+| `values.local.yaml`           | The local kind cluster (see [Local cluster](#local-cluster))     |
+| `values.secrets.yaml.example` | Template for `values.secrets.yaml`, which holds every credential |
+
+<Aside type="caution">
+  `values.secrets.yaml` is gitignored. Keep it out of the repository.
+</Aside>
+
+## Your own domain
+
+The defaults point at testcraft.pro. For another domain, set:
+
+- `keycloak.hostname`, `platform.webBaseUrl`, `platform.glitchtipBaseUrl` and `platform.alertFromEmail`. The gateway routes `auth.` and `glitchtip.` traffic by these hosts, and the API trusts tokens issued by `keycloak.hostname`.
+- `tls.dnsNames`, `secrets.corsAllowedOrigins` and `secrets.minioPublicEndpoint`.
+- The `testcraft-web` client's redirect URIs and web origins in `infrastructure/shared/keycloak/realm.json`. Keycloak imports the realm only on its first start, so after that change them in the Keycloak admin console.
+
+The web image has its API and Keycloak URLs built in, so build your own from `apps/web/Dockerfile` with the `VITE_*` build arguments instead of using the published one.
+
+## First install
 
 <Steps>
 
@@ -26,28 +50,82 @@ Deploy TestCraft to a Kubernetes cluster using the Helm chart at `infrastructure
       infrastructure/helm/testcraft/values.secrets.yaml
    ```
 
-   <Aside type="caution">
-     Don't commit `values.secrets.yaml` — it ends up holding real passwords and
-     client secrets.
-   </Aside>
+2. Create the `testcraft` namespace with Helm's ownership labels. The chart manages the namespace itself, so don't pass `--create-namespace`:
 
-2. Pull in the chart's dependencies:
+   ```bash
+   kubectl create namespace testcraft
+   kubectl label namespace testcraft app.kubernetes.io/managed-by=Helm
+   kubectl annotate namespace testcraft meta.helm.sh/release-name=testcraft meta.helm.sh/release-namespace=testcraft
+   ```
+
+   On the production k3s host, `TESTCRAFT_DEPLOY_ENV=production just prod::bootstrap` does this.
+
+3. Install the chart:
 
    ```bash
    helm dependency build infrastructure/helm/testcraft
-   ```
-
-3. Install (or upgrade) the release:
-
-   ```bash
    helm upgrade --install testcraft infrastructure/helm/testcraft \
-     --namespace testcraft --create-namespace \
+     --namespace testcraft \
      -f infrastructure/helm/testcraft/values.production.yaml \
      -f infrastructure/helm/testcraft/values.secrets.yaml
    ```
 
 </Steps>
 
-- `values.yaml` — chart defaults
-- `values.production.yaml` — production overrides (image repos, ingress, TLS)
-- `values.secrets.yaml` — your credentials
+The API applies database migrations when it starts. On every later upgrade, the `migrator` job runs them as a pre-upgrade hook, before the new API pods start.
+
+## TLS
+
+- `tls.provider: letsencrypt` (production) issues certificates for `tls.dnsNames` from Let's Encrypt. It needs `tls.acmeEmail`, and the bundled ingress-nginx answers the HTTP-01 challenge.
+- Any other provider signs certificates with a CA you supply as the `testcraft-ca-tls` secret in the namespace:
+
+  ```bash
+  kubectl -n testcraft create secret tls testcraft-ca-tls --cert=ca.pem --key=ca-key.pem
+  ```
+
+## Deploying testcraft.pro
+
+Deploys run on a self-hosted GitHub Actions runner on the production host, in the `production` environment:
+
+- A push to `main` builds and publishes images for the apps it touches. When the `AUTO_DEPLOY_PRODUCTION` repository variable is `true`, it also deploys them; otherwise run the app's CI workflow by hand.
+- `infra-deploy` applies chart changes (`infrastructure/helm/**`, `infrastructure/shared/**`).
+- `infra-deploy-version` deploys one app at a given tag: a release (`v1.2.3`) or a commit SHA.
+
+The same deploys can be run on the host. The `prod::` recipes refuse to run unless `TESTCRAFT_DEPLOY_ENV=production` is set, so they can't hit another cluster by accident:
+
+```bash
+TESTCRAFT_DEPLOY_ENV=production just prod::deploy                # whole chart
+TESTCRAFT_DEPLOY_ENV=production just prod::deploy-app api v1.2.3 # one app at a tag
+```
+
+`deploy-app` checks that the image exists in GHCR before it deploys, and rolls the release back if the new pods don't become ready.
+
+## Backups and monitoring
+
+- Postgres and MinIO are backed up into MinIO every night, and a restore of the latest Postgres backup is verified afterwards. Set the schedules and retention under `backups`. Set `backups.offsite` and the `offsiteBackup*` secrets to copy them to S3-compatible storage outside the cluster.
+- Grafana is served at `/grafana` on the web host, with dashboards for the API, Postgres, Redis, RabbitMQ and the cluster.
+- Alertmanager emails alerts to `secrets.alertEmailTo`. Each alert links to its section in [the alert runbooks](https://github.com/nevalenti/TestCraft/blob/main/infrastructure/shared/prometheus/runbooks.md).
+
+## Local cluster
+
+`just kind::up` runs the chart on a local [kind](https://kind.sigs.k8s.io/) cluster with production-like settings. It needs Docker, kind, kubectl, Helm, yq and [mkcert](https://github.com/FiloSottile/mkcert) with its root CA installed (`mkcert -install`).
+
+The recipe creates the cluster if it's missing, installs cert-manager and issues TLS from your mkcert CA. Then it builds every image and installs the chart with `values.local.yaml`. On the first run it writes random credentials to the gitignored `values.local.secrets.yaml`.
+
+```bash
+just kind::up                  # everything, from nothing
+just kind::deploy api          # rebuild and redeploy one app (api includes the migrator)
+just kind::deploy web gateway  # several apps
+just kind::destroy             # delete the namespace, its data and its volumes
+```
+
+| Service  | URL                                                                  |
+| -------- | -------------------------------------------------------------------- |
+| Web      | [https://testcraft.localhost](https://testcraft.localhost)           |
+| Keycloak | [https://auth.testcraft.localhost](https://auth.testcraft.localhost) |
+
+Mailpit isn't exposed through the gateway. Forward its port and open [http://localhost:8025](http://localhost:8025):
+
+```bash
+kubectl --context kind-testcraft-prod-local -n testcraft port-forward svc/mailpit 8025
+```

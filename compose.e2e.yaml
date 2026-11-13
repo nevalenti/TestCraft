@@ -33,7 +33,7 @@ services:
   keycloak:
     build:
       context: .
-      dockerfile: infrastructure/keycloak/e2e.Dockerfile
+      dockerfile: infrastructure/local/keycloak/e2e.Dockerfile
     ports: ["127.0.0.1:8080:8080"]
     healthcheck:
       test:

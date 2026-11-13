@@ -167,6 +167,27 @@ spec:
         - podSelector: {matchLabels: {app: postgres-restore-verify}}
       ports: [{port: 5432, protocol: TCP}]
 ---
+{{- if .Values.mailpit.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mailpit
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      app: mailpit
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector: {matchLabels: {app: api}}
+        - podSelector: {matchLabels: {app: keycloak}}
+        - podSelector: {matchLabels: {app: alertmanager}}
+        - podSelector: {matchLabels: {app: glitchtip-web}}
+        - podSelector: {matchLabels: {app: glitchtip-worker}}
+      ports: [{port: 1025, protocol: TCP}]
+---
+{{- end }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:

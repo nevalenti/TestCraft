@@ -1,7 +1,4 @@
----
-title: Database migrations
-description: Safely change the production PostgreSQL schema.
----
+# Database migrations
 
 EF Core owns the schema. `TestCraft.Migrator` applies pending migrations as a Helm
 pre-upgrade job, before the new API pods start. Existing pods keep using the database

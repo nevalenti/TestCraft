@@ -2,10 +2,10 @@
 
 set -euo pipefail
 
-command -v jq >/dev/null 2>&1 || { echo "::error::jq is required to render infrastructure/keycloak/realm.json" >&2; exit 1; }
+command -v jq >/dev/null 2>&1 || { echo "::error::jq is required to render infrastructure/local/keycloak/realm.json" >&2; exit 1; }
 
-BASE_FILE="infrastructure/helm/testcraft/files/keycloak/realm.json"
-OUT_FILE="infrastructure/keycloak/realm.json"
+BASE_FILE="infrastructure/shared/keycloak/realm.json"
+OUT_FILE="infrastructure/local/keycloak/realm.json"
 
 jq '
   (.clients[] | select(.clientId == "testcraft-web") | .redirectUris) += ["http://localhost:4173/*"] |

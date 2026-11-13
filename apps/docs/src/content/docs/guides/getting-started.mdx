@@ -7,62 +7,84 @@ sidebar:
 
 import { Aside, Steps } from "@astrojs/starlight/components";
 
-Set up a local development environment in a few minutes.
+Run the API and the web app on your machine against containers for everything else.
 
 ## Prerequisites
 
-- **[Docker](https://www.docker.com/get-started/)**
+- **[Docker](https://www.docker.com/get-started/)** with Compose
 - **[.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)**
-- **[Node.js 24](https://nodejs.org/en/download)**
-- **[pnpm](https://pnpm.io/installation)**
-- **[uv](https://docs.astral.sh/uv/getting-started/installation/)** (`just dev` runs honcho through `uvx`)
+- **[Node.js 24](https://nodejs.org/en/download)** and **[pnpm](https://pnpm.io/installation)**
 - **[just](https://github.com/casey/just)**
-- **[jq](https://jqlang.org/download/)**
-- **[yq](https://github.com/mikefarah/yq)**
+- **[uv](https://docs.astral.sh/uv/getting-started/installation/)**: `just hooks-install` and `just workflow-audit` run their tools through `uvx`
+- **[jq](https://jqlang.org/download/)** and **[yq](https://github.com/mikefarah/yq)**: `just up` uses them to render local config
 
 ## Setup
 
 <Steps>
 
-1. Clone the repository and install dependencies:
+1. Clone the repository and install the JavaScript dependencies:
 
    ```bash
    git clone https://github.com/nevalenti/TestCraft.git
    cd TestCraft
    pnpm install
-   cp .env.example .env
-   cp apps/web/.env.example apps/web/.env
    ```
 
-2. Start the local infrastructure via Docker Compose:
+2. Start the containers (Postgres, Redis, RabbitMQ, MinIO, Keycloak, Mailpit, GlitchTip and the observability stack):
 
    ```bash
    just up
    ```
 
-3. Create the database schema:
+   The first run creates `.env`, `apps/web/.env` and `e2e/.env` from their `.env.example`. Later runs add any keys the examples gained since.
 
-   ```bash
-   just api-migrate
-   ```
-
-   <Aside type="caution">
-     Skip this and the database schema stays empty — the API will fail on its
-     first request.
-   </Aside>
-
-4. Run the API and the web app outside Docker, both in one terminal:
+3. Run the API and the web app, both in one terminal:
 
    ```bash
    just dev
    ```
 
-   The API runs in the Development environment, restarts when code changes, and applies migrations and seeds sample data before it starts. To run them separately instead, use `just api-serve` and `pnpm --filter testcraft-web dev`.
+   The API applies migrations and seeds sample data before it starts, then restarts when its code changes. To run them separately, use `just api-serve` and `just web-dev`.
+
+4. Open [http://localhost:3000](http://localhost:3000) and sign in as `e2e@testcraft.pro` with the password `e2e-test-password`.
+
+   <Aside>
+     You can also register a new account. Keycloak asks you to verify the email
+     address; the message lands in Mailpit.
+   </Aside>
 
 </Steps>
 
-| Service       | URL                                                              |
-| ------------- | ---------------------------------------------------------------- |
-| Web           | [http://localhost:3000](http://localhost:3000)                   |
-| API           | [http://localhost:5000](http://localhost:5000)                   |
-| API reference | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) |
+## Local services
+
+| Service       | URL                                                              | Notes                            |
+| ------------- | ---------------------------------------------------------------- | -------------------------------- |
+| Web           | [http://localhost:3000](http://localhost:3000)                   |                                  |
+| API           | [http://localhost:5000](http://localhost:5000)                   |                                  |
+| API reference | [http://localhost:5000/api/docs](http://localhost:5000/api/docs) |                                  |
+| Keycloak      | [http://localhost:8080](http://localhost:8080)                   | `KEYCLOAK_ADMIN` from `.env`     |
+| Mailpit       | [http://localhost:8025](http://localhost:8025)                   | every email the stack sends      |
+| Grafana       | [http://localhost:3001](http://localhost:3001)                   | logs, traces and metrics         |
+| GlitchTip     | [http://localhost:8001](http://localhost:8001)                   | error tracking                   |
+| MinIO console | [http://localhost:9001](http://localhost:9001)                   | attachments and imported reports |
+| RabbitMQ      | [http://localhost:15672](http://localhost:15672)                 |                                  |
+| pgweb         | [http://localhost:8081](http://localhost:8081)                   | browse the Postgres databases    |
+
+## Everyday commands
+
+```bash
+just down               # stop the containers, keep their data
+just nuke               # stop the containers and delete every volume (asks first)
+just api-db-reset       # drop and recreate the dev database, then migrate
+just api-migration AddX # add an EF Core migration
+just codegen            # regenerate @testcraft/types and the web SDK after changing apps/Api/openapi/contract/v1.json
+
+just api-test-unit      # .NET unit and architecture tests, no Docker needed
+just api-test           # every .NET test project, including integration tests
+pnpm --filter testcraft-web test
+
+just lint
+just format
+```
+
+To run the Helm chart the way production does, see [Local cluster](/docs/guides/hosting/#local-cluster).

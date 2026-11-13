@@ -1,7 +1,7 @@
 FROM quay.io/keycloak/keycloak:26.2
 
-COPY --chown=1000:0 infrastructure/helm/testcraft/files/keycloak/theme/ /opt/keycloak/themes/dracula/login/
-COPY --chown=1000:0 infrastructure/keycloak/realm.json /realm-source/realm.json
+COPY --chown=1000:0 infrastructure/shared/keycloak/theme/ /opt/keycloak/themes/dracula/login/
+COPY --chown=1000:0 infrastructure/local/keycloak/realm.json /realm-source/realm.json
 
 RUN mkdir -p /opt/keycloak/data/import && \
     sed 's|"GITHUB_IDP_ENABLED"|false|g; s|"GOOGLE_IDP_ENABLED"|false|g' /realm-source/realm.json > /opt/keycloak/data/import/realm.json

@@ -17,6 +17,7 @@
     "packages/types/src/generated/",
     "dist/",
     "helm/",
+    "infrastructure/shared/",
     "node_modules/",
     "**/.venv/",
     "pnpm-lock.yaml",

@@ -70,8 +70,15 @@ jobs:
             --values infrastructure/helm/testcraft/values.secrets.yaml.example \
             > /dev/null
 
+      - name: Helm template (local kind values, dummy secrets)
+        run: |
+          helm template testcraft infrastructure/helm/testcraft --namespace testcraft \
+            --values infrastructure/helm/testcraft/values.local.yaml \
+            --values infrastructure/helm/testcraft/values.secrets.yaml.example \
+            > /dev/null
+
       - name: Check and test alert rules
-        working-directory: infrastructure/helm/testcraft/files/prometheus
+        working-directory: infrastructure/shared/prometheus
         run: |
           docker run --rm -v "$PWD":/rules:ro -w /rules --entrypoint promtool \
             prom/prometheus:v3.4.0 check rules alert-rules.yml
