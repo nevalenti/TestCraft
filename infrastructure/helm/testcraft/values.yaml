@@ -55,6 +55,7 @@ ingress-nginx:
 
 keycloak:
   hostname: https://auth.testcraft.pro
+  extraUsers: []
 
 platform:
   webBaseUrl: https://testcraft.pro
@@ -73,6 +74,10 @@ postgres:
 
 mailpit:
   enabled: false
+
+seed:
+  enabled: false
+  ownerId: ""
 
 storage:
   postgres: 5Gi

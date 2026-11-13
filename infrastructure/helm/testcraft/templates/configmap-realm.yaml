@@ -5,4 +5,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   testcraft-realm.json: |
+{{- if .Values.keycloak.extraUsers }}
+{{- $realm := .Files.Get "files/keycloak/realm.json" | fromJson }}
+{{- $_ := set $realm "users" (concat .Values.keycloak.extraUsers $realm.users) }}
+{{ $realm | toPrettyJson | indent 4 }}
+{{- else }}
 {{ .Files.Get "files/keycloak/realm.json" | indent 4 }}
+{{- end }}

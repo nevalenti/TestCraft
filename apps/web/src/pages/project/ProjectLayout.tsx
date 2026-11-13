@@ -36,7 +36,7 @@ export const ProjectLayout = () => {
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…" },
+    { label: project?.name },
   ]);
 
   if (!isPending && !project)

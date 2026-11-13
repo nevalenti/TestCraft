@@ -10,6 +10,8 @@ import { Fragment, type ReactNode } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SearchInput } from "@/components/ui/SearchInput";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
+import { SkeletonStatus } from "@/components/ui/skeleton/SkeletonStatus";
 import { DEFAULT_NOTE_TITLE } from "@/features/notes/constants";
 import {
   DEFAULT_NOTE_LANGUAGE,
@@ -21,6 +23,8 @@ import {
 } from "@/features/notes/noteDates";
 import { cn } from "@/lib/cn";
 import { formatRelativeTime } from "@/lib/format";
+
+const NOTE_TITLE_WIDTHS = ["w-2/3", "w-1/2", "w-3/4", "w-2/5", "w-3/5"];
 
 const groupNotes = (notes: Note[]): NoteGroup[] =>
   groupNotesByRecency(
@@ -150,14 +154,16 @@ export const NotesSidebar = ({
 
     if (isPending && !notes)
       return (
-        <ul aria-label="Loading notes" className="flex flex-col gap-1 px-2">
-          {Array.from({ length: 5 }, (_, index) => (
-            <li key={index} className="flex flex-col gap-2 p-3">
-              <span className="h-3.5 w-2/3 animate-pulse rounded bg-base-content/10" />
-              <span className="h-3 w-full animate-pulse rounded subtle-surface" />
-            </li>
-          ))}
-        </ul>
+        <SkeletonStatus label="Loading notes…">
+          <ul className="flex flex-col gap-1 px-2">
+            {NOTE_TITLE_WIDTHS.map((width, index) => (
+              <li key={index} className="flex flex-col gap-2 p-3">
+                <Skeleton className={cn("h-3.5", width)} />
+                <Skeleton className="h-3 w-full opacity-60" />
+              </li>
+            ))}
+          </ul>
+        </SkeletonStatus>
       );
 
     if (!notes?.length)

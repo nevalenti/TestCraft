@@ -137,3 +137,16 @@ describe("AnalyticsFlakyTab", () => {
     });
   });
 });
+
+describe("AnalyticsFlakyTab while loading", () => {
+  it("shows the skeleton", async () => {
+    vi.mocked(analyticsQueries.flakyTests).mockReturnValue({
+      queryKey: ["pending-flaky"],
+      queryFn: () => new Promise(() => {}),
+    } as never);
+    renderWithClient();
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading flaky tests",
+    );
+  });
+});
