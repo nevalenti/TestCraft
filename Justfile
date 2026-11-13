@@ -1,10 +1,11 @@
 set shell := ["bash", "-euc"]
 set dotenv-load := true
 
-compose := "docker compose --env-file .env --env-file infrastructure/image-versions.env"
+compose := "docker compose --env-file .env --env-file infrastructure/local/image-versions.env"
 api_project := "apps/Api/src/TestCraft.Api"
-apps := "api web gateway docs"
-ghcr_owner := "nevalenti"
+
+mod prod "infrastructure/helm/prod.just"
+mod kind "infrastructure/local/kind.just"
 
 default:
     @just --list
@@ -32,8 +33,8 @@ nuke: render
     {{ compose }} down -v
 
 [group('stack')]
-dev:
-    uvx honcho start -f Procfile.dev
+[parallel]
+dev: api-serve web-dev
 
 [group('stack')]
 e2e-up: render
@@ -106,6 +107,10 @@ web-sdk:
     pnpm --filter testcraft-web generate:sdk
 
 [group('web')]
+web-dev:
+    pnpm --filter testcraft-web dev
+
+[group('web')]
 email-preview:
     pnpm --filter @testcraft/emails dev
 
@@ -142,24 +147,3 @@ ci app job=(if app == "e2e" { "e2e" } else { "build-test" }):
     set -euo pipefail
     act push -W .github/workflows/ci-{{ app }}.yml -j {{ job }} --secret-file .secrets
     if [ "{{ app }}" = "e2e" ]; then docker stop keycloak 2>/dev/null || true; fi
-
-[group('deploy')]
-k8s-bootstrap:
-    scripts/k8s-bootstrap.sh
-
-[private]
-helm-deps:
-    helm dependency update infrastructure/helm/testcraft
-
-[group('deploy')]
-deploy-prod: k8s-bootstrap helm-deps
-    APPS="{{ apps }}" scripts/deploy.sh
-
-[group('deploy')]
-deploy-app app tag: k8s-bootstrap helm-deps
-    scripts/deploy.sh {{ app }} {{ tag }} {{ ghcr_owner }}
-
-[group('deploy')]
-[confirm("Delete the production testcraft namespace and everything in it?")]
-k8s-destroy:
-    sudo k3s kubectl delete namespace testcraft --ignore-not-found

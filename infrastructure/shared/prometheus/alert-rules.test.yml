@@ -37,4 +37,4 @@ tests:
               summary: "API is burning its error budget fast"
               description: "10.11% of testcraft-api requests returned a 5xx over the last hour (budget: 0.5%) - at least 14x the rate the monthly budget can sustain."
               dashboard_url: https://testcraft.pro/grafana/d/testcraft-overview
-              runbook_url: https://testcraft.pro/docs/runbooks/alerts/#apierrorbudgetfastburn
+              runbook_url: https://github.com/nevalenti/TestCraft/blob/main/infrastructure/shared/prometheus/runbooks.md#apierrorbudgetfastburn

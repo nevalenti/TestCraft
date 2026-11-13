@@ -1,0 +1,46 @@
+keycloak:
+  hostname: https://auth.testcraft.localhost
+
+platform:
+  webBaseUrl: https://testcraft.localhost
+  glitchtipBaseUrl: https://glitchtip.testcraft.localhost
+  alertFromEmail: alerts@testcraft.localhost
+
+tls:
+  provider: mkcert
+  dnsNames:
+    - testcraft.localhost
+    - auth.testcraft.localhost
+    - glitchtip.testcraft.localhost
+
+gateway:
+  service:
+    type: NodePort
+    nodePorts:
+      http: 30080
+      https: 30443
+
+postgres:
+  dataSubdir: pgdata
+
+mailpit:
+  enabled: true
+
+thirdPartyImages:
+  minio_client: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
+
+secrets:
+  postgresUser: postgres
+  postgresDb: testcraft_db
+  rabbitmqUser: testcraft
+  minioRootUser: testcraft
+  minioBucket: testcraft
+  minioPublicEndpoint: testcraft.localhost
+  keycloakAdmin: admin
+  swaggerBasicAuthUsername: testcraft
+  hangfireBasicAuthUsername: testcraft
+  corsAllowedOrigins: https://testcraft.localhost
+  smtpHost: mailpit
+  smtpPort: "1025"
+  smtpFromAddress: noreply@testcraft.localhost
+  alertEmailTo: alerts@testcraft.localhost

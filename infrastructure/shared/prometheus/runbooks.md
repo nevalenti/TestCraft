@@ -1,9 +1,6 @@
----
-title: Alerts
-description: What each production alert means and where to look first.
----
+# Alert runbooks
 
-Every alert email links to the [overview dashboard](https://testcraft.pro/grafana/d/testcraft-overview) and to its section here.
+Every alert email links to the [overview dashboard](https://testcraft.pro/grafana/d/testcraft-overview) and to its section in this file.
 
 ## From an alert to the root cause
 

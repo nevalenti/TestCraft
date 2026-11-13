@@ -12,10 +12,10 @@
             ]
         },
         {
-            "file": "/infrastructure/keycloak/e2e.Dockerfile",
+            "file": "/infrastructure/local/keycloak/e2e.Dockerfile",
             "findings": [
                 {
-                    "resource": "/infrastructure/keycloak/e2e.Dockerfile.",
+                    "resource": "/infrastructure/local/keycloak/e2e.Dockerfile.",
                     "check_ids": [
                         "CKV_DOCKER_2",
                         "CKV_DOCKER_3"

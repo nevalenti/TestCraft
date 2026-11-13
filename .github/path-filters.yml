@@ -61,8 +61,8 @@ e2e:
   - "e2e/**"
   - "packages/**"
   - "compose.e2e.yaml"
-  - "infrastructure/keycloak/**"
-  - "infrastructure/helm/testcraft/files/keycloak/**"
+  - "infrastructure/local/keycloak/**"
+  - "infrastructure/shared/keycloak/**"
   - "scripts/render-dev-realm.sh"
   - ".github/workflows/ci-e2e.yml"
 
@@ -81,11 +81,13 @@ containers:
 helm:
   - *filters
   - "infrastructure/helm/**"
+  - "infrastructure/shared/**"
   - ".github/workflows/infra-helm-chart.yml"
 
 iac:
   - *filters
   - "infrastructure/helm/**"
+  - "infrastructure/shared/**"
   - "**/*Dockerfile*"
   - ".checkov.baseline"
   - ".github/workflows/security-checkov.yml"

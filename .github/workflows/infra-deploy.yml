@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "infrastructure/helm/**"
+      - "infrastructure/shared/**"
       - ".github/workflows/infra-deploy.yml"
   workflow_dispatch:
 
@@ -33,7 +34,9 @@ jobs:
         uses: ./.github/actions/restore-production-secrets # zizmor: ignore[self-repository]
 
       - name: Deploy
-        run: flock "$HOME/.testcraft-deploy.lock" just deploy-prod
+        env:
+          TESTCRAFT_DEPLOY_ENV: production
+        run: flock "$HOME/.testcraft-deploy.lock" just prod::deploy
 
       - name: Remove production secrets
         if: always()

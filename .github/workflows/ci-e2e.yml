@@ -95,7 +95,7 @@ jobs:
           persist-credentials: false
 
       - name: Load shared e2e config
-        run: grep -v '^#' infrastructure/keycloak/e2e.env | grep -v '^$' >> "$GITHUB_ENV"
+        run: grep -v '^#' infrastructure/local/keycloak/e2e.env | grep -v '^$' >> "$GITHUB_ENV"
 
       - name: Render dev realm.json
         run: scripts/render-dev-realm.sh
@@ -107,13 +107,13 @@ jobs:
             --name keycloak \
             --network host \
             -e KC_HEALTH_ENABLED=true \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/helm/testcraft/files/keycloak/theme/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro \
-            -v ${{ github.workspace }}/infrastructure/keycloak/realm.json:/realm-source/realm.json:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/theme.properties:/opt/keycloak/themes/dracula/login/theme.properties:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/template.ftl:/opt/keycloak/themes/dracula/login/template.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/login.ftl:/opt/keycloak/themes/dracula/login/login.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/register.ftl:/opt/keycloak/themes/dracula/login/register.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/error.ftl:/opt/keycloak/themes/dracula/login/error.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/shared/keycloak/theme/login-verify-email.ftl:/opt/keycloak/themes/dracula/login/login-verify-email.ftl:ro \
+            -v ${{ github.workspace }}/infrastructure/local/keycloak/realm.json:/realm-source/realm.json:ro \
             --entrypoint /bin/sh \
             quay.io/keycloak/keycloak:26.2 \
             -c 'mkdir -p /opt/keycloak/data/import && sed "s|\"GITHUB_IDP_ENABLED\"|false|g; s|\"GOOGLE_IDP_ENABLED\"|false|g" /realm-source/realm.json > /opt/keycloak/data/import/realm.json && exec /opt/keycloak/bin/kc.sh start-dev --import-realm'

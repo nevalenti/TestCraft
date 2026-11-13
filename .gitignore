@@ -14,8 +14,8 @@
 .env.*
 .local/
 http-client.private.env.json
-infrastructure/image-versions.env
-infrastructure/keycloak/realm.json
+infrastructure/local/image-versions.env
+infrastructure/local/keycloak/realm.json
 infrastructure/nginx/tls/
 .eslintcache
 .idea/
@@ -35,6 +35,7 @@ e2e-results/
 infrastructure/gateway/tls/
 infrastructure/helm/testcraft/charts/
 infrastructure/helm/testcraft/values.secrets.yaml
+infrastructure/helm/testcraft/values.local.secrets.yaml
 node_modules/
 obj/
 packages/*/dist/

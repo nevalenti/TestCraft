@@ -56,6 +56,24 @@ ingress-nginx:
 keycloak:
   hostname: https://auth.testcraft.pro
 
+platform:
+  webBaseUrl: https://testcraft.pro
+  glitchtipBaseUrl: https://glitchtip.testcraft.pro
+  alertFromEmail: alerts@testcraft.pro
+
+gateway:
+  service:
+    type: LoadBalancer
+    nodePorts:
+      http: null
+      https: null
+
+postgres:
+  dataSubdir: ""
+
+mailpit:
+  enabled: false
+
 storage:
   postgres: 5Gi
   rabbitmq: 1Gi

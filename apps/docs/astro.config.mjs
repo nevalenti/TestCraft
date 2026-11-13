@@ -7,6 +7,9 @@ import { defineConfig } from "astro/config";
 export default defineConfig({
   site: "https://testcraft.pro",
   base: "/docs",
+  redirects: {
+    "/": "/docs/guides/getting-started/",
+  },
   integrations: [
     starlight({
       title: "TestCraft",
@@ -38,20 +41,7 @@ export default defineConfig({
           href: "https://github.com/nevalenti/TestCraft",
         },
       ],
-      sidebar: [
-        {
-          label: "Guides",
-          items: [{ autogenerate: { directory: "guides" } }],
-        },
-        {
-          label: "Reference",
-          items: [{ autogenerate: { directory: "reference" } }],
-        },
-        {
-          label: "Runbooks",
-          items: [{ autogenerate: { directory: "runbooks" } }],
-        },
-      ],
+      sidebar: [{ slug: "guides/getting-started" }, { slug: "guides/hosting" }],
     }),
     mdx(),
   ],
