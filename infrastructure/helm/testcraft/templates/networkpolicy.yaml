@@ -1,21 +1,3 @@
-{{/*
-Least-privilege ingress NetworkPolicies, one per workload, grouped by tier.
-Each pod may only be reached by the specific pods that actually call it (per
-apps/Gateway's ReverseProxy config, prometheus.yml's scrape_configs, and the
-env vars/connection strings each service is given). Egress is intentionally
-left unrestricted: several services (keycloak OAuth providers, SMTP,
-cert-manager ACME, offsite backup) need to reach the internet, and locking
-that down blind, without a cluster to verify against, risks silently
-breaking them.
-
-Caveat: kubelet liveness/readiness probes originate from the node, not from
-a pod that these policies can select as a source. Mainstream CNIs (Calico,
-Cilium, most managed K8s) don't route node-to-pod probe traffic through
-NetworkPolicy enforcement, but this is CNI-dependent — verify probes still
-pass in a non-prod environment before relying on this in production.
-*/}}
-
-{{/* ---- public edge ---- */}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -27,9 +9,8 @@ spec:
       app: gateway
   policyTypes: [Ingress]
   ingress:
-    - {} # public entrypoint (LoadBalancer) — reachable from anywhere
+    - {}
 ---
-{{/* ---- application tier: only the gateway may reach these ---- */}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -134,7 +115,7 @@ spec:
   policyTypes: [Ingress]
   ingress:
     - from:
-        - podSelector: {matchLabels: {app: gateway}} # /storage route
+        - podSelector: {matchLabels: {app: gateway}}
         - podSelector: {matchLabels: {app: api}}
         - podSelector: {matchLabels: {app: minio-backup}}
         - podSelector: {matchLabels: {app: postgres-backup}}
@@ -142,7 +123,6 @@ spec:
         - podSelector: {matchLabels: {app: offsite-backup-sync}}
       ports: [{port: 9000, protocol: TCP}, {port: 9001, protocol: TCP}]
 
-{{/* ---- data tier: only the specific consumers below may reach these ---- */}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -224,7 +204,6 @@ spec:
         - podSelector: {matchLabels: {app: rabbitmq-exporter}}
       ports: [{port: 15672, protocol: TCP}]
 
-{{/* ---- observability tier ---- */}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -353,9 +332,6 @@ spec:
         - podSelector: {matchLabels: {app: prometheus}}
       ports: [{port: 8080, protocol: TCP}]
 ---
-{{/* node-exporter uses hostNetwork; NetworkPolicy generally can't govern
-     hostNetwork pod traffic (it bypasses the pod network entirely), so this
-     is a compliance no-op kept for scanner coverage, not real enforcement. */}}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -371,7 +347,6 @@ spec:
         - podSelector: {matchLabels: {app: prometheus}}
       ports: [{port: 9100, protocol: TCP}]
 
-{{/* ---- batch jobs and workers: nothing calls these, so deny all ingress ---- */}}
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

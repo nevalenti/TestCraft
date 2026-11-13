@@ -1,4 +1,7 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Concurrency;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Features.Labels;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
@@ -6,8 +9,18 @@ using TestCraft.Domain.Enums;
 namespace TestCraft.Application.Features.TestCases;
 
 /// <summary>A test case: a named, prioritized check with ordered steps.</summary>
-public record TestCaseResponse
+public record TestCaseResponse : IVersionedResponse
 {
+    public static Task<TestCaseResponse> LoadAsync(
+        IApplicationDbContext context,
+        TestCaseId id,
+        CancellationToken cancellationToken
+    ) =>
+        context
+            .TestCases.Where(testCase => testCase.Id == id)
+            .Select(Projection)
+            .FirstAsync(cancellationToken);
+
     public static readonly Expression<Func<TestCase, TestCaseResponse>> Projection =
         testCase => new TestCaseResponse
         {

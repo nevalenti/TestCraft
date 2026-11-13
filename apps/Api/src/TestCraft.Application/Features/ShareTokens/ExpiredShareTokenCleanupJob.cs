@@ -4,7 +4,6 @@ using TestCraft.Application.Common.Interfaces;
 
 namespace TestCraft.Application.Features.ShareTokens;
 
-/// <summary>Recurring Hangfire job that deletes share tokens past their expiry.</summary>
 public sealed partial class ExpiredShareTokenCleanupJob(
     IApplicationDbContext context,
     ILogger<ExpiredShareTokenCleanupJob> logger,

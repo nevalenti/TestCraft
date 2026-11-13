@@ -15,12 +15,7 @@ public class UsersController(ISender sender) : ApiControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<AvatarUrlResponse>> GetAvatarUrl(
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetAvatarUrl.Query();
-
-        return Ok(await sender.Send(query, cancellationToken));
-    }
+    ) => Ok(await sender.Send(new GetAvatarUrl.Query(), cancellationToken));
 
     /// <summary>Uploads a new avatar for the current user.</summary>
     [HttpPut("avatar")]

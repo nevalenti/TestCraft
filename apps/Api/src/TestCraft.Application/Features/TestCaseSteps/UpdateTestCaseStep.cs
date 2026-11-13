@@ -2,9 +2,10 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 
 namespace TestCraft.Application.Features.TestCaseSteps;
 
@@ -13,7 +14,6 @@ public static class UpdateTestCaseStep
     /// <summary>Updates a test case step's order, action, and expected result.</summary>
     public sealed record Command : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -21,7 +21,6 @@ public static class UpdateTestCaseStep
         [JsonIgnore]
         public TestCaseId CaseId { get; init; }
 
-        /// <summary>The step to update.</summary>
         [JsonIgnore]
         public TestCaseStepId Id { get; init; }
 
@@ -43,8 +42,8 @@ public static class UpdateTestCaseStep
         public Validator()
         {
             RuleFor(command => command.Order).GreaterThanOrEqualTo(1);
-            RuleFor(command => command.Action).NotEmpty().MaximumLength(2000);
-            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.Action).NotEmpty().MaximumLength(FieldLengths.Text);
+            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(FieldLengths.Text);
         }
     }
 
@@ -56,14 +55,13 @@ public static class UpdateTestCaseStep
             CancellationToken cancellationToken
         )
         {
-            var step =
-                await context.TestCaseSteps.FirstOrDefaultAsync(
-                    existingStep =>
-                        existingStep.Id == request.Id
-                        && existingStep.TestCaseId == request.CaseId
-                        && existingStep.TestCase!.Suite!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var step = await context.TestCaseSteps.FirstOrNotFoundAsync(
+                existingStep =>
+                    existingStep.Id == request.Id
+                    && existingStep.TestCaseId == request.CaseId
+                    && existingStep.TestCase!.Suite!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(step, request.ExpectedVersion);
             step.Update(request.Order, request.Action, request.ExpectedResult);

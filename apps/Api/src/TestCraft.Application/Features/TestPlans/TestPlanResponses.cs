@@ -1,11 +1,24 @@
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
+using TestCraft.Application.Common.Concurrency;
+using TestCraft.Application.Common.Interfaces;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestPlans;
 
 /// <summary>A test plan: a curated, ordered list of test cases across suites.</summary>
-public record TestPlanResponse
+public record TestPlanResponse : IVersionedResponse
 {
+    public static Task<TestPlanResponse> LoadAsync(
+        IApplicationDbContext context,
+        TestPlanId id,
+        CancellationToken cancellationToken
+    ) =>
+        context
+            .TestPlans.Where(plan => plan.Id == id)
+            .Select(Projection)
+            .FirstAsync(cancellationToken);
+
     public static readonly Expression<Func<TestPlan, TestPlanResponse>> Projection =
         plan => new TestPlanResponse
         {
@@ -43,7 +56,7 @@ public record TestPlanResponse
 }
 
 /// <summary>A test plan including its ordered list of test cases.</summary>
-public record TestPlanDetailResponse
+public record TestPlanDetailResponse : IVersionedResponse
 {
     public static readonly Expression<Func<TestPlan, TestPlanDetailResponse>> Projection =
         plan => new TestPlanDetailResponse

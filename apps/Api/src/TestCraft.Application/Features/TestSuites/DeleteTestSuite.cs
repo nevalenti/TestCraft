@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -10,14 +9,12 @@ namespace TestCraft.Application.Features.TestSuites;
 
 public static class DeleteTestSuite
 {
-    /// <summary>Soft-deletes a test suite.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The suite to delete.</summary>
         public required TestSuiteId Id { get; init; }
     }
 
@@ -26,13 +23,11 @@ public static class DeleteTestSuite
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var suite =
-                await context.TestSuites.FirstOrDefaultAsync(
-                    existingSuite =>
-                        existingSuite.Id == request.Id
-                        && existingSuite.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var suite = await context.TestSuites.FirstOrNotFoundAsync(
+                existingSuite =>
+                    existingSuite.Id == request.Id && existingSuite.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             suite.Delete(timeProvider.GetStoredUtcNow());
 

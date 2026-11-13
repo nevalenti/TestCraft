@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestCaseSteps;
 
 /// <summary>One step of a test case: an action and its expected result.</summary>
-public record TestCaseStepResponse
+public record TestCaseStepResponse : IVersionedResponse
 {
     public static readonly Expression<Func<TestCaseStep, TestCaseStepResponse>> Projection =
         step => new TestCaseStepResponse

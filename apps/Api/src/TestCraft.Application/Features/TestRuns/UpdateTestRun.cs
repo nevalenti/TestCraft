@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -19,7 +19,6 @@ public static class UpdateTestRun
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to update.</summary>
         [JsonIgnore]
         public TestRunId Id { get; init; }
 
@@ -40,8 +39,8 @@ public static class UpdateTestRun
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Environment).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Environment).RequiredName();
             RuleFor(command => command.Status).IsInEnum();
         }
     }
@@ -54,12 +53,11 @@ public static class UpdateTestRun
             CancellationToken cancellationToken
         )
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(run, request.ExpectedVersion);
 

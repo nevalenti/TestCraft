@@ -143,8 +143,6 @@ public class NotificationDeliveryTests
     [Fact]
     public void MarkSent_CalledTwice_IsIdempotent()
     {
-        // A redelivered success confirmation re-entering the same terminal state is
-        // harmless and shouldn't throw - only an actual reversal (e.g. from Abandoned) should.
         var delivery = NotificationDelivery.FromFailedAttempt(
             ProjectId.New(),
             NotificationChannel.Webhook,

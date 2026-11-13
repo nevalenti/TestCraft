@@ -1,6 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
@@ -21,7 +19,6 @@ public static class GetTestResults
         CreatedAt,
     }
 
-    /// <summary>Lists the test results within a run; search matches the test case name.</summary>
     public sealed record Query
         : SearchPageQuery,
             IRequest<Paginated<TestResultResponse>>,
@@ -31,7 +28,6 @@ public static class GetTestResults
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to list results for.</summary>
         [RouteValue]
         public TestRunId RunId { get; init; }
 
@@ -51,14 +47,10 @@ public static class GetTestResults
             CancellationToken cancellationToken
         )
         {
-            var runExists = await context.TestRuns.AnyAsync(
+            await context.TestRuns.EnsureExistsAsync(
                 run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!runExists)
-            {
-                throw new NotFoundException();
-            }
 
             var query = context.LiveResults().Where(result => result.TestRunId == request.RunId);
 

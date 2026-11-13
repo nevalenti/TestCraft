@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestSuites;
 
 /// <summary>A suite grouping related test cases within a project.</summary>
-public record TestSuiteResponse
+public record TestSuiteResponse : IVersionedResponse
 {
     public static readonly Expression<Func<TestSuite, TestSuiteResponse>> Projection =
         suite => new TestSuiteResponse

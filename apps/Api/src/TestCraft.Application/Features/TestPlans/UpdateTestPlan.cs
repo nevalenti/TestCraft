@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -18,7 +18,6 @@ public static class UpdateTestPlan
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to update.</summary>
         [JsonIgnore]
         public TestPlanId Id { get; init; }
 
@@ -36,7 +35,7 @@ public static class UpdateTestPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
         }
     }
 
@@ -48,23 +47,18 @@ public static class UpdateTestPlan
             CancellationToken cancellationToken
         )
         {
-            var plan =
-                await context.TestPlans.FirstOrDefaultAsync(
-                    existingPlan =>
-                        existingPlan.Id == request.Id
-                        && existingPlan.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var plan = await context.TestPlans.FirstOrNotFoundAsync(
+                existingPlan =>
+                    existingPlan.Id == request.Id && existingPlan.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(plan, request.ExpectedVersion);
             plan.Update(request.Name, request.Description);
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return await context
-                .TestPlans.Where(updatedPlan => updatedPlan.Id == plan.Id)
-                .Select(TestPlanResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestPlanResponse.LoadAsync(context, plan.Id, cancellationToken);
         }
     }
 }

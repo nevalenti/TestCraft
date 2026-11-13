@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Options;
 using Prometheus;
 using TestCraft.Api.Errors;
@@ -37,7 +36,7 @@ public sealed class IpRateLimitMiddleware(
         context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
 }
 
-public sealed partial class PrincipalRateLimitMiddleware(
+public sealed class PrincipalRateLimitMiddleware(
     RequestDelegate next,
     IRateLimitCounter counter,
     IOptions<RateLimitOptions> options
@@ -65,14 +64,11 @@ public sealed partial class PrincipalRateLimitMiddleware(
             );
         }
 
-        if (context.User.GetUserIdOrNull() is not { } userId)
+        if (context.User.GetPrincipalKey() is not { } principal)
         {
             return true;
         }
 
-        var principal = context.User.FindFirst("api_token_id")?.Value is { } tokenId
-            ? $"token:{tokenId}"
-            : $"user:{userId}";
         if (
             !await RateLimits.AllowAsync(
                 context,
@@ -86,20 +82,19 @@ public sealed partial class PrincipalRateLimitMiddleware(
             return false;
         }
 
-        return !HttpMethods.IsPost(request.Method)
-            || !MembersPath().IsMatch(request.Path.Value ?? "")
+        return context.GetEndpoint()?.Metadata.GetMetadata<MemberInviteRateLimitAttribute>() is null
             || await RateLimits.AllowAsync(
                 context,
                 counter,
                 "member_invite",
-                $"member-invite:{userId}",
+                $"member-invite:{context.User.GetUserIdOrNull()}",
                 options.Value.MemberInvitesPerPrincipal
             );
     }
-
-    [GeneratedRegex("^/api/v1/projects/[^/]+/members/?$")]
-    private static partial Regex MembersPath();
 }
+
+[AttributeUsage(AttributeTargets.Method)]
+public sealed class MemberInviteRateLimitAttribute : Attribute;
 
 internal static class RateLimits
 {

@@ -1,6 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -8,17 +8,14 @@ namespace TestCraft.Application.Features.ShareTokens;
 
 public static class RevokeShareToken
 {
-    /// <summary>Revokes a share token, invalidating its public link.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run the share token belongs to.</summary>
         public required TestRunId RunId { get; init; }
 
-        /// <summary>The share token to revoke.</summary>
         public required ShareTokenId Id { get; init; }
     }
 
@@ -26,14 +23,13 @@ public static class RevokeShareToken
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var shareToken =
-                await context.ShareTokens.FirstOrDefaultAsync(
-                    st =>
-                        st.Id == request.Id
-                        && st.TestRunId == request.RunId
-                        && st.TestRun!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var shareToken = await context.ShareTokens.FirstOrNotFoundAsync(
+                st =>
+                    st.Id == request.Id
+                    && st.TestRunId == request.RunId
+                    && st.TestRun!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             context.ShareTokens.Remove(shareToken);
 

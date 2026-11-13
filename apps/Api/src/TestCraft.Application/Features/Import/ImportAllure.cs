@@ -17,7 +17,6 @@ public static class ImportAllure
     {
         public const string DefaultRunName = "Allure Import";
 
-        /// <summary>The project to import the run into.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -49,12 +48,11 @@ public static class ImportAllure
                 .WithMessage("Environment is required")
                 .MaximumLength(FieldLengths.Name);
             RuleFor(command => command.Name)
-                .NotEmpty()
-                .MaximumLength(FieldLengths.Name)
+                .RequiredName()
                 .When(command => command.Name is not null);
             RuleFor(command => command.Source)
                 .NotEmpty()
-                .MaximumLength(100)
+                .MaximumLength(FieldLengths.Source)
                 .When(command => command.Source is not null);
 
             RuleForEach(command => command.Results)
@@ -64,12 +62,12 @@ public static class ImportAllure
 
                     result
                         .RuleFor(item => item.StatusDetails!.Message)
-                        .MaximumLength(5000)
+                        .MaximumLength(FieldLengths.Notes)
                         .When(item => item.StatusDetails?.Message is not null);
 
                     result
                         .RuleFor(item => item.StatusDetails!.Trace)
-                        .MaximumLength(5000)
+                        .MaximumLength(FieldLengths.Notes)
                         .When(item => item.StatusDetails?.Trace is not null);
                 });
         }

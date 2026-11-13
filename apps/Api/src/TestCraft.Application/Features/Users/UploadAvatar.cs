@@ -18,7 +18,6 @@ public record AvatarUrlResponse
 
 public static class UploadAvatar
 {
-    /// <summary>Uploads a new avatar for the current user, replacing any existing one.</summary>
     public sealed record Command : IRequest<AvatarUrlResponse>
     {
         /// <summary>The original file name.</summary>
@@ -30,7 +29,6 @@ public static class UploadAvatar
         /// <summary>The file size, in bytes.</summary>
         public required long SizeBytes { get; init; }
 
-        /// <summary>The file content stream.</summary>
         public required Stream Content { get; init; }
     }
 
@@ -48,7 +46,7 @@ public static class UploadAvatar
     {
         public Validator()
         {
-            RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.FileName).RequiredName();
             RuleFor(command => command.ContentType)
                 .NotEmpty()
                 .Must(contentType => AllowedContentTypes.Contains(contentType))

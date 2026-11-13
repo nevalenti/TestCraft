@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using TestCraft.Api.Authorization;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Domain.Enums;
 
@@ -34,4 +35,22 @@ public abstract class ApiControllerBase : ControllerBase
         HttpContext.Features.GetRequiredFeature<ProjectRoleFeature>().Role;
 
     protected void SetETag(int version) => Response.Headers.ETag = $"\"{version}\"";
+
+    protected OkObjectResult OkWithETag(IVersionedResponse result)
+    {
+        SetETag(result.Version);
+
+        return Ok(result);
+    }
+
+    protected CreatedAtActionResult CreatedWithETag(
+        string actionName,
+        object routeValues,
+        IVersionedResponse result
+    )
+    {
+        SetETag(result.Version);
+
+        return CreatedAtAction(actionName, routeValues, result);
+    }
 }

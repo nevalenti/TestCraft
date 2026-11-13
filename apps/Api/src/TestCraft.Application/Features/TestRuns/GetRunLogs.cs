@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
@@ -31,7 +31,6 @@ public static class GetRunLogs
     public const int DefaultLimit = 1000;
     public const int MaxLimit = 5000;
 
-    /// <summary>Requests the newest log lines, optionally only those older than a line.</summary>
     public sealed record Query : IRequest<RunLogPageResponse>, IProjectScopedRequest
     {
         [RouteValue]
@@ -62,14 +61,10 @@ public static class GetRunLogs
             CancellationToken cancellationToken
         )
         {
-            var runExists = await context.TestRuns.AnyAsync(
+            await context.TestRuns.EnsureExistsAsync(
                 run => run.Id == request.RunId && run.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!runExists)
-            {
-                throw new NotFoundException();
-            }
 
             var logs = context.RunLogs.AsNoTracking().Where(log => log.RunId == request.RunId);
             if (request.BeforeSeq is { } beforeSeq)

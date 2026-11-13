@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -25,7 +24,7 @@ public static class CreateProject
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
         }
     }
 

@@ -11,7 +11,6 @@ public static class CreateLabel
     /// <summary>Creates a new label in a project.</summary>
     public sealed record Command : IRequest<LabelResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to create the label in.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 

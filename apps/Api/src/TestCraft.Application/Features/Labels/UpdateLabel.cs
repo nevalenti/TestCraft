@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -17,7 +17,6 @@ public static class UpdateLabel
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The label to update.</summary>
         [JsonIgnore]
         public LabelId Id { get; init; }
 
@@ -51,11 +50,10 @@ public static class UpdateLabel
             CancellationToken cancellationToken
         )
         {
-            var label =
-                await context.Labels.FirstOrDefaultAsync(
-                    label => label.Id == request.Id && label.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var label = await context.Labels.FirstOrNotFoundAsync(
+                label => label.Id == request.Id && label.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(label, request.ExpectedVersion);
             label.Name = request.Name;

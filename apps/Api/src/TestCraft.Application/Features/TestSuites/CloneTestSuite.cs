@@ -15,7 +15,6 @@ public static class CloneTestSuite
     /// <summary>Copies a suite, with its test cases, steps and labels, into the same or another project.</summary>
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
-        /// <summary>The project the suite being copied belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -49,11 +48,10 @@ public static class CloneTestSuite
         )
         {
             var targetProjectId = request.TargetProjectId ?? request.ProjectId;
-            var source =
-                await context.TestSuites.FirstOrDefaultAsync(
-                    suite => suite.Id == request.Id && suite.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var source = await context.TestSuites.FirstOrNotFoundAsync(
+                suite => suite.Id == request.Id && suite.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             var name = request.Name;
             if (name is null)

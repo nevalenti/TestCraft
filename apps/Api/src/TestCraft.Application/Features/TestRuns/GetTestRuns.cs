@@ -20,13 +20,11 @@ public static class GetTestRuns
         UpdatedAt,
     }
 
-    /// <summary>Lists the test runs in a project; search matches the run name.</summary>
     public sealed record Query
         : SearchPageQuery,
             IRequest<Paginated<TestRunResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list runs for.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 

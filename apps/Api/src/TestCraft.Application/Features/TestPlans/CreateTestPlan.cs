@@ -13,7 +13,6 @@ public static class CreateTestPlan
     /// <summary>Creates a new, empty test plan in a project.</summary>
     public sealed record Command : IRequest<TestPlanResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to create the plan in.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
@@ -28,7 +27,7 @@ public static class CreateTestPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
         }
     }
 
@@ -46,10 +45,7 @@ public static class CreateTestPlan
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return await context
-                .TestPlans.Where(createdPlan => createdPlan.Id == plan.Id)
-                .Select(TestPlanResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestPlanResponse.LoadAsync(context, plan.Id, cancellationToken);
         }
     }
 }

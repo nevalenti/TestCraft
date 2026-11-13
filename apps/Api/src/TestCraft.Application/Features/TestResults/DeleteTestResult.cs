@@ -1,7 +1,6 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Caching;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -10,17 +9,14 @@ namespace TestCraft.Application.Features.TestResults;
 
 public static class DeleteTestResult
 {
-    /// <summary>Soft-deletes a test result.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
         /// <summary>The project the run belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run the result belongs to.</summary>
         public required TestRunId RunId { get; init; }
 
-        /// <summary>The result to delete.</summary>
         public required TestResultId Id { get; init; }
     }
 
@@ -33,14 +29,13 @@ public static class DeleteTestResult
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var result =
-                await context.TestResults.FirstOrDefaultAsync(
-                    existingResult =>
-                        existingResult.Id == request.Id
-                        && existingResult.TestRunId == request.RunId
-                        && existingResult.TestRun!.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var result = await context.TestResults.FirstOrNotFoundAsync(
+                existingResult =>
+                    existingResult.Id == request.Id
+                    && existingResult.TestRunId == request.RunId
+                    && existingResult.TestRun!.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             result.Delete(timeProvider.GetStoredUtcNow());
 

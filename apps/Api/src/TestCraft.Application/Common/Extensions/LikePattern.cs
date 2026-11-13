@@ -23,7 +23,7 @@ public static class LikePattern
         }
 
         var pattern = ContainsLiteral(search.ToLowerInvariant());
-#pragma warning disable CA1304, CA1311 // Translated to SQL lower(), not run in .NET.
+#pragma warning disable CA1304, CA1311
         Expression<Func<string, bool>> matches = value =>
             EF.Functions.Like(value.ToLower(), pattern, EscapeCharacter);
 #pragma warning restore CA1304, CA1311

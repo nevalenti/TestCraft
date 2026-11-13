@@ -1,10 +1,11 @@
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Notifications;
 
 /// <summary>A webhook subscription that POSTs to a URL when project events occur.</summary>
-public record WebhookSubscriptionResponse
+public record WebhookSubscriptionResponse : IVersionedResponse
 {
     public static WebhookSubscriptionResponse FromEntity(WebhookSubscription subscription) =>
         new()
@@ -45,7 +46,7 @@ public record WebhookSubscriptionResponse
 }
 
 /// <summary>An email subscription that notifies an address when project events occur.</summary>
-public record EmailSubscriptionResponse
+public record EmailSubscriptionResponse : IVersionedResponse
 {
     public static EmailSubscriptionResponse FromEntity(EmailSubscription subscription) =>
         new()

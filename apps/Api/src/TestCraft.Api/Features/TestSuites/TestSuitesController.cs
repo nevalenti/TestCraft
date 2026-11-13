@@ -23,14 +23,7 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
         ProjectId projectId,
         [FromQuery] GetTestSuites.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Gets a test suite by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -39,16 +32,13 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
         ProjectId projectId,
         TestSuiteId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestSuiteById.Query { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestSuiteById.Query { ProjectId = projectId, Id = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates a new test suite.</summary>
     [HttpPost]
@@ -59,9 +49,7 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
@@ -82,9 +70,14 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
             await EnsureCanCopyIntoAsync(target, cancellationToken);
         }
 
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -103,21 +96,18 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
         UpdateTestSuite.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a test suite.</summary>
     [HttpDelete("{id:guid}")]
@@ -128,9 +118,10 @@ public class TestSuitesController(ISender sender, ProjectAccess projectAccess) :
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestSuite.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteTestSuite.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }

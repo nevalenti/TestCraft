@@ -2,7 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Domain.Enums;
@@ -18,7 +18,6 @@ public static class UpdateWebhookSubscription
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The subscription to update.</summary>
         [JsonIgnore]
         public WebhookSubscriptionId Id { get; init; }
 
@@ -78,13 +77,12 @@ public static class UpdateWebhookSubscription
             CancellationToken cancellationToken
         )
         {
-            var subscription =
-                await context.WebhookSubscriptions.FirstOrDefaultAsync(
-                    webhookSubscription =>
-                        webhookSubscription.Id == request.Id
-                        && webhookSubscription.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var subscription = await context.WebhookSubscriptions.FirstOrNotFoundAsync(
+                webhookSubscription =>
+                    webhookSubscription.Id == request.Id
+                    && webhookSubscription.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(subscription, request.ExpectedVersion);
             subscription.Update(

@@ -1,6 +1,4 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -9,7 +7,6 @@ namespace TestCraft.Application.Features.TestCases;
 
 public static class GetTestCaseById
 {
-    /// <summary>Requests a single test case by id.</summary>
     public sealed record Query : IRequest<TestCaseResponse>, IProjectScopedRequest
     {
         /// <summary>The project the suite belongs to.</summary>
@@ -18,7 +15,6 @@ public static class GetTestCaseById
         /// <summary>The suite the test case belongs to.</summary>
         public required TestSuiteId SuiteId { get; init; }
 
-        /// <summary>The test case to look up.</summary>
         public required TestCaseId Id { get; init; }
     }
 
@@ -36,7 +32,6 @@ public static class GetTestCaseById
                     && testCase.Suite!.ProjectId == request.ProjectId
                 )
                 .Select(TestCaseResponse.Projection)
-                .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException();
+                .FirstOrNotFoundAsync(cancellationToken);
     }
 }

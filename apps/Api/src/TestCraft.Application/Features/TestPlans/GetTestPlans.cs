@@ -16,13 +16,11 @@ public static class GetTestPlans
         CreatedAt,
     }
 
-    /// <summary>Lists the test plans in a project; search matches the plan name.</summary>
     public sealed record Query
         : SearchPageQuery,
             IRequest<Paginated<TestPlanResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list plans for.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 

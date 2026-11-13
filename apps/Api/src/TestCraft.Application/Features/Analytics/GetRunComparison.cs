@@ -45,16 +45,13 @@ public record ComparisonRow
 
 public static class GetRunComparison
 {
-    /// <summary>Requests a comparison between two runs in a project.</summary>
     public sealed record Query : IRequest<RunComparison>, IProjectScopedRequest
     {
-        /// <summary>The project both runs belong to.</summary>
         public ProjectId ProjectId { get; init; }
 
         /// <summary>The baseline run.</summary>
         public required TestRunId RunAId { get; init; }
 
-        /// <summary>The run being compared against the baseline.</summary>
         public required TestRunId RunBId { get; init; }
     }
 

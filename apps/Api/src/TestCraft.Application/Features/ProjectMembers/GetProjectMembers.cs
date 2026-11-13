@@ -7,12 +7,10 @@ namespace TestCraft.Application.Features.ProjectMembers;
 
 public static class GetProjectMembers
 {
-    /// <summary>Lists the members of a project.</summary>
     public sealed record Query
         : IRequest<IReadOnlyList<ProjectMemberResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list members for.</summary>
         public required ProjectId ProjectId { get; init; }
     }
 

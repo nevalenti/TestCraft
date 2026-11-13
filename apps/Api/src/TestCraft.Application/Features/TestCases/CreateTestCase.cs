@@ -1,6 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
@@ -21,7 +20,6 @@ public static class CreateTestCase
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The suite to create the test case in.</summary>
         [JsonIgnore]
         public TestSuiteId SuiteId { get; init; }
 
@@ -39,8 +37,8 @@ public static class CreateTestCase
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
-            RuleFor(command => command.Description).MaximumLength(2000);
+            RuleFor(command => command.Name).RequiredName();
+            RuleFor(command => command.Description).MaximumLength(FieldLengths.Text);
             RuleFor(command => command.Priority)
                 .IsInEnum()
                 .When(command => command.Priority is not null);
@@ -57,14 +55,10 @@ public static class CreateTestCase
             CancellationToken cancellationToken
         )
         {
-            var suiteExists = await context.TestSuites.AnyAsync(
+            await context.TestSuites.EnsureExistsAsync(
                 suite => suite.Id == request.SuiteId && suite.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!suiteExists)
-            {
-                throw new NotFoundException();
-            }
 
             var testCase = TestCase.Create(
                 request.SuiteId,
@@ -81,10 +75,7 @@ public static class CreateTestCase
                 cancellationToken
             );
 
-            return await context
-                .TestCases.Where(created => created.Id == testCase.Id)
-                .Select(TestCaseResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestCaseResponse.LoadAsync(context, testCase.Id, cancellationToken);
         }
     }
 }

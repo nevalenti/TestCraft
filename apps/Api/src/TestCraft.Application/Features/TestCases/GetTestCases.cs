@@ -1,6 +1,5 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Requests;
@@ -10,7 +9,6 @@ namespace TestCraft.Application.Features.TestCases;
 
 public static class GetTestCases
 {
-    /// <summary>Lists test cases within a suite; search matches the case name.</summary>
     public sealed record Query
         : TestCaseListQuery,
             IRequest<Paginated<TestCaseResponse>>,
@@ -20,7 +18,6 @@ public static class GetTestCases
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The suite to list test cases for.</summary>
         [RouteValue]
         public TestSuiteId SuiteId { get; init; }
     }
@@ -33,14 +30,10 @@ public static class GetTestCases
             CancellationToken cancellationToken
         )
         {
-            var suiteExists = await context.TestSuites.AnyAsync(
+            await context.TestSuites.EnsureExistsAsync(
                 suite => suite.Id == request.SuiteId && suite.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!suiteExists)
-            {
-                throw new NotFoundException();
-            }
 
             return await request.ToPageAsync(
                 context.TestCases.Where(testCase => testCase.SuiteId == request.SuiteId),

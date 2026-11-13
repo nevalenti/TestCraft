@@ -10,13 +10,18 @@ cert_manager_version := "v1.21.2"
 
 up: cluster (deploy "all")
 
-cluster:
+cluster: && namespace
     #!/usr/bin/env bash
     set -euo pipefail
     kind get clusters | grep -qx {{ cluster }} || kind create cluster --name {{ cluster }} --config infrastructure/local/kind.yaml
     helm --kube-context {{ context }} upgrade --install cert-manager cert-manager \
       --repo https://charts.jetstack.io --version {{ cert_manager_version }} \
       --namespace cert-manager --create-namespace --set crds.enabled=true --wait
+
+[private]
+namespace:
+    #!/usr/bin/env bash
+    set -euo pipefail
     kubectl() { command kubectl --context {{ context }} "$@"; }
     kubectl create namespace testcraft --dry-run=client -o yaml | kubectl apply -f -
     kubectl label namespace testcraft app.kubernetes.io/managed-by=Helm --overwrite
@@ -42,7 +47,7 @@ secrets:
     printf '%s\n' "${lines[@]}" > {{ secrets_file }}
     echo "generated {{ secrets_file }}"
 
-deploy *apps="all": secrets
+deploy *apps="all": secrets namespace
     #!/usr/bin/env bash
     set -euo pipefail
     apps="{{ apps }}"

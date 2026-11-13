@@ -16,13 +16,11 @@ public static class GetTestSuites
         CreatedAt,
     }
 
-    /// <summary>Lists the test suites in a project; search matches the suite name.</summary>
     public sealed record Query
         : SearchPageQuery,
             IRequest<Paginated<TestSuiteResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project to list suites for.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 

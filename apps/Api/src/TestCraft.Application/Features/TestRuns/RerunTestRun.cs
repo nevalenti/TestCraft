@@ -21,7 +21,6 @@ public static class RerunTestRun
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run to rerun.</summary>
         [JsonIgnore]
         public TestRunId Id { get; init; }
 
@@ -40,12 +39,10 @@ public static class RerunTestRun
         public Validator()
         {
             RuleFor(command => command.Name)
-                .NotEmpty()
-                .MaximumLength(FieldLengths.Name)
+                .RequiredName()
                 .When(command => command.Name is not null);
             RuleFor(command => command.Environment)
-                .NotEmpty()
-                .MaximumLength(FieldLengths.Name)
+                .RequiredName()
                 .When(command => command.Environment is not null);
         }
     }
@@ -63,12 +60,11 @@ public static class RerunTestRun
             CancellationToken cancellationToken
         )
         {
-            var source =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var source = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.Id && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             var outcomes = context
                 .TestResults.Where(result =>

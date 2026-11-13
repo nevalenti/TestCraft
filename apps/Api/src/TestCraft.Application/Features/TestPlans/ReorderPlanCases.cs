@@ -1,7 +1,6 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -26,7 +25,6 @@ public static class ReorderPlanCases
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan whose test cases are being reordered.</summary>
         [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
@@ -62,14 +60,10 @@ public static class ReorderPlanCases
     {
         public async Task Handle(Command request, CancellationToken cancellationToken)
         {
-            var planExists = await context.TestPlans.AnyAsync(
+            await context.TestPlans.EnsureExistsAsync(
                 plan => plan.Id == request.TestPlanId && plan.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!planExists)
-            {
-                throw new NotFoundException();
-            }
 
             var caseIds = request.Cases.Select(caseOrder => caseOrder.TestCaseId).ToList();
             var entries = await context

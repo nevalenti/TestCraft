@@ -9,6 +9,10 @@ public static class FluentValidationExtensions
     )
         where TId : IEquatable<Guid> => ruleBuilder.Must(id => !id.Equals(Guid.Empty));
 
+    public static IRuleBuilderOptions<T, string?> RequiredName<T>(
+        this IRuleBuilder<T, string?> ruleBuilder
+    ) => ruleBuilder.NotEmpty().MaximumLength(FieldLengths.Name);
+
     public static IRuleBuilderOptions<T, string> SingleLine<T>(
         this IRuleBuilder<T, string> ruleBuilder
     ) =>

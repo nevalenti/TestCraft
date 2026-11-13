@@ -1,6 +1,5 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -9,10 +8,8 @@ namespace TestCraft.Application.Features.Projects;
 
 public static class DeleteProject
 {
-    /// <summary>Soft-deletes a project. Owner-only.</summary>
     public sealed record Command : IRequest, IProjectScopedRequest
     {
-        /// <summary>The project to delete.</summary>
         public required ProjectId Id { get; init; }
 
         ProjectId IProjectScopedRequest.ProjectId => Id;
@@ -33,11 +30,10 @@ public static class DeleteProject
                 cancellationToken
             );
 
-            var project =
-                await context.Projects.FirstOrDefaultAsync(
-                    existingProject => existingProject.Id == request.Id,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var project = await context.Projects.FirstOrNotFoundAsync(
+                existingProject => existingProject.Id == request.Id,
+                cancellationToken
+            );
 
             project.Delete(timeProvider.GetStoredUtcNow());
 

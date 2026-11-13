@@ -1,14 +1,18 @@
 namespace TestCraft.Application.Common.Validation;
 
-/// <summary>Shared maximum lengths for short, freeform text fields, matching the database column sizes.</summary>
 public static class FieldLengths
 {
-    /// <summary>Max length for a name, environment, file name, or similar short identifying field.</summary>
     public const int Name = 255;
 
-    /// <summary>Max length for a URL.</summary>
     public const int Url = 2048;
 
-    /// <summary>Max length for a MIME content type string.</summary>
     public const int ContentType = 100;
+
+    public const int Email = 254;
+
+    public const int Text = 2000;
+
+    public const int Notes = 5000;
+
+    public const int Source = 100;
 }

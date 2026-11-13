@@ -21,7 +21,7 @@ public record ProblemResponse
 public record FieldError(string Field, string Message)
 {
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-#pragma warning disable CA1720 // The contract names this member `pointer`.
+#pragma warning disable CA1720
     public string? Pointer { get; init; }
 #pragma warning restore CA1720
 

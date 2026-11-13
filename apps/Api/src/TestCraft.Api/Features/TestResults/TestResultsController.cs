@@ -20,14 +20,17 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         TestRunId runId,
         [FromQuery] GetTestResults.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId, RunId = runId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                query with
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Gets a test result by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -37,21 +40,18 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         TestRunId runId,
         TestResultId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestResultById.Query
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            Id = id,
-        };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestResultById.Query
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                    Id = id,
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Records a test result for a run.</summary>
     [HttpPost]
@@ -64,9 +64,14 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                RunId = runId,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -91,9 +96,14 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, RunId = runId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                RunId = runId,
+            },
+            cancellationToken
+        );
 
         return CreatedAtAction(
             nameof(GetById),
@@ -118,22 +128,19 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         UpdateTestResult.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    RunId = runId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a test result.</summary>
     [HttpDelete("{id:guid}")]
@@ -145,14 +152,15 @@ public class TestResultsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestResult.Command
-        {
-            ProjectId = projectId,
-            RunId = runId,
-            Id = id,
-        };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteTestResult.Command
+            {
+                ProjectId = projectId,
+                RunId = runId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
         return NoContent();
     }

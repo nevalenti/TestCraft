@@ -13,7 +13,6 @@ public static class CreateWebhookSubscription
     /// <summary>Subscribes a webhook URL to project event notifications.</summary>
     public sealed record Command : IRequest<WebhookSubscriptionResponse>, IProjectScopedRequest
     {
-        /// <summary>The project to subscribe to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 

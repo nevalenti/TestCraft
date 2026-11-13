@@ -1,9 +1,10 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Common.Validation;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestCaseSteps;
@@ -13,11 +14,9 @@ public static class CreateTestCaseStep
     /// <summary>Adds a new step to a test case.</summary>
     public sealed record Command : IRequest<TestCaseStepResponse>, IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The test case to add the step to.</summary>
         [JsonIgnore]
         public TestCaseId CaseId { get; init; }
 
@@ -36,8 +35,8 @@ public static class CreateTestCaseStep
         public Validator()
         {
             RuleFor(command => command.Order).GreaterThanOrEqualTo(1);
-            RuleFor(command => command.Action).NotEmpty().MaximumLength(2000);
-            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(2000);
+            RuleFor(command => command.Action).NotEmpty().MaximumLength(FieldLengths.Text);
+            RuleFor(command => command.ExpectedResult).NotEmpty().MaximumLength(FieldLengths.Text);
         }
     }
 
@@ -49,15 +48,11 @@ public static class CreateTestCaseStep
             CancellationToken cancellationToken
         )
         {
-            var caseExists = await context.TestCases.AnyAsync(
+            await context.TestCases.EnsureExistsAsync(
                 testCase =>
                     testCase.Id == request.CaseId && testCase.Suite!.ProjectId == request.ProjectId,
                 cancellationToken
             );
-            if (!caseExists)
-            {
-                throw new NotFoundException();
-            }
 
             var step = TestCaseStep.Create(
                 request.CaseId,

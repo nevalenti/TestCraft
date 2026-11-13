@@ -16,7 +16,6 @@ public static class GetNotes
         UpdatedAt,
     }
 
-    /// <summary>Lists notes in a scope; search matches the title.</summary>
     public sealed record Query : SearchPageQuery, IRequest<Paginated<NoteResponse>>
     {
         [RouteValue]

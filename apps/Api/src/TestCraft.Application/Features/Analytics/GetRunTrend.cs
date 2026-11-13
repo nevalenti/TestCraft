@@ -46,13 +46,10 @@ public record TrendPoint
 
 public static class GetRunTrend
 {
-    /// <summary>Requests the run trend for a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<TrendPoint>>, IProjectScopedRequest
     {
-        /// <summary>The project to report on.</summary>
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>Maximum number of most recent runs to include.</summary>
         public int Limit { get; init; } = 20;
     }
 

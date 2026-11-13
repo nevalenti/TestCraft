@@ -4,10 +4,6 @@ using TestCraft.Domain.Exceptions;
 
 namespace TestCraft.Domain.Entities;
 
-/// <summary>
-/// A webhook or email delivery that failed on the first attempt, kept for retry with backoff.
-/// Successful first attempts are never persisted here.
-/// </summary>
 public class NotificationDelivery : AuditableEntity
 {
     private static readonly TimeSpan[] BackoffSchedule =

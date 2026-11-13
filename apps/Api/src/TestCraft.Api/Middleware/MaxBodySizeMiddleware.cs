@@ -5,10 +5,6 @@ using TestCraft.Api.Errors;
 
 namespace TestCraft.Api.Middleware;
 
-/// <summary>
-/// Applies the endpoint's <c>[RequestSizeLimit]</c> before anything reads the body, which the
-/// MVC filter alone would be too late for: the idempotency middleware hashes the body first.
-/// </summary>
 public class MaxBodySizeMiddleware(RequestDelegate next)
 {
     public const long DefaultLimit = 100_000;

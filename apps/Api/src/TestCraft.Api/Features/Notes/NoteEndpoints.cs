@@ -6,7 +6,6 @@ using TestCraft.Application.Features.Notes;
 
 namespace TestCraft.Api.Features.Notes;
 
-/// <summary>The note endpoints, shared by personal and project notes; subclasses pick the scope.</summary>
 public abstract class NoteEndpoints(ISender sender) : ApiControllerBase
 {
     protected abstract NoteScope Scope { get; }
@@ -25,17 +24,10 @@ public abstract class NoteEndpoints(ISender sender) : ApiControllerBase
     public async Task<ActionResult<NoteDetailResponse>> GetById(
         NoteId noteId,
         CancellationToken cancellationToken
-    )
-    {
-        var result = await sender.Send(
-            new GetNote.Query { Scope = Scope, Id = noteId },
-            cancellationToken
+    ) =>
+        OkWithETag(
+            await sender.Send(new GetNote.Query { Scope = Scope, Id = noteId }, cancellationToken)
         );
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
 
     /// <summary>Creates a note. Language defaults to markdown and content to empty.</summary>
     [HttpPost]
@@ -65,21 +57,18 @@ public abstract class NoteEndpoints(ISender sender) : ApiControllerBase
         UpdateNote.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            Scope = Scope,
-            Id = noteId,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    Scope = Scope,
+                    Id = noteId,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a note.</summary>
     [HttpDelete("{noteId:guid}")]

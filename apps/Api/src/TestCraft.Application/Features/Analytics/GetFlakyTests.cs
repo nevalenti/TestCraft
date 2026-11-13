@@ -32,16 +32,12 @@ public record FlakyTestStat
 
 public static class GetFlakyTests
 {
-    /// <summary>Requests flaky test detection for a project.</summary>
     public sealed record Query : IRequest<IReadOnlyList<FlakyTestStat>>, IProjectScopedRequest
     {
-        /// <summary>The project to scan.</summary>
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>Minimum executed results a test case needs to be considered.</summary>
         public int MinRuns { get; init; } = 3;
 
-        /// <summary>How many of the project's most recent runs to examine.</summary>
         public int RecentRuns { get; init; } = 200;
     }
 

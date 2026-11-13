@@ -1,6 +1,5 @@
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 
@@ -8,13 +7,11 @@ namespace TestCraft.Application.Features.Import;
 
 public static class GetImportJobById
 {
-    /// <summary>Requests the status of an import job.</summary>
     public sealed record Query : IRequest<ImportJobResponse>, IProjectScopedRequest
     {
         /// <summary>The project the import job belongs to.</summary>
         public required ProjectId ProjectId { get; init; }
 
-        /// <summary>The import job to look up.</summary>
         public required ImportJobId Id { get; init; }
     }
 
@@ -37,7 +34,6 @@ public static class GetImportJobById
                     CreatedAt = job.CreatedAt,
                     UpdatedAt = job.UpdatedAt,
                 })
-                .FirstOrDefaultAsync(cancellationToken)
-            ?? throw new NotFoundException();
+                .FirstOrNotFoundAsync(cancellationToken);
     }
 }

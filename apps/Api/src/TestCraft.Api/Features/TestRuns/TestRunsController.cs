@@ -25,14 +25,7 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         [FromQuery] GetTestRuns.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedQuery, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId }, cancellationToken));
 
     /// <summary>Gets a test run by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -41,16 +34,13 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         TestRunId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestRunById.Query { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                new GetTestRunById.Query { ProjectId = projectId, Id = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Gets the result counts (passed/failed/skipped/etc.) for a test run.</summary>
     [HttpGet("{id:guid}/summary")]
@@ -59,14 +49,13 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         TestRunId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetTestRunSummary.Query { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetTestRunSummary.Query { ProjectId = projectId, Id = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates a new test run.</summary>
     [HttpPost]
@@ -78,13 +67,9 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
+        return CreatedWithETag(nameof(GetById), new { projectId, id = result.Id }, result);
     }
 
     /// <summary>
@@ -101,13 +86,16 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, Id = id };
+        var result = await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                Id = id,
+            },
+            cancellationToken
+        );
 
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return CreatedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
+        return CreatedWithETag(nameof(GetById), new { projectId, id = result.Id }, result);
     }
 
     /// <summary>Updates a test run's name, environment, and status.</summary>
@@ -120,21 +108,18 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         UpdateTestRun.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>
     /// Gets up to <c>limit</c> of the newest log lines, oldest first. To page back, pass the
@@ -147,12 +132,7 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         TestRunId id,
         [FromQuery] GetRunLogs.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedQuery = query with { ProjectId = projectId, RunId = id };
-
-        return Ok(await sender.Send(scopedQuery, cancellationToken));
-    }
+    ) => Ok(await sender.Send(query with { ProjectId = projectId, RunId = id }, cancellationToken));
 
     /// <summary>Appends log lines to the live feed for a test run.</summary>
     [HttpPost("{id:guid}/logs")]
@@ -166,9 +146,7 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId, RunId = id };
-
-        await sender.Send(scopedCommand, cancellationToken);
+        await sender.Send(command with { ProjectId = projectId, RunId = id }, cancellationToken);
 
         return NoContent();
     }
@@ -189,6 +167,7 @@ public class TestRunsController(ISender sender) : ApiControllerBase
     )
     {
         var expiresAt = SignedInSession.ExpiresAt(User);
+
         await sender.Send(
             new GetTestRunById.Query { ProjectId = projectId, Id = id },
             cancellationToken
@@ -212,9 +191,11 @@ public class TestRunsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteTestRun.Command { ProjectId = projectId, Id = id };
+        await sender.Send(
+            new DeleteTestRun.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
-        await sender.Send(command, cancellationToken);
         await cacheStore.EvictPublicSharesAsync(cancellationToken);
 
         return NoContent();

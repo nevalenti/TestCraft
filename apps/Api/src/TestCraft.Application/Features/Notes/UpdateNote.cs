@@ -1,9 +1,7 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 
@@ -51,11 +49,9 @@ public static class UpdateNote
     {
         public async Task<NoteResponse> Handle(Command request, CancellationToken cancellationToken)
         {
-            var note =
-                await request
-                    .Scope.Notes(context)
-                    .FirstOrDefaultAsync(note => note.Id == request.Id, cancellationToken)
-                ?? throw new NotFoundException();
+            var note = await request
+                .Scope.Notes(context)
+                .FirstOrNotFoundAsync(note => note.Id == request.Id, cancellationToken);
 
             VersionCheck.Ensure(note, request.ExpectedVersion);
 

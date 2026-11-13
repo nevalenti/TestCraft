@@ -15,6 +15,8 @@ namespace TestCraft.Infrastructure.Auth;
 public static class ApiTokenAuthenticationDefaults
 {
     public const string AuthenticationScheme = "ApiToken";
+
+    public const string TokenIdClaim = "api_token_id";
 }
 
 public class ApiTokenAuthenticationHandler(
@@ -76,7 +78,7 @@ public class ApiTokenAuthenticationHandler(
         {
             new Claim(ClaimTypes.NameIdentifier, apiToken.CreatedById.ToString()),
             new Claim("name", apiToken.Name),
-            new Claim("api_token_id", apiToken.Id.ToString()),
+            new Claim(ApiTokenAuthenticationDefaults.TokenIdClaim, apiToken.Id.ToString()),
         };
         claims.AddRange(apiToken.Scopes.Select(scope => new Claim("scope", scope.Name())));
         var identity = new ClaimsIdentity(

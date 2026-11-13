@@ -9,17 +9,14 @@ namespace TestCraft.Application.Features.TestCaseSteps;
 
 public static class GetTestCaseSteps
 {
-    /// <summary>Lists the steps of a test case, in order.</summary>
     public sealed record Query
         : PageQuery,
             IRequest<Paginated<TestCaseStepResponse>>,
             IProjectScopedRequest
     {
-        /// <summary>The project the test case belongs to.</summary>
         [RouteValue]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The test case to list steps for.</summary>
         [RouteValue]
         public TestCaseId CaseId { get; init; }
     }

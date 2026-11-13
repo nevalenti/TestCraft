@@ -1,7 +1,5 @@
 using FluentValidation;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -41,17 +39,13 @@ public record AttachmentDownloadUrlResponse
 
 public static class UploadAttachment
 {
-    /// <summary>Uploads a file and attaches it to a test result.</summary>
     public sealed record Command : IRequest<AttachmentResponse>, IProjectScopedRequest
     {
-        /// <summary>The project the test result belongs to.</summary>
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run the test result belongs to.</summary>
         public required TestRunId RunId { get; init; }
 
-        /// <summary>The test result to attach the file to.</summary>
         public required TestResultId ResultId { get; init; }
 
         /// <summary>The original file name.</summary>
@@ -63,7 +57,6 @@ public static class UploadAttachment
         /// <summary>The file size, in bytes.</summary>
         public required long SizeBytes { get; init; }
 
-        /// <summary>The file content stream.</summary>
         public required Stream Content { get; init; }
     }
 
@@ -82,7 +75,7 @@ public static class UploadAttachment
 
         public Validator()
         {
-            RuleFor(command => command.FileName).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.FileName).RequiredName();
             RuleFor(command => command.ContentType)
                 .NotEmpty()
                 .MaximumLength(FieldLengths.ContentType)
@@ -108,16 +101,14 @@ public static class UploadAttachment
             CancellationToken cancellationToken
         )
         {
-            var run =
-                await context
-                    .TestResults.Where(testResult =>
-                        testResult.Id == request.ResultId
-                        && testResult.TestRunId == request.RunId
-                        && testResult.TestRun!.ProjectId == request.ProjectId
-                    )
-                    .Select(testResult => testResult.TestRun)
-                    .FirstOrDefaultAsync(cancellationToken)
-                ?? throw new NotFoundException();
+            var run = await context
+                .TestResults.Where(testResult =>
+                    testResult.Id == request.ResultId
+                    && testResult.TestRunId == request.RunId
+                    && testResult.TestRun!.ProjectId == request.ProjectId
+                )
+                .Select(testResult => testResult.TestRun)
+                .FirstOrNotFoundAsync(cancellationToken);
 
             run.EnsureCanAddResult();
 

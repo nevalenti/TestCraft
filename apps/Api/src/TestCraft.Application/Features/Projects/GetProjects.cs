@@ -14,7 +14,6 @@ public static class GetProjects
         CreatedAt,
     }
 
-    /// <summary>Lists the projects the current user owns or is a member of; search matches the name.</summary>
     public sealed record Query : SearchPageQuery, IRequest<Paginated<ProjectResponse>>
     {
         public SortField SortBy { get; init; } = SortField.CreatedAt;

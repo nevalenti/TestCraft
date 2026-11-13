@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -20,7 +20,6 @@ public static class CreateRunFromPlan
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to create the run from.</summary>
         [JsonIgnore]
         public TestPlanId TestPlanId { get; init; }
 
@@ -35,7 +34,7 @@ public static class CreateRunFromPlan
     {
         public Validator()
         {
-            RuleFor(command => command.Name).NotEmpty().MaximumLength(FieldLengths.Name);
+            RuleFor(command => command.Name).RequiredName();
             RuleFor(command => command.Environment).NotEmpty().MaximumLength(100);
         }
     }
@@ -51,13 +50,12 @@ public static class CreateRunFromPlan
             CancellationToken cancellationToken
         )
         {
-            var plan =
-                await context.TestPlans.FirstOrDefaultAsync(
-                    existingPlan =>
-                        existingPlan.Id == request.TestPlanId
-                        && existingPlan.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var plan = await context.TestPlans.FirstOrNotFoundAsync(
+                existingPlan =>
+                    existingPlan.Id == request.TestPlanId
+                    && existingPlan.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             var cases = await context
                 .TestPlanCases.Where(tpc => tpc.TestPlanId == plan.Id && tpc.TestCase != null)

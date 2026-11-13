@@ -3,7 +3,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using TestCraft.Application.Common.Caching;
 using TestCraft.Application.Common.Concurrency;
-using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
@@ -21,11 +20,9 @@ public static class UpdateTestResult
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The run the result belongs to.</summary>
         [JsonIgnore]
         public TestRunId RunId { get; init; }
 
-        /// <summary>The result to update.</summary>
         [JsonIgnore]
         public TestResultId Id { get; init; }
 
@@ -50,7 +47,7 @@ public static class UpdateTestResult
         public Validator()
         {
             RuleFor(command => command.Status).IsInEnum();
-            RuleFor(command => command.Notes).MaximumLength(5000);
+            RuleFor(command => command.Notes).MaximumLength(FieldLengths.Notes);
             RuleFor(command => command.DefectUrl).HttpUrl();
         }
     }
@@ -68,23 +65,19 @@ public static class UpdateTestResult
             CancellationToken cancellationToken
         )
         {
-            var run =
-                await context.TestRuns.FirstOrDefaultAsync(
-                    existingRun =>
-                        existingRun.Id == request.RunId
-                        && existingRun.ProjectId == request.ProjectId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var run = await context.TestRuns.FirstOrNotFoundAsync(
+                existingRun =>
+                    existingRun.Id == request.RunId && existingRun.ProjectId == request.ProjectId,
+                cancellationToken
+            );
 
             run.EnsureCanAddResult();
 
-            var result =
-                await context.TestResults.FirstOrDefaultAsync(
-                    existingResult =>
-                        existingResult.Id == request.Id
-                        && existingResult.TestRunId == request.RunId,
-                    cancellationToken
-                ) ?? throw new NotFoundException();
+            var result = await context.TestResults.FirstOrNotFoundAsync(
+                existingResult =>
+                    existingResult.Id == request.Id && existingResult.TestRunId == request.RunId,
+                cancellationToken
+            );
 
             VersionCheck.Ensure(result, request.ExpectedVersion);
             result.Update(
@@ -99,11 +92,7 @@ public static class UpdateTestResult
             await context.SaveChangesAsync(cancellationToken);
             await cache.RemoveAsync(CacheKeys.TestRunResponse(request.RunId), cancellationToken);
 
-            var summary = await context
-                .LiveResults()
-                .Where(updatedResult => updatedResult.Id == result.Id)
-                .Select(TestResultResponse.Projection)
-                .FirstAsync(cancellationToken);
+            var summary = await TestResultResponse.LoadAsync(context, result.Id, cancellationToken);
 
             await notifier.ResultUpdatedAsync(request.RunId, summary, cancellationToken);
             await notifier.DashboardChangedAsync(

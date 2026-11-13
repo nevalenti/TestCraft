@@ -1,11 +1,12 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Features.Projects;
 
 /// <summary>A project that groups suites, plans, and runs.</summary>
-public record ProjectResponse
+public record ProjectResponse : IVersionedResponse
 {
     /// <summary>The project's identifier.</summary>
     public required ProjectId Id { get; init; }

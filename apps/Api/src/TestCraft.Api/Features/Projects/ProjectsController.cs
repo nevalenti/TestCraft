@@ -19,12 +19,7 @@ public class ProjectsController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<Paginated<ProjectResponse>>> GetAll(
         [FromQuery] GetProjects.Query query,
         CancellationToken cancellationToken
-    )
-    {
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) => Ok(await sender.Send(query, cancellationToken));
 
     /// <summary>Gets a project by ID.</summary>
     [HttpGet("{id:guid}")]
@@ -32,16 +27,7 @@ public class ProjectsController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<ProjectResponse>> GetById(
         ProjectId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetProjectById.Query { Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) => OkWithETag(await sender.Send(new GetProjectById.Query { Id = id }, cancellationToken));
 
     /// <summary>Creates a new project.</summary>
     [HttpPost]
@@ -65,16 +51,17 @@ public class ProjectsController(ISender sender) : ApiControllerBase
         UpdateProject.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with { Id = id, ExpectedVersion = ExpectedVersion(ifMatch) };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>
     /// Issues a single-use ticket for the dashboard WebSocket, <c>/ws/dashboard?ticket=</c>;
@@ -105,9 +92,8 @@ public class ProjectsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteProject.Command { Id = id };
+        await sender.Send(new DeleteProject.Command { Id = id }, cancellationToken);
 
-        await sender.Send(command, cancellationToken);
         await cacheStore.EvictPublicSharesAsync(cancellationToken);
 
         return NoContent();

@@ -17,14 +17,13 @@ public class ImportController(ISender sender) : ApiControllerBase
         ProjectId projectId,
         ImportJobId id,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetImportJobById.Query { ProjectId = projectId, Id = id };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetImportJobById.Query { ProjectId = projectId, Id = id },
+                cancellationToken
+            )
+        );
 
     /// <summary>Queues an asynchronous import of JUnit XML test results.</summary>
     [HttpPost("junit")]
@@ -37,9 +36,7 @@ public class ImportController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return AcceptedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }
@@ -55,9 +52,7 @@ public class ImportController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return AcceptedAtAction(nameof(GetById), new { projectId, id = result.Id }, result);
     }

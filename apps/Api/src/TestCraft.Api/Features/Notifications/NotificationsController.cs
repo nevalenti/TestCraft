@@ -20,14 +20,13 @@ public class NotificationsController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<IReadOnlyList<WebhookSubscriptionResponse>>> GetWebhooks(
         ProjectId projectId,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetWebhookSubscriptions.Query { ProjectId = projectId };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetWebhookSubscriptions.Query { ProjectId = projectId },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates a webhook subscription.</summary>
     [HttpPost("webhooks")]
@@ -38,9 +37,7 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -55,21 +52,18 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         UpdateWebhookSubscription.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes a webhook subscription.</summary>
     [HttpDelete("webhooks/{id:guid}")]
@@ -80,9 +74,10 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteWebhookSubscription.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteWebhookSubscription.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }
@@ -96,14 +91,13 @@ public class NotificationsController(ISender sender) : ApiControllerBase
     public async Task<ActionResult<IReadOnlyList<EmailSubscriptionResponse>>> GetEmails(
         ProjectId projectId,
         CancellationToken cancellationToken
-    )
-    {
-        var query = new GetEmailSubscriptions.Query { ProjectId = projectId };
-
-        var result = await sender.Send(query, cancellationToken);
-
-        return Ok(result);
-    }
+    ) =>
+        Ok(
+            await sender.Send(
+                new GetEmailSubscriptions.Query { ProjectId = projectId },
+                cancellationToken
+            )
+        );
 
     /// <summary>Creates an email subscription.</summary>
     [HttpPost("emails")]
@@ -114,9 +108,7 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var scopedCommand = command with { ProjectId = projectId };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
+        var result = await sender.Send(command with { ProjectId = projectId }, cancellationToken);
 
         return StatusCode(StatusCodes.Status201Created, result);
     }
@@ -131,21 +123,18 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         UpdateEmailSubscription.Command command,
         [FromHeader(Name = "If-Match"), BindRequired] string ifMatch,
         CancellationToken cancellationToken
-    )
-    {
-        var scopedCommand = command with
-        {
-            ProjectId = projectId,
-            Id = id,
-            ExpectedVersion = ExpectedVersion(ifMatch),
-        };
-
-        var result = await sender.Send(scopedCommand, cancellationToken);
-
-        SetETag(result.Version);
-
-        return Ok(result);
-    }
+    ) =>
+        OkWithETag(
+            await sender.Send(
+                command with
+                {
+                    ProjectId = projectId,
+                    Id = id,
+                    ExpectedVersion = ExpectedVersion(ifMatch),
+                },
+                cancellationToken
+            )
+        );
 
     /// <summary>Deletes an email subscription.</summary>
     [HttpDelete("emails/{id:guid}")]
@@ -156,9 +145,10 @@ public class NotificationsController(ISender sender) : ApiControllerBase
         CancellationToken cancellationToken
     )
     {
-        var command = new DeleteEmailSubscription.Command { ProjectId = projectId, Id = id };
-
-        await sender.Send(command, cancellationToken);
+        await sender.Send(
+            new DeleteEmailSubscription.Command { ProjectId = projectId, Id = id },
+            cancellationToken
+        );
 
         return NoContent();
     }

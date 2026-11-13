@@ -1,10 +1,11 @@
 using System.Linq.Expressions;
+using TestCraft.Application.Common.Concurrency;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.Notes;
 
 /// <summary>A note without its content, as lists return it.</summary>
-public record NoteResponse
+public record NoteResponse : IVersionedResponse
 {
     public static readonly Expression<Func<Note, NoteResponse>> Projection =
         note => new NoteResponse

@@ -4,7 +4,6 @@ using TestCraft.Domain.Enums;
 
 namespace TestCraft.Application.Common.Extensions;
 
-/// <summary>Result counts per status, with the totals and pass rate derived from them.</summary>
 public readonly record struct StatusCounts(
     int Passed,
     int Failed,
@@ -17,7 +16,6 @@ public readonly record struct StatusCounts(
 
     public int Total => Executed + Untested;
 
-    /// <summary>Percentage of executed results that passed; <c>null</c> when none executed.</summary>
     public double? PassRate => Executed == 0 ? null : Math.Round(Passed * 100.0 / Executed, 1);
 
     public static StatusCounts From(IReadOnlyDictionary<TestResultStatus, int> counts) =>

@@ -1,7 +1,7 @@
 using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using TestCraft.Application.Common.Exceptions;
+using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
@@ -18,7 +18,6 @@ public static class CloneTestPlan
         [JsonIgnore]
         public ProjectId ProjectId { get; init; }
 
-        /// <summary>The plan to copy.</summary>
         [JsonIgnore]
         public TestPlanId Id { get; init; }
 
@@ -42,14 +41,12 @@ public static class CloneTestPlan
             CancellationToken cancellationToken
         )
         {
-            var source =
-                await context
-                    .TestPlans.Include(plan => plan.TestPlanCases)
-                    .FirstOrDefaultAsync(
-                        plan => plan.Id == request.Id && plan.ProjectId == request.ProjectId,
-                        cancellationToken
-                    )
-                ?? throw new NotFoundException();
+            var source = await context
+                .TestPlans.Include(plan => plan.TestPlanCases)
+                .FirstOrNotFoundAsync(
+                    plan => plan.Id == request.Id && plan.ProjectId == request.ProjectId,
+                    cancellationToken
+                );
 
             var name = request.Name;
             if (name is null)
@@ -72,10 +69,7 @@ public static class CloneTestPlan
 
             await context.SaveChangesAsync(cancellationToken);
 
-            return await context
-                .TestPlans.Where(created => created.Id == copy.Id)
-                .Select(TestPlanResponse.Projection)
-                .FirstAsync(cancellationToken);
+            return await TestPlanResponse.LoadAsync(context, copy.Id, cancellationToken);
         }
     }
 }
