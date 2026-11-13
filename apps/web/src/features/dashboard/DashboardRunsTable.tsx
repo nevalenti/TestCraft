@@ -34,7 +34,7 @@ export const DashboardRunsTable = ({
 
   return (
     <>
-      <div className="overflow-x-auto">
+      <div className="flex-1 overflow-x-auto">
         <table className="table table-stack table-sm">
           <thead>
             <tr className="border-b border-border text-xs font-semibold tracking-wider text-fg-muted uppercase">

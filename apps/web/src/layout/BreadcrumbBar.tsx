@@ -1,8 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { cn } from "@/lib/cn";
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
+
+const BreadcrumbSkeleton = () => (
+  <>
+    <span className="sr-only">Loading…</span>
+    <Skeleton className="h-3.5 w-24" />
+  </>
+);
 
 export const BreadcrumbBar = () => {
   const breadcrumbs = useBreadcrumbsStore((store) => store.items);
@@ -28,7 +36,7 @@ export const BreadcrumbBar = () => {
 
             return (
               <li
-                key={item.href ?? item.label}
+                key={item.href ?? item.label ?? index}
                 className="flex shrink-0 items-center gap-1"
               >
                 {index > 0 && (
@@ -46,7 +54,7 @@ export const BreadcrumbBar = () => {
                     title={item.label}
                     className="flex max-w-28 items-center truncate text-sm font-medium text-fg-secondary transition-colors hover:text-base-content sm:max-w-48"
                   >
-                    {item.label}
+                    {item.label ?? <BreadcrumbSkeleton />}
                   </Link>
                 ) : (
                   <span
@@ -57,7 +65,7 @@ export const BreadcrumbBar = () => {
                       isLast ? "text-base-content" : "text-fg-secondary",
                     )}
                   >
-                    {item.label}
+                    {item.label ?? <BreadcrumbSkeleton />}
                   </span>
                 )}
               </li>

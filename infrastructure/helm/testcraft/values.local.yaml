@@ -1,5 +1,17 @@
 keycloak:
   hostname: https://auth.testcraft.localhost
+  extraUsers:
+    - id: 00000000-0000-0000-0000-000000000001
+      username: e2e@testcraft.pro
+      email: e2e@testcraft.pro
+      emailVerified: true
+      enabled: true
+      firstName: E2E
+      lastName: User
+      credentials:
+        - type: password
+          value: e2e-test-password
+          temporary: false
 
 platform:
   webBaseUrl: https://testcraft.localhost
@@ -24,6 +36,9 @@ postgres:
   dataSubdir: pgdata
 
 mailpit:
+  enabled: true
+
+seed:
   enabled: true
 
 thirdPartyImages:

@@ -89,12 +89,12 @@ export const CasePage = () => {
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}/suites` },
+    { label: project?.name, href: `/projects/${projectId}/suites` },
     {
-      label: suite?.name ?? "…",
+      label: suite?.name,
       href: `/projects/${projectId}/suites/${suiteId}`,
     },
-    { label: testCase?.name ?? "…" },
+    { label: testCase?.name },
   ]);
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
@@ -130,7 +130,7 @@ export const CasePage = () => {
   return (
     <div className="flex min-h-0 w-full flex-col">
       <PageHeader
-        title={testCase?.name ?? "…"}
+        title={testCase?.name}
         badge={testCase && <PriorityBadge priority={testCase.priority} />}
         description={testCase?.description}
         backTo={{

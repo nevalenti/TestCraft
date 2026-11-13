@@ -77,6 +77,10 @@ beforeEach(() => {
 describe("AnalyticsSuiteTab", () => {
   describe("given no run selected — prompts to pick one", () => {
     it("shows the no-run-selected empty state", async () => {
+      vi.mocked(testRunQueries.all).mockReturnValue({
+        queryKey: ["no-runs"],
+        queryFn: vi.fn().mockResolvedValue({ items: [] }),
+      } as never);
       renderWithClient();
       expect(await screen.findByText("No run selected")).toBeInTheDocument();
     });
@@ -130,5 +134,19 @@ describe("AnalyticsSuiteTab", () => {
         container.querySelector(".recharts-responsive-container"),
       ).toBeInTheDocument();
     });
+  });
+});
+
+describe("AnalyticsSuiteTab while runs load", () => {
+  it("shows the skeleton instead of the no-run-selected state", async () => {
+    vi.mocked(testRunQueries.all).mockReturnValue({
+      queryKey: ["pending-runs"],
+      queryFn: () => new Promise(() => {}),
+    } as never);
+    renderWithClient();
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading suite breakdown",
+    );
+    expect(screen.queryByText("No run selected")).not.toBeInTheDocument();
   });
 });

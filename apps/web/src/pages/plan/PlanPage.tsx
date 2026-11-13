@@ -58,9 +58,9 @@ export const PlanPage = () => {
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
+    { label: project?.name, href: `/projects/${projectId}` },
     { label: "Test Plans", href: `/projects/${projectId}/plans` },
-    { label: plan?.name ?? "…" },
+    { label: plan?.name },
   ]);
 
   const sortedCases = [...(cases ?? [])].toSorted(
@@ -89,7 +89,7 @@ export const PlanPage = () => {
   return (
     <div className="flex min-h-0 w-full flex-col">
       <PageHeader
-        title={plan?.name ?? "…"}
+        title={plan?.name}
         description={plan?.description}
         meta={
           <span>

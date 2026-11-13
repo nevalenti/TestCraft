@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DEFAULT_NOTE_TITLE } from "@/features/notes/constants";
 import { NoteEditor } from "@/features/notes/editor/NoteEditor";
+import { NoteEditorSkeleton } from "@/features/notes/editor/NoteEditorSkeleton";
 import {
   useDeletePersonalNote,
   useIsNoteSaveSettled,
@@ -14,6 +15,7 @@ import {
 } from "@/features/notes/hooks";
 import { NoteBackLink } from "@/features/notes/NoteBackLink";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 
 const routeApi = getRouteApi("/_app/notes/$noteId");
 
@@ -35,13 +37,15 @@ export const NotePage = () => {
     noteId,
   );
 
-  useBreadcrumbs([
-    { label: "Notes", href: "/notes" },
-    { label: note?.title ?? "…" },
-  ]);
+  const showSkeleton = useIsLoadingVisible(
+    isPending || !note || !isSaveSettled,
+  );
+
+  useBreadcrumbs([{ label: "Notes", href: "/notes" }, { label: note?.title }]);
 
   if (isError) return <ErrorState error={error} onRetry={refetch} />;
-  if (isPending || !note || !isSaveSettled) return null;
+  if (isPending || !note || !isSaveSettled)
+    return showSkeleton ? <NoteEditorSkeleton /> : null;
 
   const handleDelete = () => {
     deleteNote.mutate(noteId, {

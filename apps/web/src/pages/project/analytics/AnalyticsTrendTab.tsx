@@ -5,16 +5,25 @@ import { useMemo } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
+import { TrendSkeleton } from "@/features/analytics/AnalyticsSkeletons";
 import { useRunTrend } from "@/features/analytics/hooks";
 import { type TrendEntry } from "@/features/analytics/trendHelpers";
 import { TrendSection } from "@/features/analytics/TrendSection";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 import { formatDate, truncate } from "@/lib/format";
 
 const routeApi = getRouteApi("/_app/projects/$projectId/analytics/trend");
 
 export const AnalyticsTrendTab = () => {
   const { projectId } = routeApi.useParams();
-  const { data: trend, isError, error, refetch } = useRunTrend(projectId, 20);
+  const {
+    data: trend,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useRunTrend(projectId, 20);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const groups = useMemo(() => {
     const raw = [...(trend ?? [])].toReversed();
@@ -49,6 +58,8 @@ export const AnalyticsTrendTab = () => {
       index,
     }));
   }, [trend]);
+
+  if (isPending) return showSkeleton ? <TrendSkeleton /> : null;
 
   if (isError)
     return (

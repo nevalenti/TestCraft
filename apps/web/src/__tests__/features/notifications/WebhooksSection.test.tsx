@@ -177,3 +177,19 @@ describe("WebhooksSection", () => {
     });
   });
 });
+
+describe("WebhooksSection while loading", () => {
+  it("shows the skeleton instead of the empty state", async () => {
+    vi.mocked(useWebhooks).mockReturnValue({
+      data: undefined,
+      isPending: true,
+      isError: false,
+      error: null,
+    } as never);
+    render(<WebhooksSection projectId="p1" />);
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading webhooks",
+    );
+    expect(screen.queryByText("No webhooks yet")).not.toBeInTheDocument();
+  });
+});
