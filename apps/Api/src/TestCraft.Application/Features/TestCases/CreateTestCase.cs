@@ -31,6 +31,9 @@ public static class CreateTestCase
 
         /// <summary>The test case's priority. Defaults to Medium if omitted.</summary>
         public TestCasePriority? Priority { get; init; }
+
+        /// <summary>ID of the section to create the test case in. Null puts it at the top level of the suite.</summary>
+        public TestSectionId? SectionId { get; init; }
     }
 
     public sealed class Validator : AbstractValidator<Command>
@@ -53,29 +56,49 @@ public static class CreateTestCase
         public async Task<TestCaseResponse> Handle(
             Command request,
             CancellationToken cancellationToken
-        )
-        {
-            await context.TestSuites.EnsureExistsAsync(
-                suite => suite.Id == request.SuiteId && suite.ProjectId == request.ProjectId,
+        ) =>
+            await context.ExecuteInTransactionAsync(
+                async token =>
+                {
+                    await context.TestSuites.EnsureExistsAsync(
+                        suite =>
+                            suite.Id == request.SuiteId && suite.ProjectId == request.ProjectId,
+                        token
+                    );
+                    await context.LockSuiteAsync(request.SuiteId, token);
+                    if (request.SectionId is { } sectionId)
+                    {
+                        await context.TestSections.EnsureExistsAsync(
+                            section =>
+                                section.Id == sectionId && section.SuiteId == request.SuiteId,
+                            token
+                        );
+                    }
+
+                    var testCase = TestCase.Create(
+                        request.SuiteId,
+                        request.Name,
+                        request.Description,
+                        request.Priority ?? TestCasePriority.Medium,
+                        request.SectionId,
+                        await context.NextCasePositionAsync(
+                            request.SuiteId,
+                            request.SectionId,
+                            token
+                        )
+                    );
+
+                    context.TestCases.Add(testCase);
+
+                    await context.SaveOrConflictAsync(
+                        dbExceptionClassifier,
+                        CatalogConflicts.CaseNameTaken(),
+                        token
+                    );
+
+                    return await TestCaseResponse.LoadAsync(context, testCase.Id, token);
+                },
                 cancellationToken
             );
-
-            var testCase = TestCase.Create(
-                request.SuiteId,
-                request.Name,
-                request.Description,
-                request.Priority ?? TestCasePriority.Medium
-            );
-
-            context.TestCases.Add(testCase);
-
-            await context.SaveOrConflictAsync(
-                dbExceptionClassifier,
-                CatalogConflicts.CaseNameTaken(),
-                cancellationToken
-            );
-
-            return await TestCaseResponse.LoadAsync(context, testCase.Id, cancellationToken);
-        }
     }
 }

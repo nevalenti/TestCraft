@@ -24,7 +24,7 @@ public static class CloneTestCase
         [JsonIgnore]
         public TestCaseId Id { get; init; }
 
-        /// <summary>The suite to copy into. Null copies into the source suite.</summary>
+        /// <summary>The suite to copy into. Null copies into the source suite and section; another suite gets the copy at its top level.</summary>
         public TestSuiteId? TargetSuiteId { get; init; }
 
         /// <summary>The copy's name. Null keeps the source name, adding "(copy)" if it is taken.</summary>
@@ -76,7 +76,15 @@ public static class CloneTestCase
                 name = CopyName.FirstFree(source.Name, taken.ToHashSet());
             }
 
-            var copy = TestCase.Create(targetSuiteId, name, source.Description, source.Priority);
+            var sectionId = targetSuiteId == source.SuiteId ? source.SectionId : null;
+            var copy = TestCase.Create(
+                targetSuiteId,
+                name,
+                source.Description,
+                source.Priority,
+                sectionId,
+                await context.NextCasePositionAsync(targetSuiteId, sectionId, cancellationToken)
+            );
             context.TestCases.Add(copy);
             foreach (var step in source.Steps.OrderBy(step => step.Order))
             {

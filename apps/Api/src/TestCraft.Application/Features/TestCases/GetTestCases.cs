@@ -1,9 +1,11 @@
 using MediatR;
+using TestCraft.Application.Common.Exceptions;
 using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Pagination;
 using TestCraft.Application.Common.Requests;
 using TestCraft.Application.Common.Security;
+using TestCraft.Application.Features.TestSections;
 
 namespace TestCraft.Application.Features.TestCases;
 
@@ -20,6 +22,12 @@ public static class GetTestCases
 
         [RouteValue]
         public TestSuiteId SuiteId { get; init; }
+
+        /// <summary>Only test cases in this section.</summary>
+        public TestSectionId? SectionId { get; init; }
+
+        /// <summary>Whether to include test cases in subsections. With no section_id, false returns only the cases at the top level of the suite.</summary>
+        public bool IncludeDescendants { get; init; } = true;
     }
 
     public sealed class Handler(IApplicationDbContext context)
@@ -35,10 +43,28 @@ public static class GetTestCases
                 cancellationToken
             );
 
-            return await request.ToPageAsync(
-                context.TestCases.Where(testCase => testCase.SuiteId == request.SuiteId),
-                cancellationToken
-            );
+            var cases = context.TestCases.Where(testCase => testCase.SuiteId == request.SuiteId);
+            if (request.SectionId is { } sectionId)
+            {
+                var tree = await context.LoadSectionTreeAsync(request.SuiteId, cancellationToken);
+                if (tree.Find(sectionId) is null)
+                {
+                    throw new NotFoundException();
+                }
+
+                IReadOnlyList<TestSectionId> sectionIds = request.IncludeDescendants
+                    ? tree.Subtree(sectionId)
+                    : [sectionId];
+                cases = cases.Where(testCase =>
+                    testCase.SectionId != null && sectionIds.Contains(testCase.SectionId.Value)
+                );
+            }
+            else if (!request.IncludeDescendants)
+            {
+                cases = cases.Where(testCase => testCase.SectionId == null);
+            }
+
+            return await request.ToPageAsync(cases, cancellationToken);
         }
     }
 }

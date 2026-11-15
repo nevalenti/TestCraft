@@ -26,11 +26,20 @@ public class TestCaseConfiguration : IEntityTypeConfiguration<TestCase>
 
         builder.Property(testCase => testCase.SuiteId).HasColumnName("suite_id");
 
+        builder.Property(testCase => testCase.SectionId).HasColumnName("section_id");
+
+        builder.Property(testCase => testCase.Position).HasColumnName("position");
+
         builder.ConfigureAuditTimestamps();
 
         builder.ConfigureSoftDelete();
 
-        builder.HasIndex(testCase => testCase.SuiteId);
+        builder.HasIndex(testCase => new
+        {
+            testCase.SuiteId,
+            testCase.SectionId,
+            testCase.Position,
+        });
 
         builder
             .HasIndex(testCase => new { testCase.SuiteId, testCase.Name })

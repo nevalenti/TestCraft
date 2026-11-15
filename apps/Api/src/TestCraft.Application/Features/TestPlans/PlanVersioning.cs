@@ -26,6 +26,20 @@ internal static class PlanVersioning
             cancellationToken
         );
 
+    public static Task TouchPlansForCasesAsync(
+        this IApplicationDbContext context,
+        IReadOnlyCollection<TestCaseId> caseIds,
+        DateTimeOffset now,
+        CancellationToken cancellationToken
+    ) =>
+        TouchAsync(
+            context.TestPlans.Where(plan =>
+                plan.TestPlanCases.Any(entry => caseIds.Contains(entry.TestCaseId))
+            ),
+            now,
+            cancellationToken
+        );
+
     public static Task TouchPlansForSuiteAsync(
         this IApplicationDbContext context,
         TestSuiteId suiteId,

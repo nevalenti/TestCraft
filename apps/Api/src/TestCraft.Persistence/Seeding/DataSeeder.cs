@@ -171,9 +171,14 @@ public sealed partial class DataSeeder(AppDbContext context, ILogger<DataSeeder>
             var suite = TestSuite.Create(project.Id, suiteSeed.Name);
             suites.Add(suite);
 
-            foreach (var caseTitle in suiteSeed.Cases)
+            foreach (var (index, caseTitle) in suiteSeed.Cases.Index())
             {
-                var testCase = TestCase.Create(suite.Id, caseTitle, priority: PickPriority(random));
+                var testCase = TestCase.Create(
+                    suite.Id,
+                    caseTitle,
+                    priority: PickPriority(random),
+                    position: index + 1
+                );
 
                 foreach (var step in BuildSteps(testCase.Id, caseTitle, faker))
                 {

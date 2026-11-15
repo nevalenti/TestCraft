@@ -6,13 +6,14 @@ using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
+using TestCraft.Domain.Common;
 using TestCraft.Domain.Entities;
 
 namespace TestCraft.Application.Features.TestSuites;
 
 public static class CloneTestSuite
 {
-    /// <summary>Copies a suite, with its test cases, steps and labels, into the same or another project.</summary>
+    /// <summary>Copies a suite, with its sections, test cases, steps and labels, into the same or another project.</summary>
     public sealed record Command : IRequest<TestSuiteResponse>, IProjectScopedRequest
     {
         [JsonIgnore]
@@ -65,6 +66,7 @@ public static class CloneTestSuite
 
             var copy = TestSuite.Create(targetProjectId, name, source.Description, source.Source);
             context.TestSuites.Add(copy);
+            var sectionIds = await CopySectionsAsync(source.Id, copy.Id, cancellationToken);
 
             var cases = await context
                 .TestCases.Include(testCase => testCase.Steps)
@@ -85,7 +87,9 @@ public static class CloneTestSuite
                     copy.Id,
                     testCase.Name,
                     testCase.Description,
-                    testCase.Priority
+                    testCase.Priority,
+                    testCase.SectionId is { } sectionId ? sectionIds[sectionId] : null,
+                    testCase.Position
                 );
                 context.TestCases.Add(caseCopy);
                 foreach (var step in testCase.Steps.OrderBy(step => step.Order))
@@ -115,6 +119,34 @@ public static class CloneTestSuite
             );
 
             return TestSuiteResponse.FromEntity(copy);
+        }
+
+        private async Task<Dictionary<TestSectionId, TestSectionId>> CopySectionsAsync(
+            TestSuiteId sourceSuiteId,
+            TestSuiteId copySuiteId,
+            CancellationToken cancellationToken
+        )
+        {
+            var sections = await context
+                .TestSections.Where(section => section.SuiteId == sourceSuiteId)
+                .ToListAsync(cancellationToken);
+            var tree = new SectionTree(sections);
+
+            var map = new Dictionary<TestSectionId, TestSectionId>();
+            foreach (var section in sections.OrderBy(section => tree.Depth(section.Id)))
+            {
+                var sectionCopy = TestSection.Create(
+                    copySuiteId,
+                    section.ParentId is { } parentId ? map[parentId] : null,
+                    section.Name,
+                    section.Description,
+                    section.Position
+                );
+                context.TestSections.Add(sectionCopy);
+                map[section.Id] = sectionCopy.Id;
+            }
+
+            return map;
         }
 
         private async Task<Dictionary<LabelId, LabelId>> MapLabelsAsync(

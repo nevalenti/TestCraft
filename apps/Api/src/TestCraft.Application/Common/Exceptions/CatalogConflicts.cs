@@ -12,4 +12,7 @@ public static class CatalogConflicts
 
     public static ConflictException CaseNameTaken() =>
         new("An active test case with this name already exists");
+
+    public static ConflictException SectionNameTaken() =>
+        new("A section with this name already exists under the same parent");
 }

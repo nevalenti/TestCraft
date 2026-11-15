@@ -13,6 +13,7 @@ public class TestSuite : SoftDeletableEntity, IVersioned
 
     public Project? Project { get; }
     public ICollection<TestCase> TestCases { get; } = [];
+    public ICollection<TestSection> Sections { get; } = [];
 
     public static TestSuite Create(
         ProjectId projectId,

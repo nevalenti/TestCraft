@@ -229,6 +229,17 @@ internal static class ImportRunWriter
             testCase => (testCase.SuiteId, testCase.Name),
             testCase => testCase.Id
         );
+        var nextPositions = await context
+            .TestCases.Where(testCase =>
+                suiteIds.Contains(testCase.SuiteId) && testCase.SectionId == null
+            )
+            .GroupBy(testCase => testCase.SuiteId)
+            .Select(group => new
+            {
+                SuiteId = group.Key,
+                Last = group.Max(testCase => testCase.Position),
+            })
+            .ToDictionaryAsync(entry => entry.SuiteId, entry => entry.Last + 1, cancellationToken);
 
         var newCases = new Dictionary<(TestSuiteId SuiteId, string Name), TestCase>();
         foreach (var parsedCase in cases)
@@ -241,7 +252,9 @@ internal static class ImportRunWriter
                 continue;
             }
 
-            var testCase = TestCase.Create(suiteId, parsedCase.CaseName);
+            var position = nextPositions.GetValueOrDefault(suiteId, 1);
+            nextPositions[suiteId] = position + 1;
+            var testCase = TestCase.Create(suiteId, parsedCase.CaseName, position: position);
 
             foreach (var step in parsedCase.Steps ?? [])
             {

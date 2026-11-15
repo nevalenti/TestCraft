@@ -5,6 +5,8 @@ export const makeTestCase = (overrides: Partial<TestCase> = {}): TestCase => ({
   id: "case-1",
   version: 1,
   suite_id: "suite-1",
+  section_id: null,
+  position: 1,
   name: "Login test",
   description: "",
   priority: "medium",

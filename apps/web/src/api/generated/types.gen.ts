@@ -403,6 +403,12 @@ export type CreateTestCaseRequest = {
      */
     name: string;
     priority?: TestCasePriority | null;
+    /**
+     * Section Id
+     *
+     * ID of the section to create the test case in. Null puts it at the top level of the suite.
+     */
+    section_id?: string | null;
 };
 
 /**
@@ -1567,6 +1573,18 @@ export type TestCaseResponse = {
      * Current version; the ETag header carries the same value.
      */
     version: number;
+    /**
+     * Section Id
+     *
+     * ID of the section the test case is in. Null means the top level of the suite.
+     */
+    section_id?: string | null;
+    /**
+     * Position
+     *
+     * The test case's place within its section, lowest first.
+     */
+    position: number;
 };
 
 /**
@@ -2222,7 +2240,7 @@ export type CloneTestCaseRequest = {
     /**
      * Target Suite Id
      *
-     * Suite to copy into; it must belong to the same project. null copies into the source suite.
+     * Suite to copy into; it must belong to the same project. null copies into the source suite and section; another suite gets the copy at its top level.
      */
     target_suite_id?: string | null;
 };
@@ -2259,6 +2277,228 @@ export type CloneTestPlanRequest = {
      * Name of the copy. null keeps the source name, adding " (copy)" when that name is already taken.
      */
     name?: string | null;
+};
+
+/**
+ * TestSectionResponse
+ *
+ * A section of a test suite: a named folder of test cases that can hold subsections.
+ */
+export type TestSectionResponse = {
+    /**
+     * Case Count
+     *
+     * Number of test cases directly in the section, not counting subsections.
+     */
+    case_count: number;
+    /**
+     * Created At
+     *
+     * When the section was created (UTC).
+     */
+    created_at: string;
+    /**
+     * Description
+     *
+     * The section's description. Null when none is set.
+     */
+    description?: string | null;
+    /**
+     * Id
+     *
+     * ID of the section.
+     */
+    id: string;
+    /**
+     * Name
+     *
+     * The section's display name.
+     */
+    name: string;
+    /**
+     * Parent Id
+     *
+     * ID of the parent section. Null means the section sits at the top level of the suite.
+     */
+    parent_id?: string | null;
+    /**
+     * Position
+     *
+     * The section's place among its siblings, lowest first.
+     */
+    position: number;
+    /**
+     * Suite Id
+     *
+     * ID of the suite the section belongs to.
+     */
+    suite_id: string;
+    /**
+     * Updated At
+     *
+     * When the section was last updated (UTC).
+     */
+    updated_at: string;
+    /**
+     * Version
+     *
+     * Current version; the ETag header carries the same value.
+     */
+    version: number;
+};
+
+/**
+ * CreateTestSectionRequest
+ *
+ * Body for creating a section.
+ */
+export type CreateTestSectionRequest = {
+    /**
+     * Description
+     *
+     * The section's description. Null leaves it empty.
+     */
+    description?: string | null;
+    /**
+     * Name
+     *
+     * The section's display name, unique among its siblings.
+     */
+    name: string;
+    /**
+     * Parent Id
+     *
+     * ID of the parent section. Null creates the section at the top level of the suite.
+     */
+    parent_id?: string | null;
+};
+
+/**
+ * UpdateTestSectionRequest
+ *
+ * Body for renaming a section or changing its description.
+ */
+export type UpdateTestSectionRequest = {
+    /**
+     * Description
+     *
+     * The section's new description. Null clears it.
+     */
+    description?: string | null;
+    /**
+     * Name
+     *
+     * The section's new display name, unique among its siblings.
+     */
+    name: string;
+};
+
+/**
+ * MoveTestSectionRequest
+ *
+ * Body for moving a section under another parent in the same suite.
+ */
+export type MoveTestSectionRequest = {
+    /**
+     * Parent Id
+     *
+     * ID of the new parent section. Null moves the section to the top level of the suite.
+     */
+    parent_id?: string | null;
+    /**
+     * Position
+     *
+     * The section's place among its new siblings. Null puts it last.
+     */
+    position?: number | null;
+};
+
+/**
+ * TestSectionOrder
+ *
+ * The new position for one section.
+ */
+export type TestSectionOrder = {
+    /**
+     * Id
+     *
+     * ID of the section to reposition.
+     */
+    id: string;
+    /**
+     * Position
+     *
+     * The section's new place among its siblings, lowest first.
+     */
+    position: number;
+};
+
+/**
+ * TestCaseOrder
+ *
+ * The new position for one test case.
+ */
+export type TestCaseOrder = {
+    /**
+     * Id
+     *
+     * ID of the test case to reposition.
+     */
+    id: string;
+    /**
+     * Position
+     *
+     * The test case's new place within its section, lowest first.
+     */
+    position: number;
+};
+
+/**
+ * ReorderTestSectionsRequest
+ *
+ * Body for setting the position of several sections.
+ */
+export type ReorderTestSectionsRequest = {
+    /**
+     * Sections
+     *
+     * The sections to reposition. Sections not listed keep their position.
+     */
+    sections: Array<TestSectionOrder>;
+};
+
+/**
+ * ReorderTestCasesRequest
+ *
+ * Body for setting the position of several test cases.
+ */
+export type ReorderTestCasesRequest = {
+    /**
+     * Cases
+     *
+     * The test cases to reposition. Cases not listed keep their position.
+     */
+    cases: Array<TestCaseOrder>;
+};
+
+/**
+ * MoveTestCasesRequest
+ *
+ * Body for moving test cases into a section of the same suite.
+ */
+export type MoveTestCasesRequest = {
+    /**
+     * Case Ids
+     *
+     * IDs of the test cases to move, in the order they should end up.
+     */
+    case_ids: Array<string>;
+    /**
+     * Section Id
+     *
+     * ID of the destination section. Null moves the cases to the top level of the suite.
+     */
+    section_id?: string | null;
 };
 
 export type GetAvatarUrlData = {
@@ -3360,7 +3600,7 @@ export type ListTestCasesByProjectData = {
          *
          * Field to sort by.
          */
-        sort_by?: 'name' | 'priority' | 'created_at';
+        sort_by?: 'name' | 'priority' | 'created_at' | 'position';
         /**
          * Sort Dir
          *
@@ -7943,11 +8183,23 @@ export type ListTestCasesData = {
          */
         label_id?: string | null;
         /**
+         * Section Id
+         *
+         * Only test cases in this section (and its subsections, unless `include_descendants` is false).
+         */
+        section_id?: string | null;
+        /**
+         * Include Descendants
+         *
+         * Whether to include test cases in subsections. With no `section_id`, false returns only the test cases at the top level of the suite.
+         */
+        include_descendants?: boolean;
+        /**
          * Sort By
          *
          * Field to sort by.
          */
-        sort_by?: 'name' | 'priority' | 'created_at';
+        sort_by?: 'name' | 'priority' | 'created_at' | 'position';
         /**
          * Sort Dir
          *
@@ -9237,3 +9489,645 @@ export type CloneTestPlanResponses = {
 };
 
 export type CloneTestPlanResponse = CloneTestPlanResponses[keyof CloneTestPlanResponses];
+
+export type ListTestSectionsData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections';
+};
+
+export type ListTestSectionsErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ListTestSectionsError = ListTestSectionsErrors[keyof ListTestSectionsErrors];
+
+export type ListTestSectionsResponses = {
+    /**
+     * Successful Response
+     */
+    200: Array<TestSectionResponse>;
+};
+
+export type ListTestSectionsResponse = ListTestSectionsResponses[keyof ListTestSectionsResponses];
+
+export type CreateTestSectionData = {
+    body: CreateTestSectionRequest;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections';
+};
+
+export type CreateTestSectionErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The requested change conflicts with an existing resource
+     */
+    409: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type CreateTestSectionError = CreateTestSectionErrors[keyof CreateTestSectionErrors];
+
+export type CreateTestSectionResponses = {
+    /**
+     * Successful Response
+     */
+    201: TestSectionResponse;
+};
+
+export type CreateTestSectionResponse = CreateTestSectionResponses[keyof CreateTestSectionResponses];
+
+export type ReorderTestSectionsData = {
+    body: ReorderTestSectionsRequest;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/order';
+};
+
+export type ReorderTestSectionsErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ReorderTestSectionsError = ReorderTestSectionsErrors[keyof ReorderTestSectionsErrors];
+
+export type ReorderTestSectionsResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type ReorderTestSectionsResponse = ReorderTestSectionsResponses[keyof ReorderTestSectionsResponses];
+
+export type DeleteTestSectionData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Section Id
+         *
+         * ID of the section.
+         */
+        section_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}';
+};
+
+export type DeleteTestSectionErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type DeleteTestSectionError = DeleteTestSectionErrors[keyof DeleteTestSectionErrors];
+
+export type DeleteTestSectionResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteTestSectionResponse = DeleteTestSectionResponses[keyof DeleteTestSectionResponses];
+
+export type GetTestSectionData = {
+    body?: never;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Section Id
+         *
+         * ID of the section.
+         */
+        section_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}';
+};
+
+export type GetTestSectionErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type GetTestSectionError = GetTestSectionErrors[keyof GetTestSectionErrors];
+
+export type GetTestSectionResponses = {
+    /**
+     * Successful Response
+     */
+    200: TestSectionResponse;
+};
+
+export type GetTestSectionResponse = GetTestSectionResponses[keyof GetTestSectionResponses];
+
+export type UpdateTestSectionData = {
+    body: UpdateTestSectionRequest;
+    headers: {
+        /**
+         * If-Match
+         *
+         * ETag from your last read of this resource. A stale value returns 412.
+         */
+        'if-match': string;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Section Id
+         *
+         * ID of the section.
+         */
+        section_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}';
+};
+
+export type UpdateTestSectionErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The requested change conflicts with an existing resource
+     */
+    409: ProblemDetails;
+    /**
+     * If-Match does not match the current version; reload and retry
+     */
+    412: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type UpdateTestSectionError = UpdateTestSectionErrors[keyof UpdateTestSectionErrors];
+
+export type UpdateTestSectionResponses = {
+    /**
+     * Successful Response
+     */
+    200: TestSectionResponse;
+};
+
+export type UpdateTestSectionResponse = UpdateTestSectionResponses[keyof UpdateTestSectionResponses];
+
+export type MoveTestSectionData = {
+    body: MoveTestSectionRequest;
+    headers: {
+        /**
+         * If-Match
+         *
+         * ETag from your last read of this resource. A stale value returns 412.
+         */
+        'if-match': string;
+    };
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Section Id
+         *
+         * ID of the section.
+         */
+        section_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}/move';
+};
+
+export type MoveTestSectionErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The requested change conflicts with an existing resource
+     */
+    409: ProblemDetails;
+    /**
+     * If-Match does not match the current version; reload and retry
+     */
+    412: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type MoveTestSectionError = MoveTestSectionErrors[keyof MoveTestSectionErrors];
+
+export type MoveTestSectionResponses = {
+    /**
+     * Successful Response
+     */
+    200: TestSectionResponse;
+};
+
+export type MoveTestSectionResponse = MoveTestSectionResponses[keyof MoveTestSectionResponses];
+
+export type MoveTestCasesData = {
+    body: MoveTestCasesRequest;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/cases/move';
+};
+
+export type MoveTestCasesErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type MoveTestCasesError = MoveTestCasesErrors[keyof MoveTestCasesErrors];
+
+export type MoveTestCasesResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type MoveTestCasesResponse = MoveTestCasesResponses[keyof MoveTestCasesResponses];
+
+export type ReorderTestCasesData = {
+    body: ReorderTestCasesRequest;
+    path: {
+        /**
+         * Project Id
+         *
+         * ID of the project.
+         */
+        project_id: string;
+        /**
+         * Suite Id
+         *
+         * ID of the test suite.
+         */
+        suite_id: string;
+    };
+    query?: never;
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/cases/order';
+};
+
+export type ReorderTestCasesErrors = {
+    /**
+     * Missing, invalid or expired credentials
+     */
+    401: ProblemDetails;
+    /**
+     * Your project role is too low, or the API token lacks the needed scope
+     */
+    403: ProblemDetails;
+    /**
+     * The project or resource does not exist, or you cannot access it
+     */
+    404: ProblemDetails;
+    /**
+     * The request body is larger than 100,000 bytes
+     */
+    413: ProblemDetails;
+    /**
+     * Request validation or business rule failed
+     */
+    422: ProblemDetails;
+    /**
+     * Rate limit exceeded; retry after Retry-After seconds
+     */
+    429: ProblemDetails;
+    /**
+     * An unexpected server error occurred
+     */
+    500: ProblemDetails;
+    /**
+     * A backing service or authentication provider is unavailable
+     */
+    503: ProblemDetails;
+};
+
+export type ReorderTestCasesError = ReorderTestCasesErrors[keyof ReorderTestCasesErrors];
+
+export type ReorderTestCasesResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type ReorderTestCasesResponse = ReorderTestCasesResponses[keyof ReorderTestCasesResponses];
