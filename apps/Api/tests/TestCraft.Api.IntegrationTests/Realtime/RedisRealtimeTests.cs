@@ -163,7 +163,7 @@ public sealed class RedisRealtimeTests(ApiFactory factory) : IAsyncLifetime
         var received = await socket.ReceiveAsync(buffer, timeout.Token);
         received.MessageType.Should().Be(WebSocketMessageType.Text);
 
-        return JsonDocument.Parse(Encoding.UTF8.GetString(buffer, 0, received.Count)).RootElement;
+        return JsonElement.Parse(Encoding.UTF8.GetString(buffer, 0, received.Count));
     }
 
     private static async Task<WebSocketCloseStatus?> CloseStatusAsync(WebSocket socket)
