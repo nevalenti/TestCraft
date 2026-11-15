@@ -17,7 +17,7 @@ COPY apps/Api/src/TestCraft.Migrator/ apps/Api/src/TestCraft.Migrator/
 
 RUN dotnet publish apps/Api/src/TestCraft.Migrator/TestCraft.Migrator.csproj -c Release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/runtime:10.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/runtime:11.0-alpine AS runtime
 WORKDIR /app
 
 ARG APK_CACHE_BUST=0
