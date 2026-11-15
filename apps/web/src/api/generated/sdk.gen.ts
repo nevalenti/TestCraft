@@ -2,7 +2,7 @@
 
 import { type Client, formDataBodySerializer, type Options as Options2, type TDataShape } from './client';
 import { client } from './client.gen';
-import type { AddCaseToPlanData, AddCaseToPlanErrors, AddCaseToPlanResponses, AddProjectMemberData, AddProjectMemberErrors, AddProjectMemberResponses, AddTestCaseLabelData, AddTestCaseLabelErrors, AddTestCaseLabelResponses, AppendTestRunLogsData, AppendTestRunLogsErrors, AppendTestRunLogsResponses, CloneTestCaseData, CloneTestCaseErrors, CloneTestCaseResponses, CloneTestPlanData, CloneTestPlanErrors, CloneTestPlanResponses, CloneTestSuiteData, CloneTestSuiteErrors, CloneTestSuiteResponses, CreateApiTokenData, CreateApiTokenErrors, CreateApiTokenResponses, CreateDashboardSocketTicketData, CreateDashboardSocketTicketErrors, CreateDashboardSocketTicketResponses, CreateEmailSubscriptionData, CreateEmailSubscriptionErrors, CreateEmailSubscriptionResponses, CreateLabelData, CreateLabelErrors, CreateLabelResponses, CreatePersonalNoteData, CreatePersonalNoteErrors, CreatePersonalNoteResponses, CreateProjectData, CreateProjectErrors, CreateProjectNoteData, CreateProjectNoteErrors, CreateProjectNoteResponses, CreateProjectResponses, CreateRunFromPlanData, CreateRunFromPlanErrors, CreateRunFromPlanResponses, CreateShareTokenData, CreateShareTokenErrors, CreateShareTokenResponses, CreateTestCaseData, CreateTestCaseErrors, CreateTestCaseResponses, CreateTestCaseStepData, CreateTestCaseStepErrors, CreateTestCaseStepResponses, CreateTestPlanData, CreateTestPlanErrors, CreateTestPlanResponses, CreateTestResultByNameData, CreateTestResultByNameErrors, CreateTestResultByNameResponses, CreateTestResultData, CreateTestResultErrors, CreateTestResultResponses, CreateTestRunData, CreateTestRunErrors, CreateTestRunResponses, CreateTestRunSocketTicketData, CreateTestRunSocketTicketErrors, CreateTestRunSocketTicketResponses, CreateTestSuiteData, CreateTestSuiteErrors, CreateTestSuiteResponses, CreateWebhookSubscriptionData, CreateWebhookSubscriptionErrors, CreateWebhookSubscriptionResponses, DeleteAttachmentData, DeleteAttachmentErrors, DeleteAttachmentResponses, DeleteEmailSubscriptionData, DeleteEmailSubscriptionErrors, DeleteEmailSubscriptionResponses, DeleteLabelData, DeleteLabelErrors, DeleteLabelResponses, DeletePersonalNoteData, DeletePersonalNoteErrors, DeletePersonalNoteResponses, DeleteProjectData, DeleteProjectErrors, DeleteProjectNoteData, DeleteProjectNoteErrors, DeleteProjectNoteResponses, DeleteProjectResponses, DeleteTestCaseData, DeleteTestCaseErrors, DeleteTestCaseResponses, DeleteTestCaseStepData, DeleteTestCaseStepErrors, DeleteTestCaseStepResponses, DeleteTestPlanData, DeleteTestPlanErrors, DeleteTestPlanResponses, DeleteTestResultData, DeleteTestResultErrors, DeleteTestResultResponses, DeleteTestRunData, DeleteTestRunErrors, DeleteTestRunResponses, DeleteTestSuiteData, DeleteTestSuiteErrors, DeleteTestSuiteResponses, DeleteWebhookSubscriptionData, DeleteWebhookSubscriptionErrors, DeleteWebhookSubscriptionResponses, GetAttachmentDownloadUrlData, GetAttachmentDownloadUrlErrors, GetAttachmentDownloadUrlResponses, GetAvatarUrlData, GetAvatarUrlErrors, GetAvatarUrlResponses, GetDashboardSummaryData, GetDashboardSummaryErrors, GetDashboardSummaryResponses, GetFlakyTestsData, GetFlakyTestsErrors, GetFlakyTestsResponses, GetImportJobData, GetImportJobErrors, GetImportJobResponses, GetPersonalNoteData, GetPersonalNoteErrors, GetPersonalNoteResponses, GetProjectData, GetProjectErrors, GetProjectNoteData, GetProjectNoteErrors, GetProjectNoteResponses, GetProjectResponses, GetRunByShareTokenData, GetRunByShareTokenErrors, GetRunByShareTokenResponses, GetRunComparisonData, GetRunComparisonErrors, GetRunComparisonResponses, GetRunTrendData, GetRunTrendErrors, GetRunTrendResponses, GetSuiteBreakdownData, GetSuiteBreakdownErrors, GetSuiteBreakdownResponses, GetTestCaseData, GetTestCaseErrors, GetTestCaseResponses, GetTestCaseStepData, GetTestCaseStepErrors, GetTestCaseStepResponses, GetTestPlanCasesData, GetTestPlanCasesErrors, GetTestPlanCasesResponses, GetTestPlanData, GetTestPlanErrors, GetTestPlanResponses, GetTestResultData, GetTestResultErrors, GetTestResultResponses, GetTestRunData, GetTestRunErrors, GetTestRunLogsData, GetTestRunLogsErrors, GetTestRunLogsResponses, GetTestRunResponses, GetTestRunSummaryData, GetTestRunSummaryErrors, GetTestRunSummaryResponses, GetTestSuiteData, GetTestSuiteErrors, GetTestSuiteResponses, ImportAllureData, ImportAllureErrors, ImportAllureResponses, ImportJunitData, ImportJunitErrors, ImportJunitResponses, ListApiTokensData, ListApiTokensErrors, ListApiTokensResponses, ListAttachmentsData, ListAttachmentsErrors, ListAttachmentsResponses, ListEmailSubscriptionsData, ListEmailSubscriptionsErrors, ListEmailSubscriptionsResponses, ListLabelsData, ListLabelsErrors, ListLabelsResponses, ListPersonalNotesData, ListPersonalNotesErrors, ListPersonalNotesResponses, ListProjectMembersData, ListProjectMembersErrors, ListProjectMembersResponses, ListProjectNotesData, ListProjectNotesErrors, ListProjectNotesResponses, ListProjectsData, ListProjectsErrors, ListProjectsResponses, ListShareTokensData, ListShareTokensErrors, ListShareTokensResponses, ListTestCasesByProjectData, ListTestCasesByProjectErrors, ListTestCasesByProjectResponses, ListTestCasesData, ListTestCasesErrors, ListTestCasesResponses, ListTestCaseStepsData, ListTestCaseStepsErrors, ListTestCaseStepsResponses, ListTestPlansData, ListTestPlansErrors, ListTestPlansResponses, ListTestResultsData, ListTestResultsErrors, ListTestResultsResponses, ListTestRunsData, ListTestRunsErrors, ListTestRunsResponses, ListTestSuitesData, ListTestSuitesErrors, ListTestSuitesResponses, ListWebhookSubscriptionsData, ListWebhookSubscriptionsErrors, ListWebhookSubscriptionsResponses, RemoveCaseFromPlanData, RemoveCaseFromPlanErrors, RemoveCaseFromPlanResponses, RemoveProjectMemberData, RemoveProjectMemberErrors, RemoveProjectMemberResponses, RemoveTestCaseLabelData, RemoveTestCaseLabelErrors, RemoveTestCaseLabelResponses, ReorderPlanCasesData, ReorderPlanCasesErrors, ReorderPlanCasesResponses, ReorderTestCaseStepsData, ReorderTestCaseStepsErrors, ReorderTestCaseStepsResponses, RerunTestRunData, RerunTestRunErrors, RerunTestRunResponses, RevokeApiTokenData, RevokeApiTokenErrors, RevokeApiTokenResponses, RevokeShareTokenData, RevokeShareTokenErrors, RevokeShareTokenResponses, UpdateEmailSubscriptionData, UpdateEmailSubscriptionErrors, UpdateEmailSubscriptionResponses, UpdateLabelData, UpdateLabelErrors, UpdateLabelResponses, UpdatePersonalNoteData, UpdatePersonalNoteErrors, UpdatePersonalNoteResponses, UpdateProjectData, UpdateProjectErrors, UpdateProjectMemberData, UpdateProjectMemberErrors, UpdateProjectMemberResponses, UpdateProjectNoteData, UpdateProjectNoteErrors, UpdateProjectNoteResponses, UpdateProjectResponses, UpdateTestCaseData, UpdateTestCaseErrors, UpdateTestCaseResponses, UpdateTestCaseStepData, UpdateTestCaseStepErrors, UpdateTestCaseStepResponses, UpdateTestPlanData, UpdateTestPlanErrors, UpdateTestPlanResponses, UpdateTestResultData, UpdateTestResultErrors, UpdateTestResultResponses, UpdateTestRunData, UpdateTestRunErrors, UpdateTestRunResponses, UpdateTestSuiteData, UpdateTestSuiteErrors, UpdateTestSuiteResponses, UpdateWebhookSubscriptionData, UpdateWebhookSubscriptionErrors, UpdateWebhookSubscriptionResponses, UploadAttachmentData, UploadAttachmentErrors, UploadAttachmentResponses, UploadAvatarData, UploadAvatarErrors, UploadAvatarResponses } from './types.gen';
+import type { AddCaseToPlanData, AddCaseToPlanErrors, AddCaseToPlanResponses, AddProjectMemberData, AddProjectMemberErrors, AddProjectMemberResponses, AddTestCaseLabelData, AddTestCaseLabelErrors, AddTestCaseLabelResponses, AppendTestRunLogsData, AppendTestRunLogsErrors, AppendTestRunLogsResponses, CloneTestCaseData, CloneTestCaseErrors, CloneTestCaseResponses, CloneTestPlanData, CloneTestPlanErrors, CloneTestPlanResponses, CloneTestSuiteData, CloneTestSuiteErrors, CloneTestSuiteResponses, CreateApiTokenData, CreateApiTokenErrors, CreateApiTokenResponses, CreateDashboardSocketTicketData, CreateDashboardSocketTicketErrors, CreateDashboardSocketTicketResponses, CreateEmailSubscriptionData, CreateEmailSubscriptionErrors, CreateEmailSubscriptionResponses, CreateLabelData, CreateLabelErrors, CreateLabelResponses, CreatePersonalNoteData, CreatePersonalNoteErrors, CreatePersonalNoteResponses, CreateProjectData, CreateProjectErrors, CreateProjectNoteData, CreateProjectNoteErrors, CreateProjectNoteResponses, CreateProjectResponses, CreateRunFromPlanData, CreateRunFromPlanErrors, CreateRunFromPlanResponses, CreateShareTokenData, CreateShareTokenErrors, CreateShareTokenResponses, CreateTestCaseData, CreateTestCaseErrors, CreateTestCaseResponses, CreateTestCaseStepData, CreateTestCaseStepErrors, CreateTestCaseStepResponses, CreateTestPlanData, CreateTestPlanErrors, CreateTestPlanResponses, CreateTestResultByNameData, CreateTestResultByNameErrors, CreateTestResultByNameResponses, CreateTestResultData, CreateTestResultErrors, CreateTestResultResponses, CreateTestRunData, CreateTestRunErrors, CreateTestRunResponses, CreateTestRunSocketTicketData, CreateTestRunSocketTicketErrors, CreateTestRunSocketTicketResponses, CreateTestSectionData, CreateTestSectionErrors, CreateTestSectionResponses, CreateTestSuiteData, CreateTestSuiteErrors, CreateTestSuiteResponses, CreateWebhookSubscriptionData, CreateWebhookSubscriptionErrors, CreateWebhookSubscriptionResponses, DeleteAttachmentData, DeleteAttachmentErrors, DeleteAttachmentResponses, DeleteEmailSubscriptionData, DeleteEmailSubscriptionErrors, DeleteEmailSubscriptionResponses, DeleteLabelData, DeleteLabelErrors, DeleteLabelResponses, DeletePersonalNoteData, DeletePersonalNoteErrors, DeletePersonalNoteResponses, DeleteProjectData, DeleteProjectErrors, DeleteProjectNoteData, DeleteProjectNoteErrors, DeleteProjectNoteResponses, DeleteProjectResponses, DeleteTestCaseData, DeleteTestCaseErrors, DeleteTestCaseResponses, DeleteTestCaseStepData, DeleteTestCaseStepErrors, DeleteTestCaseStepResponses, DeleteTestPlanData, DeleteTestPlanErrors, DeleteTestPlanResponses, DeleteTestResultData, DeleteTestResultErrors, DeleteTestResultResponses, DeleteTestRunData, DeleteTestRunErrors, DeleteTestRunResponses, DeleteTestSectionData, DeleteTestSectionErrors, DeleteTestSectionResponses, DeleteTestSuiteData, DeleteTestSuiteErrors, DeleteTestSuiteResponses, DeleteWebhookSubscriptionData, DeleteWebhookSubscriptionErrors, DeleteWebhookSubscriptionResponses, GetAttachmentDownloadUrlData, GetAttachmentDownloadUrlErrors, GetAttachmentDownloadUrlResponses, GetAvatarUrlData, GetAvatarUrlErrors, GetAvatarUrlResponses, GetDashboardSummaryData, GetDashboardSummaryErrors, GetDashboardSummaryResponses, GetFlakyTestsData, GetFlakyTestsErrors, GetFlakyTestsResponses, GetImportJobData, GetImportJobErrors, GetImportJobResponses, GetPersonalNoteData, GetPersonalNoteErrors, GetPersonalNoteResponses, GetProjectData, GetProjectErrors, GetProjectNoteData, GetProjectNoteErrors, GetProjectNoteResponses, GetProjectResponses, GetRunByShareTokenData, GetRunByShareTokenErrors, GetRunByShareTokenResponses, GetRunComparisonData, GetRunComparisonErrors, GetRunComparisonResponses, GetRunTrendData, GetRunTrendErrors, GetRunTrendResponses, GetSuiteBreakdownData, GetSuiteBreakdownErrors, GetSuiteBreakdownResponses, GetTestCaseData, GetTestCaseErrors, GetTestCaseResponses, GetTestCaseStepData, GetTestCaseStepErrors, GetTestCaseStepResponses, GetTestPlanCasesData, GetTestPlanCasesErrors, GetTestPlanCasesResponses, GetTestPlanData, GetTestPlanErrors, GetTestPlanResponses, GetTestResultData, GetTestResultErrors, GetTestResultResponses, GetTestRunData, GetTestRunErrors, GetTestRunLogsData, GetTestRunLogsErrors, GetTestRunLogsResponses, GetTestRunResponses, GetTestRunSummaryData, GetTestRunSummaryErrors, GetTestRunSummaryResponses, GetTestSectionData, GetTestSectionErrors, GetTestSectionResponses, GetTestSuiteData, GetTestSuiteErrors, GetTestSuiteResponses, ImportAllureData, ImportAllureErrors, ImportAllureResponses, ImportJunitData, ImportJunitErrors, ImportJunitResponses, ListApiTokensData, ListApiTokensErrors, ListApiTokensResponses, ListAttachmentsData, ListAttachmentsErrors, ListAttachmentsResponses, ListEmailSubscriptionsData, ListEmailSubscriptionsErrors, ListEmailSubscriptionsResponses, ListLabelsData, ListLabelsErrors, ListLabelsResponses, ListPersonalNotesData, ListPersonalNotesErrors, ListPersonalNotesResponses, ListProjectMembersData, ListProjectMembersErrors, ListProjectMembersResponses, ListProjectNotesData, ListProjectNotesErrors, ListProjectNotesResponses, ListProjectsData, ListProjectsErrors, ListProjectsResponses, ListShareTokensData, ListShareTokensErrors, ListShareTokensResponses, ListTestCasesByProjectData, ListTestCasesByProjectErrors, ListTestCasesByProjectResponses, ListTestCasesData, ListTestCasesErrors, ListTestCasesResponses, ListTestCaseStepsData, ListTestCaseStepsErrors, ListTestCaseStepsResponses, ListTestPlansData, ListTestPlansErrors, ListTestPlansResponses, ListTestResultsData, ListTestResultsErrors, ListTestResultsResponses, ListTestRunsData, ListTestRunsErrors, ListTestRunsResponses, ListTestSectionsData, ListTestSectionsErrors, ListTestSectionsResponses, ListTestSuitesData, ListTestSuitesErrors, ListTestSuitesResponses, ListWebhookSubscriptionsData, ListWebhookSubscriptionsErrors, ListWebhookSubscriptionsResponses, MoveTestCasesData, MoveTestCasesErrors, MoveTestCasesResponses, MoveTestSectionData, MoveTestSectionErrors, MoveTestSectionResponses, RemoveCaseFromPlanData, RemoveCaseFromPlanErrors, RemoveCaseFromPlanResponses, RemoveProjectMemberData, RemoveProjectMemberErrors, RemoveProjectMemberResponses, RemoveTestCaseLabelData, RemoveTestCaseLabelErrors, RemoveTestCaseLabelResponses, ReorderPlanCasesData, ReorderPlanCasesErrors, ReorderPlanCasesResponses, ReorderTestCasesData, ReorderTestCasesErrors, ReorderTestCasesResponses, ReorderTestCaseStepsData, ReorderTestCaseStepsErrors, ReorderTestCaseStepsResponses, ReorderTestSectionsData, ReorderTestSectionsErrors, ReorderTestSectionsResponses, RerunTestRunData, RerunTestRunErrors, RerunTestRunResponses, RevokeApiTokenData, RevokeApiTokenErrors, RevokeApiTokenResponses, RevokeShareTokenData, RevokeShareTokenErrors, RevokeShareTokenResponses, UpdateEmailSubscriptionData, UpdateEmailSubscriptionErrors, UpdateEmailSubscriptionResponses, UpdateLabelData, UpdateLabelErrors, UpdateLabelResponses, UpdatePersonalNoteData, UpdatePersonalNoteErrors, UpdatePersonalNoteResponses, UpdateProjectData, UpdateProjectErrors, UpdateProjectMemberData, UpdateProjectMemberErrors, UpdateProjectMemberResponses, UpdateProjectNoteData, UpdateProjectNoteErrors, UpdateProjectNoteResponses, UpdateProjectResponses, UpdateTestCaseData, UpdateTestCaseErrors, UpdateTestCaseResponses, UpdateTestCaseStepData, UpdateTestCaseStepErrors, UpdateTestCaseStepResponses, UpdateTestPlanData, UpdateTestPlanErrors, UpdateTestPlanResponses, UpdateTestResultData, UpdateTestResultErrors, UpdateTestResultResponses, UpdateTestRunData, UpdateTestRunErrors, UpdateTestRunResponses, UpdateTestSectionData, UpdateTestSectionErrors, UpdateTestSectionResponses, UpdateTestSuiteData, UpdateTestSuiteErrors, UpdateTestSuiteResponses, UpdateWebhookSubscriptionData, UpdateWebhookSubscriptionErrors, UpdateWebhookSubscriptionResponses, UploadAttachmentData, UploadAttachmentErrors, UploadAttachmentResponses, UploadAvatarData, UploadAvatarErrors, UploadAvatarResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -321,7 +321,7 @@ export const getRunTrend = <ThrowOnError extends boolean = true>(options: Option
 /**
  * List test cases across suites
  *
- * Lists test cases from every suite in the project, with the same filters and sorting as the per-suite list.
+ * Lists test cases from every suite in the project, with the same `label_id`, `search` and sorting options as the per-suite list.
  *
  * **Access:** the viewer role or higher. API tokens need the `cases_read` scope.
  */
@@ -1388,7 +1388,7 @@ export const updateTestSuite = <ThrowOnError extends boolean = true>(options: Op
 /**
  * List a suite's test cases
  *
- * Lists the test cases in one suite, oldest first by default, each with its labels and step count. Filter by `label_id`; `search` matches test case names; sort by name, priority or creation time.
+ * Lists the test cases in one suite, oldest first by default, each with its labels and step count. Filter by `label_id`, or by `section_id` (with or without subsections, see `include_descendants`); `search` matches test case names; sort by name, priority, creation time or `position`. Position sorting lists the top-level cases first, then each section (in its own position order) with its cases in position order.
  *
  * **Access:** the viewer role or higher. API tokens need the `cases_read` scope.
  */
@@ -1402,7 +1402,7 @@ export const listTestCases = <ThrowOnError extends boolean = true>(options: Opti
 /**
  * Create a test case
  *
- * Creates a test case in the suite. Names must be unique within the suite; a duplicate returns 409. `priority` defaults to `medium`.
+ * Creates a test case in the suite. Names must be unique within the suite; a duplicate returns 409. `priority` defaults to `medium`. `section_id` must be a section of this suite; the case goes last in it.
  *
  * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
  */
@@ -1645,7 +1645,7 @@ export const cloneTestCase = <ThrowOnError extends boolean = true>(options: Opti
 /**
  * Copy a test suite
  *
- * Copies a suite, with its test cases, their steps and labels, into this project or another project. The copy keeps the source name, adding " (copy)" when a suite with that name already exists in the target project. Copying into another project needs the editor role there and is not available to API tokens; labels are matched by name in the target project and created when missing. Results, attachments and plans are not copied.
+ * Copies a suite, with its sections, test cases, their steps and labels, into this project or another project. The copy keeps the source name, adding " (copy)" when a suite with that name already exists in the target project. Copying into another project needs the editor role there and is not available to API tokens; labels are matched by name in the target project and created when missing. Results, attachments and plans are not copied.
  *
  * **Access:** the editor role or higher. API tokens need the `suites_write` scope.
  */
@@ -1671,6 +1671,156 @@ export const cloneTestPlan = <ThrowOnError extends boolean = true>(options: Opti
     responseType: 'json',
     security: [{ scheme: 'bearer', type: 'http' }],
     url: '/api/v1/projects/{project_id}/plans/{plan_id}/clone',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * List a suite's sections
+ *
+ * Returns every section of the suite as a flat list, ordered by `position`. The list is not paginated, so a client can build the whole tree from `parent_id` in one request.
+ *
+ * **Access:** the viewer role or higher. API tokens need the `cases_read` scope.
+ */
+export const listTestSections = <ThrowOnError extends boolean = true>(options: Options<ListTestSectionsData, ThrowOnError>) => (options.client ?? client).get<ListTestSectionsResponses, ListTestSectionsErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections',
+    ...options
+});
+
+/**
+ * Create a section
+ *
+ * Creates a section in the suite, at the top level or under `parent_id`, and puts it last among its siblings. Names must be unique among siblings; a duplicate returns 409. Sections nest at most 10 levels deep (422 `SECTION_TOO_DEEP`).
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const createTestSection = <ThrowOnError extends boolean = true>(options: Options<CreateTestSectionData, ThrowOnError>) => (options.client ?? client).post<CreateTestSectionResponses, CreateTestSectionErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Reorder sections
+ *
+ * Sets the `position` of the listed sections in one request. Every listed ID must be a section of this suite (422 `SECTIONS_NOT_FOUND`); sections that aren't listed keep their position.
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const reorderTestSections = <ThrowOnError extends boolean = true>(options: Options<ReorderTestSectionsData, ThrowOnError>) => (options.client ?? client).put<ReorderTestSectionsResponses, ReorderTestSectionsErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/order',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Delete a section
+ *
+ * Deletes the section, all its subsections and every test case in them. Results already recorded in runs are kept, and test plans that contained the deleted cases get a new version.
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const deleteTestSection = <ThrowOnError extends boolean = true>(options: Options<DeleteTestSectionData, ThrowOnError>) => (options.client ?? client).delete<DeleteTestSectionResponses, DeleteTestSectionErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}',
+    ...options
+});
+
+/**
+ * Get a section
+ *
+ * Returns a single section.
+ *
+ * **Access:** the viewer role or higher. API tokens need the `cases_read` scope.
+ */
+export const getTestSection = <ThrowOnError extends boolean = true>(options: Options<GetTestSectionData, ThrowOnError>) => (options.client ?? client).get<GetTestSectionResponses, GetTestSectionErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}',
+    ...options
+});
+
+/**
+ * Update a section
+ *
+ * Replaces the section's name and description. Names must be unique among siblings; a duplicate returns 409. To change the parent, use the move endpoint.
+ *
+ * Send the `ETag` from your last read as `If-Match`; it is required. A stale value returns 412.
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const updateTestSection = <ThrowOnError extends boolean = true>(options: Options<UpdateTestSectionData, ThrowOnError>) => (options.client ?? client).put<UpdateTestSectionResponses, UpdateTestSectionErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Move a section
+ *
+ * Moves the section, with its subsections and test cases, under `parent_id` in the same suite, or to the top level when `parent_id` is null. A section can't move into itself or one of its subsections (422 `SECTION_CYCLE`), and the result can't nest more than 10 levels deep (422 `SECTION_TOO_DEEP`). A sibling with the same name returns 409.
+ *
+ * Send the `ETag` from your last read as `If-Match`; it is required. A stale value returns 412.
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const moveTestSection = <ThrowOnError extends boolean = true>(options: Options<MoveTestSectionData, ThrowOnError>) => (options.client ?? client).post<MoveTestSectionResponses, MoveTestSectionErrors, ThrowOnError>({
+    responseType: 'json',
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}/move',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Move test cases to a section
+ *
+ * Moves the listed test cases into `section_id`, or to the top level of the suite when it is null, after the cases already there and in the order listed. Every listed ID must be a test case of this suite (422 `CASES_NOT_FOUND`).
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const moveTestCases = <ThrowOnError extends boolean = true>(options: Options<MoveTestCasesData, ThrowOnError>) => (options.client ?? client).post<MoveTestCasesResponses, MoveTestCasesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/cases/move',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Reorder test cases
+ *
+ * Sets the `position` of the listed test cases in one request. Every listed ID must be a test case of this suite (422 `CASES_NOT_FOUND`); test cases that aren't listed keep their position.
+ *
+ * **Access:** the editor role or higher. API tokens need the `cases_write` scope.
+ */
+export const reorderTestCases = <ThrowOnError extends boolean = true>(options: Options<ReorderTestCasesData, ThrowOnError>) => (options.client ?? client).put<ReorderTestCasesResponses, ReorderTestCasesErrors, ThrowOnError>({
+    security: [{ scheme: 'bearer', type: 'http' }],
+    url: '/api/v1/projects/{project_id}/suites/{suite_id}/cases/order',
     ...options,
     headers: {
         'Content-Type': 'application/json',

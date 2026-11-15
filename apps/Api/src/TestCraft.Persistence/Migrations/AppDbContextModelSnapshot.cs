@@ -830,11 +830,19 @@ namespace TestCraft.Persistence.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
+                    b.Property<int>("Position")
+                        .HasColumnType("integer")
+                        .HasColumnName("position");
+
                     b.Property<string>("Priority")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("priority");
+
+                    b.Property<Guid?>("SectionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("section_id");
 
                     b.Property<Guid>("SuiteId")
                         .HasColumnType("uuid")
@@ -857,12 +865,14 @@ namespace TestCraft.Persistence.Migrations
 
                     b.HasIndex("Priority");
 
-                    b.HasIndex("SuiteId");
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("SuiteId", "Name")
                         .IsUnique()
                         .HasDatabaseName("uq_test_cases_active_name")
                         .HasFilter("NOT is_deleted");
+
+                    b.HasIndex("SuiteId", "SectionId", "Position");
 
                     b.ToTable("test_cases", (string)null);
                 });
@@ -1194,6 +1204,78 @@ namespace TestCraft.Persistence.Migrations
                     b.ToTable("test_runs", (string)null);
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestSection", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id")
+                        .HasDefaultValueSql("gen_random_uuid()");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<DateTimeOffset?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("ParentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_id");
+
+                    b.Property<int>("Position")
+                        .HasColumnType("integer")
+                        .HasColumnName("position");
+
+                    b.Property<Guid>("SuiteId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("suite_id");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at")
+                        .HasDefaultValueSql("now()");
+
+                    b.Property<int>("Version")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(1)
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("SuiteId", "ParentId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("uq_test_sections_active_name")
+                        .HasFilter("NOT is_deleted");
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("SuiteId", "ParentId", "Name"), false);
+
+                    b.ToTable("test_sections", (string)null);
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestSuite", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1523,11 +1605,18 @@ namespace TestCraft.Persistence.Migrations
 
             modelBuilder.Entity("TestCraft.Domain.Entities.TestCase", b =>
                 {
+                    b.HasOne("TestCraft.Domain.Entities.TestSection", "Section")
+                        .WithMany("TestCases")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("TestCraft.Domain.Entities.TestSuite", "Suite")
                         .WithMany("TestCases")
                         .HasForeignKey("SuiteId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Section");
 
                     b.Navigation("Suite");
                 });
@@ -1622,6 +1711,22 @@ namespace TestCraft.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestSection", b =>
+                {
+                    b.HasOne("TestCraft.Domain.Entities.TestSection", null)
+                        .WithMany()
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TestCraft.Domain.Entities.TestSuite", "Suite")
+                        .WithMany("Sections")
+                        .HasForeignKey("SuiteId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Suite");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestSuite", b =>
                 {
                     b.HasOne("TestCraft.Domain.Entities.Project", "Project")
@@ -1698,8 +1803,15 @@ namespace TestCraft.Persistence.Migrations
                     b.Navigation("TestResults");
                 });
 
+            modelBuilder.Entity("TestCraft.Domain.Entities.TestSection", b =>
+                {
+                    b.Navigation("TestCases");
+                });
+
             modelBuilder.Entity("TestCraft.Domain.Entities.TestSuite", b =>
                 {
+                    b.Navigation("Sections");
+
                     b.Navigation("TestCases");
                 });
 #pragma warning restore 612, 618

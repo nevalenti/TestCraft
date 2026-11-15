@@ -118,6 +118,50 @@ public class TestCasesController(ISender sender) : ApiControllerBase
         );
     }
 
+    /// <summary>Moves test cases into a section of the suite.</summary>
+    [HttpPost("move")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Move(
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        MoveTestCases.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+            },
+            cancellationToken
+        );
+
+        return NoContent();
+    }
+
+    /// <summary>Sets the position of several test cases.</summary>
+    [HttpPut("order")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> Reorder(
+        ProjectId projectId,
+        TestSuiteId suiteId,
+        ReorderTestCases.Command command,
+        CancellationToken cancellationToken
+    )
+    {
+        await sender.Send(
+            command with
+            {
+                ProjectId = projectId,
+                SuiteId = suiteId,
+            },
+            cancellationToken
+        );
+
+        return NoContent();
+    }
+
     /// <summary>Updates a test case's details.</summary>
     [HttpPut("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

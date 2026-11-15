@@ -14,6 +14,7 @@ public abstract record TestCaseListQuery : SearchPageQuery
         Name,
         Priority,
         CreatedAt,
+        Position,
     }
 
     /// <summary>Only test cases that carry this label.</summary>
@@ -47,12 +48,28 @@ public abstract record TestCaseListQuery : SearchPageQuery
                 testCase => testCase.Id
             ),
             SortField.Priority => cases.SortedBy(PriorityRank, SortDir, testCase => testCase.Id),
+            SortField.Position => ByPosition(cases),
             _ => cases.SortedBy(testCase => testCase.CreatedAt, SortDir, testCase => testCase.Id),
         };
 
         return sorted
             .Select(TestCaseResponse.Projection)
             .ToPaginatedAsync(ToPagination(), cancellationToken);
+    }
+
+    /// <summary>Top-level cases first, then each section's cases; positions only order cases within one section.</summary>
+    private IOrderedQueryable<TestCase> ByPosition(IQueryable<TestCase> cases)
+    {
+        var bySection = cases
+            .OrderBy(testCase => testCase.SectionId != null)
+            .ThenBy(testCase => testCase.Section!.Position)
+            .ThenBy(testCase => testCase.SectionId);
+
+        return SortDir == SortDirection.Desc
+            ? bySection
+                .ThenByDescending(testCase => testCase.Position)
+                .ThenByDescending(testCase => testCase.Id)
+            : bySection.ThenBy(testCase => testCase.Position).ThenBy(testCase => testCase.Id);
     }
 
     private static Expression<Func<TestCase, int>> BuildPriorityRank()

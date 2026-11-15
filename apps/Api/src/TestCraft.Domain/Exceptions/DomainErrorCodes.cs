@@ -19,6 +19,11 @@ public static class DomainErrorCodes
 
     public const string StepsNotFound = "STEPS_NOT_FOUND";
 
+    public const string SectionCycle = "SECTION_CYCLE";
+    public const string SectionTooDeep = "SECTION_TOO_DEEP";
+    public const string SectionsNotFound = "SECTIONS_NOT_FOUND";
+    public const string CasesNotFound = "CASES_NOT_FOUND";
+
     public const string MissingSubjectClaim = "MISSING_SUBJECT_CLAIM";
 
     public const string UserNotFound = "USER_NOT_FOUND";

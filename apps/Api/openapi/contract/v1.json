@@ -758,7 +758,8 @@
         "examples": [
           {
             "name": "Pay with a saved card",
-            "priority": "high"
+            "priority": "high",
+            "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13"
           },
           {
             "name": "Apply an expired coupon"
@@ -791,6 +792,19 @@
                 "type": "null"
               }
             ]
+          },
+          "section_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the section to create the test case in. Null puts it at the top level of the suite.",
+            "title": "Section Id"
           }
         },
         "required": ["name"],
@@ -2814,7 +2828,9 @@
             "step_count": 3,
             "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
             "updated_at": "2026-09-02T10:00:00Z",
-            "version": 1
+            "version": 1,
+            "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+            "position": 1
           }
         ],
         "properties": {
@@ -2871,12 +2887,31 @@
             "description": "Current version; the ETag header carries the same value.",
             "title": "Version",
             "type": "integer"
+          },
+          "section_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the section the test case is in. Null means the top level of the suite.",
+            "title": "Section Id"
+          },
+          "position": {
+            "description": "The test case's place within its section, lowest first.",
+            "title": "Position",
+            "type": "integer"
           }
         },
         "required": [
           "id",
           "version",
           "suite_id",
+          "position",
           "name",
           "priority",
           "step_count",
@@ -4132,7 +4167,7 @@
                 "type": "null"
               }
             ],
-            "description": "Suite to copy into; it must belong to the same project. null copies into the source suite.",
+            "description": "Suite to copy into; it must belong to the same project. null copies into the source suite and section; another suite gets the copy at its top level.",
             "title": "Target Suite Id"
           }
         },
@@ -4205,6 +4240,384 @@
         "title": "CloneTestPlanRequest",
         "type": "object",
         "description": "Options for copying a test plan. Every field is optional."
+      },
+      "TestSectionResponse": {
+        "description": "A section of a test suite: a named folder of test cases that can hold subsections.",
+        "examples": [
+          {
+            "case_count": 4,
+            "created_at": "2026-09-02T10:00:00Z",
+            "description": "Paying with cards saved on the account",
+            "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+            "name": "Saved cards",
+            "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+            "position": 1,
+            "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+            "updated_at": "2026-09-02T10:00:00Z",
+            "version": 1
+          }
+        ],
+        "properties": {
+          "case_count": {
+            "description": "Number of test cases directly in the section, not counting subsections.",
+            "title": "Case Count",
+            "type": "integer"
+          },
+          "created_at": {
+            "description": "When the section was created (UTC).",
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The section's description. Null when none is set.",
+            "title": "Description"
+          },
+          "id": {
+            "description": "ID of the section.",
+            "format": "uuid",
+            "type": "string",
+            "title": "Id"
+          },
+          "name": {
+            "description": "The section's display name.",
+            "title": "Name",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the parent section. Null means the section sits at the top level of the suite.",
+            "title": "Parent Id"
+          },
+          "position": {
+            "description": "The section's place among its siblings, lowest first.",
+            "title": "Position",
+            "type": "integer"
+          },
+          "suite_id": {
+            "description": "ID of the suite the section belongs to.",
+            "format": "uuid",
+            "type": "string",
+            "title": "Suite Id"
+          },
+          "updated_at": {
+            "description": "When the section was last updated (UTC).",
+            "format": "date-time",
+            "title": "Updated At",
+            "type": "string"
+          },
+          "version": {
+            "description": "Current version; the ETag header carries the same value.",
+            "title": "Version",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "version",
+          "suite_id",
+          "name",
+          "position",
+          "case_count",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "TestSectionResponse",
+        "type": "object"
+      },
+      "CreateTestSectionRequest": {
+        "additionalProperties": false,
+        "description": "Body for creating a section.",
+        "examples": [
+          {
+            "name": "Saved cards",
+            "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80"
+          },
+          {
+            "name": "Checkout"
+          }
+        ],
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The section's description. Null leaves it empty.",
+            "title": "Description"
+          },
+          "name": {
+            "description": "The section's display name, unique among its siblings.",
+            "maxLength": 255,
+            "title": "Name",
+            "type": "string"
+          },
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the parent section. Null creates the section at the top level of the suite.",
+            "title": "Parent Id"
+          }
+        },
+        "required": ["name"],
+        "title": "CreateTestSectionRequest",
+        "type": "object"
+      },
+      "UpdateTestSectionRequest": {
+        "additionalProperties": false,
+        "description": "Body for renaming a section or changing its description.",
+        "examples": [
+          {
+            "description": "Paying with cards saved on the account",
+            "name": "Saved cards"
+          }
+        ],
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "maxLength": 2000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The section's new description. Null clears it.",
+            "title": "Description"
+          },
+          "name": {
+            "description": "The section's new display name, unique among its siblings.",
+            "maxLength": 255,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": ["name"],
+        "title": "UpdateTestSectionRequest",
+        "type": "object"
+      },
+      "MoveTestSectionRequest": {
+        "additionalProperties": false,
+        "description": "Body for moving a section under another parent in the same suite.",
+        "examples": [
+          {
+            "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+            "position": 2
+          },
+          {
+            "parent_id": null
+          }
+        ],
+        "properties": {
+          "parent_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the new parent section. Null moves the section to the top level of the suite.",
+            "title": "Parent Id"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "minimum": 1,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "The section's place among its new siblings. Null puts it last.",
+            "title": "Position"
+          }
+        },
+        "title": "MoveTestSectionRequest",
+        "type": "object"
+      },
+      "TestSectionOrder": {
+        "additionalProperties": false,
+        "description": "The new position for one section.",
+        "properties": {
+          "id": {
+            "description": "ID of the section to reposition.",
+            "format": "uuid",
+            "type": "string",
+            "title": "Id"
+          },
+          "position": {
+            "description": "The section's new place among its siblings, lowest first.",
+            "minimum": 1,
+            "title": "Position",
+            "type": "integer"
+          }
+        },
+        "required": ["id", "position"],
+        "title": "TestSectionOrder",
+        "type": "object"
+      },
+      "TestCaseOrder": {
+        "additionalProperties": false,
+        "description": "The new position for one test case.",
+        "properties": {
+          "id": {
+            "description": "ID of the test case to reposition.",
+            "format": "uuid",
+            "type": "string",
+            "title": "Id"
+          },
+          "position": {
+            "description": "The test case's new place within its section, lowest first.",
+            "minimum": 1,
+            "title": "Position",
+            "type": "integer"
+          }
+        },
+        "required": ["id", "position"],
+        "title": "TestCaseOrder",
+        "type": "object"
+      },
+      "ReorderTestSectionsRequest": {
+        "additionalProperties": false,
+        "description": "Body for setting the position of several sections.",
+        "examples": [
+          {
+            "sections": [
+              {
+                "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                "position": 1
+              },
+              {
+                "id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                "position": 2
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "sections": {
+            "description": "The sections to reposition. Sections not listed keep their position.",
+            "items": {
+              "$ref": "#/components/schemas/TestSectionOrder"
+            },
+            "minItems": 1,
+            "title": "Sections",
+            "type": "array"
+          }
+        },
+        "required": ["sections"],
+        "title": "ReorderTestSectionsRequest",
+        "type": "object"
+      },
+      "ReorderTestCasesRequest": {
+        "additionalProperties": false,
+        "description": "Body for setting the position of several test cases.",
+        "examples": [
+          {
+            "cases": [
+              {
+                "id": "0b8f6a52-3c1e-4d7a-9a63-5b2f1e0c4d11",
+                "position": 1
+              },
+              {
+                "id": "8b71c945-5129-4bb8-8d8c-1f75491eb4d2",
+                "position": 2
+              }
+            ]
+          }
+        ],
+        "properties": {
+          "cases": {
+            "description": "The test cases to reposition. Cases not listed keep their position.",
+            "items": {
+              "$ref": "#/components/schemas/TestCaseOrder"
+            },
+            "minItems": 1,
+            "title": "Cases",
+            "type": "array"
+          }
+        },
+        "required": ["cases"],
+        "title": "ReorderTestCasesRequest",
+        "type": "object"
+      },
+      "MoveTestCasesRequest": {
+        "additionalProperties": false,
+        "description": "Body for moving test cases into a section of the same suite.",
+        "examples": [
+          {
+            "case_ids": [
+              "0b8f6a52-3c1e-4d7a-9a63-5b2f1e0c4d11",
+              "8b71c945-5129-4bb8-8d8c-1f75491eb4d2"
+            ],
+            "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13"
+          },
+          {
+            "case_ids": ["0b8f6a52-3c1e-4d7a-9a63-5b2f1e0c4d11"],
+            "section_id": null
+          }
+        ],
+        "properties": {
+          "case_ids": {
+            "description": "IDs of the test cases to move, in the order they should end up.",
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Case Ids",
+            "type": "array"
+          },
+          "section_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ID of the destination section. Null moves the cases to the top level of the suite.",
+            "title": "Section Id"
+          }
+        },
+        "required": ["case_ids"],
+        "title": "MoveTestCasesRequest",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -7988,7 +8401,7 @@
     },
     "/api/v1/projects/{project_id}/cases": {
       "get": {
-        "description": "Lists test cases from every suite in the project, with the same filters and sorting as the per-suite list.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
+        "description": "Lists test cases from every suite in the project, with the same `label_id`, `search` and sorting options as the per-suite list.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
         "operationId": "list_test_cases_by_project",
         "parameters": [
           {
@@ -8075,7 +8488,7 @@
             "required": false,
             "schema": {
               "default": "created_at",
-              "enum": ["name", "priority", "created_at"],
+              "enum": ["name", "priority", "created_at", "position"],
               "title": "Sort By",
               "type": "string"
             }
@@ -8118,7 +8531,9 @@
                       "step_count": 3,
                       "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                       "updated_at": "2026-09-02T10:00:00Z",
-                      "version": 1
+                      "version": 1,
+                      "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                      "position": 1
                     }
                   ],
                   "page": 1,
@@ -24288,7 +24703,7 @@
     },
     "/api/v1/projects/{project_id}/suites/{suite_id}/cases": {
       "get": {
-        "description": "Lists the test cases in one suite, oldest first by default, each with its labels and step count. Filter by `label_id`; `search` matches test case names; sort by name, priority or creation time.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
+        "description": "Lists the test cases in one suite, oldest first by default, each with its labels and step count. Filter by `label_id`, or by `section_id` (with or without subsections, see `include_descendants`); `search` matches test case names; sort by name, priority, creation time or `position`. Position sorting lists the top-level cases first, then each section (in its own position order) with its cases in position order.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
         "operationId": "list_test_cases",
         "parameters": [
           {
@@ -24380,13 +24795,44 @@
             }
           },
           {
+            "description": "Only test cases in this section (and its subsections, unless `include_descendants` is false).",
+            "in": "query",
+            "name": "section_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "uuid",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Only test cases in this section (and its subsections, unless `include_descendants` is false).",
+              "title": "Section Id"
+            }
+          },
+          {
+            "description": "Whether to include test cases in subsections. With no `section_id`, false returns only the test cases at the top level of the suite.",
+            "in": "query",
+            "name": "include_descendants",
+            "required": false,
+            "schema": {
+              "default": true,
+              "description": "Whether to include test cases in subsections. With no `section_id`, false returns only the test cases at the top level of the suite.",
+              "title": "Include Descendants",
+              "type": "boolean"
+            }
+          },
+          {
             "description": "Field to sort by.",
             "in": "query",
             "name": "sort_by",
             "required": false,
             "schema": {
               "default": "created_at",
-              "enum": ["name", "priority", "created_at"],
+              "enum": ["name", "priority", "created_at", "position"],
               "title": "Sort By",
               "type": "string"
             }
@@ -24429,7 +24875,9 @@
                       "step_count": 3,
                       "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                       "updated_at": "2026-09-02T10:00:00Z",
-                      "version": 1
+                      "version": 1,
+                      "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                      "position": 1
                     }
                   ],
                   "page": 1,
@@ -24608,7 +25056,7 @@
         "tags": ["test-cases"]
       },
       "post": {
-        "description": "Creates a test case in the suite. Names must be unique within the suite; a duplicate returns 409. `priority` defaults to `medium`.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "description": "Creates a test case in the suite. Names must be unique within the suite; a duplicate returns 409. `priority` defaults to `medium`. `section_id` must be a section of this suite; the case goes last in it.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
         "operationId": "create_test_case",
         "parameters": [
           {
@@ -24670,7 +25118,9 @@
                   "step_count": 3,
                   "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                   "updated_at": "2026-09-02T10:00:00Z",
-                  "version": 1
+                  "version": 1,
+                  "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "position": 1
                 },
                 "schema": {
                   "$ref": "#/components/schemas/TestCaseResponse"
@@ -25163,7 +25613,9 @@
                   "step_count": 3,
                   "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                   "updated_at": "2026-09-02T10:00:00Z",
-                  "version": 1
+                  "version": 1,
+                  "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "position": 1
                 },
                 "schema": {
                   "$ref": "#/components/schemas/TestCaseResponse"
@@ -25431,7 +25883,9 @@
                   "step_count": 3,
                   "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                   "updated_at": "2026-09-02T10:00:00Z",
-                  "version": 1
+                  "version": 1,
+                  "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "position": 1
                 },
                 "schema": {
                   "$ref": "#/components/schemas/TestCaseResponse"
@@ -28182,7 +28636,9 @@
                   "step_count": 3,
                   "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
                   "updated_at": "2026-09-02T10:00:00Z",
-                  "version": 1
+                  "version": 1,
+                  "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "position": 1
                 },
                 "schema": {
                   "$ref": "#/components/schemas/TestCaseResponse"
@@ -28422,7 +28878,7 @@
     },
     "/api/v1/projects/{project_id}/suites/{suite_id}/clone": {
       "post": {
-        "description": "Copies a suite, with its test cases, their steps and labels, into this project or another project. The copy keeps the source name, adding \" (copy)\" when a suite with that name already exists in the target project. Copying into another project needs the editor role there and is not available to API tokens; labels are matched by name in the target project and created when missing. Results, attachments and plans are not copied.\n\n**Access:** the editor role or higher. API tokens need the `suites_write` scope.",
+        "description": "Copies a suite, with its sections, test cases, their steps and labels, into this project or another project. The copy keeps the source name, adding \" (copy)\" when a suite with that name already exists in the target project. Copying into another project needs the editor role there and is not available to API tokens; labels are matched by name in the target project and created when missing. Results, attachments and plans are not copied.\n\n**Access:** the editor role or higher. API tokens need the `suites_write` scope.",
         "operationId": "clone_test_suite",
         "parameters": [
           {
@@ -29032,6 +29488,2319 @@
         "summary": "Copy a test plan",
         "tags": ["test-plans"]
       }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/sections": {
+      "get": {
+        "description": "Returns every section of the suite as a flat list, ordered by `position`. The list is not paginated, so a client can build the whole tree from `parent_id` in one request.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
+        "operationId": "list_test_sections",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": [
+                  {
+                    "case_count": 4,
+                    "created_at": "2026-09-02T10:00:00Z",
+                    "description": "Paying with cards saved on the account",
+                    "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                    "name": "Saved cards",
+                    "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                    "position": 1,
+                    "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+                    "updated_at": "2026-09-02T10:00:00Z",
+                    "version": 1
+                  }
+                ],
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TestSectionResponse"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_read scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List a suite's sections",
+        "tags": ["test-sections"]
+      },
+      "post": {
+        "description": "Creates a section in the suite, at the top level or under `parent_id`, and puts it last among its siblings. Names must be unique among siblings; a duplicate returns 409. Sections nest at most 10 levels deep (422 `SECTION_TOO_DEEP`).\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "create_test_section",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "name": "Saved cards",
+                "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/CreateTestSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "case_count": 4,
+                  "created_at": "2026-09-02T10:00:00Z",
+                  "description": "Paying with cards saved on the account",
+                  "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "name": "Saved cards",
+                  "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                  "position": 1,
+                  "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+                  "updated_at": "2026-09-02T10:00:00Z",
+                  "version": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TestSectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A record with these values already exists",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 409,
+                  "title": "Conflict",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The requested change conflicts with an existing resource"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create a section",
+        "tags": ["test-sections"]
+      }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/sections/order": {
+      "put": {
+        "description": "Sets the `position` of the listed sections in one request. Every listed ID must be a section of this suite (422 `SECTIONS_NOT_FOUND`); sections that aren't listed keep their position.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "reorder_test_sections",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "sections": [
+                  {
+                    "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                    "position": 1
+                  },
+                  {
+                    "id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                    "position": 2
+                  }
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ReorderTestSectionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reorder sections",
+        "tags": ["test-sections"]
+      }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}": {
+      "delete": {
+        "description": "Deletes the section, all its subsections and every test case in them. Results already recorded in runs are kept, and test plans that contained the deleted cases get a new version.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "delete_test_section",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the section.",
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete a section",
+        "tags": ["test-sections"]
+      },
+      "get": {
+        "description": "Returns a single section.\n\n**Access:** the viewer role or higher. API tokens need the `cases_read` scope.",
+        "operationId": "get_test_section",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the section.",
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "case_count": 4,
+                  "created_at": "2026-09-02T10:00:00Z",
+                  "description": "Paying with cards saved on the account",
+                  "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "name": "Saved cards",
+                  "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                  "position": 1,
+                  "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+                  "updated_at": "2026-09-02T10:00:00Z",
+                  "version": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TestSectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "ETag": {
+                "description": "Current version of the resource; send it back as If-Match on the next PUT.",
+                "schema": {
+                  "example": "\"3\"",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_read scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get a section",
+        "tags": ["test-sections"]
+      },
+      "put": {
+        "description": "Replaces the section's name and description. Names must be unique among siblings; a duplicate returns 409. To change the parent, use the move endpoint.\n\nSend the `ETag` from your last read as `If-Match`; it is required. A stale value returns 412.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "update_test_section",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the section.",
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ETag from your last read of this resource. A stale value returns 412.",
+            "in": "header",
+            "name": "if-match",
+            "required": true,
+            "schema": {
+              "description": "ETag from your last read of this resource. A stale value returns 412.",
+              "title": "If-Match",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "description": "Paying with cards saved on the account",
+                "name": "Saved cards"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTestSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "case_count": 4,
+                  "created_at": "2026-09-02T10:00:00Z",
+                  "description": "Paying with cards saved on the account",
+                  "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "name": "Saved cards",
+                  "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                  "position": 1,
+                  "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+                  "updated_at": "2026-09-02T10:00:00Z",
+                  "version": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TestSectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "ETag": {
+                "description": "Current version of the resource; send it back as If-Match on the next PUT.",
+                "schema": {
+                  "example": "\"3\"",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A record with these values already exists",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 409,
+                  "title": "Conflict",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The requested change conflicts with an existing resource"
+          },
+          "412": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "This was changed by someone else (now version 3, you sent 2); reload it and try again",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 412,
+                  "title": "Precondition Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "If-Match does not match the current version; reload and retry"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update a section",
+        "tags": ["test-sections"]
+      }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/sections/{section_id}/move": {
+      "post": {
+        "description": "Moves the section, with its subsections and test cases, under `parent_id` in the same suite, or to the top level when `parent_id` is null. A section can't move into itself or one of its subsections (422 `SECTION_CYCLE`), and the result can't nest more than 10 levels deep (422 `SECTION_TOO_DEEP`). A sibling with the same name returns 409.\n\nSend the `ETag` from your last read as `If-Match`; it is required. A stale value returns 412.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "move_test_section",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the section.",
+            "in": "path",
+            "name": "section_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Section Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ETag from your last read of this resource. A stale value returns 412.",
+            "in": "header",
+            "name": "if-match",
+            "required": true,
+            "schema": {
+              "description": "ETag from your last read of this resource. A stale value returns 412.",
+              "title": "If-Match",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                "position": 2
+              },
+              "schema": {
+                "$ref": "#/components/schemas/MoveTestSectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "case_count": 4,
+                  "created_at": "2026-09-02T10:00:00Z",
+                  "description": "Paying with cards saved on the account",
+                  "id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13",
+                  "name": "Saved cards",
+                  "parent_id": "7a2d9e41-0b6c-4f3a-8e57-1c4b9d2f6a80",
+                  "position": 1,
+                  "suite_id": "9e4b7a10-2c6d-4f8e-b1a3-7d5c0e2f6a48",
+                  "updated_at": "2026-09-02T10:00:00Z",
+                  "version": 1
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TestSectionResponse"
+                }
+              }
+            },
+            "description": "Successful Response",
+            "headers": {
+              "ETag": {
+                "description": "Current version of the resource; send it back as If-Match on the next PUT.",
+                "schema": {
+                  "example": "\"3\"",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "409": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A record with these values already exists",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 409,
+                  "title": "Conflict",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The requested change conflicts with an existing resource"
+          },
+          "412": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "This was changed by someone else (now version 3, you sent 2); reload it and try again",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 412,
+                  "title": "Precondition Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "If-Match does not match the current version; reload and retry"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Move a section",
+        "tags": ["test-sections"]
+      }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/cases/move": {
+      "post": {
+        "description": "Moves the listed test cases into `section_id`, or to the top level of the suite when it is null, after the cases already there and in the order listed. Every listed ID must be a test case of this suite (422 `CASES_NOT_FOUND`).\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "move_test_cases",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "case_ids": [
+                  "0b8f6a52-3c1e-4d7a-9a63-5b2f1e0c4d11",
+                  "8b71c945-5129-4bb8-8d8c-1f75491eb4d2"
+                ],
+                "section_id": "3c7e1f92-5a4b-4d8e-b6c1-9f2a0d7e5b13"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/MoveTestCasesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Move test cases to a section",
+        "tags": ["test-cases"]
+      }
+    },
+    "/api/v1/projects/{project_id}/suites/{suite_id}/cases/order": {
+      "put": {
+        "description": "Sets the `position` of the listed test cases in one request. Every listed ID must be a test case of this suite (422 `CASES_NOT_FOUND`); test cases that aren't listed keep their position.\n\n**Access:** the editor role or higher. API tokens need the `cases_write` scope.",
+        "operationId": "reorder_test_cases",
+        "parameters": [
+          {
+            "description": "ID of the project.",
+            "in": "path",
+            "name": "project_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Project Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "ID of the test suite.",
+            "in": "path",
+            "name": "suite_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Suite Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "cases": [
+                  {
+                    "id": "0b8f6a52-3c1e-4d7a-9a63-5b2f1e0c4d11",
+                    "position": 1
+                  },
+                  {
+                    "id": "8b71c945-5129-4bb8-8d8c-1f75491eb4d2",
+                    "position": 2
+                  }
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ReorderTestCasesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Missing bearer token",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 401,
+                  "title": "Unauthorized",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Missing, invalid or expired credentials",
+            "headers": {
+              "WWW-Authenticate": {
+                "description": "Bearer authentication is required.",
+                "schema": {
+                  "example": "Bearer",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "403": {
+            "content": {
+              "application/problem+json": {
+                "examples": {
+                  "missing_token_scope": {
+                    "value": {
+                      "detail": "This API token needs the cases_write scope",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  },
+                  "role_too_low": {
+                    "value": {
+                      "detail": "This action requires the editor role or higher",
+                      "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                      "status": 403,
+                      "title": "Forbidden",
+                      "type": "about:blank"
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Your project role is too low, or the API token lacks the needed scope"
+          },
+          "404": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Not Found",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 404,
+                  "title": "Not Found",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The project or resource does not exist, or you cannot access it"
+          },
+          "413": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Request body too large",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 413,
+                  "title": "Content Too Large",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "The request body is larger than 100,000 bytes"
+          },
+          "422": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "name: must not be blank",
+                  "errors": [
+                    {
+                      "field": "name",
+                      "message": "must not be blank",
+                      "pointer": "#/name"
+                    }
+                  ],
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 422,
+                  "title": "Validation Failed",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Request validation or business rule failed"
+          },
+          "429": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "Too Many Requests",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 429,
+                  "title": "Too Many Requests",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "Rate limit exceeded; retry after Retry-After seconds",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          },
+          "500": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "An unexpected error occurred",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 500,
+                  "title": "An unexpected error occurred",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "An unexpected server error occurred"
+          },
+          "503": {
+            "content": {
+              "application/problem+json": {
+                "example": {
+                  "detail": "A backing service is unavailable; please retry",
+                  "instance": "3f0c9a52-6d1b-4e8a-9c27-5b1e8d4f7a10",
+                  "status": 503,
+                  "title": "Service Unavailable",
+                  "type": "about:blank"
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            },
+            "description": "A backing service or authentication provider is unavailable",
+            "headers": {
+              "Retry-After": {
+                "description": "Seconds to wait before retrying, when supplied by the server.",
+                "schema": {
+                  "type": "integer"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reorder test cases",
+        "tags": ["test-cases"]
+      }
     }
   },
   "servers": [
@@ -29056,6 +31825,10 @@
     {
       "description": "Groups of test cases within a project.",
       "name": "test-suites"
+    },
+    {
+      "description": "Nested folders that organize the test cases of a suite.",
+      "name": "test-sections"
     },
     {
       "description": "Test case definitions.",
@@ -29123,6 +31896,7 @@
       "name": "Test design",
       "tags": [
         "test-suites",
+        "test-sections",
         "test-cases",
         "test-case-steps",
         "labels",

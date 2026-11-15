@@ -55,6 +55,10 @@ ingress-nginx:
 
 keycloak:
   hostname: https://auth.testcraft.pro
+  extraUsers: []
+
+seed:
+  enabled: false
 
 platform:
   webBaseUrl: https://testcraft.pro

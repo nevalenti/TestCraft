@@ -6,3 +6,7 @@ metadata:
 data:
   testcraft-realm.json: |
 {{ .Files.Get "files/keycloak/realm.json" | indent 4 }}
+{{- with .Values.keycloak.extraUsers }}
+  testcraft-users-0.json: |
+    {{- dict "realm" "testcraft" "users" . | toPrettyJson | nindent 4 }}
+{{- end }}

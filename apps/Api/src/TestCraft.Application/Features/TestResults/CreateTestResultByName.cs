@@ -4,6 +4,7 @@ using TestCraft.Application.Common.Extensions;
 using TestCraft.Application.Common.Interfaces;
 using TestCraft.Application.Common.Security;
 using TestCraft.Application.Common.Validation;
+using TestCraft.Application.Features.TestCases;
 using TestCraft.Domain.Entities;
 using TestCraft.Domain.Enums;
 
@@ -88,11 +89,12 @@ public static class CreateTestResultByName
                 cancellationToken
             );
 
+            var position = await context.NextCasePositionAsync(suite.Id, null, cancellationToken);
             var testCase = await context.GetOrCreateAsync(
                 context.TestCases,
                 existingCase =>
                     existingCase.SuiteId == suite.Id && existingCase.Name == request.TestCaseName,
-                () => TestCase.Create(suite.Id, request.TestCaseName),
+                () => TestCase.Create(suite.Id, request.TestCaseName, position: position),
                 dbExceptionClassifier,
                 cancellationToken
             );

@@ -8,6 +8,7 @@ public interface IApplicationDbContext
     DbSet<Project> Projects { get; }
     DbSet<TestSuite> TestSuites { get; }
     DbSet<TestCase> TestCases { get; }
+    DbSet<TestSection> TestSections { get; }
     DbSet<TestCaseStep> TestCaseSteps { get; }
     DbSet<TestRun> TestRuns { get; }
     DbSet<TestResult> TestResults { get; }
@@ -28,6 +29,9 @@ public interface IApplicationDbContext
     DbSet<Note> Notes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>Locks the suite row until the current transaction ends, serializing changes to its section tree.</summary>
+    Task LockSuiteAsync(TestSuiteId suiteId, CancellationToken cancellationToken);
 
     Task<T> ExecuteInTransactionAsync<T>(
         Func<CancellationToken, Task<T>> operation,

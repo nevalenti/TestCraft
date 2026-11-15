@@ -22,6 +22,7 @@ public class AppDbContext(
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<TestSuite> TestSuites => Set<TestSuite>();
     public DbSet<TestCase> TestCases => Set<TestCase>();
+    public DbSet<TestSection> TestSections => Set<TestSection>();
     public DbSet<TestCaseStep> TestCaseSteps => Set<TestCaseStep>();
     public DbSet<TestRun> TestRuns => Set<TestRun>();
     public DbSet<TestResult> TestResults => Set<TestResult>();
@@ -70,6 +71,12 @@ public class AppDbContext(
         ApplyAuditTimestamps();
         return await base.SaveChangesAsync(cancellationToken);
     }
+
+    public Task LockSuiteAsync(TestSuiteId suiteId, CancellationToken cancellationToken) =>
+        Database.ExecuteSqlAsync(
+            $"SELECT 1 FROM test_suites WHERE id = {suiteId.Value} FOR UPDATE",
+            cancellationToken
+        );
 
     public Task<T> ExecuteInTransactionAsync<T>(
         Func<CancellationToken, Task<T>> operation,

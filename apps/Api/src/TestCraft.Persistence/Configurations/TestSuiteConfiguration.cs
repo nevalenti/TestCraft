@@ -38,5 +38,10 @@ public class TestSuiteConfiguration : IEntityTypeConfiguration<TestSuite>
             .HasMany(testSuite => testSuite.TestCases)
             .WithOne(testCase => testCase.Suite)
             .HasForeignKey(testCase => testCase.SuiteId);
+
+        builder
+            .HasMany(testSuite => testSuite.Sections)
+            .WithOne(section => section.Suite)
+            .HasForeignKey(section => section.SuiteId);
     }
 }

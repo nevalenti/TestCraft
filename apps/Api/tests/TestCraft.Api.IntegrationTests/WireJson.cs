@@ -30,12 +30,25 @@ public static class WireJson
         T value,
         int version = 1,
         CancellationToken cancellationToken = default
+    ) =>
+        client.SendVersionedAsJsonAsync(
+            HttpMethod.Put,
+            requestUri,
+            value,
+            version,
+            cancellationToken
+        );
+
+    public static Task<HttpResponseMessage> SendVersionedAsJsonAsync<T>(
+        this HttpClient client,
+        HttpMethod method,
+        string? requestUri,
+        T value,
+        int version = 1,
+        CancellationToken cancellationToken = default
     )
     {
-        var request = new HttpRequestMessage(HttpMethod.Put, requestUri)
-        {
-            Content = Content(value),
-        };
+        var request = new HttpRequestMessage(method, requestUri) { Content = Content(value) };
         request.Headers.TryAddWithoutValidation("If-Match", $"\"{version}\"");
 
         return client.SendAsync(request, cancellationToken);

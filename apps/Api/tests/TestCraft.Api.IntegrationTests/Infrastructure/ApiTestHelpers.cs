@@ -9,6 +9,7 @@ using TestCraft.Application.Features.TestCases;
 using TestCraft.Application.Features.TestPlans;
 using TestCraft.Application.Features.TestResults;
 using TestCraft.Application.Features.TestRuns;
+using TestCraft.Application.Features.TestSections;
 using TestCraft.Application.Features.TestSuites;
 using TestCraft.Domain.Enums;
 
@@ -49,7 +50,8 @@ internal static class ApiTestHelpers
             ProjectId projectId,
             TestSuiteId suiteId,
             string name = "Case",
-            TestCasePriority? priority = null
+            TestCasePriority? priority = null,
+            TestSectionId? sectionId = null
         )
         {
             var response = await client.PostAsJsonAsync(
@@ -59,10 +61,26 @@ internal static class ApiTestHelpers
                     ProjectId = projectId,
                     Name = name,
                     Priority = priority,
+                    SectionId = sectionId,
                 }
             );
 
             return (await response.Content.ReadFromJsonAsync<TestCaseResponse>(JsonOptions))!;
+        }
+
+        public async Task<TestSectionResponse> CreateSectionAsync(
+            ProjectId projectId,
+            TestSuiteId suiteId,
+            string name = "Section",
+            TestSectionId? parentId = null
+        )
+        {
+            var response = await client.PostAsJsonAsync(
+                $"/api/v1/projects/{projectId}/suites/{suiteId}/sections",
+                new CreateTestSection.Command { Name = name, ParentId = parentId }
+            );
+
+            return (await response.Content.ReadFromJsonAsync<TestSectionResponse>(JsonOptions))!;
         }
 
         public async Task<TestRunResponse> CreateRunAsync(

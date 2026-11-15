@@ -27,6 +27,8 @@ public record TestCaseResponse : IVersionedResponse
             Id = testCase.Id,
             Version = testCase.Version,
             SuiteId = testCase.SuiteId,
+            SectionId = testCase.SectionId,
+            Position = testCase.Position,
             Name = testCase.Name,
             Description = testCase.Description,
             Priority = testCase.Priority,
@@ -54,6 +56,12 @@ public record TestCaseResponse : IVersionedResponse
 
     /// <summary>The suite the test case belongs to.</summary>
     public required TestSuiteId SuiteId { get; init; }
+
+    /// <summary>ID of the section the test case is in. Null means the top level of the suite.</summary>
+    public TestSectionId? SectionId { get; init; }
+
+    /// <summary>The test case's place within its section, lowest first.</summary>
+    public required int Position { get; init; }
 
     /// <summary>The test case's display name.</summary>
     public required string Name { get; init; }

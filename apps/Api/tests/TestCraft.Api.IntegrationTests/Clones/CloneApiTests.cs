@@ -10,6 +10,7 @@ using TestCraft.Application.Features.ProjectMembers;
 using TestCraft.Application.Features.TestCases;
 using TestCraft.Application.Features.TestCaseSteps;
 using TestCraft.Application.Features.TestPlans;
+using TestCraft.Application.Features.TestSections;
 using TestCraft.Application.Features.TestSuites;
 using TestCraft.Domain.Enums;
 
@@ -217,6 +218,46 @@ public class CloneApiTests(ApiFactory factory)
         (await StepsOfAsync(client, project.Id, copy.Id, copiedCase.Id))
             .Should()
             .ContainSingle(step => step.Action == "Enter the card");
+    }
+
+    [Fact]
+    public async Task CloneSuite_CopiesSectionTreeAndCasePlacement()
+    {
+        var client = CreateClient(Guid.NewGuid());
+        var project = await client.CreateProjectAsync();
+        var suite = await client.CreateSuiteAsync(project.Id, "Checkout");
+        var parent = await client.CreateSectionAsync(project.Id, suite.Id, "Payment");
+        var child = await client.CreateSectionAsync(project.Id, suite.Id, "Cards", parent.Id);
+        await client.CreateCaseAsync(project.Id, suite.Id, "Browse");
+        await client.CreateCaseAsync(project.Id, suite.Id, "Pay", sectionId: child.Id);
+
+        var copy = await ReadAsync<TestSuiteResponse>(
+            await client.PostAsJsonAsync(
+                $"/api/v1/projects/{project.Id}/suites/{suite.Id}/clone",
+                new CloneTestSuite.Command()
+            )
+        );
+
+        var sections = await (
+            await client.GetAsync($"/api/v1/projects/{project.Id}/suites/{copy.Id}/sections")
+        ).Content.ReadFromJsonAsync<List<TestSectionResponse>>(ApiTestHelpers.JsonOptions);
+        var copiedParent = sections!
+            .Should()
+            .ContainSingle(section => section.Name == "Payment")
+            .Subject;
+        var copiedChild = sections
+            .Should()
+            .ContainSingle(section => section.Name == "Cards")
+            .Subject;
+        copiedParent.ParentId.Should().BeNull();
+        copiedChild.ParentId.Should().Be(copiedParent.Id);
+        (await CasesOfAsync(client, project.Id, copy.Id))
+            .Select(testCase => (testCase.Name, testCase.SectionId, testCase.Position))
+            .Should()
+            .BeEquivalentTo([
+                ("Browse", (TestSectionId?)null, 1),
+                ("Pay", (TestSectionId?)copiedChild.Id, 1),
+            ]);
     }
 
     [Fact]
