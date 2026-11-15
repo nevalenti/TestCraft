@@ -17,10 +17,12 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { FormField } from "@/components/ui/form/FormField";
 import { FormSelect } from "@/components/ui/form/FormSelect";
 import { SectionErrorBoundary } from "@/components/ui/SectionErrorBoundary";
+import { SuiteChartSkeleton } from "@/features/analytics/AnalyticsSkeletons";
 import { useSuiteBreakdown } from "@/features/analytics/hooks";
 import { latestRuns } from "@/features/analytics/latestRuns";
 import { SuiteTooltip } from "@/features/analytics/SuiteTooltip";
 import { useTestRuns } from "@/features/testRuns/hooks";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 import { formatDate, truncate } from "@/lib/format";
 
 const routeApi = getRouteApi("/_app/projects/$projectId/analytics/suite");
@@ -37,6 +39,7 @@ export const AnalyticsSuiteTab = () => {
   const { projectId } = routeApi.useParams();
   const {
     data: runs,
+    isPending: isRunsPending,
     isError: isRunsError,
     error: runsError,
     refetch: refetchRuns,
@@ -51,10 +54,14 @@ export const AnalyticsSuiteTab = () => {
 
   const {
     data: suiteBreakdown,
+    isPending: isSuiteBreakdownPending,
     isError: isSuiteBreakdownError,
     error: suiteBreakdownError,
     refetch: refetchSuiteBreakdown,
   } = useSuiteBreakdown(projectId, suiteRunId);
+  const isChartPending =
+    isRunsPending || (!!suiteRunId && isSuiteBreakdownPending);
+  const showSkeleton = useIsLoadingVisible(isChartPending);
 
   const suiteData = useMemo(
     () =>
@@ -100,7 +107,9 @@ export const AnalyticsSuiteTab = () => {
         </div>
       </div>
 
-      {!suiteRunId && (
+      {isChartPending && showSkeleton && <SuiteChartSkeleton />}
+
+      {!isRunsPending && !suiteRunId && (
         <EmptyState
           icon={<Squares2X2Icon className="size-6" />}
           title="No run selected"
@@ -115,12 +124,15 @@ export const AnalyticsSuiteTab = () => {
         />
       )}
 
-      {suiteRunId && !isSuiteBreakdownError && suiteData.length === 0 && (
-        <EmptyState
-          icon={<Squares2X2Icon className="size-6" />}
-          title="No suite data"
-        />
-      )}
+      {suiteRunId &&
+        !isSuiteBreakdownPending &&
+        !isSuiteBreakdownError &&
+        suiteData.length === 0 && (
+          <EmptyState
+            icon={<Squares2X2Icon className="size-6" />}
+            title="No suite data"
+          />
+        )}
 
       {suiteRunId && !isSuiteBreakdownError && suiteData.length > 0 && (
         <div className="rounded-xl border border-border bg-base-100 px-4 pt-4 pb-2">

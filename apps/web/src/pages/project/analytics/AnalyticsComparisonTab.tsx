@@ -6,11 +6,13 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SegmentedControl } from "@/components/ui/SegmentedControl";
 import { TablePager } from "@/components/ui/TablePager";
+import { AnalyticsTableSkeleton } from "@/features/analytics/AnalyticsSkeletons";
 import { rowBg, STATUS_BADGE } from "@/features/analytics/comparisonHelpers";
 import { useRunComparison } from "@/features/analytics/hooks";
 import { latestRuns } from "@/features/analytics/latestRuns";
 import { RunComparisonPicker } from "@/features/analytics/RunComparisonPicker";
 import { useTestRuns } from "@/features/testRuns/hooks";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 import { usePagination } from "@/hooks/usePagination";
 import { cn } from "@/lib/cn";
 
@@ -22,6 +24,7 @@ export const AnalyticsComparisonTab = () => {
   const { projectId } = routeApi.useParams();
   const {
     data: runs,
+    isPending: isRunsPending,
     isError: isRunsError,
     error: runsError,
     refetch: refetchRuns,
@@ -49,6 +52,8 @@ export const AnalyticsComparisonTab = () => {
     error: comparisonError,
     refetch: refetchComparison,
   } = useRunComparison(projectId, submitted ? runA : "", submitted ? runB : "");
+  const isComparing = isRunsPending || (submitted && isComparisonPending);
+  const showSkeleton = useIsLoadingVisible(isComparing);
 
   const counts = useMemo(() => {
     if (!comparison) return null;
@@ -106,14 +111,16 @@ export const AnalyticsComparisonTab = () => {
         }}
       />
 
-      {!submitted && (
+      {!isRunsPending && !submitted && (
         <EmptyState
           icon={<ArrowsRightLeftIcon className="size-6" />}
           title="Select two runs to compare"
         />
       )}
 
-      {submitted && isComparisonPending && <p role="status">Comparing runs…</p>}
+      {isComparing && showSkeleton && (
+        <AnalyticsTableSkeleton label="Comparing runs…" chips={3} columns={4} />
+      )}
       {submitted && isComparisonError && (
         <ErrorState error={comparisonError} onRetry={refetchComparison} />
       )}

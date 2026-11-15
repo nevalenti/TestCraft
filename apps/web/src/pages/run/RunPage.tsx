@@ -123,8 +123,8 @@ export const RunPage = () => {
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}` },
-    { label: run?.name ?? "…" },
+    { label: project?.name, href: `/projects/${projectId}` },
+    { label: run?.name },
   ]);
 
   const resultsContent = (

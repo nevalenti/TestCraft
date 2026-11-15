@@ -6,6 +6,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DEFAULT_NOTE_TITLE } from "@/features/notes/constants";
 import { NoteEditor } from "@/features/notes/editor/NoteEditor";
+import { NoteEditorSkeleton } from "@/features/notes/editor/NoteEditorSkeleton";
 import {
   useDeleteProjectNote,
   useIsNoteSaveSettled,
@@ -16,6 +17,7 @@ import { NoteBackLink } from "@/features/notes/NoteBackLink";
 import { useProject } from "@/features/projects/hooks";
 import { useProjectPermissions } from "@/features/projects/permissions";
 import { useBreadcrumbs } from "@/hooks/useBreadcrumbs";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 
 const routeApi = getRouteApi("/_app/projects/$projectId/notes/$noteId");
 
@@ -40,10 +42,14 @@ export const ProjectNotePage = () => {
   const notesHref = `/projects/${projectId}/notes`;
   const { data: project } = useProject(projectId);
 
+  const showSkeleton = useIsLoadingVisible(
+    isPending || !note || !isSaveSettled,
+  );
+
   useBreadcrumbs(
     [
       { label: "Projects", href: "/projects" },
-      { label: project?.name ?? "…", href: `/projects/${projectId}` },
+      { label: project?.name, href: `/projects/${projectId}` },
       { label: "Notes", href: notesHref },
       { label: note?.title || DEFAULT_NOTE_TITLE },
     ],
@@ -51,7 +57,8 @@ export const ProjectNotePage = () => {
   );
 
   if (isError) return <ErrorState error={error} onRetry={refetch} />;
-  if (isPending || !note || !isSaveSettled) return null;
+  if (isPending || !note || !isSaveSettled)
+    return showSkeleton ? <NoteEditorSkeleton /> : null;
 
   const handleDelete = () => {
     deleteNote.mutate(noteId, {

@@ -2,6 +2,7 @@ import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 import { Link, type LinkOptions } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
 import { cn } from "@/lib/cn";
 
 interface PageHeaderProps {
@@ -38,7 +39,14 @@ export const PageHeader = ({
           </Link>
         )}
         <div className="flex min-w-0 flex-wrap items-center gap-x-2.5 gap-y-1">
-          <h1 className="page-title min-w-0 break-words">{title}</h1>
+          <h1 className="page-title min-w-0 break-words">
+            {title ?? (
+              <>
+                <span className="sr-only">Loading…</span>
+                <Skeleton className="my-1 h-5 w-56 max-w-full" />
+              </>
+            )}
+          </h1>
           {badge}
         </div>
         {description && (

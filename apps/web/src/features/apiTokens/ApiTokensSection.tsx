@@ -34,7 +34,13 @@ const tokenStatus = (token: {
 };
 
 export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
-  const { data: tokens, isError, error, refetch } = useApiTokens(projectId);
+  const {
+    data: tokens,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useApiTokens(projectId);
   const createToken = useCreateApiToken(projectId);
   const revokeToken = useRevokeApiToken(projectId);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -152,7 +158,9 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
           />
         ) : (
           <SettingsEntityList
-            items={visibleTokens ?? []}
+            items={visibleTokens}
+            isPending={isPending}
+            pendingLabel="Loading API tokens…"
             getKey={(t) => t.id}
             renderPrimary={(t) => (
               <span className="inline-flex items-center gap-2">

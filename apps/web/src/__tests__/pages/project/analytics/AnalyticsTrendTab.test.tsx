@@ -107,3 +107,17 @@ describe("AnalyticsTrendTab", () => {
     });
   });
 });
+
+describe("AnalyticsTrendTab while loading", () => {
+  it("shows the skeleton instead of the empty state", async () => {
+    vi.mocked(analyticsQueries.trend).mockReturnValue({
+      queryKey: ["pending-trend"],
+      queryFn: () => new Promise(() => {}),
+    } as never);
+    renderWithClient();
+    expect(await screen.findByRole("status")).toHaveTextContent(
+      "Loading trend data",
+    );
+    expect(screen.queryByText("No run data yet")).not.toBeInTheDocument();
+  });
+});

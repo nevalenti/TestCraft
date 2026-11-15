@@ -57,9 +57,6 @@ keycloak:
   hostname: https://auth.testcraft.pro
   extraUsers: []
 
-seed:
-  enabled: false
-
 platform:
   webBaseUrl: https://testcraft.pro
   glitchtipBaseUrl: https://glitchtip.testcraft.pro
@@ -77,6 +74,10 @@ postgres:
 
 mailpit:
   enabled: false
+
+seed:
+  enabled: false
+  ownerId: ""
 
 storage:
   postgres: 5Gi

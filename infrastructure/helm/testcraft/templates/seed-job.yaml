@@ -28,6 +28,10 @@ spec:
             {{- include "testcraft.containerSecurityContext" dict | nindent 12 }}
           env:
             {{- include "testcraft.appDatabaseEnv" . | nindent 12 }}
+            {{- with .Values.seed.ownerId }}
+            - name: SEED_OWNER_USER_ID
+              value: {{ . | quote }}
+            {{- end }}
           resources:
             requests:
               memory: 64Mi

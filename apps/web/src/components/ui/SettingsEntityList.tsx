@@ -2,9 +2,15 @@ import { TrashIcon } from "@heroicons/react/24/solid";
 import type { ReactNode } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton/Skeleton";
+import { SkeletonStatus } from "@/components/ui/skeleton/SkeletonStatus";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
+import { cn } from "@/lib/cn";
 
 interface SettingsEntityListProps<T> {
-  items: T[];
+  items: T[] | undefined;
+  isPending: boolean;
+  pendingLabel: string;
   getKey: (item: T) => string;
   renderLeading?: (item: T) => ReactNode;
   renderPrimary: (item: T) => ReactNode;
@@ -17,8 +23,46 @@ interface SettingsEntityListProps<T> {
   emptyTitle: string;
 }
 
+const ROW_WIDTHS = [
+  ["w-48", "w-64"],
+  ["w-36", "w-52"],
+  ["w-56", "w-44"],
+];
+
+const SettingsEntityListSkeleton = ({
+  label,
+  hasLeading,
+}: {
+  label: string;
+  hasLeading: boolean;
+}) => (
+  <SkeletonStatus label={label}>
+    <ul className="space-y-2">
+      {ROW_WIDTHS.map(([primary, secondary], index) => (
+        <li
+          key={index}
+          className="flex items-center justify-between gap-4 rounded-xl border border-border bg-base-200/40 px-4 py-2.5"
+        >
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            {hasLeading && (
+              <Skeleton className="size-8 shrink-0 rounded-full" />
+            )}
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5 py-0.5">
+              <Skeleton className={cn("h-3.5 max-w-full", primary)} />
+              <Skeleton className={cn("h-3 max-w-full", secondary)} />
+            </div>
+          </div>
+          <Skeleton className="size-6 shrink-0" />
+        </li>
+      ))}
+    </ul>
+  </SkeletonStatus>
+);
+
 export const SettingsEntityList = <T,>({
   items,
+  isPending,
+  pendingLabel,
   getKey,
   renderLeading,
   renderPrimary,
@@ -30,7 +74,17 @@ export const SettingsEntityList = <T,>({
   isRemoveHidden,
   emptyTitle,
 }: SettingsEntityListProps<T>) => {
-  if (items.length === 0) return <EmptyState compact title={emptyTitle} />;
+  const showSkeleton = useIsLoadingVisible(isPending);
+
+  if (isPending)
+    return showSkeleton ? (
+      <SettingsEntityListSkeleton
+        label={pendingLabel}
+        hasLeading={!!renderLeading}
+      />
+    ) : null;
+
+  if (!items?.length) return <EmptyState compact title={emptyTitle} />;
 
   return (
     <ul className="space-y-2">

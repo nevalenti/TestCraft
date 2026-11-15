@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 export interface BreadcrumbItem {
-  label: string;
+  label?: string;
   href?: string;
 }
 

@@ -41,7 +41,7 @@ export const RunPageHeader = ({
   onRerun,
 }: RunPageHeaderProps) => (
   <PageHeader
-    title={run?.name ?? "…"}
+    title={run?.name}
     badge={run && <RunStatusBadge status={run.status} />}
     backTo={{
       to: "/projects/$projectId/runs",

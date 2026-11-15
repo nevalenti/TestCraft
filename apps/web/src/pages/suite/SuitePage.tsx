@@ -73,8 +73,8 @@ export const SuitePage = () => {
 
   useBreadcrumbs([
     { label: "Projects", href: "/projects" },
-    { label: project?.name ?? "…", href: `/projects/${projectId}/suites` },
-    { label: suite?.name ?? "…" },
+    { label: project?.name, href: `/projects/${projectId}/suites` },
+    { label: suite?.name },
   ]);
 
   const deleteItem = modal.type === "delete" ? modal.item : null;

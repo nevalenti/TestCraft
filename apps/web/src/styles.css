@@ -411,6 +411,38 @@
   }
 }
 
+@utility skeleton-block {
+  background-color: oklch(from var(--color-base-content) l c h / 0.07);
+  background-image: linear-gradient(
+    100deg,
+    transparent 35%,
+    oklch(from var(--color-base-content) l c h / 0.07) 50%,
+    transparent 65%
+  );
+  background-size: 200vw 100%;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  animation: skeleton-sweep 1.8s ease-in-out infinite;
+}
+
+@keyframes skeleton-sweep {
+  from {
+    background-position: 100vw 0;
+  }
+  to {
+    background-position: -100vw 0;
+  }
+}
+
+@keyframes skeleton-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 @keyframes shine {
   0%,
   30% {

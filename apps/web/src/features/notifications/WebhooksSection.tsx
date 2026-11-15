@@ -16,7 +16,13 @@ import { WebhookForm } from "@/features/notifications/WebhookForm";
 import { useDebounce } from "@/hooks/useDebounce";
 
 export const WebhooksSection = ({ projectId }: { projectId: string }) => {
-  const { data: webhooks, isError, error, refetch } = useWebhooks(projectId);
+  const {
+    data: webhooks,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useWebhooks(projectId);
   const createWebhook = useCreateWebhook(projectId);
   const deleteWebhook = useDeleteWebhook(projectId);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -73,7 +79,9 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
         />
       ) : (
         <SettingsEntityList
-          items={visibleWebhooks ?? []}
+          items={visibleWebhooks}
+          isPending={isPending}
+          pendingLabel="Loading webhooks…"
           getKey={(wh) => wh.id}
           renderPrimary={(wh) => wh.url}
           renderSecondary={(wh) => wh.events.join(", ")}

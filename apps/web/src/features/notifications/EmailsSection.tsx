@@ -16,7 +16,13 @@ import {
 import { useDebounce } from "@/hooks/useDebounce";
 
 export const EmailsSection = ({ projectId }: { projectId: string }) => {
-  const { data: emailSubs, isError, error, refetch } = useEmails(projectId);
+  const {
+    data: emailSubs,
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useEmails(projectId);
   const createEmail = useCreateEmail(projectId);
   const deleteEmail = useDeleteEmail(projectId);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -69,7 +75,9 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
         />
       ) : (
         <SettingsEntityList
-          items={visibleSubs ?? []}
+          items={visibleSubs}
+          isPending={isPending}
+          pendingLabel="Loading email subscriptions…"
           getKey={(sub) => sub.id}
           renderPrimary={(sub) => sub.email}
           renderSecondary={(sub) => sub.events.join(", ")}

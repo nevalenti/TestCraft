@@ -5,7 +5,9 @@ import { useMemo } from "react";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { TablePager } from "@/components/ui/TablePager";
+import { AnalyticsTableSkeleton } from "@/features/analytics/AnalyticsSkeletons";
 import { useFlakyTests } from "@/features/analytics/hooks";
+import { useIsLoadingVisible } from "@/hooks/useIsLoadingVisible";
 import { usePagination } from "@/hooks/usePagination";
 import { cn } from "@/lib/cn";
 import { TABLE_PAGE_SIZE } from "@/lib/constants";
@@ -21,6 +23,7 @@ export const AnalyticsFlakyTab = () => {
     error,
     refetch,
   } = useFlakyTests(projectId);
+  const showSkeleton = useIsLoadingVisible(isPending);
 
   const sortedTests = useMemo(
     () =>
@@ -48,7 +51,14 @@ export const AnalyticsFlakyTab = () => {
     [sortedTests],
   );
 
-  if (isPending) return <p role="status">Loading flaky tests…</p>;
+  if (isPending)
+    return showSkeleton ? (
+      <AnalyticsTableSkeleton
+        label="Loading flaky tests…"
+        chips={3}
+        columns={6}
+      />
+    ) : null;
   if (isError) return <ErrorState error={error} onRetry={refetch} />;
 
   if (sortedTests.length === 0)

@@ -31,6 +31,7 @@ const memberLabel = (member: {
 export const MembersSection = ({ projectId }: { projectId: string }) => {
   const {
     data: members,
+    isPending,
     isError,
     error,
     refetch,
@@ -89,7 +90,9 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
         />
       ) : (
         <SettingsEntityList
-          items={visibleMembers ?? []}
+          items={visibleMembers}
+          isPending={isPending}
+          pendingLabel="Loading members…"
           getKey={(member) => member.id}
           renderLeading={(member) => (
             <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-bold text-secondary-content">
