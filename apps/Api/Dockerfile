@@ -18,7 +18,7 @@ COPY apps/Api/openapi/contract/v1.json apps/Api/openapi/contract/
 
 RUN dotnet publish apps/Api/src/TestCraft.Api/TestCraft.Api.csproj -c Release -o /app --no-restore
 
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-alpine AS runtime
 WORKDIR /app
 
 ARG APK_CACHE_BUST=0
