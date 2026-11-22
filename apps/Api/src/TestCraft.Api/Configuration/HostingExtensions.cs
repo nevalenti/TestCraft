@@ -69,67 +69,70 @@ public static class HostingExtensions
             .AddOutputCaching();
     }
 
-    public static void LogStartupConfiguration(this WebApplication app)
+    extension(WebApplication app)
     {
-        var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
-        loggerFactory
-            .CreateLogger(typeof(StartupConfigurationLogging))
-            .LogStartupConfiguration(app.Services);
-        loggerFactory
-            .CreateLogger(typeof(InfrastructureFallbackLogging))
-            .LogInfrastructureFallbacks(
-                app.Services.GetRequiredService<IOptions<InfrastructureOptions>>().Value
+        public void LogStartupConfiguration()
+        {
+            var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
+            loggerFactory
+                .CreateLogger(typeof(StartupConfigurationLogging))
+                .LogStartupConfiguration(app.Services);
+            loggerFactory
+                .CreateLogger(typeof(InfrastructureFallbackLogging))
+                .LogInfrastructureFallbacks(
+                    app.Services.GetRequiredService<IOptions<InfrastructureOptions>>().Value
+                );
+        }
+
+        public void ConfigurePipeline()
+        {
+            app.UseForwardedHeaders();
+
+            app.UseRequestId();
+            app.UsePageId();
+            app.UseSecurityHeaders();
+            app.UseCacheControl();
+            app.UseIpRateLimit();
+            app.UseResponseCompression();
+
+            app.UseRequestLogging();
+
+            app.UseExceptionHandler();
+
+            app.UseRouting();
+
+            app.UseMaxBodySize();
+
+            app.UseWebSockets();
+
+            app.UseHttpMetrics();
+            app.UseObservabilityHealthChecks();
+
+            app.UseCors(CorsExtensions.DefaultPolicyName);
+
+            app.UseWhen(
+                context => ApiPaths.IsVersionedApi(context.Request.Path),
+                branch => branch.UseRequestTimeouts()
             );
-    }
 
-    public static void ConfigurePipeline(this WebApplication app)
-    {
-        app.UseForwardedHeaders();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-        app.UseRequestId();
-        app.UsePageId();
-        app.UseSecurityHeaders();
-        app.UseCacheControl();
-        app.UseIpRateLimit();
-        app.UseResponseCompression();
+            app.UseMiddleware<IdempotencyMiddleware>();
 
-        app.UseRequestLogging();
+            app.UsePrincipalRateLimit();
 
-        app.UseExceptionHandler();
+            app.UseOutputCache();
 
-        app.UseRouting();
+            app.UseUserLogContext();
 
-        app.UseMaxBodySize();
+            app.UseSwaggerDocs();
+            app.UseHangfireJobs();
 
-        app.UseWebSockets();
+            app.MapControllers();
+            app.MapRealtime();
 
-        app.UseHttpMetrics();
-        app.UseObservabilityHealthChecks();
-
-        app.UseCors(CorsExtensions.DefaultPolicyName);
-
-        app.UseWhen(
-            context => ApiPaths.IsVersionedApi(context.Request.Path),
-            branch => branch.UseRequestTimeouts()
-        );
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.UseMiddleware<IdempotencyMiddleware>();
-
-        app.UsePrincipalRateLimit();
-
-        app.UseOutputCache();
-
-        app.UseUserLogContext();
-
-        app.UseSwaggerDocs();
-        app.UseHangfireJobs();
-
-        app.MapControllers();
-        app.MapRealtime();
-
-        app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
+            app.MapFallback(context => ProblemWriter.WriteAsync(context, Problems.NotFound()));
+        }
     }
 }

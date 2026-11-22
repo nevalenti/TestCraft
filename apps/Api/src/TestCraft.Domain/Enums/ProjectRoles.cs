@@ -14,9 +14,12 @@ public static class ProjectRoles
     public static ProjectRole Resolve(bool isOwner, AssignableRole? memberRole) =>
         isOwner ? ProjectRole.Owner : memberRole?.ToProjectRole() ?? ProjectRole.Viewer;
 
-    public static bool HasAtLeast(this ProjectRole role, ProjectRole minimum) => role >= minimum;
+    extension(ProjectRole role)
+    {
+        public bool HasAtLeast(ProjectRole minimum) => role >= minimum;
 
-    public static bool CanManage(this ProjectRole actor, AssignableRole memberRole) =>
-        actor == ProjectRole.Owner
-        || (actor == ProjectRole.Admin && memberRole != AssignableRole.Admin);
+        public bool CanManage(AssignableRole memberRole) =>
+            role == ProjectRole.Owner
+            || (role == ProjectRole.Admin && memberRole != AssignableRole.Admin);
+    }
 }

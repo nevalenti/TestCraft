@@ -5,58 +5,57 @@ namespace TestCraft.Application.Features.TestPlans;
 
 internal static class PlanVersioning
 {
-    public static Task TouchPlanAsync(
-        this IApplicationDbContext context,
-        TestPlanId planId,
-        DateTimeOffset now,
-        CancellationToken cancellationToken
-    ) => TouchAsync(context.TestPlans.Where(plan => plan.Id == planId), now, cancellationToken);
+    extension(IApplicationDbContext context)
+    {
+        public Task TouchPlanAsync(
+            TestPlanId planId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken
+        ) => TouchAsync(context.TestPlans.Where(plan => plan.Id == planId), now, cancellationToken);
 
-    public static Task TouchPlansForCaseAsync(
-        this IApplicationDbContext context,
-        TestCaseId caseId,
-        DateTimeOffset now,
-        CancellationToken cancellationToken
-    ) =>
-        TouchAsync(
-            context.TestPlans.Where(plan =>
-                plan.TestPlanCases.Any(entry => entry.TestCaseId == caseId)
-            ),
-            now,
-            cancellationToken
-        );
+        public Task TouchPlansForCaseAsync(
+            TestCaseId caseId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken
+        ) =>
+            TouchAsync(
+                context.TestPlans.Where(plan =>
+                    plan.TestPlanCases.Any(entry => entry.TestCaseId == caseId)
+                ),
+                now,
+                cancellationToken
+            );
 
-    public static Task TouchPlansForCasesAsync(
-        this IApplicationDbContext context,
-        IReadOnlyCollection<TestCaseId> caseIds,
-        DateTimeOffset now,
-        CancellationToken cancellationToken
-    ) =>
-        TouchAsync(
-            context.TestPlans.Where(plan =>
-                plan.TestPlanCases.Any(entry => caseIds.Contains(entry.TestCaseId))
-            ),
-            now,
-            cancellationToken
-        );
+        public Task TouchPlansForCasesAsync(
+            IReadOnlyCollection<TestCaseId> caseIds,
+            DateTimeOffset now,
+            CancellationToken cancellationToken
+        ) =>
+            TouchAsync(
+                context.TestPlans.Where(plan =>
+                    plan.TestPlanCases.Any(entry => caseIds.Contains(entry.TestCaseId))
+                ),
+                now,
+                cancellationToken
+            );
 
-    public static Task TouchPlansForSuiteAsync(
-        this IApplicationDbContext context,
-        TestSuiteId suiteId,
-        DateTimeOffset now,
-        CancellationToken cancellationToken
-    ) =>
-        TouchAsync(
-            context.TestPlans.Where(plan =>
-                plan.TestPlanCases.Any(entry =>
-                    context.TestCases.Any(testCase =>
-                        testCase.Id == entry.TestCaseId && testCase.SuiteId == suiteId
+        public Task TouchPlansForSuiteAsync(
+            TestSuiteId suiteId,
+            DateTimeOffset now,
+            CancellationToken cancellationToken
+        ) =>
+            TouchAsync(
+                context.TestPlans.Where(plan =>
+                    plan.TestPlanCases.Any(entry =>
+                        context.TestCases.Any(testCase =>
+                            testCase.Id == entry.TestCaseId && testCase.SuiteId == suiteId
+                        )
                     )
-                )
-            ),
-            now,
-            cancellationToken
-        );
+                ),
+                now,
+                cancellationToken
+            );
+    }
 
     private static async Task TouchAsync(
         IQueryable<Domain.Entities.TestPlan> plans,
