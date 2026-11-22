@@ -24,9 +24,14 @@ public static class RateLimitingExtensions
     public static bool IsRateLimited(this IHostEnvironment environment) =>
         !UnlimitedEnvironments.Any(name => environment.IsEnvironment(name));
 
-    public static IApplicationBuilder UseIpRateLimit(this WebApplication app) =>
-        app.Environment.IsRateLimited() ? app.UseMiddleware<IpRateLimitMiddleware>() : app;
+    extension(WebApplication app)
+    {
+        public IApplicationBuilder UseIpRateLimit() =>
+            app.Environment.IsRateLimited() ? app.UseMiddleware<IpRateLimitMiddleware>() : app;
 
-    public static IApplicationBuilder UsePrincipalRateLimit(this WebApplication app) =>
-        app.Environment.IsRateLimited() ? app.UseMiddleware<PrincipalRateLimitMiddleware>() : app;
+        public IApplicationBuilder UsePrincipalRateLimit() =>
+            app.Environment.IsRateLimited()
+                ? app.UseMiddleware<PrincipalRateLimitMiddleware>()
+                : app;
+    }
 }

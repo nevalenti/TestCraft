@@ -7,51 +7,52 @@ namespace TestCraft.Application.Common.Extensions;
 
 public static class UniqueSaveExtensions
 {
-    public static async Task SaveOrConflictAsync(
-        this IApplicationDbContext context,
-        IDbExceptionClassifier classifier,
-        ConflictException conflict,
-        CancellationToken cancellationToken
-    )
+    extension(IApplicationDbContext context)
     {
-        try
+        public async Task SaveOrConflictAsync(
+            IDbExceptionClassifier classifier,
+            ConflictException conflict,
+            CancellationToken cancellationToken
+        )
         {
-            await context.SaveChangesAsync(cancellationToken);
-        }
-        catch (DbUpdateException exception) when (classifier.IsUniqueViolation(exception))
-        {
-            throw conflict;
-        }
-    }
-
-    public static async Task<T> GetOrCreateAsync<T>(
-        this IApplicationDbContext context,
-        DbSet<T> set,
-        Expression<Func<T, bool>> match,
-        Func<T> create,
-        IDbExceptionClassifier classifier,
-        CancellationToken cancellationToken
-    )
-        where T : class
-    {
-        if (await set.FirstOrDefaultAsync(match, cancellationToken) is { } existing)
-        {
-            return existing;
+            try
+            {
+                await context.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException exception) when (classifier.IsUniqueViolation(exception))
+            {
+                throw conflict;
+            }
         }
 
-        var created = create();
-        set.Add(created);
-        try
+        public async Task<T> GetOrCreateAsync<T>(
+            DbSet<T> set,
+            Expression<Func<T, bool>> match,
+            Func<T> create,
+            IDbExceptionClassifier classifier,
+            CancellationToken cancellationToken
+        )
+            where T : class
         {
-            await context.SaveChangesAsync(cancellationToken);
+            if (await set.FirstOrDefaultAsync(match, cancellationToken) is { } existing)
+            {
+                return existing;
+            }
 
-            return created;
-        }
-        catch (DbUpdateException exception) when (classifier.IsUniqueViolation(exception))
-        {
-            set.Remove(created);
+            var created = create();
+            set.Add(created);
+            try
+            {
+                await context.SaveChangesAsync(cancellationToken);
 
-            return await set.SingleAsync(match, cancellationToken);
+                return created;
+            }
+            catch (DbUpdateException exception) when (classifier.IsUniqueViolation(exception))
+            {
+                set.Remove(created);
+
+                return await set.SingleAsync(match, cancellationToken);
+            }
         }
     }
 }

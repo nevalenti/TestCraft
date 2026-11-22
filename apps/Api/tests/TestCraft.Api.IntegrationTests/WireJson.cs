@@ -10,48 +10,47 @@ public static class WireJson
 
     public static JsonContent Content<T>(T value) => JsonContent.Create(value, options: Options);
 
-    public static Task<HttpResponseMessage> PostAsJsonAsync<T>(
-        this HttpClient client,
-        string? requestUri,
-        T value,
-        CancellationToken cancellationToken = default
-    ) => client.PostAsync(requestUri, Content(value), cancellationToken);
-
-    public static Task<HttpResponseMessage> PutAsJsonAsync<T>(
-        this HttpClient client,
-        string? requestUri,
-        T value,
-        CancellationToken cancellationToken = default
-    ) => client.PutAsync(requestUri, Content(value), cancellationToken);
-
-    public static Task<HttpResponseMessage> UpdateAsJsonAsync<T>(
-        this HttpClient client,
-        string? requestUri,
-        T value,
-        int version = 1,
-        CancellationToken cancellationToken = default
-    ) =>
-        client.SendVersionedAsJsonAsync(
-            HttpMethod.Put,
-            requestUri,
-            value,
-            version,
-            cancellationToken
-        );
-
-    public static Task<HttpResponseMessage> SendVersionedAsJsonAsync<T>(
-        this HttpClient client,
-        HttpMethod method,
-        string? requestUri,
-        T value,
-        int version = 1,
-        CancellationToken cancellationToken = default
-    )
+    extension(HttpClient client)
     {
-        var request = new HttpRequestMessage(method, requestUri) { Content = Content(value) };
-        request.Headers.TryAddWithoutValidation("If-Match", $"\"{version}\"");
+        public Task<HttpResponseMessage> PostAsJsonAsync<T>(
+            string? requestUri,
+            T value,
+            CancellationToken cancellationToken = default
+        ) => client.PostAsync(requestUri, Content(value), cancellationToken);
 
-        return client.SendAsync(request, cancellationToken);
+        public Task<HttpResponseMessage> PutAsJsonAsync<T>(
+            string? requestUri,
+            T value,
+            CancellationToken cancellationToken = default
+        ) => client.PutAsync(requestUri, Content(value), cancellationToken);
+
+        public Task<HttpResponseMessage> UpdateAsJsonAsync<T>(
+            string? requestUri,
+            T value,
+            int version = 1,
+            CancellationToken cancellationToken = default
+        ) =>
+            client.SendVersionedAsJsonAsync(
+                HttpMethod.Put,
+                requestUri,
+                value,
+                version,
+                cancellationToken
+            );
+
+        public Task<HttpResponseMessage> SendVersionedAsJsonAsync<T>(
+            HttpMethod method,
+            string? requestUri,
+            T value,
+            int version = 1,
+            CancellationToken cancellationToken = default
+        )
+        {
+            var request = new HttpRequestMessage(method, requestUri) { Content = Content(value) };
+            request.Headers.TryAddWithoutValidation("If-Match", $"\"{version}\"");
+
+            return client.SendAsync(request, cancellationToken);
+        }
     }
 
     public static Task<T?> ReadFromJsonAsync<T>(
