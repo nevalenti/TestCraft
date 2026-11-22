@@ -70,7 +70,7 @@ gateway:
       https: null
 
 postgres:
-  dataSubdir: ""
+  dataSubdir: "pgdata"
 
 mailpit:
   enabled: false
