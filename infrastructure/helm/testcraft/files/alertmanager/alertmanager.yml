@@ -1,23 +1,34 @@
 global:
   resolve_timeout: 5m
+  {{- if .Values.secrets.smtpHost }}
   smtp_smarthost: '{{ .Values.secrets.smtpHost }}:{{ .Values.secrets.smtpPort }}'
   smtp_from: '{{ .Values.secrets.smtpFromAddress }}'
+  {{- if .Values.secrets.smtpUser }}
   smtp_auth_username: '{{ .Values.secrets.smtpUser }}'
   smtp_auth_password_file: /etc/alertmanager/secrets/smtp-password
+  {{- end }}
   smtp_require_tls: true
+  {{- end }}
 
 route:
+  {{- if and .Values.secrets.smtpHost .Values.secrets.alertEmailTo }}
   receiver: email
+  {{- else }}
+  receiver: noop
+  {{- end }}
   group_by: ["alertname"]
   group_wait: 30s
   group_interval: 5m
   repeat_interval: 4h
 
 receivers:
+  {{- if and .Values.secrets.smtpHost .Values.secrets.alertEmailTo }}
   - name: email
     email_configs:
       - to: '{{ .Values.secrets.alertEmailTo }}'
         send_resolved: true
+  {{- end }}
+  - name: noop
 
 inhibit_rules:
   - source_matchers: ["severity = critical"]

@@ -18,6 +18,9 @@ images:
 tls:
   provider: letsencrypt
 
+postgres:
+  dataSubdir: pgdata
+
 storage:
   tempo: 5Gi
 
