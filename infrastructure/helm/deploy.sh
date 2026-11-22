@@ -16,7 +16,7 @@ upgrade() {
     --namespace testcraft \
     --values infrastructure/helm/testcraft/values.production.yaml \
     --values infrastructure/helm/testcraft/values.secrets.yaml \
-    --reset-then-reuse-values --server-side=true --force-conflicts \
+    --reset-then-reuse-values \
     "$@"
 }
 
