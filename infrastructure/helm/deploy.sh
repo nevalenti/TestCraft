@@ -21,7 +21,7 @@ upgrade() {
 }
 
 wait_for_rollout() {
-  if ! kubectl rollout status "$@" -n testcraft --timeout=120s; then
+  if ! kubectl rollout status "$@" -n testcraft --timeout=300s; then
     echo "rollout of $* failed, rolling back release" >&2
     k3s_helm rollback testcraft -n testcraft
     exit 1
@@ -52,6 +52,7 @@ deploy_all() {
   local deployments=()
   for app in $APPS; do deployments+=("deployment/$app"); done
   upgrade
+  wait_for_rollout deployment/rabbitmq
   rollout "${deployments[@]}"
 }
 
@@ -81,6 +82,9 @@ deploy_app() {
     extra+=(--set images.migrator.tag="$tag" --set images.migrator.pullPolicy=IfNotPresent)
   fi
   upgrade --set images."$app".tag="$tag" --set images."$app".pullPolicy=IfNotPresent "${extra[@]}"
+  if [ "$app" = "api" ]; then
+    wait_for_rollout deployment/rabbitmq
+  fi
   wait_for_rollout "deployment/$app"
 }
 
