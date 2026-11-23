@@ -26,8 +26,8 @@ thirdPartyImages:
   mailpit: axllent/mailpit:v1.31.1
   redis: redis:7-alpine
   rabbitmq: rabbitmq:4-management-alpine
-  minio: quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z
-  minio_client: quay.io/minio/mc:RELEASE.2025-08-13T08-35-41Z
+  minio: pgsty/silo:RELEASE.2026-11-12T00-00-00Z
+  minio_client: pgsty/mc:RELEASE.2026-11-12T00-00-00Z
   keycloak: quay.io/keycloak/keycloak:26.2
   busybox: busybox:1.36
   grafana: grafana/grafana:11.6.0
