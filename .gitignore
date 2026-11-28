@@ -25,6 +25,7 @@ infrastructure/nginx/tls/
 .stylelintcache
 .turbo/
 .vite/
+.vs/
 .vscode/
 e2e/tests/.auth/
 artifacts/
