@@ -137,6 +137,8 @@ export const MembersSection = ({ projectId }: { projectId: string }) => {
             `Remove ${member.email ?? memberLabel(member)}`
           }
           emptyTitle="No members yet"
+          emptyDescription="Add a teammate by email to start collaborating on this project."
+          emptyIcon={<UsersIcon className="size-4" aria-hidden="true" />}
         />
       )}
 

@@ -13,8 +13,10 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
 import type { TestPlanCase } from "@testcraft/types";
 
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { SkeletonStatus } from "@/components/ui/skeleton/SkeletonStatus";
 import { PlanCaseRowSkeleton } from "@/features/testPlans/PlanCaseRowSkeleton";
@@ -63,9 +65,16 @@ export const PlanCasesPanel = ({
   if (isError) return <ErrorState error={error} onRetry={onRetry} />;
   if (sortedCases.length === 0) {
     return (
-      <p className="text-sm text-fg-muted">
-        Add test cases from the right panel.
-      </p>
+      <EmptyState
+        compact
+        icon={<ClipboardDocumentListIcon className="size-5" />}
+        title="No cases in this plan yet"
+        description={
+          onRemove
+            ? "Add test cases from the right panel."
+            : "This plan doesn't have any test cases yet."
+        }
+      />
     );
   }
 

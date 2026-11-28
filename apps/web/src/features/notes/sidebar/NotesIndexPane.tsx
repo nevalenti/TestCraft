@@ -30,6 +30,12 @@ export const NotesIndexPane = ({
     ? "Pick up where you left off"
     : "Start your first note";
   const title = onCreate ? emptyTitle : "Select a note to read it";
+  const emptyDescription = onCreate
+    ? "Capture test ideas, run notes, and documentation in Markdown."
+    : "Choose a note from the list to start reading.";
+  const description = hasNotes
+    ? "Jump back into a recent note, or start a new one."
+    : emptyDescription;
 
   return (
     <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-6 py-12">
@@ -41,6 +47,9 @@ export const NotesIndexPane = ({
           <h2 className="font-display text-xl font-bold tracking-tight text-base-content">
             {title}
           </h2>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-fg-muted">
+            {description}
+          </p>
           {onCreate && (
             <button
               type="button"

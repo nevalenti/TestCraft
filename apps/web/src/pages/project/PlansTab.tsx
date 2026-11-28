@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ClipboardDocumentListIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
@@ -8,6 +9,7 @@ import type {
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
@@ -77,6 +79,44 @@ export const PlansTab = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const emptyState = debouncedSearch.trim() ? (
+    <EmptyState
+      icon={<MagnifyingGlassIcon className="size-6" />}
+      title="No test plans match your search"
+      description="Try a different name, or clear the search to see every plan in this project."
+      action={
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={() => {
+            setSearch("");
+            setPage(0);
+          }}
+        >
+          Clear search
+        </button>
+      }
+    />
+  ) : (
+    <EmptyState
+      icon={<ClipboardDocumentListIcon className="size-6" />}
+      title="No test plans yet"
+      description="Plans are reusable sets of test cases you can run together and rerun whenever you need."
+      action={
+        canEdit && (
+          <button
+            type="button"
+            className="btn gap-2 btn-sm btn-primary"
+            onClick={openCreate}
+          >
+            <ClipboardDocumentListIcon className="size-4" aria-hidden="true" />
+            Create your first plan
+          </button>
+        )
+      }
+    />
+  );
+
   const renderTable = (items: TestPlan[]) => (
     <PlansTable
       plans={items}
@@ -123,6 +163,7 @@ export const PlansTab = () => {
         displayItems={plans}
         viewMode="list"
         emptyTitle="No test plans yet"
+        emptyState={emptyState}
         renderTable={renderTable}
       />
 

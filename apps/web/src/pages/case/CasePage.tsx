@@ -1,3 +1,4 @@
+import { ListBulletIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, PlusCircleIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
@@ -114,7 +115,25 @@ export const CasePage = () => {
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
     if (sortedSteps.length === 0)
-      return <EmptyState title="No steps defined" />;
+      return (
+        <EmptyState
+          icon={<ListBulletIcon className="size-6" />}
+          title="No steps defined"
+          description="Add the first step to describe how this test case should be executed."
+          action={
+            canEdit && (
+              <button
+                type="button"
+                className="btn gap-1.5 btn-sm btn-primary"
+                onClick={openCreate}
+              >
+                <PlusCircleIcon className="size-4" aria-hidden="true" />
+                Add your first step
+              </button>
+            )
+          }
+        />
+      );
 
     return (
       <StepsList

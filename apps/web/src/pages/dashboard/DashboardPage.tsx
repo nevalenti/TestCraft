@@ -149,9 +149,19 @@ export const DashboardPage = () => {
 
   const noMatches = (
     <EmptyState
-      className="flex-1"
+      className="m-4 flex-1"
       icon={<MagnifyingGlassIcon className="size-5" />}
       title="No runs match your search"
+      description="Try a different run or project name, or clear the search to see everything again."
+      action={
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={() => handleSearch("")}
+        >
+          Clear search
+        </button>
+      }
     />
   );
 
@@ -169,10 +179,11 @@ export const DashboardPage = () => {
           noMatches
         ) : (
           <EmptyState
-            className="flex-1"
+            className="m-4 flex-1"
             icon={<ClockIcon className="size-5" />}
             iconClassName="text-warning"
             title="No active runs"
+            description="Runs appear here while they're in progress. Start a run from a project to watch results stream in."
             action={
               <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
                 <FolderOpenIcon className="size-4" aria-hidden="true" />
@@ -207,10 +218,11 @@ export const DashboardPage = () => {
           noMatches
         ) : (
           <EmptyState
-            className="flex-1"
+            className="m-4 flex-1"
             icon={<CheckCircleIcon className="size-5" />}
             iconClassName="text-success"
             title="No completed runs"
+            description="Finished runs will show up here with their pass rates and result summaries."
             action={
               <Link to="/projects" className="btn gap-2 btn-sm btn-primary">
                 <FolderOpenIcon className="size-4" aria-hidden="true" />
@@ -261,6 +273,7 @@ export const DashboardPage = () => {
             <EmptyState
               icon={<RectangleStackIcon className="size-6" />}
               title="No projects yet"
+              description="Projects organize your test suites, runs, and results. Create your first project to get started."
               action={
                 <Link to="/projects" className="btn btn-sm btn-primary">
                   Go to projects

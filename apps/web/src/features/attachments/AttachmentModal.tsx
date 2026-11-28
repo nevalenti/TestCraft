@@ -96,6 +96,7 @@ export const AttachmentModal = ({
       return (
         <EmptyState
           title="No attachments yet"
+          description="Upload screenshots, logs, or other evidence to keep it with this result."
           icon={<PaperClipIcon aria-hidden="true" />}
         />
       );

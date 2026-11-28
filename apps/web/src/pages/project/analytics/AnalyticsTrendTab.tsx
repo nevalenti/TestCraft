@@ -75,6 +75,7 @@ export const AnalyticsTrendTab = () => {
       <EmptyState
         icon={<ArrowTrendingUpIcon className="size-6" />}
         title="No run data yet"
+        description="Completed runs will build a pass-rate trend here. Start a run to see the chart fill in."
       />
     );
 

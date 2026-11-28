@@ -84,6 +84,8 @@ export const EmailsSection = ({ projectId }: { projectId: string }) => {
           onRemove={(sub) => deleteEmail.mutate(sub.id)}
           removeAriaLabel={(sub) => `Delete email subscription ${sub.email}`}
           emptyTitle="No email subscriptions yet"
+          emptyDescription="Add an email address to be notified when runs complete or fail."
+          emptyIcon={<EnvelopeIcon className="size-4" aria-hidden="true" />}
         />
       )}
 

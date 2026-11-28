@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { PencilIcon, TagIcon, TrashIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type { CreateLabel, Label, UpdateLabel } from "@testcraft/types";
@@ -73,8 +74,45 @@ export const LabelsTab = () => {
         )
       );
     if (isError) return <ErrorState error={error} onRetry={refetch} />;
-    if (!labels || labels.length === 0)
-      return <EmptyState title="No labels yet" />;
+    if (!labels || labels.length === 0) {
+      if (debouncedSearch)
+        return (
+          <EmptyState
+            icon={<MagnifyingGlassIcon className="size-6" />}
+            title="No labels match your search"
+            description="Try a different name, or clear the search to see every label."
+            action={
+              <button
+                type="button"
+                className="btn btn-outline btn-sm"
+                onClick={() => handleSearch("")}
+              >
+                Clear search
+              </button>
+            }
+          />
+        );
+
+      return (
+        <EmptyState
+          icon={<TagIcon className="size-6" />}
+          title="No labels yet"
+          description="Labels let you group and filter test cases across suites so related work is easy to find."
+          action={
+            canEdit && (
+              <button
+                type="button"
+                className="btn gap-2 btn-sm btn-primary"
+                onClick={openCreate}
+              >
+                <TagIcon className="size-4" aria-hidden="true" />
+                Create your first label
+              </button>
+            )
+          }
+        />
+      );
+    }
     return (
       <div className="table-shell">
         <div className="overflow-x-auto">

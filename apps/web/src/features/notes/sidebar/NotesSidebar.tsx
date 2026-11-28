@@ -171,6 +171,7 @@ export const NotesSidebar = ({
         <EmptyState
           icon={<MagnifyingGlassIcon className="size-5" />}
           title="No notes match"
+          description="Try a different title, or clear the search to see all of your notes."
           action={
             <button
               type="button"
@@ -185,6 +186,28 @@ export const NotesSidebar = ({
         <EmptyState
           icon={<DocumentTextIcon className="size-5" />}
           title="No notes yet"
+          description={
+            onCreate
+              ? "Capture test ideas, run notes, and documentation in Markdown."
+              : "No notes have been added here yet."
+          }
+          action={
+            onCreate && (
+              <button
+                type="button"
+                className="btn gap-2 btn-sm btn-primary"
+                onClick={onCreate}
+                disabled={isCreating}
+              >
+                {isCreating ? (
+                  <span className="loading size-4 loading-spinner" />
+                ) : (
+                  <DocumentPlusIcon className="size-4" aria-hidden="true" />
+                )}
+                Create your first note
+              </button>
+            )
+          }
         />
       );
 

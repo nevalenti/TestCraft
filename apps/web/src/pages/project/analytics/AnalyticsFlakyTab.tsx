@@ -65,7 +65,9 @@ export const AnalyticsFlakyTab = () => {
     return (
       <EmptyState
         icon={<ExclamationTriangleIcon className="size-6" />}
+        iconClassName="text-success"
         title="No flaky tests detected"
+        description="No tests have flipped between passing and failing often enough to be flagged. Nice and stable."
       />
     );
 

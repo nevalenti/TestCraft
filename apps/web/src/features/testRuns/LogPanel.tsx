@@ -49,6 +49,7 @@ export const LogPanel = ({ projectId, runId }: Props) => {
     <EmptyState
       icon={<CommandLineIcon className="size-5" />}
       title="No pipeline output yet"
+      description="Pipeline output will appear here once the run starts reporting."
     />
   ) : (
     <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-xl border border-border bg-base-300">

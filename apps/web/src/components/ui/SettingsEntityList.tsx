@@ -21,6 +21,9 @@ interface SettingsEntityListProps<T> {
   removeLabel?: ReactNode;
   isRemoveHidden?: (item: T) => boolean;
   emptyTitle: string;
+  emptyDescription?: ReactNode;
+  emptyIcon?: ReactNode;
+  emptyAction?: ReactNode;
 }
 
 const ROW_WIDTHS = [
@@ -73,6 +76,9 @@ export const SettingsEntityList = <T,>({
   removeLabel,
   isRemoveHidden,
   emptyTitle,
+  emptyDescription,
+  emptyIcon,
+  emptyAction,
 }: SettingsEntityListProps<T>) => {
   const showSkeleton = useIsLoadingVisible(isPending);
 
@@ -84,7 +90,16 @@ export const SettingsEntityList = <T,>({
       />
     ) : null;
 
-  if (!items?.length) return <EmptyState compact title={emptyTitle} />;
+  if (!items?.length)
+    return (
+      <EmptyState
+        compact
+        title={emptyTitle}
+        description={emptyDescription}
+        icon={emptyIcon}
+        action={emptyAction}
+      />
+    );
 
   return (
     <ul className="space-y-2">

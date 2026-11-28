@@ -1,9 +1,11 @@
+import { FunnelIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ArrowUpTrayIcon, PlayIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type { CreateTestRun, TestRun, UpdateTestRun } from "@testcraft/types";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
@@ -85,6 +87,66 @@ export const RunsTab = () => {
     sourceFilter,
   );
 
+  const renderEmptyState = () => {
+    if (debouncedSearch.trim())
+      return (
+        <EmptyState
+          icon={<MagnifyingGlassIcon className="size-6" />}
+          title="No test runs match your search"
+          description="Try a different name, or clear the search to see every run in this project."
+          action={
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => setSearch("")}
+            >
+              Clear search
+            </button>
+          }
+        />
+      );
+
+    if (sourceFilter)
+      return (
+        <EmptyState
+          icon={<FunnelIcon className="size-6" />}
+          title="No runs from this source"
+          description="Clear the source filter to see all of the runs in this project."
+          action={
+            <button
+              type="button"
+              className="btn btn-outline btn-sm"
+              onClick={() => setSourceFilter(null)}
+            >
+              Clear filter
+            </button>
+          }
+        />
+      );
+
+    return (
+      <EmptyState
+        icon={<PlayIcon className="size-6" />}
+        title="No test runs yet"
+        description="Start a run manually or import JUnit/Allure results to track pass rates, failures, and trends."
+        action={
+          canEdit && (
+            <button
+              type="button"
+              className="btn gap-2 btn-sm btn-primary"
+              onClick={openCreate}
+            >
+              <PlayIcon className="size-4" aria-hidden="true" />
+              Start your first run
+            </button>
+          )
+        }
+      />
+    );
+  };
+
+  const emptyState = renderEmptyState();
+
   const renderTable = (items: TestRun[]) => (
     <RunsTable
       runs={items}
@@ -136,6 +198,7 @@ export const RunsTab = () => {
         displayItems={visibleRuns}
         viewMode="list"
         emptyTitle="No test runs yet"
+        emptyState={emptyState}
         renderTable={renderTable}
       />
 

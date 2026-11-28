@@ -181,6 +181,8 @@ export const ApiTokensSection = ({ projectId }: { projectId: string }) => {
             removeLabel="Revoke"
             isRemoveHidden={(t) => t.is_revoked}
             emptyTitle="No API tokens yet"
+            emptyDescription="Create a token to authenticate CI pipelines and scripts against the TestCraft API."
+            emptyIcon={<KeyIcon className="size-4" aria-hidden="true" />}
           />
         )}
       </div>

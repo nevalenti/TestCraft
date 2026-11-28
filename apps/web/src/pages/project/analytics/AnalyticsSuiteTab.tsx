@@ -113,6 +113,7 @@ export const AnalyticsSuiteTab = () => {
         <EmptyState
           icon={<Squares2X2Icon className="size-6" />}
           title="No run selected"
+          description="Pick a run above to see how each suite performed."
         />
       )}
 
@@ -131,6 +132,7 @@ export const AnalyticsSuiteTab = () => {
           <EmptyState
             icon={<Squares2X2Icon className="size-6" />}
             title="No suite data"
+            description="This run doesn't have any suite-level results to chart yet."
           />
         )}
 

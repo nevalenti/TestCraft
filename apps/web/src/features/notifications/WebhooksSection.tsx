@@ -88,6 +88,8 @@ export const WebhooksSection = ({ projectId }: { projectId: string }) => {
           onRemove={(wh) => deleteWebhook.mutate(wh.id)}
           removeAriaLabel={(wh) => `Delete webhook ${wh.url}`}
           emptyTitle="No webhooks yet"
+          emptyDescription="Point TestCraft at your endpoint to receive run events in real time."
+          emptyIcon={<LinkIcon className="size-4" aria-hidden="true" />}
         />
       )}
 

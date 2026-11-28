@@ -1,8 +1,10 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { FolderPlusIcon } from "@heroicons/react/24/solid";
 import type { CreateProject, Project, UpdateProject } from "@testcraft/types";
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
@@ -62,6 +64,39 @@ export const ProjectsPage = () => {
     />
   );
 
+  const emptyState = debouncedSearch ? (
+    <EmptyState
+      icon={<MagnifyingGlassIcon className="size-6" />}
+      title="No projects match your search"
+      description="Try a different name, or clear the search to see every project."
+      action={
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={() => setSearch("")}
+        >
+          Clear search
+        </button>
+      }
+    />
+  ) : (
+    <EmptyState
+      icon={<FolderPlusIcon className="size-6" />}
+      title="No projects yet"
+      description="Projects keep your suites, runs, and results together. Create your first project to start organizing your testing."
+      action={
+        <button
+          type="button"
+          className="btn gap-2 btn-sm btn-primary"
+          onClick={openCreate}
+        >
+          <FolderPlusIcon className="size-4" aria-hidden="true" />
+          Create your first project
+        </button>
+      }
+    />
+  );
+
   return (
     <div className="flex min-h-0 w-full flex-col">
       <h1 className="sr-only">Projects</h1>
@@ -87,6 +122,7 @@ export const ProjectsPage = () => {
             items={projects}
             viewMode="grid"
             emptyTitle="No projects yet"
+            emptyState={emptyState}
             renderCard={renderCard}
           />
         </div>

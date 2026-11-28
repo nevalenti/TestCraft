@@ -1,7 +1,12 @@
+import {
+  CheckCircleIcon,
+  MagnifyingGlassIcon,
+} from "@heroicons/react/24/outline";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import type { TestCase } from "@testcraft/types";
 import { useState } from "react";
 
+import { EmptyState } from "@/components/ui/EmptyState";
 import { SearchInput } from "@/components/ui/SearchInput";
 
 interface AddCasesPanelProps {
@@ -48,9 +53,35 @@ export const AddCasesPanel = ({
         )}
       </div>
       {filtered.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-fg-subtle">
-          {search ? "No matches." : "All test cases are in the plan."}
-        </p>
+        <EmptyState
+          compact
+          icon={
+            search ? (
+              <MagnifyingGlassIcon className="size-5" />
+            ) : (
+              <CheckCircleIcon className="size-5 text-success" />
+            )
+          }
+          title={
+            search ? "No matching test cases" : "All test cases are in the plan"
+          }
+          description={
+            search
+              ? "Try a different name or clear the search."
+              : "Every test case in this project is already part of this plan."
+          }
+          action={
+            search && (
+              <button
+                type="button"
+                className="btn btn-ghost btn-xs"
+                onClick={() => setSearch("")}
+              >
+                Clear search
+              </button>
+            )
+          }
+        />
       ) : (
         <ul className="max-h-112 overflow-y-auto rounded-xl border border-border bg-base-100">
           {filtered.map((testCase) => (

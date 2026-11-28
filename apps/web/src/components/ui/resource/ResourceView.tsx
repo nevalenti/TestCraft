@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 import { EmptyState } from "@/components/ui/EmptyState";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -19,6 +19,7 @@ interface ResourceViewProps<T> {
   displayItems?: T[];
   viewMode: ViewMode;
   emptyTitle: string;
+  emptyState?: ReactNode;
   renderListItem?: (item: T) => ReactElement;
   renderCard?: (item: T) => ReactElement;
   renderTable?: (items: T[]) => ReactElement;
@@ -39,6 +40,7 @@ export function ResourceView<T>({
   displayItems,
   viewMode,
   emptyTitle,
+  emptyState,
   renderListItem,
   renderCard,
   renderTable,
@@ -54,9 +56,9 @@ export function ResourceView<T>({
 
   if (isError) return <ErrorState error={error} onRetry={onRetry} />;
 
-  if (items?.length === 0) return <EmptyState title={emptyTitle} />;
-
   const list = displayItems ?? items ?? [];
+
+  if (list.length === 0) return emptyState ?? <EmptyState title={emptyTitle} />;
 
   if (viewMode === "list") {
     if (renderTable) return renderTable(list);

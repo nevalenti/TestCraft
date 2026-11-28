@@ -1,4 +1,7 @@
-import { ArrowsRightLeftIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowsRightLeftIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/24/outline";
 import { getRouteApi } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 
@@ -115,6 +118,7 @@ export const AnalyticsComparisonTab = () => {
         <EmptyState
           icon={<ArrowsRightLeftIcon className="size-6" />}
           title="Select two runs to compare"
+          description="Choose a baseline and a candidate run above to see regressions, fixes, and unchanged tests."
         />
       )}
 
@@ -170,9 +174,13 @@ export const AnalyticsComparisonTab = () => {
           </div>
 
           {visibleRows.length === 0 ? (
-            <p className="py-6 text-center text-sm text-fg-muted">
-              No changes between these two runs.
-            </p>
+            <EmptyState
+              compact
+              icon={<CheckCircleIcon className="size-5" />}
+              iconClassName="text-success"
+              title="No changes between these runs"
+              description="Every test had the same status in both runs."
+            />
           ) : (
             <div className="overflow-hidden rounded-xl border border-border">
               <div className="overflow-x-auto">

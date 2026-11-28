@@ -62,6 +62,7 @@ export const ResultsContent = ({
     return (
       <EmptyState
         title="No results recorded"
+        description="Results appear as tests run, or you can add one manually to record an outcome."
         action={
           openCreate && (
             <button
@@ -69,7 +70,7 @@ export const ResultsContent = ({
               onClick={openCreate}
             >
               <PlusCircleIcon className="size-4" aria-hidden="true" />
-              Add Result
+              Add your first result
             </button>
           )
         }
@@ -81,6 +82,7 @@ export const ResultsContent = ({
       <EmptyState
         icon={<MagnifyingGlassIcon className="size-5" />}
         title="No results match"
+        description="Try a different search term or status filter."
         action={
           <div className="flex gap-2">
             {debouncedSearch && (

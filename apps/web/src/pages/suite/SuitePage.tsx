@@ -1,3 +1,4 @@
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { DocumentPlusIcon } from "@heroicons/react/24/solid";
 import { getRouteApi } from "@tanstack/react-router";
 import type {
@@ -8,6 +9,7 @@ import type {
 import { useState } from "react";
 
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { ListToolbar } from "@/components/ui/ListToolbar";
 import { Modal } from "@/components/ui/Modal";
 import { ResourceView } from "@/components/ui/resource/ResourceView";
@@ -79,6 +81,41 @@ export const SuitePage = () => {
 
   const deleteItem = modal.type === "delete" ? modal.item : null;
 
+  const emptyState = debouncedSearch.trim() ? (
+    <EmptyState
+      icon={<MagnifyingGlassIcon className="size-6" />}
+      title="No test cases match your search"
+      description="Try a different name, or clear the search to see every case in this suite."
+      action={
+        <button
+          type="button"
+          className="btn btn-outline btn-sm"
+          onClick={() => setSearch("")}
+        >
+          Clear search
+        </button>
+      }
+    />
+  ) : (
+    <EmptyState
+      icon={<DocumentPlusIcon className="size-6" />}
+      title="No test cases yet"
+      description="Test cases describe what to verify and the steps needed to verify it."
+      action={
+        canEdit && (
+          <button
+            type="button"
+            className="btn gap-2 btn-sm btn-primary"
+            onClick={openCreate}
+          >
+            <DocumentPlusIcon className="size-4" aria-hidden="true" />
+            Create your first test case
+          </button>
+        )
+      }
+    />
+  );
+
   const renderTable = (items: TestCase[]) => (
     <CasesTable
       testCases={items}
@@ -116,6 +153,7 @@ export const SuitePage = () => {
             items={testCases}
             viewMode="list"
             emptyTitle="No test cases yet"
+            emptyState={emptyState}
             renderTable={renderTable}
           />
         </div>
